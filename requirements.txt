@@ -1,0 +1,8 @@
+openfisca-france==177.0.0
+pandas
+numpy
+scipy
+openpyxl
+xlrd
+pyarrow
+statsmodels
