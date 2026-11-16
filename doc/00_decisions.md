@@ -49,3 +49,5 @@ Aucune source sous habilitation. Chaque source est inscrite dans `02_registre_de
 ## A8 — Conservation du travail
 
 **Décision (16 novembre 2026).** L'espace de calcul n'est pas conservé d'une session à l'autre et aucun dépôt Git n'est relié au projet. Le code est versé dans le projet (`modele/code/`) ; les données brutes ne sont pas conservées mais retéléchargées par script, avec contrôle d'empreinte (`modele/resultats/registre_telechargements.json`). À réviser si un dépôt Git est relié : il deviendrait alors la référence pour le code.
+
+**Révision du 16 novembre 2026 (soir).** Le dépôt GitHub `vjwkjw26wk-dot/Pr-sidentielle-` est relié et accessible en écriture : il devient la référence pour le code, les tests, la documentation et les rapports (historique des versions). Le projet claude.ai en garde une copie de lecture. Les données brutes restent hors dépôt (téléchargées par script, empreintes dans `resultats/registre_telechargements.json`). Le dépôt est public : le code y est visible de tous.

@@ -21,6 +21,6 @@ Depuis le 16 novembre 2026 après-midi, le réseau est ouvert : PyPI, Insee, Eur
 
 **L'espace de travail n'est pas conservé d'une session à l'autre** (le code du lot 1 v1 a été perdu ainsi). Le code est donc versé dans le projet sous `modele/code/`, et les données brutes ne sont jamais conservées : elles sont retéléchargées par script, et leurs empreintes SHA-256 sont consignées dans `modele/resultats/registre_telechargements.json`. Une révision des données publiées est ainsi détectée.
 
-Pour reconstruire : copier `modele/code/` dans un dossier `modele/`, installer `openfisca-france statsmodels pandas scipy openpyxl`, puis exécuter `python3 tests/validation_M1.py`, `python3 tests/validation_M3.py`, `python3 tests/validation_lot5_cas_types.py` et `python3 tests/validation_M4.py` (premier lancement : téléchargement du recensement, 650 Mo, environ 17 min).
+Pour reconstruire : cloner le dépôt (ou copier `modele/code/`), installer `openfisca-france statsmodels pandas scipy openpyxl`, puis exécuter `python3 tests/validation_M1.py`, `python3 tests/validation_M3.py`, `python3 tests/validation_lot5_cas_types.py` et `python3 tests/validation_M4.py` (premier lancement : téléchargement du recensement, 650 Mo, environ 17 min).
 
-**Dépôt Git** : `vjwkjw26wk-dot/Pr-sidentielle-` (public) est lisible, mais l'envoi est refusé tant que l'application GitHub de Claude n'y est pas installée ; un commit local complet attend (décision A8).
+**Dépôt Git** : le code, les tests, la documentation et les rapports sont versionnés dans `vjwkjw26wk-dot/Pr-sidentielle-` (branche `main`), qui fait référence pour le code ; le projet en garde une copie (décision A8).
