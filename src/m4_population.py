@@ -36,7 +36,7 @@ URL_RP = "https://www.insee.fr/fr/statistiques/fichier/8590183/RP2022_indreg.par
 URL_IRCOM = ("https://static.data.gouv.fr/resources/limpot-sur-le-revenu-par-collectivite-territoriale-ircom/"
              "20260526-131537/ircom-2025-revenus-2024.zip")
 COLS = ["REGION", "NUMMR", "AGEREV", "SEXE", "LPRM", "NUMF", "LIENF", "STAT_CONJ", "TACT", "TP", "STAT", "GS",
-        "ETUD", "IPONDI", "CATPC", "ILT"]
+        "ETUD", "IPONDI", "CATPC", "ILT", "STOCD", "SURF", "DEPT"]
 
 # --- Grilles publiées servant au score latent ------------------------------------------------------
 # Salaire mensuel net moyen en EQTP, secteur privé, 2024 (Insee, base Tous salariés) : cadres F/H 4 180 / 4 906,

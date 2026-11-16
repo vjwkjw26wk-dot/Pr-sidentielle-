@@ -3,7 +3,8 @@
 **Statut : construit pour l'impôt sur le revenu, sous réserve (16 novembre 2026, soir).**
 - Validé : structure des ménages ; impôt au barème par décile de revenu fiscal par part (écart total +2 %).
 - Restent calés, et non testés : le capital au prélèvement forfaitaire et les réductions et crédits non modélisés un à un.
-- Non construits : les prestations ; les 3 millions de foyers hors champ.
+- Prestations : première version. RSA, allocations familiales et aides au logement sont cohérents ; les éligibles à la prime d'activité sont sous-estimés.
+- Non construits : les 3 millions de foyers hors champ.
 
 ## Base : de vrais ménages
 Le fichier détail du recensement 2022 (Insee, « Individus localisés à la région », licence ouverte, 17,5 millions d'individus pondérés) fournit des ménages réels anonymisés. Il donne pour chaque personne :
@@ -65,8 +66,38 @@ Ce qui reste fragile :
 
 Conséquence pour l'usage : une réforme du barème, du quotient familial ou de la décote peut être chiffrée. Une réforme de l'imposition du capital ou des niches fiscales exige d'abord de modéliser ces postes un à un.
 
+## Prestations (version 1, `m4_prestations.py`, test `validation_prestations.py`)
+
+**Méthode**
+- **Familles au sens de la CAF** : un couple (marié, pacsé ou en concubinage) et ses enfants de moins de 25 ans vivant au foyer.
+- **Ressources** : les montants annuels de M4 (salaires, chômage, pensions) sont répartis uniformément sur les mois, avec des coefficients approchés pour passer au net. Les revenus N-1 et N-2 reprennent les mêmes montants.
+- **Logement** :
+  - le statut d'occupation vient du recensement ;
+  - le loyer est imputé (surface × prix au m² : parc social 6,5 € ; privé 21 / 13 / 10 € selon la zone ; meublé +15 %) ;
+  - la zone APL est approchée par le département.
+
+  Hypothèses de niveau D.
+- **Calcul** : OpenFisca, mois d'octobre 2024 multiplié par 12, sur un sous-échantillon de 0,5 % des ménages (contrainte de mémoire).
+- **Grandeur obtenue** : des droits, avec un recours de 100 %. Le rapport entre montant versé et montant simulé est un taux de recours apparent, à comparer aux estimations de non-recours de la DREES.
+
+**Résultats (`resultats/validation_prestations.md`)**
+
+| Prestation | Éligibles simulés | Bénéficiaires réels | Droits simulés | Versé | Recours apparent (foyers ; masse) | Estimation DREES du recours | Lecture |
+|---|---|---|---|---|---|---|---|
+| RSA | 2,90 M | 1,83 M | 15,4 Md€ | 11,9 Md€ | 63 % ; 77 % | 63 à 67 % des foyers | cohérent |
+| Prime d'activité | 6,25 M | ≈ 4,55 M | 15,0 Md€ | ≈ 10,3 Md€ | 73 % ; 69 % | ≈ 50 % des foyers, 54 à 57 % de la masse | éligibles sous-estimés d'environ 25 % |
+| Allocations familiales | 4,77 M | 4,7 M | 14,0 Md€ | — | 99 % | recours quasi complet | conforme |
+| Aides au logement | 5,25 M | ≈ 5,8 M | 14,4 Md€ | ≈ 16 Md€ | 110 % ; 111 % | recours élevé | droits sous-estimés d'environ 10 % |
+
+**Écarts et causes probables**
+- **Prime d'activité** : les revenus lissés sur l'année suppriment les trimestres à faibles revenus (contrats courts, intérim). Or l'éligibilité se joue trimestre par trimestre.
+- **Aides au logement** :
+  - les étudiants en résidence universitaire et en foyer (communautés) sont hors champ ;
+  - les loyers et les zones sont imputés grossièrement.
+- **Non modélisés** : allocation aux adultes handicapés (le recensement n'a pas d'information sur le handicap), revenus du patrimoine dans les bases de ressources, non-recours.
+
 ## Travaux restants
 1. **Postes calés à modéliser un à un** : réductions et crédits (investissement locatif, souscriptions, dépendance, d'après le tableau DGFiP par décile et par dispositif) ; option pour le barème (2,5 M de foyers, abattement de 40 % sur les dividendes) ; composition du poste exonéré.
 2. **Écart de 3 M de foyers** : population des communautés (fichier détail, catégorie 1), rattachement des jeunes adultes.
-3. **Prestations** (RSA, prime d'activité, allocations familiales, aides au logement) : calcul OpenFisca et comparaison aux masses de la CNAF.
+3. **Prestations** : non-recours explicite (taux DREES appliqués par tirage, pour que le simulateur rende des montants versés) ; variabilité infra-annuelle des revenus pour la prime d'activité ; loyers à partir de sources publiques par zone ; allocation aux adultes handicapés.
 4. **Recalage 2022 → année courante** sur M1 (âge, sexe) et sur l'évolution des revenus.
