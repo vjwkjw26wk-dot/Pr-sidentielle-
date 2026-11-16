@@ -116,6 +116,21 @@ Variable expliquée : Δln exportations ; 23 observations ; R² = 0.85 ; écart 
 
 Grandeurs dérivées : élasticité à la demande mondiale = 0.711 ; élasticité-prix = -0.595 ; tendance des parts de marché (% par an) = 0.177 ; forme à correction d'erreur : λ (t) = -0.247 (-1.6).
 
+### Transmission des prix d'importation aux prix à la consommation
+
+Variable expliquée : Δln prix de la consommation ; 27 observations ; R² = 0.68 ; écart type résiduel = 1.0 % ; autocorrélation des résidus (Breusch-Godfrey, p) = 0.15 ; estimé sur 1998-2024.
+
+| Variable | Coefficient | Écart type | t |
+|---|---|---|---|
+| const | 0.009 | 0.002 | 4.2 |
+| dlpm | 0.179 | 0.057 | 3.1 |
+| dlpm_1 | 0.182 | 0.078 | 2.3 |
+| dlclu | -0.133 | 0.185 | -0.7 |
+| dlclu_1 | 0.105 | 0.123 | 0.9 |
+| dlpc_1 | 0.216 | 0.062 | 3.5 |
+
+Grandeurs dérivées : transmission immédiate b0 = 0.179 ; transmission l'année suivante b1 = 0.182 ; part transmise l'année même θ = 0.495 ; sur 1998-2019 seulement : b0 = 0.274 ; sur 1998-2019 seulement : b1 = -0.054.
+
 ## 2. Tests rétrospectifs
 
 ### A. Estimation 1997-2012, simulation 2013-2019

@@ -150,6 +150,7 @@ def main():
         L += [f"### {e.nom}", "", f"Variable expliquée : {e.variable} ; {dg['n']} observations ; R² = {dg['R²']:.2f} ; "
               f"écart type résiduel = {dg['écart type résiduel'] * 100:.1f} %"
               + (f" ; autocorrélation des résidus (Breusch-Godfrey, p) = {dg['autocorrélation (BG, p)']:.2f}" if k not in ("emploi", "prix_va", "investissement") else "")
+              + (" ; estimé sur 1998-2024" if k == "transmission" else "")
               + ".", "", "| Variable | Coefficient | Écart type | t |", "|---|---|---|---|"]
         for nom, c, se, t in e.tableau([c for c in e.res.params.index if not c.startswith(("fe_", "tr_"))]):
             L.append(f"| {nom} | {c:.3f} | {se:.3f} | {t:.1f} |")
@@ -161,6 +162,8 @@ def main():
         L += [f"### {titre}", "", "| Équation | Croissance annuelle observée | Simulée | EAM | EAM naïve | Erreur de niveau en fin de période | Naïve |",
               "|---|---|---|---|---|---|---|"]
         for k, e in eqs.items():
+            if k == "transmission":
+                continue
             if k in ("emploi", "prix_va", "investissement"):
                 df = sim_branches(k, e, p, d_sim, f_sim)
                 est = sim_branches(k, e, p, d_est, f_est).obs
