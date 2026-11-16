@@ -23,8 +23,11 @@ def tbs():
 STATUT = {"1": "marie", "2": "pacse", "3": "celibataire", "4": "veuf", "5": "divorce", "6": "celibataire"}
 
 
-def simulation(ind: pd.DataFrame, annee: int, autres: pd.Series | None = None, option_bareme: bool = False):
-    """autres : revenus de capitaux mobiliers (case 2TR) par foyer ; option_bareme : case 2OP (imposition au barème)."""
+def simulation(ind: pd.DataFrame, annee: int, autres: pd.Series | None = None, option_bareme: bool = False,
+               entrees_foyer: dict | None = None, entrees_individu: dict | None = None):
+    """autres : revenus de capitaux mobiliers (case 2TR) par foyer ; option_bareme : case 2OP (imposition au barème) ;
+    entrees_foyer : {variable OpenFisca annuelle du foyer: Series indexée par foyer} ;
+    entrees_individu : {variable OpenFisca de l'individu: nom de colonne de ind} (montant annuel)."""
     ind = ind.sort_values(["foyer", "role"], key=lambda s: s.map({"dec": 0, "conj": 1, "pac": 2}) if s.name == "role" else s)
     ind = ind.reset_index(drop=True)
     T = tbs()
@@ -66,11 +69,16 @@ def simulation(ind: pd.DataFrame, annee: int, autres: pd.Series | None = None, o
     sim.set_input("caseT", a, (~fo.couple & (fo.pac > 0)).to_numpy())
     if autres is not None:
         sim.set_input("f2tr", a, autres.reindex(foyers).fillna(0).to_numpy())
-        sim.set_input("f2op", a, np.full(len(foyers), option_bareme))
+    sim.set_input("f2op", a, np.full(len(foyers), option_bareme))
+    for var, serie in (entrees_foyer or {}).items():
+        sim.set_input(var, a, serie.reindex(foyers).fillna(0).to_numpy())
+    for var, col in (entrees_individu or {}).items():
+        sim.set_input(var, a, ind[col].to_numpy())
     return sim, foyers
 
 
 def impot(ind: pd.DataFrame, annee: int = 2024, variables=("ip_net", "rfr", "nbptr", "prelevement_forfaitaire_unique_ir"),
-          autres: pd.Series | None = None, option_bareme: bool = False) -> pd.DataFrame:
-    sim, foyers = simulation(ind, annee, autres, option_bareme)
+          autres: pd.Series | None = None, option_bareme: bool = False,
+          entrees_foyer: dict | None = None, entrees_individu: dict | None = None) -> pd.DataFrame:
+    sim, foyers = simulation(ind, annee, autres, option_bareme, entrees_foyer, entrees_individu)
     return pd.DataFrame({v + "_of": sim.calculate(v, str(annee)) for v in variables}, index=foyers)

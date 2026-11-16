@@ -1,0 +1,128 @@
+{
+ "dgfip_ir_credits_deciles.xlsx": {
+  "date": "2026-11-16T19:05:10",
+  "octets": 118865,
+  "sha256": "c7578465e0a5101bcca0f21a0f37f21291c092f2c9dcfcc40c8e9bff5a44797c",
+  "url": "https://www.impots.gouv.fr/node/25535"
+ },
+ "dgfip_ir_deciles_rfr_part.xlsx": {
+  "date": "2026-11-16T19:05:07",
+  "octets": 108644,
+  "sha256": "59eebbdbfb0af568f6ab0ddd28cc30c76deaee95d62f5bf795c1cca130e1f307",
+  "url": "https://www.impots.gouv.fr/node/25518"
+ },
+ "dgfip_ir_declarations_2042_nat.csv": {
+  "date": "2026-11-16T18:45:18",
+  "octets": 1281848,
+  "sha256": "40df4b5c6649ea1647730a5e173aa7bcfc96af66990ef39de49d7c0a00411f8d",
+  "url": "https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/ir-declarations-2042-nat/exports/csv?delimiter=%3B"
+ },
+ "dgfip_ir_reductions_deciles.xlsx": {
+  "date": "2026-11-16T19:05:11",
+  "octets": 56734,
+  "sha256": "b9425ecfe7188e670198ce45350b5441d35462826d0b2e5ff9aeac604512a63f",
+  "url": "https://www.impots.gouv.fr/node/25536"
+ },
+ "dgfip_ir_taux_marginal.xlsx": {
+  "date": "2026-11-16T19:05:08",
+  "octets": 36224,
+  "sha256": "2fb279cf8d89e6737a0d1afe9b2dffd7719477944e09e69b442f50f653261f17",
+  "url": "https://www.impots.gouv.fr/node/25519"
+ },
+ "dgfip_ircom_2025_rev2024.zip": {
+  "date": "2026-11-16T17:45:00",
+  "octets": 18181698,
+  "sha256": "3df14c80f69afb76a8c6d1f13cd2fb9e861ba9e162bc1e516c6fb2ed77338b00",
+  "url": "https://static.data.gouv.fr/resources/limpot-sur-le-revenu-par-collectivite-territoriale-ircom/20260526-131537/ircom-2025-revenus-2024.zip"
+ },
+ "eurostat_gov_10dd_edpt1_FR.json": {
+  "date": "2026-11-16T16:05:01",
+  "octets": 3322,
+  "sha256": "f1e887afe10ef64578c7121f07422cc71effe162541377b3d9656e333f4abbaf",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/gov_10dd_edpt1?format=JSON&geo=FR&sector=S13&na_item=B9&na_item=GD&unit=MIO_EUR&unit=PC_GDP&sinceTimePeriod=2019"
+ },
+ "eurostat_lfsa_argan_FR_2024.json": {
+  "date": "2026-11-16T16:00:38",
+  "octets": 4360,
+  "sha256": "978073dcee6556e3d6db180a5cc1e83a95200f558c166dad80672b63e577745f",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lfsa_argan?format=JSON&geo=FR&time=2024&sex=F&sex=M&age=Y15-19&age=Y20-24&age=Y25-29&age=Y30-34&age=Y35-39&age=Y40-44&age=Y45-49&age=Y50-54&age=Y55-59&age=Y60-64&age=Y65-69&age=Y70-74&citizen=TOTAL"
+ },
+ "eurostat_nasa_10_f_bs_FR.json": {
+  "date": "2026-11-16T16:04:56",
+  "octets": 16117,
+  "sha256": "ba347a6d671f8ff6a77a441f0d7db9f34c587ce94452f682b00175a69ae5ccde",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nasa_10_f_bs?format=JSON&geo=FR&unit=MIO_EUR&co_nco=NCO&na_item=BF90&na_item=F&sinceTimePeriod=2018"
+ },
+ "eurostat_nasa_10_f_tr_FR.json": {
+  "date": "2026-11-16T16:05:00",
+  "octets": 8424,
+  "sha256": "e702c5ab69811d3fe0e558aab0449eaa77ee5bdd24b4835164aafd3132c9bc91",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nasa_10_f_tr?format=JSON&geo=FR&unit=MIO_EUR&co_nco=NCO&na_item=B9F&na_item=F&sinceTimePeriod=2019"
+ },
+ "eurostat_nasa_10_nf_tr_FR.json": {
+  "date": "2026-11-16T16:03:18",
+  "octets": 129934,
+  "sha256": "7ea2d6661c638cbcbecba856b088e81abf0347e4447dd13e6e35f95773ad56c9",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nasa_10_nf_tr?format=JSON&geo=FR&unit=CP_MEUR&sinceTimePeriod=2019"
+ },
+ "insee_ip2108.xlsx": {
+  "date": "2026-11-16T15:51:09",
+  "octets": 71728,
+  "sha256": "33fd2a0496c1cd6c60c82969eb9158f1cfefc08da7b0acaa06e4a96cdc1b5b3a",
+  "url": "https://www.insee.fr/fr/statistiques/fichier/9004289/ip2108.xlsx"
+ },
+ "insee_proj2026_00_central.xlsx": {
+  "date": "2026-11-16T15:50:18",
+  "octets": 2450989,
+  "sha256": "93ab1daf7c7b41cfde39010b684f357cb13d8ca0f8a7a4c0b2d28882b4c37326",
+  "url": "https://www.insee.fr/fr/statistiques/fichier/8990852/00_central.xlsx"
+ },
+ "insee_proj2026_combines.zip": {
+  "date": "2026-11-16T15:55:42",
+  "octets": 34710814,
+  "sha256": "a81fce8b5fc2dd484e8fcbbb2a541cc32e858cc3f39582a0ced14e7c05c583fd",
+  "url": "https://www.insee.fr/fr/statistiques/fichier/8990860/ensemble_dd2.zip"
+ },
+ "insee_proj2026_extremes.zip": {
+  "date": "2026-11-16T15:50:59",
+  "octets": 8665625,
+  "sha256": "bb4c2cca8455fdd1010fbfd1db82b4e4ad95ef63ef6094c792fcf5e2a6d000c6",
+  "url": "https://www.insee.fr/fr/statistiques/fichier/8990858/ensemble_dd1_3.zip"
+ },
+ "insee_proj2026_hyp_mortalite.xlsx": {
+  "date": "2026-11-16T15:51:09",
+  "octets": 1286484,
+  "sha256": "a0edc54772a3da1500aa0b4e75aca8130b3191010a1f509bbfe7cf9f09931525",
+  "url": "https://www.insee.fr/fr/statistiques/fichier/8990899/hyp_mortalite.xlsx"
+ },
+ "insee_proj2026_note_technique.pdf": {
+  "date": "2026-11-16T15:51:14",
+  "octets": 2589471,
+  "sha256": "3092e2f29c2183dea178b1f3ad25b06d0ea5e36a82df0f76758760ccd67c173c",
+  "url": "https://www.insee.fr/fr/metadonnees/source/fichier/Note_technique_hypotheses_projections_2026.pdf"
+ },
+ "insee_proj2026_travail.zip": {
+  "date": "2026-11-16T15:51:06",
+  "octets": 3954546,
+  "sha256": "3a56419068d910d948875a8874781ddd7cba24771af35da0a5cf894c8f744711",
+  "url": "https://www.insee.fr/fr/statistiques/fichier/8990868/ensemble_dd3.zip"
+ },
+ "insee_proj2026_variantes1.zip": {
+  "date": "2026-11-16T15:50:43",
+  "octets": 13044000,
+  "sha256": "ac7248bdd543c4df0391b581f4f237075de186dfe547212ae4e0624dd4bdabb8",
+  "url": "https://www.insee.fr/fr/statistiques/fichier/8990856/ensemble_dd1_2.zip"
+ },
+ "insee_rp2022_indreg.parquet": {
+  "date": "2026-11-16T17:39:41",
+  "octets": 647295748,
+  "sha256": "1e9ac18edbaa906c7def6aaaf737793202ff1bd8aa343128d786fff0ea44a0ce",
+  "url": "https://www.insee.fr/fr/statistiques/fichier/8590183/RP2022_indreg.parquet"
+ },
+ "insee_rp2022_varmod_indreg.csv": {
+  "date": "2026-11-16T17:39:43",
+  "octets": 283437,
+  "sha256": "04a7026d959c108c73c0b5d1143cbf771f611e8c380723a97d9b74e16d1d6aae",
+  "url": "https://www.insee.fr/fr/statistiques/fichier/8590183/varmod_indreg_2022.csv"
+ }
+}

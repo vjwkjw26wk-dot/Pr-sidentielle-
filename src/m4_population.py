@@ -36,7 +36,7 @@ URL_RP = "https://www.insee.fr/fr/statistiques/fichier/8590183/RP2022_indreg.par
 URL_IRCOM = ("https://static.data.gouv.fr/resources/limpot-sur-le-revenu-par-collectivite-territoriale-ircom/"
              "20260526-131537/ircom-2025-revenus-2024.zip")
 COLS = ["REGION", "NUMMR", "AGEREV", "SEXE", "LPRM", "NUMF", "LIENF", "STAT_CONJ", "TACT", "TP", "STAT", "GS",
-        "ETUD", "IPONDI", "CATPC"]
+        "ETUD", "IPONDI", "CATPC", "ILT"]
 
 # --- Grilles publiées servant au score latent ------------------------------------------------------
 # Salaire mensuel net moyen en EQTP, secteur privé, 2024 (Insee, base Tous salariés) : cadres F/H 4 180 / 4 906,
@@ -201,6 +201,8 @@ def construire(f: float = 0.02, graine: int = 2026) -> tuple[pd.DataFrame, pd.Da
                                   score_sal=("score_sal", "sum"), score_pen=("score_pen", "sum"),
                                   n=("age", "size"), n_pac=("role", lambda r: (r == "pac").sum()),
                                   couple=("role", lambda r: (r == "conj").any()))
+    indep = ind[(ind.TACT == "11") & ind.STAT.isin(["21", "22"])].foyer.unique()
+    fo["independant"] = fo.index.isin(indep)
     # rang pondéré (ex aequo départagés aléatoirement), puis RFR DGFiP
     rng = np.random.default_rng(graine + 1)
     ordre = np.lexsort((rng.random(len(fo)), fo.score.to_numpy()))
@@ -234,3 +236,188 @@ def construire(f: float = 0.02, graine: int = 2026) -> tuple[pd.DataFrame, pd.Da
         manque = (tot_sc == 0) & (ind.role == "dec")
         ind.loc[manque, col] = fo[col].reindex(ind.foyer[manque]).to_numpy()
     return ind, fo, ircom
+
+
+# ---------------------------------------------------------------------------------------------------
+# Version 1.1 : décomposition des autres revenus et dépenses ouvrant droit à crédits ou réductions
+# ---------------------------------------------------------------------------------------------------
+URL_CASES = ("https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/ir-declarations-2042-nat/"
+             "exports/csv?delimiter=%3B")
+
+
+def totaux_cases(annee: int = 2024) -> dict:
+    """Masses nationales (euros) par catégorie, d'après les déclarations nationales DGFiP (revenus de l'année)."""
+    d = pd.read_csv(telecharger(URL_CASES, "dgfip_ir_declarations_2042_nat.csv"), sep=";")
+    d = d[d.annee.astype(str).str[:4] == str(annee)].set_index("nom")
+    m = lambda codes: float(d.montant.reindex(codes).fillna(0).sum())  # noqa: E731
+    n = lambda codes: float(d.nombre.reindex(codes).fillna(0).max())  # noqa: E731
+    cinq = d[d.index.str.startswith("5")]
+    # bénéfices et revenus imposables des indépendants (hors micro-entrepreneurs au versement libératoire), moins déficits
+    pro_pos = cinq[cinq.libelle.str.contains("énéfices|Revenus imposables|revenus imposables", regex=True)
+                   & ~cinq.libelle.str.contains("Micro-entrepreneur")].montant.sum()
+    pro_neg = cinq[cinq.libelle.str.contains("éficit")].montant.sum()
+    meubles_micro = m(["5ND", "5OD", "5KP", "5LP", "5KO", "5LO"])  # recettes micro : abattement moyen ≈ 50 %
+    return {
+        "hs_exonerees": m(["1GH", "1HH", "1IH", "1JH"]), "foyers_hs": n(["1GH"]),
+        "dividendes": m(["2DC"]), "interets": m(["2TR", "2TS"]), "plus_values": m(["3VG"]) - m(["3VH"]),
+        "foncier": m(["4BA"]) - m(["4BC"]) + 0.7 * m(["4BE"]),
+        "independants": pro_pos - pro_neg + 0.5 * meubles_micro,
+        "emploi_domicile": m(["7DB"]), "foyers_emploi_domicile": n(["7DB"]),
+        "garde": m(["7GA", "7GB", "7GC"]), "foyers_garde": n(["7GA"]),
+        "dons_oeuvres": m(["7UF"]), "foyers_dons_oeuvres": n(["7UF"]),
+        "dons_difficulte": m(["7UD"]), "foyers_dons_difficulte": n(["7UD"]),
+        "salaires_etrangers_ci": m(["1AF", "1BF", "1CF"]),
+        "epargne_retraite": m(["6NS", "6NT", "6RS", "6RT", "6QS", "6QT"]), "personnes_epargne_retraite": n(["6NS"]) + n(["6NT"]) + n(["6RS"]),
+    }
+
+
+def imputer_heures_sup(ind: pd.DataFrame, total: float, plafond: float = 7_500) -> pd.Series:
+    """Heures supplémentaires exonérées (incluses dans les salaires de l'IRCOM) : salariés hors cadres (poids 1) et
+    cadres (poids 0,4), proportionnelles au salaire, plafonnées par la loi (7 500 €) et à 25 % du salaire."""
+    sal = ind.salaires.to_numpy()
+    w = np.where(ind.STAT == "10", np.where(ind.GS == "3", 0.4, 1.0), 0.0) * (sal > 0)
+    cap = np.minimum(plafond, 0.25 * sal)
+    lo, hi = 0.0, 1.0
+    for _ in range(60):
+        tau = (lo + hi) / 2
+        tot = (ind.poids.to_numpy() * np.minimum(tau * w * sal, cap)).sum()
+        lo, hi = (tau, hi) if tot < total else (lo, tau)
+    return pd.Series(np.minimum(tau * w * sal, cap), index=ind.index)
+
+
+def repartir_autres(fo: pd.DataFrame, reste: pd.Series, totaux: dict, eta_capital: float = 0.8,
+                    eta_bareme: float = 0.2, bonus_independant: float = 5.0) -> pd.DataFrame:
+    """Répartit le reste de chaque foyer entre revenus du capital (PFU : dividendes, intérêts, plus-values), revenus au
+    barème (fonciers, indépendants) et un poste « exonere » : part du reste qui dépasse les masses nationales par case
+    (revenus inclus dans le RFR mais non imposés au barème : revenus étrangers à crédit égal à l'impôt français hors
+    frontaliers, plus-values en report, revenus exonérés, abattements réintégrés…).
+    Ajustement biproportionnel par tranche (RAS) : lignes = masse du reste par tranche, colonnes = masses nationales
+    (non remises à l'échelle) ; a priori ∝ masse × (RFR moyen de la tranche)^η ; le poste exonéré suit le profil du
+    capital. Les foyers comptant un indépendant reçoivent une part au barème renforcée. η et bonus : niveau D."""
+    cats = ["dividendes", "interets", "plus_values", "foncier", "independants", "exonere"]
+    eta = {"dividendes": eta_capital, "interets": eta_capital, "plus_values": eta_capital,
+           "foncier": eta_bareme, "independants": eta_bareme, "exonere": eta_capital}
+    w = fo.poids
+    R_b = (reste * w).groupby(fo.tranche).sum()
+    m_b = (fo.rfr * w).groupby(fo.tranche).sum() / w.groupby(fo.tranche).sum()
+    couverts = sum(totaux[c] for c in cats[:-1])
+    T = pd.Series({c: totaux[c] for c in cats[:-1]})
+    T = T * min(1.0, R_b.sum() / couverts)
+    T["exonere"] = max(0.0, R_b.sum() - T.sum())
+    P = pd.DataFrame({c: max(T[c], 1.0) * (m_b / m_b.median()) ** eta[c] for c in cats})
+    P = P.div(P.sum(axis=1), axis=0).mul(R_b, axis=0)
+    for _ in range(300):  # RAS
+        P = P.mul(T.clip(lower=1e-9) / P.sum().clip(lower=1e-9), axis=1)
+        P = P.mul(R_b / P.sum(axis=1).clip(lower=1e-9), axis=0)
+    parts = P.div(P.sum(axis=1), axis=0).fillna(0)
+    a = parts.reindex(fo.tranche).to_numpy()
+    bonus = np.where(fo.independant.to_numpy()[:, None], np.array([1, 1, 1, 1, bonus_independant, 1]), 1.0)
+    a = a * bonus
+    a = a / a.sum(axis=1, keepdims=True).clip(min=1e-12)
+    out = pd.DataFrame(a * reste.to_numpy()[:, None], index=fo.index, columns=cats).fillna(0)
+    out.attrs["facteur_masses"] = float(R_b.sum() / couverts)
+    out.attrs["part_exoneree"] = float(T["exonere"] / R_b.sum())
+    return out
+
+
+def lire_deciles_dgfip(annee: int = 2024) -> pd.DataFrame:
+    """Tableau DGFiP « répartition de l'impôt moyen par déciles de RFR par part » (impots.gouv.fr, node 25518), en euros
+    par part : parts moyennes, RFR, impôt au barème, impôt forfaitaire, CEHR, réductions et crédits (RICI), IR net."""
+    import openpyxl
+    p = telecharger("https://www.impots.gouv.fr/node/25518", "dgfip_ir_deciles_rfr_part.xlsx")
+    ws = openpyxl.load_workbook(p, data_only=True)[f"a{annee}"]
+    lignes = []
+    for r in ws.iter_rows(values_only=True):
+        if r[0] is not None and str(r[0]).strip().isdigit():
+            v = [x for x in r[1:] if isinstance(x, (int, float))]
+            d = int(str(r[0]).strip())
+            # bornes présentes : une seule pour les déciles 1 et 10, deux sinon ; taux « n.s. » possibles au décile 1
+            v = v[(1 if d in (1, 10) else 2):]
+            v = (v + [np.nan] * 9)[:9]
+            lignes.append(dict(zip(["parts", "rfr", "bareme", "forfaitaire", "cehr", "rici", "net", "taux_av", "taux_ap"],
+                                   [v[0], v[1] * 1e3, v[2] * 1e3, v[3] * 1e3, v[4] * 1e3, v[5] * 1e3, v[6] * 1e3, v[7], v[8]]),
+                               decile=d))
+    return pd.DataFrame(lignes).set_index("decile")
+
+
+def deciles_rfr_par_part(fo: pd.DataFrame, nbptr: pd.Series) -> pd.Series:
+    """Décile (1-10) de RFR par part, pondéré."""
+    rpp = (fo.rfr / nbptr.clip(lower=0.5)).to_numpy()
+    o = np.argsort(rpp, kind="stable")
+    cw = np.cumsum(fo.poids.to_numpy()[o]) / fo.poids.sum()
+    d = np.empty(len(fo), dtype=int)
+    d[o] = np.minimum((cw * 10).astype(int) + 1, 10)
+    return pd.Series(d, index=fo.index)
+
+
+def caler_rici_residuelles(fo: pd.DataFrame, impot_avant: pd.Series, rici_modele: pd.Series, nbptr: pd.Series,
+                           deciles: pd.Series, dgfip: pd.DataFrame) -> pd.Series:
+    """Réductions et crédits non modélisés un à un (investissements locatifs, souscriptions PME, outre-mer, dépendance…) :
+    l'écart par décile entre les RICI de la DGFiP et ceux du modèle est réparti au prorata de l'impôt avant RICI du
+    foyer, sans dépasser cet impôt. Renvoie le montant résiduel par foyer (à soustraire de l'impôt)."""
+    w = fo.poids
+    out = pd.Series(0.0, index=fo.index)
+    for d in range(1, 11):
+        m = deciles == d
+        cible = dgfip.loc[d, "rici"] * (nbptr[m] * w[m]).sum()
+        ecart = cible - (rici_modele[m] * w[m]).sum()
+        base = impot_avant[m].clip(lower=0)
+        if ecart > 0 and (base * w[m]).sum() > 0:
+            out[m] = np.minimum(base, base * ecart / (base * w[m]).sum())
+    return out
+
+
+def imputer_depenses(fo: pd.DataFrame, ind: pd.DataFrame, totaux: dict, couverture: float, graine: int = 11) -> pd.DataFrame:
+    """Dépenses ouvrant droit à crédit ou réduction, imputées pour reproduire les nombres de foyers et montants
+    nationaux (ramenés à la couverture de la population). Probabilités croissantes avec le rang de revenu ;
+    emploi à domicile renforcé à partir de 75 ans ; garde réservée aux foyers ayant un enfant de moins de 6 ans."""
+    rng = np.random.default_rng(graine)
+    w = fo.poids.to_numpy()
+    r = fo.rfr.rank(pct=True).to_numpy()
+    u = rng.random((4, len(fo)))
+    age_dec = ind[ind.role == "dec"].groupby("foyer").age.first().reindex(fo.index).to_numpy()
+    jeunes = ind[(ind.role == "pac") & (ind.age < 6)].groupby("foyer").size().reindex(fo.index).fillna(0).to_numpy()
+
+    def tirer(score, n_cible, montant, k_u, mult=None):
+        lo, hi = 0.0, 50.0
+        for _ in range(60):
+            c = (lo + hi) / 2
+            p = np.minimum(1, c * score)
+            lo, hi = (c, hi) if (w * p).sum() < n_cible else (lo, c)
+        sel = u[k_u] < np.minimum(1, c * score)
+        base = np.where(sel, (mult if mult is not None else 1.0) * (0.5 + r), 0.0)
+        return base * montant / max((w * base).sum(), 1e-9)
+
+    out = pd.DataFrame(index=fo.index)
+    out["f7db"] = tirer(r ** 1.5 * np.where(age_dec >= 75, 3.0, 1.0), totaux["foyers_emploi_domicile"] * couverture,
+                        totaux["emploi_domicile"] * couverture, 0)
+    out["f7ga"] = tirer((jeunes > 0) * (0.3 + r), totaux["foyers_garde"] * couverture, totaux["garde"] * couverture, 1)
+    out["f7ga"] = np.minimum(out.f7ga, 3_500)  # plafond par enfant (le crédit de 50 % est calculé par OpenFisca)
+    out["f7uf"] = tirer(r ** 2, totaux["foyers_dons_oeuvres"] * couverture, totaux["dons_oeuvres"] * couverture, 2)
+    out["f7ud"] = tirer(r ** 1.5, totaux["foyers_dons_difficulte"] * couverture, totaux["dons_difficulte"] * couverture, 3)
+    return out
+
+
+def imputer_epargne_retraite(ind: pd.DataFrame, fo: pd.DataFrame, total: float, n_cible: float, graine: int = 13) -> pd.Series:
+    """Versements déductibles d'épargne retraite (cases 6NS, 6RS, 6QS…) : actifs occupés de 30 à 64 ans, probabilité
+    croissante avec le rang du foyer, montant proportionnel au RFR du foyer et plafonné à 10 % des revenus d'activité
+    (plafond légal simplifié). Déduits du revenu imposable, réintégrés dans le RFR."""
+    rng = np.random.default_rng(graine)
+    r = fo.rfr.rank(pct=True).reindex(ind.foyer).to_numpy()
+    elig = ((ind.TACT == "11") & ind.age.between(30, 64)).to_numpy()
+    score = elig * r ** 2.5
+    w = ind.poids.to_numpy()
+    u = rng.random(len(ind))
+    lo, hi = 0.0, 50.0
+    for _ in range(60):
+        c = (lo + hi) / 2
+        lo, hi = (c, hi) if (w * np.minimum(1, c * score)).sum() < n_cible else (lo, c)
+    sel = u < np.minimum(1, c * score)
+    plafond = 0.10 * (ind.salaires.to_numpy() + 0)
+    rfr_f = fo.rfr.reindex(ind.foyer).to_numpy()
+    base = np.where(sel, rfr_f, 0.0)
+    k = total / max((w * base).sum(), 1e-9)
+    for _ in range(20):  # mise à l'échelle sous plafond
+        v = np.minimum(k * base, np.maximum(plafond, 4_637))  # plancher légal de déductibilité (10 % du PASS)
+        k *= total / max((w * v).sum(), 1e-9)
+    return pd.Series(np.where(sel, np.minimum(k * base, np.maximum(plafond, 4_637)), 0.0), index=ind.index)
