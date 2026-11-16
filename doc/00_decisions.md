@@ -57,3 +57,17 @@ Aucune source sous habilitation. Chaque source est inscrite dans `02_registre_de
 **Décision (16 novembre 2026).** Le système productif est représenté par 64 produits et branches (nomenclature A64 des tableaux entrées-sorties symétriques d'Eurostat), avec séparation des flux intérieurs et importés et trois produits énergétiques distincts (B, C19, D). Le socle est un modèle de quantités de Leontief et un modèle de prix par les coûts, aux coefficients de l'année de base. Les comportements (marges, substitution intérieur-importé, emploi, investissement, capacités) seront estimés par branche sur les séries 1995-2025 et ajoutés à ce socle.
 **Justification.** C'est le niveau le plus fin publié chaque année en données ouvertes avec séparation intérieur/importé ; il isole l'énergie et les filières industrielles concernées par la réindustrialisation. Un niveau plus fin (A138 de l'Insee) n'existe pas sous forme de tableau symétrique annuel ouvert.
 **Limites.** Tableaux disponibles jusqu'en 2022 seulement : les années 2023-2025 seront projetées à partir des comptes annuels par branche. Les prix d'importation viennent des tableaux des ressources (`naio_10_pyp15`), la ligne P7 de `naio_10_pyp1700` étant défectueuse pour la France en 2014-2019.
+
+## A10 — Équations de comportement et modèle bouclé
+
+**Décision (16 novembre 2026).** Les comportements sont des modèles à correction d'erreur estimés sur 1997-2019 : en
+panel pour les 25 branches marchandes (emploi, prix de la valeur ajoutée, investissement), en séries agrégées pour les
+salaires, la consommation, l'investissement des sociétés non financières (coût d'usage du capital, dont l'impôt sur les
+sociétés) et le commerce extérieur. Deux paramètres non identifiés sur ces données sont calibrés et signalés :
+l'élasticité de l'emploi au coût réel du travail (−0,4) et l'effet du chômage sur les salaires (−0,4 % par point).
+Dans le modèle bouclé, les constantes de branche sont recalées sur les résidus moyens des cinq dernières années
+observées, et la tendance de productivité de chaque branche est un paramètre de scénario.
+**Justification.** L'extrapolation des effets fixes et tendances estimés faisait dériver l'emploi simulé de −7 % à +4 %
+en cinq ans selon la période d'estimation ; le recalage ramène l'erreur du modèle complet à −0,9 % sur 2015-2019.
+**Limites.** Voir `M7_M8_comportements_et_bouclage.md` : pas de délais de transmission des prix (l'inflation 2023 est
+manquée), pas de contraintes d'offre (les variantes de réindustrialisation sont des majorants), pas de politique monétaire.
