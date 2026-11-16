@@ -429,8 +429,8 @@ def recaler_capital_deciles(fo: pd.DataFrame, autres: pd.DataFrame, deciles: pd.
     La DGFiP publie le PFU moyen par part et par décile ; la masse de capital visée vaut PFU / 12,8 %. Dans chaque décile,
     le capital (dividendes, intérêts, plus-values) est remis à l'échelle ; la différence est prise sur (ou rendue à) les
     revenus au barème et le poste exonéré, au prorata de leurs montants, de sorte que le reste de chaque foyer est
-    inchangé. Les masses nationales du barème ne sont donc plus imposées : leur dérive est un diagnostic.
-    `fo` doit contenir `nbptr` (parts OpenFisca)."""
+    inchangé. Si `masse_bareme` est fourni, les revenus au barème sont ensuite recalés sur cette masse nationale
+    déclarée, le solde allant au poste exonéré. `fo` doit contenir `nbptr` (parts OpenFisca)."""
     cap = ["dividendes", "interets", "plus_values"]
     aut = ["foncier", "independants", "exonere"]
     out = autres.copy()

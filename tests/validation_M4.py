@@ -115,7 +115,7 @@ def simuler(ind, fo, tot, f8tk, reste, dep, eta):
     au = m4.repartir_autres(fo, reste, tot, eta_capital=eta)
     if RECALER:
         au0 = au
-        cov = fo.poids.sum() / 41_635_259
+        cov = fo.poids.sum() / m4.charger_ircom().foyers.sum()
         au = m4.recaler_capital_deciles(fo, au, m4.deciles_rfr_par_part(fo, fo.nbptr), m4.lire_deciles_dgfip(2024),
                                         masse_bareme=(tot["foncier"] + tot["independants"]) * cov)
         au.attrs.update(au0.attrs)
