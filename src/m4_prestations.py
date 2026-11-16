@@ -38,7 +38,11 @@ def familles_caf(ind: pd.DataFrame) -> pd.DataFrame:
     """Ajoute `famille_caf` et `role_fa` (demandeur, conjoint, enfant)."""
     ind = ind.copy()
     fam = ind.NUMF != "Z"
-    enfant = fam & (ind.LIENF == "3") & (ind.age < 25)
+    # enfant à charge au sens des prestations : moins de 25 ans et, à partir de 18 ans, revenus d'activité au plus
+    # égaux à 55 % du SMIC brut (≈ 11 000 € nets par an en 2024) ; au-delà, le jeune forme sa propre famille et peut
+    # demander la prime d'activité ou le RSA pour lui-même
+    revenu = ind.salaires.fillna(0) * 0.97
+    enfant = fam & (ind.LIENF == "3") & (ind.age < 25) & ((ind.age < 18) | (revenu <= 11_000))
     adulte = fam & ind.LIENF.isin(["1", "2"])
     ind["famille_caf"] = np.where(enfant | adulte, ind.men + "_F" + ind.NUMF, ind.men + "_I" + ind.index.astype(str))
     ind["role_fa"] = np.where(enfant, "enfant", "demandeur")
@@ -69,7 +73,28 @@ def imputer_loyer(men: pd.DataFrame) -> pd.Series:
     return pd.Series(loyer, index=men.index)
 
 
-def simulation(ind: pd.DataFrame, annee: int = 2024):
+# Contrats non permanents du recensement (EMPL) : apprentissage, intérim, emplois aidés, stages, CDD et contrats courts.
+EMPL_PRECAIRES = {"11", "12", "13", "14", "15"}
+
+
+def profil_mensuel(ind: pd.DataFrame, p_emploi: float, graine: int = 21) -> np.ndarray:
+    """Coefficients mensuels (n × 12), de somme 12 par personne : les titulaires d'un contrat non permanent sont en
+    emploi chaque mois avec la probabilité p_emploi, leur revenu annuel étant concentré sur les mois travaillés ;
+    les autres ont un profil plat. Hypothèse D (p_emploi testé en sensibilité) : le recensement ne décrit que la
+    situation à la date de collecte, pas la trajectoire infra-annuelle."""
+    n = len(ind)
+    prof = np.ones((n, 12))
+    prec = ind.EMPL.isin(EMPL_PRECAIRES).to_numpy() & (ind.TACT == "11").to_numpy()
+    if p_emploi < 1 and prec.any():
+        rng = np.random.default_rng(graine)
+        e = (rng.random((prec.sum(), 12)) < p_emploi).astype(float)
+        vide = e.sum(axis=1) == 0
+        e[vide, rng.integers(0, 12, vide.sum())] = 1.0
+        prof[prec] = 12 * e / e.sum(axis=1, keepdims=True)
+    return prof
+
+
+def simulation(ind: pd.DataFrame, annee: int = 2024, p_emploi: float = 1.0):
     """ind : individus M4 (colonnes salaires, pensions annuels, TACT, STAT, STOCD, SURF, DEPT, foyer, role, men…)."""
     T = mo.tbs()
     ind = familles_caf(ind)
@@ -113,11 +138,17 @@ def simulation(ind: pd.DataFrame, annee: int = 2024):
     statut = sv.encode(men.STOCD.map(STATUT).fillna("non_renseigne").to_numpy().astype("U"))
     zones = zv.encode(np.array([f"zone_{z}" for z in zone(men.DEPT)]).astype("U"))
     # montants annuels : OpenFisca les répartit sur les mois (variables mensuelles à saisie divisée par période)
+    prof = profil_mensuel(ind, p_emploi)
+    for m in range(1, 13):  # année courante : profil mensuel (revenus d'activité seulement)
+        p = f"{annee}-{m:02d}"
+        sim.set_input("salaire_net", p, net_act * prof[:, m - 1])
+        sim.set_input("salaire_imposable", p, net_act * prof[:, m - 1] / 0.97 * 0.99)
     for a in (str(annee - 2), str(annee - 1), str(annee)):
-        sim.set_input("salaire_net", a, 12 * net_act)
+        if a != str(annee):
+            sim.set_input("salaire_net", a, 12 * net_act)
+            sim.set_input("salaire_imposable", a, 12 * net_act / 0.97 * 0.99)
         sim.set_input("chomage_net", a, 12 * net_cho)
         sim.set_input("retraite_nette", a, 12 * net_ret)
-        sim.set_input("salaire_imposable", a, 12 * net_act / 0.97 * 0.99)
         sim.set_input("chomage_imposable", a, 12 * net_cho / 0.95 * 0.97)
         sim.set_input("retraite_imposable", a, 12 * net_ret / 0.92 * 0.96)
     for a in (annee - 1, annee):
@@ -129,8 +160,9 @@ def simulation(ind: pd.DataFrame, annee: int = 2024):
     return sim, ind, fams, menages
 
 
-def prestations(ind: pd.DataFrame, mois: str = "2024-10", variables=("rsa", "ppa", "af", "aide_logement")):
-    sim, ind2, fams, _ = simulation(ind, int(mois[:4]))
+def prestations(ind: pd.DataFrame, mois: str = "2024-10", variables=("rsa", "ppa", "af", "aide_logement"),
+                p_emploi: float = 1.0):
+    sim, ind2, fams, _ = simulation(ind, int(mois[:4]), p_emploi)
     out = pd.DataFrame({v: sim.calculate(v, mois) for v in variables}, index=fams)
     poids = ind2.groupby("famille_caf", sort=False).poids.first().reindex(fams)
     out["poids"] = poids.to_numpy()
