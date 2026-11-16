@@ -421,3 +421,58 @@ def imputer_epargne_retraite(ind: pd.DataFrame, fo: pd.DataFrame, total: float, 
         v = np.minimum(k * base, np.maximum(plafond, 4_637))  # plancher légal de déductibilité (10 % du PASS)
         k *= total / max((w * v).sum(), 1e-9)
     return pd.Series(np.where(sel, np.minimum(k * base, np.maximum(plafond, 4_637)), 0.0), index=ind.index)
+
+
+def recaler_capital_deciles(fo: pd.DataFrame, autres: pd.DataFrame, deciles: pd.Series, dgfip: pd.DataFrame,
+                            taux_pfu: float = 0.128, masse_bareme: float | None = None) -> pd.DataFrame:
+    """Version 1.3 : contrainte directe sur le capital au prélèvement forfaitaire unique (PFU), par décile de RFR par part.
+    La DGFiP publie le PFU moyen par part et par décile ; la masse de capital visée vaut PFU / 12,8 %. Dans chaque décile,
+    le capital (dividendes, intérêts, plus-values) est remis à l'échelle ; la différence est prise sur (ou rendue à) les
+    revenus au barème et le poste exonéré, au prorata de leurs montants, de sorte que le reste de chaque foyer est
+    inchangé. Les masses nationales du barème ne sont donc plus imposées : leur dérive est un diagnostic.
+    `fo` doit contenir `nbptr` (parts OpenFisca)."""
+    cap = ["dividendes", "interets", "plus_values"]
+    aut = ["foncier", "independants", "exonere"]
+    out = autres.copy()
+    w = fo.poids
+    for d in range(1, 11):
+        m = (deciles == d).to_numpy()
+        cible = dgfip.loc[d, "forfaitaire"] / taux_pfu * (fo.nbptr[m] * w[m]).sum()
+        c_tot = out.loc[m, cap].sum(axis=1)
+        a_tot = out.loc[m, aut].sum(axis=1)
+        actuel = (c_tot * w[m]).sum()
+        if actuel <= 0:
+            continue
+        f = cible / actuel
+        if f > 1:  # on prend sur les autres postes, sans dépasser ce qu'ils contiennent
+            besoin = (f - 1) * c_tot
+            dispo = a_tot
+            # facteur commun g tel que Σ w·min(g·besoin, dispo) = (f−1)·actuel
+            lo, hi = 0.0, 1.0
+            for _ in range(50):
+                g = (lo + hi) / 2
+                lo, hi = (g, hi) if (w[m] * np.minimum(g * besoin, dispo)).sum() < (f - 1) * actuel else (lo, g)
+            transfert = np.minimum(g * besoin, dispo)
+        else:
+            transfert = (f - 1) * c_tot  # négatif : le capital rend une partie aux autres postes
+        k_cap = np.where(c_tot > 0, 1 + transfert / c_tot.replace(0, 1), 1.0)
+        out.loc[m, cap] = out.loc[m, cap].mul(k_cap, axis=0)
+        part_aut = out.loc[m, aut].div(a_tot.replace(0, np.nan), axis=0).fillna(1 / 3)
+        out.loc[m, aut] = out.loc[m, aut].sub(part_aut.mul(transfert, axis=0))
+    out[aut] = out[aut].clip(lower=0)
+    if masse_bareme is not None:
+        # le non-capital de chaque foyer est partagé entre barème et exonéré ; un facteur commun φ sur la part au
+        # barème (plafonnée à 1) rétablit la masse nationale déclarée des revenus fonciers et d'indépendants
+        nc = out[aut].sum(axis=1)
+        bar = out[["foncier", "independants"]].sum(axis=1)
+        s0 = np.where(nc > 0, bar / nc.replace(0, 1), 0.0)
+        cle_f = np.where(bar > 0, out.foncier / bar.replace(0, 1), 0.5)
+        lo, hi = 0.0, 50.0
+        for _ in range(60):
+            phi = (lo + hi) / 2
+            lo, hi = (phi, hi) if (w * nc * np.minimum(1, phi * s0)).sum() < masse_bareme else (lo, phi)
+        nb = nc * np.minimum(1, phi * s0)
+        out["foncier"] = nb * cle_f
+        out["independants"] = nb * (1 - cle_f)
+        out["exonere"] = nc - nb
+    return out

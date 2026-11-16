@@ -1,4 +1,4 @@
-"""Validation du lot 4 (population M4, version 1.2) et des masses d'impôt sur le revenu (lot 5).
+"""Validation du lot 4 (population M4, version 1.3) et des masses d'impôt sur le revenu (lot 5).
 
 Chaîne :
  1. population (2 % des ménages du recensement 2022) ; RFR, salaires et pensions ancrés sur l'IRCOM (revenus 2024) ;
@@ -34,6 +34,7 @@ import m4_population as m4  # noqa: E402
 
 F = 0.02
 ETAS = (0.8, 0.5, 1.2)
+RECALER = True  # version 1.3 : capital au PFU calé par décile sur la DGFiP (PFU devient une donnée, plus un test)
 VARS = ("nbptr", "ip_net", "prelevement_forfaitaire_unique_ir", "credits_impot", "reductions")
 
 
@@ -68,7 +69,7 @@ def _travailleur(tache: str, eta: float = 0.8):
         return
     d = pd.read_pickle(TMP / "prep.pkl")
     if tache == "rfr":
-        r = mo.impot(d["ind"], 2024, variables=("rfr",), entrees_foyer={"f8tk": d["f8tk"]}, entrees_individu={"f6ns": "per"})
+        r = mo.impot(d["ind"], 2024, variables=("rfr", "nbptr"), entrees_foyer={"f8tk": d["f8tk"]}, entrees_individu={"f6ns": "per"})
     else:
         r = simuler(d["ind"], d["fo"], d["tot"], d["f8tk"], d["reste"], d["dep"], eta)
     r.to_pickle(TMP / f"{tache}_{eta}.pkl")
@@ -102,6 +103,7 @@ def preparer():
     p0 = _lancer("rfr")
     ind = pd.read_pickle(TMP / "prep.pkl")["ind"]
     reste = (fo.rfr - p0.rfr_of - hs_f).clip(lower=0)
+    fo["nbptr"] = p0.nbptr_of
     del p0
     gc.collect()
     dep = m4.imputer_depenses(fo, ind, tot, cov)
@@ -111,10 +113,20 @@ def preparer():
 
 def simuler(ind, fo, tot, f8tk, reste, dep, eta):
     au = m4.repartir_autres(fo, reste, tot, eta_capital=eta)
+    if RECALER:
+        au0 = au
+        cov = fo.poids.sum() / 41_635_259
+        au = m4.recaler_capital_deciles(fo, au, m4.deciles_rfr_par_part(fo, fo.nbptr), m4.lire_deciles_dgfip(2024),
+                                        masse_bareme=(tot["foncier"] + tot["independants"]) * cov)
+        au.attrs.update(au0.attrs)
     e = {"f2dc": au.dividendes, "f2tr": au.interets, "f3vg": au.plus_values, "f4ba": au.foncier + au.independants,
          "f8tk": f8tk, **{c: dep[c] for c in dep.columns}}
     r = mo.impot(ind, 2024, variables=VARS, entrees_foyer=e, entrees_individu={"f6ns": "per"})
     r["part_exoneree"] = au.attrs["part_exoneree"]  # les attrs ne traversent pas toujours le pickle
+    w = fo.poids
+    for nom, cols in (("masse_cap", ["dividendes", "interets", "plus_values"]), ("masse_bar", ["foncier", "independants"]),
+                      ("masse_exo", ["exonere"])):
+        r[nom] = float((au[cols].sum(axis=1) * w).sum())
     gc.collect()
     return r
 
@@ -132,8 +144,11 @@ def main():
     for eta in ETAS:
         r = _lancer("impot", eta)
         r.attrs["part_exoneree"] = float(r.pop("part_exoneree").iloc[0])
+        for nom in ("masse_cap", "masse_bar", "masse_exo"):
+            r.attrs[nom] = float(r.pop(nom).iloc[0])
         dec = m4.deciles_rfr_par_part(fo, r.nbptr_of)
         avant = r.ip_net_of + r.prelevement_forfaitaire_unique_ir_of + cehr(fo)
+        avant = avant.where(avant >= 61, 0.0)  # seuil de mise en recouvrement (art. 1657 du CGI), avant crédits
         rici_mod = r.credits_impot_of + r.reductions_of
         resid = m4.caler_rici_residuelles(fo, avant - rici_mod, rici_mod, r.nbptr_of, dec, dg)
         r["dec"] = dec
@@ -151,7 +166,7 @@ def main():
     tot_bar = {e: (res[e].ip_net_of * w).sum() * k / 1e9 for e in ETAS}
     tot_net = {e: (res[e].net * w).sum() * k / 1e9 for e in ETAS}
     bar_dgfip = (dg.bareme * dg.parts).sum() / 10 * ir.foyers.sum() / 1e9
-    L = ["# Validation du lot 4 (version 1.2) — population de foyers et impôt sur le revenu 2024", "",
+    L = ["# Validation du lot 4 (version 1.3) — population de foyers et impôt sur le revenu 2024", "",
          f"Généré par `tests/validation_M4.py` : échantillon de {F:.0%} des ménages du recensement 2022 "
          f"({len(fo)} foyers, {st['n_ind']} personnes), durée {time.time() - t0:.0f} s. Masses ramenées aux "
          f"{ir.foyers.sum() / 1e6:.2f} M de foyers DGFiP (couverture du modèle : {cov:.1%}).", "",
@@ -165,8 +180,10 @@ def main():
          f"| Reste (RFR − salaires et pensions − heures sup.) | {(reste * w).sum() / cov / 1e9:.0f} Md€ | capital, foncier, indépendants déclarés : "
          f"{sum(tot[c] for c in ('dividendes', 'interets', 'plus_values', 'foncier', 'independants')) / 1e9:.0f} Md€ ; "
          f"excédent traité comme inclus dans le RFR mais non imposé au barème : {r.attrs['part_exoneree']:.0%} du reste |", "",
+         f"| Répartition du reste après calage du capital par décile (η = 0,8) | capital {r.attrs['masse_cap'] / cov / 1e9:.0f} ; barème {r.attrs['masse_bar'] / cov / 1e9:.0f} ; exonéré {r.attrs['masse_exo'] / cov / 1e9:.0f} Md€ | "
+         f"déclaré : capital {(tot['dividendes'] + tot['interets'] + tot['plus_values']) / 1e9:.0f} ; foncier et indépendants {(tot['foncier'] + tot['independants']) / 1e9:.0f} Md€ |", "",
          "## Test 1 : par décile de RFR par part (DGFiP, revenus 2024), η = 0,8", "",
-         "Grandeurs testées : nombre de parts, impôt au barème par part. Les réductions et crédits (RICI) non modélisés "
+         "Grandeurs testées : nombre de parts, impôt au barème par part. Le PFU par part est calé (version 1.3). Les réductions et crédits (RICI) non modélisés "
          "un à un sont calés par décile ; la colonne « RICI modélisés » montre la part reconstituée sans calage. Euros par part ; "
          "valeurs DGFiP arrondies à 10 €.", "",
          "| Décile | Parts, modèle | Parts, DGFiP | RFR/part, modèle | RFR/part, DGFiP | Barème/part, modèle | Barème/part, DGFiP | PFU/part, modèle | PFU/part, DGFiP | RICI modélisés/part | RICI/part, DGFiP | IR net/part, modèle | IR net/part, DGFiP |",
