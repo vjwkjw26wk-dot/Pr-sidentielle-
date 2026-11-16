@@ -5,7 +5,7 @@
    investissements, population active, taux long, taux d'IS, prestations en volume, autres dépenses publiques) :
      - base 2014, simulation 2015-2019 (coefficients estimés sur 1997-2014) ;
      - base 2022, simulation 2023-2024 (coefficients estimés sur 1997-2019).
-2. Variantes autour d'un compte central conventionnel (base 2022, 2023-2028) : écarts au compte central.
+2. Variantes autour d'un compte central conventionnel (base 2022, 2023-2030) : écarts au compte central.
 Sortie : outputs/validation_M8.md
 """
 from __future__ import annotations
@@ -56,18 +56,21 @@ def retro(base, fin, fin_estimation):
 
 def variantes():
     mod = M.Modele(2022)
-    ans = range(2023, 2029)
+    ans = range(2023, 2031)
     central = mod.simuler(ans, M.exogenes_projection(mod, ans))
     ene = M.exogenes_projection(mod, ans)
     for p in ("CPA_B", "CPA_C19", "CPA_D"):
-        ene.prix_import[p] = [v * (1.5 if t >= 2024 else 1.0) for t, v in zip(ene.prix_import.index, ene.prix_import[p])]
+        ene.prix_import[p] = [v * (1.2 if t >= 2024 else 1.0) for t, v in zip(ene.prix_import.index, ene.prix_import[p])]
     indus = ["CPA_C20", "CPA_C21", "CPA_C24", "CPA_C25", "CPA_C26", "CPA_C27", "CPA_C28", "CPA_C29"]
     vs = {
-        "Énergie importée +50 % (dès 2024)": ene,
+        "Prix de l'énergie importée +20 % (dès 2024 ; ≈ +34 Md€ sur la facture de 2022, 169 Md€)": ene,
         "Salaires +2 % (choc ponctuel en 2024)": M.exogenes_projection(mod, ans, choc_salaire=pd.Series({2024: 0.02})),
-        "Taux d'IS de 25,8 % à 20 % (dès 2024)": M.exogenes_projection(mod, ans, taux_is=pd.Series({t: (25.83 if t < 2024 else 20.0) for t in range(2019, 2029)})),
-        "Réindustrialisation : parts importées −20 % (chimie, pharmacie, métallurgie, électronique, équipements, automobile)":
-            M.exogenes_projection(mod, ans, parts_importees={p: 0.8 for p in indus}, phi_impose=central.phi),
+        "Taux d'IS de 25,8 % à 20 % (dès 2024)": M.exogenes_projection(mod, ans, taux_is=pd.Series({t: (25.83 if t < 2024 else 20.0) for t in range(2019, 2031)})),
+        "Réindustrialisation, borne haute : parts importées −10 % immédiatement (≈ 38 Md€ sur 380 Md€ d'importations de ces produits en 2022), sans investissement ni surcoût — chimie, pharmacie, métallurgie, produits métalliques, électronique, équipements électriques, machines, automobile":
+            M.exogenes_projection(mod, ans, parts_importees={p: 0.9 for p in indus}, phi_impose=central.phi),
+        "Réindustrialisation, mêmes produits, −10 % atteint en 5 ans (dès 2024), avec investissement de capacité et surcoût de 10 % de la VA produite en France":
+            M.exogenes_projection(mod, ans, reindustrialisation={"produits": {p: 0.9 for p in indus}, "debut": 2024, "duree": 5, "surcout": 0.10},
+                                  phi_impose=central.phi),
         "Consommation publique +1 % du PIB en volume (dès 2024)":
             M.exogenes_projection(mod, ans),
     }
@@ -75,14 +78,14 @@ def variantes():
     pibb = mod.macro.pib_cp[2022]
     g_part = mod.T.Fd.loc[mod.P, ["P3_S13", "P3_S15"]].values.sum() + mod.T.Fm.loc[mod.P, ["P3_S13", "P3_S15"]].values.sum()
     g.conso_publique = g.conso_publique * pd.Series({t: (1 + 0.01 * pibb / g_part if t >= 2024 else 1.0) for t in g.conso_publique.index})
-    L = ["## 2. Variantes (écarts au compte central, base 2022)", "",
+    L = ["## 2. Variantes (écarts au compte central, base 2022, 2023-2030)", "",
          "Compte central conventionnel, et non une prévision (`exogenes_projection`). Écarts en % (volumes, prix) ou en points.", ""]
     for nom, ex in vs.items():
         t0 = time.time()
         r = mod.simuler(ans, ex)
         L += [f"### {nom}", "", "| Année | PIB | Consommation | Investissement | Exportations | Importations | Emploi (milliers) | Chômage (pt) | Prix conso. | Salaire | Solde public (pt de PIB) | Dette (pt de PIB) |",
               "|---|---|---|---|---|---|---|---|---|---|---|---|"]
-        for t in (2024, 2026, 2028):
+        for t in (2024, 2026, 2028, 2030):
             e = lambda v: (r[v][t] / central[v][t] - 1) * 100  # noqa: E731
             L.append(f"| {t} | {e('pib'):+.2f} % | {e('c'):+.2f} % | {e('fbcf'):+.2f} % | {e('x'):+.2f} % | {e('m'):+.2f} % | "
                      f"{r.emploi[t] - central.emploi[t]:+.0f} | {r.chomage[t] - central.chomage[t]:+.2f} | {e('pc'):+.2f} % | {e('salaire'):+.2f} % | "

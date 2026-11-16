@@ -87,6 +87,10 @@ class Exogenes:
     prestations_volume: pd.Series          # croissance en volume des prestations (hors chômage), indice
     duree_travail: pd.Series = None        # non utilisé en v0.1
     parts_importees: dict = field(default_factory=dict)   # réindustrialisation : {produit: facteur sur la part importée}
+    reindustrialisation: dict = None       # {"produits": {produit: facteur final sur la part importée}, "debut": année,
+    #                                        "duree": années de montée en charge, "surcout": surcoût relatif de la VA produite
+    #                                        en France à la place des importations}
+    theta_import: float = None             # part des variations de prix d'importation répercutée l'année même (défaut : estimée)
     phi_impose: pd.Series = None           # facteur commun des parts importées imposé (repris d'un compte central)
     choc_salaire: pd.Series = None         # hausse exogène du salaire (log), par année
     taux_cotisations: pd.Series = None     # taux apparent de cotisations sociales (si mesure)
@@ -104,6 +108,7 @@ class Modele:
         self.panel = S.panel_branches()
         self.macro = S.macro()
         self.eq = E.toutes(self.panel, self.macro, E.DEBUT, fe)
+        self.theta = float(self.eq["transmission"].lr["part transmise l'année même θ"])
         self.men, self.apu = comptes_menages_apu()
         self.emp = emploi_total()
         self._preparer()
@@ -172,6 +177,19 @@ class Modele:
                 res_i.append((li[t] - li[t - 1]) - (ri["dlq"] * (lq[t] - lq[t - 1]) + ri["dlq_1"] * (lq[t - 1] - lq[t - 2])
                                                    + ri["li_1"] * li[t - 1] + ri["lk_1"] * lk[t - 1] + ri["lq_1"] * lq[t - 1]))
             self.c_emp[b], self.c_prix[b], self.c_inv[b] = map(lambda v: float(np.mean(v)), (res_e, res_p, res_i))
+
+    def _ecart_initial(self, theta, recul=4):
+        T, B = self.tables, self.B
+        e = np.zeros(len(self.P))
+        for t in range(B - recul + 1, B + 1):
+            g = []
+            for p in self.P:
+                c = float(T["OFFRE"].get(("P7", p, str(t)), np.nan)); y = float(T["OFFRE_PYP"].get(("P7", p, str(t)), np.nan))
+                g.append(np.log(c / y) if (c > 50 and y > 0) else np.log(self.macro.p_m[t] / self.macro.p_m[t - 1]))
+            g = np.array(g)
+            # e_t = ln pm_eff_t − ln pm_t ; pm_t = pm_{t−1} e^g ; pm_eff suit avec le coefficient θ
+            e = (1 - theta) * (e - g)
+        return e
 
     # ---------------------------------------------------------------------------------------------------------------
     def _leontief(self, phi, fact_imp):
@@ -245,6 +263,17 @@ class Modele:
         conv_I = dem0["I"] / m.fbcf_cp[B]                    # passage comptes nationaux → tableau (prix de base)
         I_autres_B = dem0["I"] - fbcf_br_B * conv_I
         fact_imp = np.array([ex.parts_importees.get(p, 1.0) for p in P])
+        R = ex.reindustrialisation
+        imp_prod0 = self.Am0 @ self.x0 + sum(self.Fm[k] for k in CAT)          # importations par produit, base
+        kappa = np.array([(self.hist[b].k[B] / self.hist[b].q[B]) if b in self.hist else 0.0 for b in self.br_prod])
+        delta_k = np.array([(1 - (self.hist[b].k[B] - self.hist[b].i[B]) / self.hist[b].k[B - 1]) if b in self.hist else 0.0 for b in self.br_prod])
+        va_cap_prec = np.zeros(len(P))
+        # Ajustement partiel des prix d'importation répercutés (θ estimé, lot 7) : ln pm_eff_t = ln pm_eff_{t−1} + θ (ln pm_t − ln pm_eff_{t−1}).
+        # L'écart initial e_B = ln pm_eff_B − ln pm_B (hausses pas encore répercutées à l'année de base) est reconstitué
+        # à partir des prix d'importation observés des 4 années précédant la base.
+        theta = self.theta if ex.theta_import is None else ex.theta_import
+        e_B = self._ecart_initial(theta)
+        lpm_eff = {B: e_B}
         for t in annees:
             # valeurs initiales de l'itération : celles de l'année précédente
             prev = hist_vol[t - 1]
@@ -254,11 +283,23 @@ class Modele:
             n_br = {b: H[b]["n"][t - 1] for b in BR}
             w = A["w"][t - 1]
             pva = {b: H[b]["pva"][t - 1] for b in BR}
+            # réindustrialisation : montée en charge progressive, investissement de capacité, surcoût de production
+            I_cap, surcout_prod = 0.0, np.ones(len(P))
+            if R:
+                prog = min(1.0, max(0.0, (t - R["debut"] + 1) / R.get("duree", 5)))
+                fact_imp = np.array([1 - (1 - R["produits"].get(p, 1.0)) * prog for p in P])
+                croiss_m = hist_vol[t - 1]["M"] / M_B
+                va_cap = (1 - fact_imp) * imp_prod0 * croiss_m * self.av      # VA des capacités nouvelles (prix de base)
+                I_cap = float((kappa * np.maximum(va_cap - va_cap_prec, 0) + delta_k * kappa * va_cap_prec).sum())
+                surcout_prod = 1 + R.get("surcout", 0.0) * np.divide(va_cap, self.va0, out=np.zeros(len(P)), where=self.va0 > 0)
+                va_cap_t = va_cap
             for it in range(iterations):
                 # ---- 1. prix
-                pm = np.array([float(ex.prix_import.loc[t, p]) if p in ex.prix_import.columns else 1.0 for p in P])
+                pm_brut = np.array([float(ex.prix_import.loc[t, p]) if p in ex.prix_import.columns else 1.0 for p in P])
+                lpm_eff[t] = lpm_eff[t - 1] + theta * (np.log(pm_brut) - lpm_eff[t - 1])
+                pm = np.exp(lpm_eff[t] - e_B)
                 w_idx = w / A["w"][B]
-                pva_prod = np.array([pva[b] / H[b]["pva"][B] if b in pva else w_idx for b in self.br_prod])
+                pva_prod = np.array([pva[b] / H[b]["pva"][B] if b in pva else w_idx for b in self.br_prod]) * surcout_prod
                 pp = self._prix(pva_prod, pm)
                 def pfin(k):
                     v = self.struct[k] * self.tot[k]
@@ -338,7 +379,7 @@ class Modele:
                 X_cn = A["X"][t - 1] * np.exp(dX)
                 G_idx = float(ex.conso_publique[t]) / float(ex.conso_publique[B])
                 fbcf_br = sum(I_new[b] / self.hist[b].i[B] * self.hist[b].i_cp[B] for b in BR) * conv_I
-                I_tot = fbcf_br + I_autres_B * float(ex.autres_investissements[t]) / float(ex.autres_investissements[B])
+                I_tot = fbcf_br + I_autres_B * float(ex.autres_investissements[t]) / float(ex.autres_investissements[B]) + I_cap
                 self.dem = {"C": dem0["C"] * C_cn / m.c[B], "G": dem0["G"] * G_idx, "I": I_tot, "S": dem0["S"], "X": dem0["X"] * X_cn / m.x[B]}
                 # ---- 5. importations (équation agrégée) et production
                 rm = r["importations"]
@@ -375,6 +416,8 @@ class Modele:
                 n_br, pva, w, phi, u_cur = n_new, pva_new, w_new, phi_, u_new
                 if ecart < 1e-7 and it > 2:
                     break
+            if R:
+                va_cap_prec = va_cap_t
             # ---- enregistrement de l'année t
             for b in BR:
                 hb = H[b]

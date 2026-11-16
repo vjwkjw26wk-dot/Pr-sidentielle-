@@ -304,6 +304,27 @@ def exportations(m, debut=DEBUT, fin=FIN) -> Equation:
                      "forme à correction d'erreur : λ (t)": f"{rl.params['lx_1']:.3f} ({rl.tvalues['lx_1']:.1f})"})
 
 
+def transmission_importations(p, m, debut=1998, fin=2024) -> Equation:
+    """Délai de transmission des prix d'importation aux prix à la consommation :
+    Δln pc = a + b0 Δln pm + b1 Δln pm_{t−1} + c0 Δln clu + c1 Δln clu_{t−1} + ρ Δln pc_{t−1}.
+    Sur 1998-2019, la transmission est immédiate (b1 ≈ 0) ; l'épisode 2021-2024 révèle un délai important (tarifs
+    réglementés, bouclier tarifaire, contrats). L'estimation retenue couvre 1998-2024 ; la part transmise l'année même
+    θ = b0 / (b0 + b1) sert de paramètre d'ajustement partiel des prix d'importation dans le modèle bouclé."""
+    g = p.groupby("annee")[["wb", "ns", "n", "q"]].sum()
+    clu = np.log(g.wb / g.ns * g.n / g.q)
+    pc, pm = np.log(m.p_c), np.log(m.p_m)
+    X = pd.DataFrame({"dlpm": pm.diff(), "dlpm_1": pm.diff().shift(1), "dlclu": clu.diff(), "dlclu_1": clu.diff().shift(1),
+                      "dlpc_1": pc.diff().shift(1)})
+    ok = (m.index >= debut) & (m.index <= fin) & X.reindex(m.index).notna().all(axis=1)
+    r = _ols(pc.diff()[ok], X.reindex(m.index)[ok])
+    r19 = _ols(pc.diff()[ok & (m.index <= 2019)], X.reindex(m.index)[ok & (m.index <= 2019)])
+    th = r.params["dlpm"] / (r.params["dlpm"] + r.params["dlpm_1"])
+    return Equation("Transmission des prix d'importation aux prix à la consommation", "Δln prix de la consommation", r,
+                    {"transmission immédiate b0": r.params["dlpm"], "transmission l'année suivante b1": r.params["dlpm_1"],
+                     "part transmise l'année même θ": th,
+                     "sur 1998-2019 seulement : b0": r19.params["dlpm"], "sur 1998-2019 seulement : b1": r19.params["dlpm_1"]})
+
+
 def diagnostics(e: Equation) -> dict:
     out = {"n": int(e.res.nobs), "R²": e.res.rsquared, "écart type résiduel": float(np.sqrt(e.res.scale))}
     try:
@@ -319,4 +340,5 @@ def toutes(p=None, m=None, debut=DEBUT, fin=FIN) -> dict:
     return {"emploi": emploi(p, debut, fin), "prix_va": prix_va(p, debut, fin), "investissement": investissement(p, m, debut, fin),
             "investissement_snf": investissement_snf(m, debut, fin),
             "salaires": salaires(p, m, debut, fin), "consommation": consommation(m, debut, fin),
-            "importations": importations(m, debut, fin), "exportations": exportations(m, debut, fin)}
+            "importations": importations(m, debut, fin), "exportations": exportations(m, debut, fin),
+            "transmission": transmission_importations(p, m)}

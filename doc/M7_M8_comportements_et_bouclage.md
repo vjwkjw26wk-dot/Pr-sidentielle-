@@ -1,6 +1,6 @@
-# Lot 7 et M8 — Équations de comportement estimées et modèle bouclé (version 0.1)
+# Lot 7 et M8 — Équations de comportement estimées et modèle bouclé (version 0.2)
 
-**État : première version complète et testée de bout en bout. C'est un prototype à consolider : plusieurs paramètres
+**État : version 0.2 (délais de transmission des prix, réindustrialisation avec investissement et surcoût). Première version complète et testée de bout en bout. C'est un prototype à consolider : plusieurs paramètres
 clés ne sont pas identifiés sur les données et sont calibrés ; les grands chocs de prix sont mal reproduits.**
 Code : `src/m7_series.py`, `src/m7_equations.py`, `src/m8_modele.py`. Tests : `tests/validation_M7.py`,
 `tests/validation_M8.py`. Rapports : `resultats/validation_M7.md`, `resultats/validation_M8.md`.
@@ -40,6 +40,7 @@ l'autocorrélation (Newey-West).
 | Consommation des ménages | Élasticité de court terme au revenu réel 0,78 (t = 4) ; effet du chômage −0,5 % par point ; retour vers le revenu de 31 % par an | **estimé** |
 | Importations | Élasticité à la demande pondérée 1,47 à court terme, 1,37 à long terme ; tendance de pénétration +0,6 % par an ; élasticité-prix −0,16 | **estimé** (élasticité-prix faible et peu significative) |
 | Exportations | Élasticité à la demande mondiale 0,71 ; élasticité-prix −0,60 (t = −2) ; pas de relation de long terme identifiée, forme en différences | **estimé** |
+| Transmission des prix d'importation aux prix à la consommation (v0.2) | Sur 1998-2024 : 0,18 l'année même et 0,18 l'année suivante, soit une part transmise l'année même θ = 0,50. Sur 1998-2019, la transmission était immédiate (0,27, puis −0,05) | **estimé sur un échantillon qui inclut 2021-2024** : le délai n'apparaît qu'avec l'épisode énergétique (tarifs réglementés, bouclier tarifaire, contrats) ; le test 2023-2024 n'est donc plus entièrement hors échantillon |
 
 ## 3. Tests rétrospectifs, équation par équation (`resultats/validation_M7.md`)
 
@@ -69,22 +70,43 @@ Choix de construction (décision A10) :
   à raison d'un huitième par an. Pas d'ajustements stock-flux. La microsimulation M4 n'est pas encore branchée : une
   réforme fiscale détaillée passe aujourd'hui par M4 seul.
 
+### Délais de transmission des prix (v0.2)
+
+Dans le modèle bouclé, les prix d'importation **répercutés** s'ajustent partiellement vers les prix observés :
+ln pm_eff(t) = ln pm_eff(t−1) + θ · (ln pm(t) − ln pm_eff(t−1)), avec θ = 0,50. L'écart à l'année de base (hausses
+pas encore répercutées) est reconstitué à partir des prix d'importation par produit des quatre années précédentes.
+Le paramètre θ est modifiable par scénario (`Exogenes.theta_import`).
+
+### Réindustrialisation (v0.2)
+
+Variante paramétrée par `Exogenes.reindustrialisation` :
+- **Parts importées des produits ciblés** : chaque produit a un facteur cible (0,9 = −10 %), atteint progressivement sur une durée de montée en charge.
+- **Investissement de capacité** : capital nécessaire = rapport capital / valeur ajoutée de la branche observé à l'année de base, multiplié par la valeur ajoutée des capacités nouvelles ; s'y ajoute le renouvellement, au taux de dépréciation observé de la branche.
+- **Surcoût** : la valeur ajoutée produite en France à la place des importations coûte un pourcentage de plus ; ce surcoût se répercute sur les prix par le modèle entrées-sorties.
+
+Les autres parts importées gardent le comportement du compte central. Les contraintes de main-d'œuvre jouent par le
+chômage et les salaires. Il n'y a encore ni contrainte de qualification, ni limite de capacité dans les autres branches.
+
 ### Tests rétrospectifs du modèle complet (`resultats/validation_M8.md`)
 
-| | 2015-2019 (base 2014, estimation jusqu'en 2014) | 2023-2024 (base 2022) |
+| Erreur de niveau en fin de période | 2015-2019 (base 2014, estimation jusqu'en 2014) | 2023-2024 (base 2022) |
 |---|---|---|
-| PIB en volume, erreur de niveau en fin de période | −0,4 % | −2,8 % |
-| Consommation, investissement, emploi | −0,2 % ; −0,4 % ; −0,9 % | +0,6 % ; −3,7 % ; −0,2 % |
-| Exportations ; importations | +3,0 % ; +3,9 % | −7,6 % ; +1,5 % |
-| Prix à la consommation | +0,7 % | **−7,2 %** |
-| Salaire moyen | +4,8 % | −4,3 % |
-| Chômage, solde public, dette | +0,8 pt ; −0,2 pt ; +1,8 pt | +0,2 pt ; +2,3 pt ; +1,9 pt |
+| PIB en volume | −0,3 % | −3,6 % |
+| Consommation ; investissement ; emploi | +1,4 % ; −0,2 % ; −0,4 % | −1,4 % ; −3,8 % ; −0,6 % |
+| Exportations ; importations | +3,2 % ; +5,0 % | −10,3 % ; −2,5 % |
+| Prix à la consommation | +0,2 % | −2,8 % (v0.1 : −7,2 %) |
+| Salaire moyen | +5,2 % | −2,8 % |
+| Revenu disponible brut | +0,1 % | −7,9 % |
+| Chômage ; solde public ; dette | +0,4 pt ; 0,0 pt ; +1,9 pt | +0,6 pt ; +1,7 pt ; +2,0 pt |
 
-**Lecture.** En régime ordinaire (2015-2019), le modèle bouclé reproduit la croissance, la demande, l'emploi, les prix
-et les comptes publics à moins de 1 % ou 1 point près sur cinq ans ; il surestime la croissance des salaires.
-Après le choc énergétique (2023-2024), il manque l'inflation : il ne représente pas les délais de transmission des prix
-de l'énergie (tarifs réglementés, bouclier tarifaire, contrats), ni le rattrapage des salaires qui a suivi. Il en
-découle une erreur sur le revenu nominal et le solde public. C'est la priorité de la version suivante.
+**Lecture.**
+- **2015-2019, régime ordinaire** : le modèle bouclé reproduit la croissance, l'emploi, les prix et le solde public à moins de 1,5 % ou 0,5 point près sur cinq ans. Il surestime la croissance des salaires d'environ 1 point par an.
+- **2023-2024** :
+  - Les délais de transmission ramènent l'erreur sur les prix de −7,2 % à −2,8 %.
+  - Trois défauts restent :
+    - Les exportations sont mal suivies. La demande mondiale approchée par les importations de l'Union européenne baisse en 2023, alors que les exportations françaises progressent (aéronautique, énergie).
+    - Le revenu des ménages est sous-estimé. Les revenus de la propriété (+15 % par an, avec la hausse des taux) et les loyers imputés ne sont indexés que sur le PIB nominal.
+    - Par conséquent, le PIB est trop bas.
 
 ### Variantes (écarts au compte central, base 2022)
 
@@ -92,11 +114,12 @@ Effets à cinq ans (2028) :
 
 | Variante | PIB | Emploi | Prix | Solde public | Lecture |
 |---|---|---|---|---|---|
-| Énergie importée +50 % | −0,4 % | −190 000 | +3,3 % | −0,9 pt | sens attendu ; transmission aux prix probablement surestimée (pas de substitution énergétique) |
-| Salaires +2 % (ponctuel) | −0,1 % | −66 000 | +1,3 % | +0,1 pt | effet compétitivité et substitution contre effet revenu |
-| IS de 25,8 % à 20 % | +0,25 % | +53 000 | ≈ 0 | −0,4 pt | investissement +1,8 % ; coût budgétaire peu compensé à cinq ans |
-| Consommation publique +1 % du PIB | +1,15 % | +333 000 | +1,1 % | −0,2 pt | multiplicateur proche de 1,2, dans la fourchette haute des estimations, faute de politique monétaire et de contraintes d'offre |
-| Réindustrialisation : parts importées −20 % dans six filières | +2,8 % | +650 000 | +2,5 % | +1,3 pt | **majorant** : aucune contrainte de capacité, de qualification ni de coût de production intérieur n'est représentée |
+| Énergie importée +20 % (≈ +34 Md€ sur la facture de 2022) | −0,3 % | −108 000 | +1,9 % | −0,5 pt | perte de pouvoir d'achat ; pas de substitution énergétique représentée |
+| Salaires +2 % (ponctuel) | −0,1 % | −60 000 | +1,2 % | +0,1 pt | compétitivité et substitution contre effet revenu |
+| IS de 25,8 % à 20 % | +0,26 % | +55 000 | ≈ 0 | −0,4 pt | investissement +1,8 % (+2,4 % en 2030) ; coût budgétaire peu compensé |
+| Consommation publique +1 % du PIB | +1,2 % | +335 000 | +1,0 % | −0,2 pt | multiplicateur proche de 1,2, haut de fourchette (pas de politique monétaire ni de contraintes d'offre) |
+| Réindustrialisation −10 % d'importations (≈ 38 Md€), immédiate et sans coût | +1,4 % | +318 000 | +1,1 % | +0,7 pt | borne haute |
+| Même objectif en 5 ans, avec investissement de capacité et surcoût de 10 % | +1,7 % (+1,3 % en 2030) | +291 000 | +0,4 % | +0,6 pt | effet d'investissement transitoire ; résultat proportionnel à l'hypothèse de substitution, qui n'est pas expliquée par le modèle |
 
 ## 5. Ce qui est robuste et ce qui dépend des hypothèses
 
@@ -107,7 +130,8 @@ Effets à cinq ans (2028) :
   - l'effet de l'impôt sur les sociétés (une seule élasticité agrégée, fragile) ;
   - la tendance de productivité ;
   - la réindustrialisation, qui n'a pas de contrainte d'offre ;
-  - toute variante de grande ampleur sur les prix.
+  - toute variante de grande ampleur sur les prix ;
+  - le délai de transmission des prix d'importation, estimé grâce au seul épisode 2021-2024.
 - **Absent** :
   - politique monétaire et taux d'intérêt endogènes ;
   - contraintes de capacité et taux d'utilisation ;
@@ -118,9 +142,10 @@ Effets à cinq ans (2028) :
 
 ## 6. Suite
 
-1. Délais de transmission des prix (énergie et alimentation), estimés sur les tableaux entrées-sorties 2010-2022.
+1. Revenus de la propriété dépendant des taux d'intérêt ; demande mondiale adressée par produit (pondérée par les
+   marchés de la France) à la place des importations de l'Union européenne.
 2. Contraintes d'offre : taux d'utilisation des capacités et capital par branche dans les décisions d'investissement et
-   de prix ; coûts relatifs de production pour la réindustrialisation.
+   de prix ; qualifications ; mécanisme expliquant la substitution aux importations (coûts relatifs, aides).
 3. Activité et retraites : population active issue de M1 et des taux d'activité par âge sensibles aux règles de retraite ;
    pensions, cotisations, dépenses de retraite.
 4. Comptes physiques de l'énergie (`nrg_bal_c`, téléchargé) reliés aux branches.
