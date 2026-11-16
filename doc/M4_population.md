@@ -66,38 +66,49 @@ Ce qui reste fragile :
 
 Conséquence pour l'usage : une réforme du barème, du quotient familial ou de la décote peut être chiffrée. Une réforme de l'imposition du capital ou des niches fiscales exige d'abord de modéliser ces postes un à un.
 
-## Prestations (version 1, `m4_prestations.py`, test `validation_prestations.py`)
+## Prestations (version 1.1, `m4_prestations.py`, test `validation_prestations.py`)
 
 **Méthode**
-- **Familles au sens de la CAF** : un couple (marié, pacsé ou en concubinage) et ses enfants de moins de 25 ans vivant au foyer.
-- **Ressources** : les montants annuels de M4 (salaires, chômage, pensions) sont répartis uniformément sur les mois, avec des coefficients approchés pour passer au net. Les revenus N-1 et N-2 reprennent les mêmes montants.
-- **Logement** :
-  - le statut d'occupation vient du recensement ;
-  - le loyer est imputé (surface × prix au m² : parc social 6,5 € ; privé 21 / 13 / 10 € selon la zone ; meublé +15 %) ;
-  - la zone APL est approchée par le département.
+- **Familles au sens de la CAF** : un couple (marié, pacsé ou en concubinage) et ses enfants à charge. Version 1.1 : un enfant de 18 à 24 ans qui gagne plus de 55 % du SMIC (seuil des prestations familiales) forme sa propre famille ; il est alors éligible en propre à la prime d'activité et aux aides au logement.
+- **Ressources** : montants annuels de M4 (salaires, chômage, pensions), coefficients approchés pour passer au net. Pour les contrats non permanents (CDD, intérim, apprentissage, emplois aidés), un profil mensuel tiré au hasard : chaque mois travaillé avec une probabilité de 0,75, le revenu annuel étant conservé. Les revenus N-1 et N-2 reprennent les montants annuels.
+- **Logement** : statut d'occupation du recensement ; loyer imputé (surface × prix au m² : parc social 6,5 € ; privé 21 / 13 / 10 € selon la zone ; meublé +15 %) ; zone APL approchée par le département. Hypothèses de niveau D.
+- **Calcul** : OpenFisca, mois d'octobre 2024 × 12, sur 4 sous-échantillons indépendants de 0,5 % des ménages (2 % au total), une prestation par processus (contrainte de mémoire).
+- **Grandeur obtenue** : des droits, avec un recours de 100 %. Le rapport entre montant versé et droits simulés est un taux de recours apparent, à comparer aux estimations de non-recours de la DREES.
 
-  Hypothèses de niveau D.
-- **Calcul** : OpenFisca, mois d'octobre 2024 multiplié par 12, sur un sous-échantillon de 0,5 % des ménages (contrainte de mémoire).
-- **Grandeur obtenue** : des droits, avec un recours de 100 %. Le rapport entre montant versé et montant simulé est un taux de recours apparent, à comparer aux estimations de non-recours de la DREES.
-
-**Résultats (`resultats/validation_prestations.md`)**
+**Résultats (`resultats/validation_prestations.md`, intervalles à ± 2 erreurs types)**
 
 | Prestation | Éligibles simulés | Bénéficiaires réels | Droits simulés | Versé | Recours apparent (foyers ; masse) | Estimation DREES du recours | Lecture |
 |---|---|---|---|---|---|---|---|
-| RSA | 2,90 M | 1,83 M | 15,4 Md€ | 11,9 Md€ | 63 % ; 77 % | 63 à 67 % des foyers | cohérent |
-| Prime d'activité | 6,25 M | ≈ 4,55 M | 15,0 Md€ | ≈ 10,3 Md€ | 73 % ; 69 % | ≈ 50 % des foyers, 54 à 57 % de la masse | éligibles sous-estimés d'environ 25 % |
-| Allocations familiales | 4,77 M | 4,7 M | 14,0 Md€ | — | 99 % | recours quasi complet | conforme |
-| Aides au logement | 5,25 M | ≈ 5,8 M | 14,4 Md€ | ≈ 16 Md€ | 110 % ; 111 % | recours élevé | droits sous-estimés d'environ 10 % |
+| RSA | 3,20 ± 0,03 M | 1,83 M | 17,6 ± 0,3 Md€ | 11,9 Md€ | 57 % ; 68 % | 63 à 67 % des foyers | éligibles un peu surestimés (≈ 8 %) |
+| Prime d'activité | 6,78 ± 0,11 M | ≈ 4,55 M | 15,5 ± 0,3 Md€ | ≈ 10,3 Md€ | 67 % ; 66 % | ≈ 50 % des foyers, 54 à 57 % de la masse | éligibles sous-estimés d'environ 25 % |
+| Allocations familiales | 4,64 ± 0,06 M | 4,7 M | 13,5 ± 0,1 Md€ | — | 101 % | recours quasi complet | conforme |
+| Aides au logement | 5,44 ± 0,09 M | ≈ 5,8 M | 15,0 ± 0,3 Md€ | ≈ 16 Md€ | 107 % ; 107 % | recours élevé | droits sous-estimés d'environ 7 % |
 
-**Écarts et causes probables**
-- **Prime d'activité** : les revenus lissés sur l'année suppriment les trimestres à faibles revenus (contrats courts, intérim). Or l'éligibilité se joue trimestre par trimestre.
-- **Aides au logement** :
-  - les étudiants en résidence universitaire et en foyer (communautés) sont hors champ ;
-  - les loyers et les zones sont imputés grossièrement.
-- **Non modélisés** : allocation aux adultes handicapés (le recensement n'a pas d'information sur le handicap), revenus du patrimoine dans les bases de ressources, non-recours.
+**Cohérence entre recours en nombre et recours en masse.** Les non-recourants ont en moyenne des droits plus faibles (DREES : 42 % des non-recourants au RSA ont un droit faible). Le recours en masse doit donc dépasser le recours en nombre. C'est le cas pour le RSA (+11 points ; droit moyen simulé 458 €/mois contre 542 € versés), ce qui conforte la simulation. Pour la prime d'activité, recours en nombre et en masse sont égaux (−1 point) alors que la DREES trouve +4 à +7 points : la population simulée manque surtout de bénéficiaires à faibles droits, c'est-à-dire de salariés proches de la sortie du dispositif ou aux revenus irréguliers.
+
+**Prime d'activité : corrections apportées et écart résiduel.**
+- Hypothèse de lissage infra-annuel testée et **rejetée comme cause principale** : passer de revenus lissés (probabilité 1) à des revenus très irréguliers (0,6) ne fait passer les éligibles que de 7,04 à 6,57 M. Le trimestre de référence lisse lui-même les irrégularités.
+- Correction retenue : rattachement des jeunes salariés à leur propre famille (+0,6 M d'éligibles, +1,2 Md€).
+- Écart résiduel non forcé : pour retrouver un recours de 50 %, il faudrait environ 9 M d'éligibles. Causes candidates, non tranchées : revenus d'activité du bas de la distribution imputés à partir du rang et non observés (le recensement ne donne pas les salaires) ; travailleurs indépendants à faibles revenus ; temps partiels et multi-employeurs ; le recours DREES de 50 % porte sur une autre année de référence. Les droits simulés sont donc à interpréter comme un minorant.
+
+**Représentativité du sous-échantillon de 0,5 %.** L'écart type entre sous-échantillons est de 0,8 à 1,6 % sur les effectifs et de 0,9 à 2,2 % sur les masses. Un sous-échantillon unique suffit pour les agrégats nationaux. En revanche, une sous-population (une région, une configuration familiale rare) demande d'agréger plusieurs sous-échantillons ou de passer au fichier complet par lots. Les poids sont ceux du recensement multipliés par l'inverse du taux de sondage des ménages : le tirage étant aléatoire simple sur les ménages, il n'introduit pas de biais, seulement de la variance.
+
+**Limites et incertitudes des imputations (synthèse)**
+
+| Imputation | Ce qui est observé | Ce qui est imputé | Effet sur les résultats | Niveau |
+|---|---|---|---|---|
+| Revenus d'activité et de remplacement | Statut d'activité, profession, temps de travail, type de contrat | Montants, par rang sur la distribution DGFiP du revenu fiscal | Distribution fiscale conforme (déciles 1-8) ; bas de distribution incertain pour les prestations | C |
+| Capital et revenus exceptionnels | — | Calés par décile sur la DGFiP | Correct en masse, pas au niveau individuel | D |
+| Loyers et zones | Statut d'occupation, surface, département | Prix au m² par zone | ± 10 % sur les aides au logement | D |
+| Profil mensuel des contrats courts | Type de contrat | Mois travaillés tirés au hasard | Faible (testé) | D |
+| Non-recours | — | Non simulé (droits seulement) | Montants versés = droits × recours apparent | — |
+
+Niveaux : C = calé sur des agrégats publics ; D = hypothèse raisonnée, non vérifiable directement.
+
+**Non modélisés** : allocation aux adultes handicapés (pas d'information sur le handicap dans le recensement), revenus du patrimoine dans les bases de ressources, minimum vieillesse, étudiants en résidence (communautés hors champ).
 
 ## Travaux restants
 1. **Postes calés à modéliser un à un** : réductions et crédits (investissement locatif, souscriptions, dépendance, d'après le tableau DGFiP par décile et par dispositif) ; option pour le barème (2,5 M de foyers, abattement de 40 % sur les dividendes) ; composition du poste exonéré.
 2. **Écart de 3 M de foyers** : population des communautés (fichier détail, catégorie 1), rattachement des jeunes adultes.
-3. **Prestations** : non-recours explicite (taux DREES appliqués par tirage, pour que le simulateur rende des montants versés) ; variabilité infra-annuelle des revenus pour la prime d'activité ; loyers à partir de sources publiques par zone ; allocation aux adultes handicapés.
+3. **Prestations** : non-recours explicite (taux DREES appliqués par tirage, pour que le simulateur rende des montants versés) ; origine de l'écart résiduel de la prime d'activité (bas de distribution des salaires) ; loyers à partir de sources publiques par zone ; allocation aux adultes handicapés.
 4. **Recalage 2022 → année courante** sur M1 (âge, sexe) et sur l'évolution des revenus.

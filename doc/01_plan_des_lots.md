@@ -1,7 +1,7 @@
 # Plan des lots et état d'avancement
 
 Statuts : **construit** (code, données, validation chiffrée livrés) · **en partie construit** · **à faire** · **bloqué**.
-Mise à jour : 16 novembre 2026, soir (lot 4 version 1.3).
+Mise à jour : 16 novembre 2026, nuit (prestations v1.1 ; lot 6 socle entrées-sorties).
 
 | Lot | Contenu | Critère de validation | Statut |
 |---|---|---|---|
@@ -10,9 +10,9 @@ Mise à jour : 16 novembre 2026, soir (lot 4 version 1.3).
 | 2 | Taux d'activité par âge sensibles aux règles de retraite ; composition des ménages | Projections de population active de l'Insee ; nombre de ménages observé | à faire |
 | 3 | Cadre comptable T0 : comptes des secteurs, administrations publiques, dette | Identités exactes ; agrégats 2023-2025 reproduits | **en partie construit** — comptes non financiers 2019-2025, patrimoine financier net, dette : identités exactes, agrégats conformes à l'Insee (voir `M3_cadre_comptable.md`). Reste (3b) : bilans par instrument, matrice de qui à qui |
 | 4 | Population de ménages et de foyers fiscaux | Marges publiées reproduites ; biais sur distributions jointes mesurés | **construit pour l'impôt sur le revenu, sous réserve (v1.3)** — vrais ménages du recensement 2022, revenus ancrés sur la DGFiP ; impôt au barème +2 % au total, conforme par décile (test) ; capital et réductions calés ; familles au sens de la CAF et loyers imputés pour les prestations (v1) ; 3 M de foyers hors champ : à faire (voir `M4_population.md`) |
-| 5 | Législation socio-fiscale (OpenFisca-France 177, licence AGPL-3.0) | Cas types ; masses d'impôts et de prestations face aux comptes publics | **en partie construit** — 11 cas types sur 11 conformes à l'euro près ; IR : barème +2 %, impôt net 92,4 contre 91,7 Md€ ; prestations v1 : RSA (recours apparent 63 %, DREES 63-67 %), allocations familiales (4,77 contre 4,7 M de familles), aides au logement (90 % du versé) cohérents ; prime d'activité : éligibles sous-estimés d'environ 25 % ; non-recours et AAH : à faire |
-| 6 | Bloc productif entrées-sorties, énergie, commerce extérieur par produit | Équilibres ressources-emplois par produit ; contenu en importations | à faire (données accessibles : Insee TES, Eurostat `naio_10`) |
-| 7 | Équations de comportement estimées | Tests de spécification ; rétrosimulation 2000-2019 | à faire (séries longues désormais téléchargeables ; statsmodels installé) |
+| 5 | Législation socio-fiscale (OpenFisca-France 177, licence AGPL-3.0) | Cas types ; masses d'impôts et de prestations face aux comptes publics | **en partie construit** — 11 cas types sur 11 conformes à l'euro près ; IR : barème +2 %, impôt net 92,4 contre 91,7 Md€ ; prestations v1.1 (4 sous-échantillons de 0,5 %, erreur d'échantillonnage 1-2 %) : RSA (recours apparent 57 % en foyers, 68 % en masse ; DREES 63-67 %), allocations familiales (4,64 contre 4,7 M), aides au logement (94 % du versé) cohérents ; prime d'activité : éligibles encore sous-estimés d'environ 25 % (cause non tranchée, documentée) ; non-recours et AAH : à faire |
+| 6 | Bloc productif entrées-sorties, énergie, commerce extérieur par produit | Équilibres ressources-emplois par produit ; contenu en importations ; test rétrospectif des prix | **socle construit (v0.1)** — 64 produits, intérieur/importé, 2010-2022 ; identités exactes ; modèles de quantités et de prix testés année par année 2012-2022 (prix : erreur 0,3-0,8 point en année ordinaire, dégradée en 2020 et 2022 à coefficients fixes) ; voir `M5_productif.md`. Reste : flux physiques d'énergie, emploi et capital par branche |
+| 7 | Équations de comportement estimées | Tests de spécification ; rétrosimulation sur plusieurs années | **en cours** — séries par branche 1995-2025 téléchargées (production, VA, rémunérations, emploi, heures, FBCF, capital) ; estimation à faire |
 | 8 | Couplage, convergence, retraites, finances publiques dynamiques | Convergence ; identités ; indépendance au point de départ | à faire |
 | 9 | Validation intégrale | Écarts quantifiés et expliqués | à faire |
 

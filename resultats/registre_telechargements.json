@@ -47,6 +47,78 @@
   "sha256": "978073dcee6556e3d6db180a5cc1e83a95200f558c166dad80672b63e577745f",
   "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lfsa_argan?format=JSON&geo=FR&time=2024&sex=F&sex=M&age=Y15-19&age=Y20-24&age=Y25-29&age=Y30-34&age=Y35-39&age=Y40-44&age=Y45-49&age=Y50-54&age=Y55-59&age=Y60-64&age=Y65-69&age=Y70-74&citizen=TOTAL"
  },
+ "eurostat_naio_10_cp15_FR.json": {
+  "date": "2026-11-16T21:53:29",
+  "octets": 906201,
+  "sha256": "ba9f3e2bb39a642404b0930ce5e07ebfe9dce56193218b66ee3d1a5baad86204",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/naio_10_cp15?format=JSON&geo=FR&unit=MIO_EUR&sinceTimePeriod=2010"
+ },
+ "eurostat_naio_10_cp1700_FR_DOM.json": {
+  "date": "2026-11-16T21:49:36",
+  "octets": 1329636,
+  "sha256": "670639fdb3febfbe2e6136749849e3f578873abd6b2898d7f064a4f1bc0137fb",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/naio_10_cp1700?format=JSON&geo=FR&unit=MIO_EUR&stk_flow=DOM&sinceTimePeriod=2010"
+ },
+ "eurostat_naio_10_cp1700_FR_IMP.json": {
+  "date": "2026-11-16T21:49:37",
+  "octets": 1075540,
+  "sha256": "09d3ee558f8340f6bc779052177293648656de2c69548ca361c71964f0376b4b",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/naio_10_cp1700?format=JSON&geo=FR&unit=MIO_EUR&stk_flow=IMP&sinceTimePeriod=2010"
+ },
+ "eurostat_naio_10_cp1700_FR_TOTAL.json": {
+  "date": "2026-11-16T21:49:34",
+  "octets": 1387988,
+  "sha256": "023545e64f5d683aa7bb5b1f1f391a0f0c6873ab33cc984b3d88a16348bf25fe",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/naio_10_cp1700?format=JSON&geo=FR&unit=MIO_EUR&stk_flow=TOTAL&sinceTimePeriod=2010"
+ },
+ "eurostat_naio_10_pyp15_FR.json": {
+  "date": "2026-11-16T21:53:25",
+  "octets": 850667,
+  "sha256": "f97b8f75f27ea80679d70535c09e9528fc0f723858a70934ed49168833daf22e",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/naio_10_pyp15?format=JSON&geo=FR&unit=MIO_EUR&sinceTimePeriod=2010"
+ },
+ "eurostat_naio_10_pyp1700_FR_DOM.json": {
+  "date": "2026-11-16T21:50:07",
+  "octets": 1036370,
+  "sha256": "46db1167fb1e04791100281215d84bfa33a4b7e381bc1d4ec76e5b9554b9c7b2",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/naio_10_pyp1700?format=JSON&geo=FR&unit=MIO_EUR&stk_flow=DOM&sinceTimePeriod=2011"
+ },
+ "eurostat_naio_10_pyp1700_FR_IMP.json": {
+  "date": "2026-11-16T21:50:10",
+  "octets": 910952,
+  "sha256": "12d9931be4af98fd820ec80fca88423899ee902114f8867f6c3b2e5f80bdcdeb",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/naio_10_pyp1700?format=JSON&geo=FR&unit=MIO_EUR&stk_flow=IMP&sinceTimePeriod=2011"
+ },
+ "eurostat_naio_10_pyp1700_FR_TOTAL.json": {
+  "date": "2026-11-16T21:50:04",
+  "octets": 1268616,
+  "sha256": "8218da2d00d741ef14baf4115fbcfb2c7b01521f00013b90ff0cd0d14c1d2820",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/naio_10_pyp1700?format=JSON&geo=FR&unit=MIO_EUR&stk_flow=TOTAL&sinceTimePeriod=2011"
+ },
+ "eurostat_nama_10_a64_FR.json": {
+  "date": "2026-11-16T21:59:07",
+  "octets": 379780,
+  "sha256": "478737c868032454af42828e949bda2e4d343ec000777d44603da72605f2a403",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nama_10_a64?format=JSON&geo=FR&sinceTimePeriod=1995&na_item=B1G&na_item=P1&na_item=D1&na_item=D11&unit=CP_MEUR&unit=CLV15_MEUR&unit=PYP_MEUR"
+ },
+ "eurostat_nama_10_a64_e_FR.json": {
+  "date": "2026-11-16T21:59:10",
+  "octets": 143757,
+  "sha256": "c2fcc80529a5c7d0a10765f12be2c9833cca5d6fabdf74457d2498aacb77dd77",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nama_10_a64_e?format=JSON&geo=FR&sinceTimePeriod=1995&na_item=EMP_DC&na_item=SAL_DC&unit=THS_PER&unit=THS_HW"
+ },
+ "eurostat_nama_10_a64_p5_FR.json": {
+  "date": "2026-11-16T21:59:11",
+  "octets": 57907,
+  "sha256": "c3f79f30409fe152795ede6a44574b5034bc55258758f5065eba39a9a4f7962a",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nama_10_a64_p5?format=JSON&geo=FR&sinceTimePeriod=1995&asset10=N11G&unit=CP_MEUR&unit=CLV15_MEUR"
+ },
+ "eurostat_nama_10_nfa_st_FR.json": {
+  "date": "2026-11-16T21:59:13",
+  "octets": 31618,
+  "sha256": "6b72baaab0dc189286708a9da81a7ebd70acda98d50df926774dc7c76ec261c6",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nama_10_nfa_st?format=JSON&geo=FR&sinceTimePeriod=1995&asset10=N11N&unit=CP_MEUR&unit=CLV15_MEUR"
+ },
  "eurostat_nasa_10_f_bs_FR.json": {
   "date": "2026-11-16T16:04:56",
   "octets": 16117,
