@@ -53,7 +53,7 @@ Code : `m4_population.py`, `m4_openfisca.py`, test `validation_M4.py`. Chaque si
 | **Impôt au barème par part, déciles 9 et 10** (test) | 2 680 ; 10 738 € | 2 510 ; 10 050 € | +7 % chacun |
 | **Impôt au barème total** (test) | 100,5 Md€ (99,2 à 102,0 selon η) | ≈ 98,6 Md€ | **+2 %** |
 | Part de foyers imposés par tranche de revenu fiscal (test) | 1 % ; 37 % ; 56 % ; 71 % ; 94 % | 3 % ; 29 % ; 61 % ; 72 % ; 91 % | conforme à ±8 points |
-| Impôt net par tranche (test partiel : prélèvement forfaitaire et réductions calés) | de −14 % (30-50 k€) à +11 % (100-200 k€) | IRCOM | acceptable |
+| Impôt net par tranche (test partiel : prélèvement forfaitaire et réductions calés) | de −15 % (30-50 k€) à +10 % (100-200 k€) | IRCOM | acceptable |
 | Impôt net total | 92,4 Md€ (91,1 à 93,9 selon η) | 91,7 Md€ | conforme, mais en partie par calage |
 | Crédits d'impôt modélisés (emploi à domicile, garde) | ≈ 9,9 Md€ | ≈ 9,7 Md€ | conforme |
 
