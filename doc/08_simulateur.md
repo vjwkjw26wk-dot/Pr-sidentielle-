@@ -114,7 +114,7 @@ Ces résultats illustrent la mécanique et doivent être lus avec leurs incertit
 
 ## 6. Reste à faire avant une ouverture au public
 
-1. Interface web : composition de scénario, affichage des résultats, comparaison de scénarios. Le format JSON et la page de restitution en sont la base.
+1. Interface web : une interface de test existe (§ 0). Restent à faire : la comparaison de scénarios côte à côte, la prise en compte des interactions sans serveur local (grille croisée ou calcul à la demande hébergé) et les intervalles d'incertitude dans la page.
 2. Élargir le catalogue : TVA, CSG, cotisations, investissement public, emploi public, dépenses par fonction, énergie et climat, logement.
 3. Effets distributifs complets : CSG, cotisations, TVA par décile.
 4. Revue scientifique externe des modèles et du catalogue (cahier des charges, phase 7), avant toute diffusion.
