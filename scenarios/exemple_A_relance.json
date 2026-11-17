@@ -1,0 +1,11 @@
+{
+ "nom": "Exemple A — relance par la dépense et retour à 62 ans",
+ "description": "Scénario illustratif (non attribué à un programme) : consommation publique +1 point de PIB, RSA +10 %, âge légal ramené à 62 ans, dès 2024.",
+ "base": 2022, "horizon": 2030,
+ "hypotheses": {"fermeture_offre": 0.15, "europe": true, "incertitude": 0},
+ "mesures": [
+  {"type": "depense_publique", "parametres": {"points_pib": 1.0, "debut": 2024}},
+  {"type": "rsa", "parametres": {"facteur": 1.10}},
+  {"type": "age_legal", "parametres": {"regle": "2010"}}
+ ]
+}

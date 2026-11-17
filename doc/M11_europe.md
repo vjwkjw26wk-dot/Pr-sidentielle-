@@ -39,15 +39,17 @@ En simulation dynamique avec l'inflation et l'écart de production observés :
 
 | Variante (effet en 2035) | PIB | Taux BCE | Taux long français | Solde public | Dette |
 |---|---|---|---|---|---|
-| Dépense publique française +1 pt de PIB, sans rétroaction | +0,22 % | — | — | −0,70 pt | +5,0 pt |
-| Même mesure, avec BCE et partenaires | +0,22 % | ≈ 0 (+0,10 en 2026) | ≈ 0 | −0,73 pt | +5,3 pt |
-| Même mesure, avec en plus la prime de risque | +0,19 % | ≈ 0 | +0,17 pt | −0,88 pt | +5,9 pt |
-| Relance coordonnée dans toute la zone (+1 pt partout) | +0,16 % (+1,62 % en 2024) | +0,6 pt en 2025-2027 | +0,22 pt | −1,19 pt | +7,8 pt |
-| Transferts aux ménages +1 pt de PIB, avec rétroactions | +0,03 % | ≈ 0 | +0,31 pt | −1,37 pt | +10,2 pt |
+| Dépense publique française +1 pt de PIB, sans rétroaction | +0,31 % | — | — | −0,53 pt | +2,3 pt |
+| Même mesure, avec BCE et partenaires | +0,30 % | ≈ 0 (+0,08 en 2024) | +0,02 pt | −0,61 pt | +3,0 pt |
+| Même mesure, avec en plus la prime de risque | +0,28 % | ≈ 0 | +0,11 pt | −0,67 pt | +3,1 pt |
+| Relance coordonnée dans toute la zone (+1 pt partout) | +0,17 % (+1,60 % en 2024) | hausse transitoire | +0,19 pt | −1,23 pt | +6,4 pt |
+| Transferts aux ménages +1 pt de PIB, avec rétroactions | +0,07 % | ≈ 0 | +0,28 pt | −1,22 pt | +8,6 pt |
+
+Ces chiffres correspondent au calibrage de la fermeture d'offre de la phase 7 (ρ = 0,15).
 
 **Lecture.**
 - **Mesure française isolée.** La BCE réagit peu, car la France ne pèse que 20 % de la zone. La rétroaction européenne est donc faible.
-- **Relance coordonnée.** Elle soutient davantage l'activité au départ (+1,6 % contre +1,4 %), mais elle déclenche une hausse des taux de la BCE (+0,6 point pendant trois ans). Le coût en intérêts alourdit la dette française de près de 2 points de plus à l'horizon 2035.
+- **Relance coordonnée.** Elle soutient davantage l'activité au départ (+1,6 % contre +1,4 %), mais elle déclenche une hausse des taux de la BCE. Le coût en intérêts alourdit nettement la dette française à l'horizon 2035 (+6,4 points contre +3,1).
 - **Dette élevée.** La prime de risque ajoute un effet boule de neige modéré : +0,3 point de taux long et +1 point de dette pour un déficit permanent de 1 point de PIB.
 
 ## 4. Limites

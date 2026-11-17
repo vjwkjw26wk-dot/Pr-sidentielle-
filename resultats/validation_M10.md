@@ -28,9 +28,9 @@ Législation actuelle : impôt net 92.4 Md€ ; droits simulés RSA 17.8, prime 
 
 | Année | PIB | Consommation | Emploi (milliers) | Prix conso. | Revenu disponible | Solde public (pt de PIB) | Dette (pt de PIB) |
 |---|---|---|---|---|---|---|---|
-| 2024 | -0.09 % | -0.69 % | -30 | -0.04 % | -0.81 % | +0.32 | -0.49 |
-| 2026 | -0.07 % | -0.74 % | -28 | -0.10 % | -0.89 % | +0.33 | -1.05 |
-| 2030 | -0.04 % | -0.76 % | -14 | -0.16 % | -0.94 % | +0.37 | -2.28 |
+| 2024 | -0.23 % | -0.79 % | -52 | -0.01 % | -0.86 % | +0.30 | -0.35 |
+| 2026 | -0.18 % | -0.84 % | -55 | -0.13 % | -1.00 % | +0.29 | -0.78 |
+| 2030 | -0.09 % | -0.84 % | -33 | -0.28 % | -1.15 % | +0.33 | -1.77 |
 
 ## R3 — Impôt sur le revenu : barème non revalorisé (seuils des tranches, décote et plafond du quotient familial −2 %, soit l'équivalent d'un gel face à une indexation de 2 %)
 
@@ -56,9 +56,9 @@ Législation actuelle : impôt net 92.4 Md€ ; droits simulés RSA 17.8, prime 
 
 | Année | PIB | Consommation | Emploi (milliers) | Prix conso. | Revenu disponible | Solde public (pt de PIB) | Dette (pt de PIB) |
 |---|---|---|---|---|---|---|---|
-| 2024 | -0.02 % | -0.14 % | -6 | -0.01 % | -0.16 % | +0.06 | -0.10 |
-| 2026 | -0.01 % | -0.15 % | -5 | -0.02 % | -0.17 % | +0.07 | -0.21 |
-| 2030 | -0.01 % | -0.15 % | -3 | -0.03 % | -0.19 % | +0.07 | -0.45 |
+| 2024 | -0.05 % | -0.16 % | -10 | -0.00 % | -0.17 % | +0.06 | -0.07 |
+| 2026 | -0.04 % | -0.17 % | -11 | -0.03 % | -0.20 % | +0.06 | -0.15 |
+| 2030 | -0.02 % | -0.17 % | -6 | -0.06 % | -0.23 % | +0.06 | -0.35 |
 
 ## R2 — RSA : montant forfaitaire +10 %
 
@@ -84,9 +84,9 @@ Législation actuelle : impôt net 92.4 Md€ ; droits simulés RSA 17.8, prime 
 
 | Année | PIB | Consommation | Emploi (milliers) | Prix conso. | Revenu disponible | Solde public (pt de PIB) | Dette (pt de PIB) |
 |---|---|---|---|---|---|---|---|
-| 2024 | +0.01 % | +0.09 % | +4 | +0.01 % | +0.10 % | -0.05 | +0.08 |
-| 2026 | +0.01 % | +0.09 % | +4 | +0.01 % | +0.11 % | -0.05 | +0.16 |
-| 2030 | +0.01 % | +0.10 % | +2 | +0.02 % | +0.12 % | -0.06 | +0.35 |
+| 2024 | +0.03 % | +0.10 % | +7 | +0.00 % | +0.11 % | -0.05 | +0.06 |
+| 2026 | +0.02 % | +0.11 % | +7 | +0.02 % | +0.13 % | -0.04 | +0.13 |
+| 2030 | +0.01 % | +0.11 % | +4 | +0.04 % | +0.15 % | -0.05 | +0.28 |
 
 ## Limites
 
@@ -95,5 +95,5 @@ Législation actuelle : impôt net 92.4 Md€ ; droits simulés RSA 17.8, prime 
 - Prestations : erreur d'échantillonnage de l'ordre de 2 % (deux sous-échantillons) ; les petites réformes de prestations sont donc imprécises.
 - Le sens macro → micro (revalorisation des revenus de M4 par M8) n'est pas encore fait : le montant statique est indexé sur le PIB nominal.
 
-Durée : 99 s.
+Durée : 17 s.
 

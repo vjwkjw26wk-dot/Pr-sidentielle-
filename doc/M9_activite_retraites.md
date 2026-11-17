@@ -73,21 +73,21 @@ résidant à l'étranger.
 
 Résultats en 2040. Trois lectures du PIB et du solde public :
 - demande seule (ρ = 0) ;
-- fermeture d'offre (ρ = 0,3, décision A12) ;
+- fermeture d'offre (ρ = 0,15, décision A12) ;
 - borne offre : la production suit l'emploi immédiatement.
 
 | Variante | Actifs | Emploi (fermeture) | Pensions | PIB : demande / fermeture / borne | Solde public : demande / fermeture / borne |
 |---|---|---|---|---|---|
-| Retour à 62 ans | −1 078 000 | −919 000 | +49 Md€ | +0,1 % / −2,7 % / −2,7 % | −2,1 / −2,0 / −3,6 pt |
-| Loi de 2023 sans suspension | +7 000 | +18 000 | ≈ 0 | ≈ 0 | +0,04 pt |
-| 65 ans | +560 000 | +420 000 | −12 Md€ | +0,1 % / +1,4 % / +1,6 % | +0,8 / +0,6 / +1,6 pt |
+| Retour à 62 ans | −1 078 000 | −831 000 | +49 Md€ | +0,1 % / −2,3 % / −2,7 % | −2,1 / −1,3 / −3,6 pt |
+| Loi de 2023 sans suspension | +7 000 | +30 000 | ≈ 0 | ≈ 0 / +0,06 % / +0,03 % | +0,04 pt |
+| 65 ans | +560 000 | +318 000 | −12 Md€ | +0,1 % / +1,0 % / +1,6 % | +0,8 / +0,3 / +1,6 pt |
 
 Les pensions sont calculées avec les prix et salaires simulés par M8 dans le compte central.
 
 **Lecture.**
 - **Robuste** : les effets sur les pensions et les cotisations. Ils reposent sur la démographie, les règles et des comportements d'activité bien reproduits.
 - **Dépendant de la fermeture** : l'effet sur le PIB.
-  - Avec la fermeture d'offre, il rejoint la borne offre en une dizaine d'années.
+  - Avec la fermeture d'offre (calibrage de phase 7), il se rapproche de la borne offre sans l'atteindre en 2040 : l'ajustement est volontairement progressif.
   - En demande seule, un retour à 62 ans paraît même neutre, car les pensions versées compensent les salaires perdus.
 - **Solde public** : avec la fermeture, il est plus proche de la colonne « demande ». La demande supplémentaire qui absorbe les actifs vient en partie de dépenses indexées sur le PIB (convention du compte central).
 

@@ -86,24 +86,25 @@ fermeture d'offre : présenter une seule colonne de PIB serait trompeur.
 
 ## A12 — Fermeture d'offre de moyen terme
 
-**Décision (17 novembre 2026).** Le modèle bouclé reste déterminé par la demande à court terme. À moyen terme, l'écart du
-chômage au chômage structurel est résorbé progressivement par un supplément (ou un retrait) de demande intérieure, réparti
-à 60 % sur la consommation et à 40 % sur l'investissement. Ce supplément est piloté par un correcteur proportionnel-intégral :
-- ρ = 0,3 sur l'écart ;
-- amortissement de 1,0 sur sa variation ;
+**Décision (17 novembre 2026, recalibrée en phase 7).** Le modèle bouclé reste déterminé par la demande à court terme.
+À moyen terme, l'écart du chômage au chômage structurel est résorbé progressivement par un supplément (ou un retrait) de
+demande intérieure, réparti à 60 % sur la consommation et à 40 % sur l'investissement. Ce supplément est piloté par un
+correcteur proportionnel-intégral :
+- ρ = 0,15 sur l'écart ;
+- amortissement de 0,3 sur sa variation ;
 - loi d'Okun : 1,5 point de PIB par point de chômage.
 
-Ce terme représente les canaux non modélisés : politique monétaire, conditions de crédit, confiance, compétitivité de
-moyen terme.
-**Justification.** C'est la pratique des modèles institutionnels (Mésange, hypothèses du COR) : à long terme, la
-production suit les facteurs disponibles. Sans fermeture, une hausse de la population active n'est absorbée qu'à 10 %
-par les salaires, et le PIB ne réagit pas. Avec ρ = 0,3 :
-- une population active +1 % donne un PIB +0,9 % en trois ans environ ;
-- une hausse durable de la consommation publique de 1 point de PIB a un multiplicateur de 1,4 la première année, qui retombe à 0,2 à moyen terme (éviction) ;
-- les rétrosimulations 2015-2019 et 2023-2024 sont inchangées à 0,4 point près (le chômage y reste proche de son niveau structurel).
+Ce terme représente les canaux non modélisés : politique monétaire, crédit, confiance, compétitivité.
+**Justification.** C'est la pratique des modèles institutionnels : à long terme, la production suit les facteurs
+disponibles. Le calibrage retenu donne pour une hausse durable de la consommation publique d'un point de PIB un
+multiplicateur de 1,40 la première année, 0,91 la deuxième, 0,77 la troisième, 0,39 la septième et 0,31 la douzième.
+Ce profil est proche de celui des modèles macroéconométriques français, qui restent autour de 1 les premières années
+puis décroissent. Une population active +1 % donne un PIB +0,8 % au bout de sept ans environ.
 
-**Statut.** Hypothèse de niveau C/D du cahier des charges, non estimée. Les projections l'activent par défaut ; les
-rétrosimulations et le « modèle de demande » la désactivent (ρ = 0). Sensibilité documentée pour ρ = 0,2 à 0,5.
+Le premier calibrage (ρ = 0,3, amortissement 1,0) évinçait la dépense publique en deux ans et faisait osciller le PIB.
+Il a été abandonné.
+**Statut.** Hypothèse de niveau C/D, non estimée. Les projections l'activent par défaut ; les rétrosimulations et le
+« modèle de demande » la désactivent (ρ = 0). Dans les tirages Monte-Carlo, ρ varie de 0,1 à 0,25.
 
 ## A13 — Couplage micro-macro par variations de montants
 
@@ -130,3 +131,12 @@ estimée au taux long français, une prime de risque calibrée sur la dette, et 
 et la demande adressée. Un modèle multi-pays (comme le modèle NiGEM ou les modèles de la Commission européenne) n'est
 pas disponible en données ouvertes, et sa construction serait disproportionnée à ce stade.
 **Limites.** Voir `M11_europe.md`.
+
+## A15 — Simulateur : restitution par écarts, sans note globale
+
+**Décision (17 novembre 2026).** Le simulateur restitue des écarts à un compte de référence conventionnel, accompagnés de
+leur fiche de transparence : mesures, hypothèses, données, modèles, paramètres sensibles, incertitudes, limites. Il
+n'agrège jamais les résultats en une note. Les mêmes modèles et indicateurs s'appliquent à toute mesure, et les exemples
+publiés vont par paires de sens opposés.
+**Justification.** Cahier des charges § 17.1 et § 17.2 (transparence, neutralité). Toute agrégation exigerait des
+pondérations normatives, qui relèvent du choix de l'utilisateur.

@@ -33,8 +33,8 @@ import m7_equations as E
 import m7_series as S
 from telechargement import jsonstat_dict, telecharger
 
-RHO_DEFAUT = 0.3   # fermeture d'offre des projections (sensibilité : 0 et 1)
-AMORTI_FERMETURE = 1.0   # terme proportionnel du correcteur, limite les dépassements (calibré par simulation)
+RHO_DEFAUT = 0.15   # fermeture d'offre des projections (sensibilité : 0 et 1)
+AMORTI_FERMETURE = 0.3   # terme proportionnel du correcteur, limite les dépassements (calibré par simulation)
 OKUN = 1.5      # points de PIB par point de chômage (ordre de grandeur des estimations françaises de la loi d'Okun)
 PRODUITS_NM = ["CPA_L68A", "CPA_L68B", "CPA_O", "CPA_P", "CPA_Q86", "CPA_Q87_88"]
 CAT = {"C": ["P3_S14"], "G": ["P3_S13", "P3_S15"], "I": ["P51G"], "S": ["P52", "P53"], "X": ["P6"]}
@@ -517,10 +517,10 @@ class Modele:
         ebe, d4 = self._revenus_patrimoine(t, A, ex, pc)
         autres = ebe + d4 + (mb.d7 + mb.autres) * pib_nom
         mm = ex.mesure_menages or {}
-        d62 = mb.d62 * prest + self._extra(ex, "ajust_prestations", t) + mm.get("prestations", 0.0) * self._idx_mesure(mm, pib_nom)
+        d62 = mb.d62 * prest + self._extra(ex, "ajust_prestations", t) + mm.get("prestations", 0.0) * self._idx_mesure(mm, pib_nom, t)
         d61 = mb.d61 * masse * (1 if ex.taux_cotisations is None else float(ex.taux_cotisations.get(t, 1.0)))
         base_imp = (mb.d1 * masse + ebe + d4 + d62)
-        d5 = mb.d5 * base_imp / (mb.d1 + mb.ebe + mb.d4 + mb.d62) + mm.get("impots", 0.0) * self._idx_mesure(mm, pib_nom)
+        d5 = mb.d5 * base_imp / (mb.d1 + mb.ebe + mb.d4 + mb.d62) + mm.get("impots", 0.0) * self._idx_mesure(mm, pib_nom, t)
         return d1 + autres + d62 - d61 - d5
 
     def _tuc(self, b, t, q, H):
@@ -530,8 +530,11 @@ class Modele:
         cap = (H[b]["k"][t - 1] / H[b]["k"][B - 1]) * np.exp(self.g_cap[b] * (t - B))
         return self.tuc_B[b] * (q / H[b]["q"][B]) / cap
 
-    def _idx_mesure(self, mm, pib_nom):
-        """Montant d'une mesure évaluée sur les revenus de l'année mm["annee"], indexé sur le PIB nominal simulé."""
+    def _idx_mesure(self, mm, pib_nom, t):
+        """Montant d'une mesure évaluée sur les revenus de l'année mm["annee"], indexé sur le PIB nominal simulé ;
+        nul avant l'année mm["debut"]."""
+        if t < mm.get("debut", 0):
+            return 0.0
         a = mm.get("annee", self.B)
         return pib_nom * self.macro.pib_cp[self.B] / self.macro.pib_cp[a]
 
@@ -582,7 +585,7 @@ class Modele:
         is_t = is0 * (ebe_m / ebe_m0) * (tau / tau0)
         mm = ex.mesure_menages or {}
         d5_men = (ab.d5rec - is0) * (mb.d1 * masse + A["ebe"][t] + A["d4"][t] + mb.d62 * prest) / (mb.d1 + mb.ebe + mb.d4 + mb.d62)
-        d5_men += mm.get("impots", 0.0) * self._idx_mesure(mm, pib_nom)
+        d5_men += mm.get("impots", 0.0) * self._idx_mesure(mm, pib_nom, t)
         d2 = ab.d2rec * cons_nom
         d61 = ab.d61rec * masse * (1 if ex.taux_cotisations is None else float(ex.taux_cotisations.get(t, 1.0)))
         autres_r = (ab.tr - ab.d2rec - ab.d5rec - ab.d61rec) * pib_nom
@@ -590,7 +593,7 @@ class Modele:
         d1p = ab.d1pay * (w / A["w"][B]) * (n_nm / self.n_nm0)
         g_vol = float(ex.conso_publique[t]) / float(ex.conso_publique[B])
         p3_autres = (ab.p3 - ab.d1pay) * g_vol * pc / A["pc"][B]
-        d62 = ab.d62pay * prest + self._extra(ex, "ajust_prestations", t) + mm.get("prestations", 0.0) * self._idx_mesure(mm, pib_nom)
+        d62 = ab.d62pay * prest + self._extra(ex, "ajust_prestations", t) + mm.get("prestations", 0.0) * self._idx_mesure(mm, pib_nom, t)
         # taux apparent de la dette : rejoint progressivement le taux de marché (renouvellement d'environ 1/8 de la dette par an)
         if "taux_app" not in niv:
             niv["taux_app"] = ab.d41pay / self.apu.dette[B - 1]
@@ -639,7 +642,7 @@ def exogenes_projection(mod: Modele, annees, **modifs) -> Exogenes:
     Demande mondiale +3 %/an, prix mondiaux et d'importation +1,5 %/an, consommation publique et autres investissements
     +1 %/an en volume, population active +0,3 %/an, chômage structurel 7,5 %, taux long 3,2 %, taux d'IS inchangé,
     prestations +1,2 %/an en volume (vieillissement), dépenses publiques autres constantes en part du PIB ;
-    fermeture d'offre ρ = 0,3 avec amortissement 1,0 (décision A12 ; ρ = 0 pour le modèle de demande pur)."""
+    fermeture d'offre ρ = 0,15 avec amortissement 0,3 (décision A12 ; ρ = 0 pour le modèle de demande pur)."""
     B, m = mod.B, mod.macro
     ans = list(range(B - 3, max(annees) + 1))
     obs = exogenes_observes(mod, [B])

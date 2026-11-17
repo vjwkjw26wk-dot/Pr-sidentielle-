@@ -1,7 +1,7 @@
 # Plan des lots et état d'avancement
 
 Statuts : **construit** (code, données, validation chiffrée livrés) · **en partie construit** · **à faire** · **bloqué**.
-Mise à jour : 17 novembre 2026 (M8 v0.4 ; M9 v0.1 ; M10 v0.1 ; M11 France-zone euro v0.1).
+Mise à jour : 17 novembre 2026 (M8 v0.4 ; M9-M12 v0.1 ; phase 7 : rapport de validation ; phase 8 : prototype du simulateur).
 
 | Lot | Contenu | Critère de validation | Statut |
 |---|---|---|---|
@@ -15,7 +15,8 @@ Mise à jour : 17 novembre 2026 (M8 v0.4 ; M9 v0.1 ; M10 v0.1 ; M11 France-zone 
 | 7 | Équations de comportement estimées | Tests de spécification ; rétrosimulation sur plusieurs années | **construit (v0.1)** — 9 équations (emploi, prix, investissement par branche ; investissement des SNF avec coût d'usage et IS ; salaires ; consommation ; importations ; exportations) estimées sur 1997-2019 ; 2 paramètres calibrés (signalés) ; tests hors échantillon 2013-2019 et 2022-2024 (voir `M7_M8_comportements_et_bouclage.md`) |
 | 8 | Couplage, convergence, retraites, finances publiques dynamiques | Convergence ; identités ; rétrosimulation du modèle complet | **en partie construit (M8 v0.4)** — v0.4 : fermeture d'offre de moyen terme (hypothèse A12) ; v0.3 : taux d'utilisation des capacités industrielles (enquête Insee) dans les prix, capital de capacité pour la réindustrialisation ; modèle annuel bouclé (64 produits, 25 branches, ménages, administrations publiques, dette) ; v0.2 : délais de transmission des prix d'importation, réindustrialisation avec investissement de capacité et surcoût ; rétrosimulation 2015-2019 : PIB −0,3 %, emploi −0,4 %, prix +0,2 %, solde public 0,0 pt ; 2023-2024 : prix −2,8 %, exportations et revenus des ménages sous-estimés ; 6 variantes. M10 (v0.1) : réformes de l'impôt sur le revenu et des prestations calculées ménage par ménage (OpenFisca) puis transmises à M8, avec effets par décile ; sensibilité aux seuils du barème sous-estimée d'environ 30 % (voir `M10_couplage_micro_macro.md`). Reste : sens macro → micro, CSG et cotisations dans M4, retraites et population active (lot 2), branchement de M4, politique monétaire |
 | 6b | Couplage France-zone euro (phase 6 du cahier des charges) | Règle de taux reproduite ; rétroactions cohérentes | **construit (M11 v0.1)** — règle de la BCE estimée (1999-2019), transmission aux taux longs, prime de risque, demande des partenaires ; variantes isolée / coordonnée / dette (voir `M11_europe.md`) |
-| 9 | Validation intégrale | Écarts quantifiés et expliqués | à faire |
+| 9 | Validation intégrale (phase 7) | Écarts quantifiés et expliqués | **construit (v0.1)** — rapport `07_validation_integrale.md` : synthèse des tests rétrospectifs, comparaison des multiplicateurs, Monte-Carlo (M12, 40 tirages), robuste / plausible / non validé, conformité au cahier des charges |
+| 10 | Préparation du simulateur (phase 8) | Scénario → résultats transparents | **prototype (v0.1)** — scénarios JSON, catalogue de 11 mesures, exécution intégrée, restitution HTML avec fiche de transparence, ménages types ; pas encore d'interface web (voir `08_simulateur.md`) |
 
 ## Environnement de calcul
 Depuis le 16 novembre 2026 après-midi, le réseau est ouvert : PyPI, Insee, Eurostat, data.gouv.fr, BCE et DBnomics répondent (OCDE `sdmx.oecd.org` refusé ; `api.insee.fr` et `webstat.banque-france.fr` sans réponse lors du test).

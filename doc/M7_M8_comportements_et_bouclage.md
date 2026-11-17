@@ -131,29 +131,24 @@ chômage et les salaires. Il n'y a encore ni contrainte de qualification, ni lim
 
 ### Fermeture d'offre de moyen terme (v0.4, décision A12)
 
-Option `Exogenes.fermeture_offre` (ρ), active par défaut dans les projections (ρ = 0,3) et inactive dans les
-rétrosimulations. Chaque année, un supplément de demande intérieure Z (consommation 60 %, investissement 40 %) évolue
-selon :
+Option `Exogenes.fermeture_offre` (ρ), active par défaut dans les projections et inactive dans les rétrosimulations.
+Chaque année, un supplément de demande intérieure Z (consommation 60 %, investissement 40 %) évolue selon :
 
-ΔZ = [ρ · (u − u*)₍t−1₎ + 1,0 · Δ(u − u*)₍t−1₎] × 1,5 % du PIB.
+ΔZ = [ρ · (u − u*)₍t−1₎ + 0,3 · Δ(u − u*)₍t−1₎] × 1,5 % du PIB, avec ρ = 0,15.
 
-Le chômage converge ainsi vers le chômage structurel u*.
+Profils de réponse (calibrage de phase 7) :
 
-Tests de comportement (compte central 2023-2040) :
+| Choc | 1 an | 2 ans | 3 ans | 5 ans | 7 ans | 12 ans |
+|---|---|---|---|---|---|---|
+| Consommation publique +1 pt de PIB : écart de PIB | +1,40 % | +0,91 % | +0,77 % | +0,52 % | +0,39 % | +0,31 % |
+| Demande seule (ρ = 0) | +1,39 % | +1,38 % | +1,36 % | +1,30 % | +1,24 % | +1,13 % |
+| Population active +1 % : écart de PIB | −0,25 % | — | +0,56 % | +0,76 % | +0,82 % | +0,81 % |
 
-| Choc | Écart de PIB en 2024 | 2026 | 2030 | 2040 |
-|---|---|---|---|---|
-| Population active +1 % dès 2024 | −0,25 % | +0,86 % | +0,87 % | +0,86 % |
-| Consommation publique +1 point de PIB | +1,41 % | +0,42 % | +0,23 % | +0,21 % |
-
-Avec ρ = 0,5, l'ajustement est plus rapide mais dépasse légèrement sa cible ; avec ρ = 0,2, il est plus lent. Les effets
-de long terme des politiques qui modifient l'offre de travail ou la demande dépendent de cette hypothèse. Elle est donc
-toujours présentée avec la variante ρ = 0 (demande seule).
-
-Conséquence sur les variantes de M8 (2030) : la plupart des effets de demande sont fortement réduits à moyen terme.
-- Dépenses publiques : PIB +0,23 %.
-- Réindustrialisation progressive : PIB +0,44 %, contre +1,4 % sans fermeture.
-- Impôt sur les sociétés : investissement +2,3 %, PIB +0,13 %.
+Variantes de M8 avec cette fermeture (effets en 2030) :
+- dépense publique +1 pt de PIB : PIB +0,39 % ;
+- impôt sur les sociétés à 20 % : PIB +0,21 %, investissement +2,4 % ;
+- énergie importée +20 % : PIB −0,03 %, prix +1,9 % ;
+- réindustrialisation progressive : PIB +0,71 %.
 
 ### Essais écartés (17 novembre 2026)
 
