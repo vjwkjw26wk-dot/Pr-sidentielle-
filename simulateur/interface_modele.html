@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Simulateur Présidentielle — test</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@500;600&display=swap" rel="stylesheet">
+<style>
+/* Plan : outil de travail en deux colonnes — mesures à gauche (curseurs), effets à droite (synthèse, graphique, tableaux).
+   Palette : encre bleu ardoise, papier gris-bleu très clair, accent bleu de Prusse ; rouge/vert réservés au sens des écarts. */
+:root {
+  --papier: #f3f5f8;
+  --surface: #ffffff;
+  --encre: #18212f;
+  --doux: #5a6577;
+  --trait: #d9dee7;
+  --accent: #1f4e8c;
+  --accent-pale: #e3ebf6;
+  --hausse: #1d7a4f;
+  --baisse: #b23a2e;
+  --alerte: #8a5a00;
+  --alerte-fond: #fbf3e2;
+  --f-titre: "IBM Plex Serif", Georgia, serif;
+  --f-texte: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --papier: #10141b; --surface: #171c25; --encre: #e4e8ef; --doux: #9aa4b5; --trait: #2a3140;
+    --accent: #7fa8e8; --accent-pale: #1d2a40; --hausse: #4cc38a; --baisse: #f07a6c; --alerte: #e6b45a; --alerte-fond: #2a2416;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --papier: #10141b; --surface: #171c25; --encre: #e4e8ef; --doux: #9aa4b5; --trait: #2a3140;
+  --accent: #7fa8e8; --accent-pale: #1d2a40; --hausse: #4cc38a; --baisse: #f07a6c; --alerte: #e6b45a; --alerte-fond: #2a2416;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--papier); color: var(--encre); font-family: var(--f-texte); font-size: 15px; line-height: 1.45; }
+header { padding: 20px 24px 12px; display: grid; gap: 6px; max-width: 1320px; margin: 0 auto; }
+h1 { font-family: var(--f-titre); font-weight: 600; font-size: 1.55rem; margin: 0; text-wrap: balance; }
+.sous { color: var(--doux); margin: 0; max-width: 70ch; }
+.bandeau { background: var(--alerte-fond); color: var(--encre); border-left: 3px solid var(--alerte); padding: 8px 12px; font-size: .88rem; border-radius: 4px; max-width: 110ch; }
+main { display: grid; grid-template-columns: minmax(300px, 380px) 1fr; gap: 20px; padding: 8px 24px 32px; max-width: 1320px; margin: 0 auto; }
+@media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+.panneau { background: var(--surface); border: 1px solid var(--trait); border-radius: 8px; padding: 14px 16px; }
+.mesures { display: grid; gap: 14px; align-content: start; }
+.groupe h2 { font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; color: var(--doux); margin: 0 0 8px; font-weight: 600; }
+.curseur { display: grid; gap: 2px; padding: 6px 0; border-top: 1px solid var(--trait); }
+.curseur:first-of-type { border-top: 0; }
+.curseur label { display: flex; justify-content: space-between; gap: 8px; font-size: .9rem; }
+.curseur output { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--accent); white-space: nowrap; }
+.curseur output.neutre { color: var(--doux); font-weight: 400; }
+.curseur small { color: var(--doux); font-size: .76rem; }
+input[type=range] { width: 100%; accent-color: var(--accent); }
+input[type=range]:focus-visible, button:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+button, select { font: inherit; border: 1px solid var(--trait); background: var(--surface); color: var(--encre); border-radius: 6px; padding: 6px 10px; cursor: pointer; }
+button:hover { border-color: var(--accent); }
+button.principal { background: var(--accent); color: var(--surface); border-color: var(--accent); }
+.effets { display: grid; gap: 16px; align-content: start; min-width: 0; }
+.tuiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(128px, 1fr)); gap: 10px; }
+.tuile { background: var(--surface); border: 1px solid var(--trait); border-radius: 8px; padding: 10px 12px; display: grid; gap: 2px; }
+.tuile .lib { font-size: .78rem; color: var(--doux); }
+.tuile .val { font-size: 1.35rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.tuile .det { font-size: .76rem; color: var(--doux); font-variant-numeric: tabular-nums; }
+.pos { color: var(--hausse); } .neg { color: var(--baisse); } .nul { color: var(--doux); }
+h3 { font-family: var(--f-titre); font-weight: 500; font-size: 1.05rem; margin: 0 0 8px; }
+.entete-graphe { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+svg.graphe { width: 100%; height: auto; display: block; }
+svg .grille { stroke: var(--trait); stroke-width: 1; }
+svg .axe { fill: var(--doux); font-size: 11px; font-family: var(--f-texte); }
+svg .zero { stroke: var(--doux); stroke-dasharray: 4 3; }
+svg .courbe { fill: none; stroke: var(--accent); stroke-width: 2.4; }
+svg .aire { fill: var(--accent); opacity: .12; }
+svg .point { fill: var(--accent); }
+svg .barre-pos { fill: var(--hausse); } svg .barre-neg { fill: var(--baisse); }
+.table-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .86rem; font-variant-numeric: tabular-nums; }
+#profils td:first-child { min-width: 14em; }
+th, td { padding: 5px 8px; border-bottom: 1px solid var(--trait); text-align: right; white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; white-space: normal; }
+th { color: var(--doux); font-weight: 500; }
+.deux { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 1100px) { .deux { grid-template-columns: 1fr; } }
+.liste-limites { margin: 0; padding-left: 18px; font-size: .86rem; }
+.liste-limites li { margin: 3px 0; }
+.chip { display: inline-block; font-size: .72rem; padding: 1px 7px; border-radius: 10px; background: var(--accent-pale); color: var(--accent); margin-right: 4px; }
+.vide { color: var(--doux); font-size: .9rem; }
+footer { max-width: 1320px; margin: 0 auto; padding: 0 24px 28px; color: var(--doux); font-size: .8rem; }
+@media (prefers-reduced-motion: no-preference) { .tuile .val { transition: color .2s; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Simulateur de politiques publiques — interface de test</h1>
+  <p class="sous">Composez un ensemble de mesures et lisez leurs effets sur l'économie française de 2023 à 2030, en écart à une trajectoire de référence à législation inchangée (base 2022).</p>
+  <div class="bandeau"><strong>Version de test.</strong> Les effets affichés additionnent des simulations précalculées mesure par mesure par le modèle complet (ménages, branches, finances publiques, zone euro), interpolées entre les points calculés. Les interactions entre mesures sont ignorées. Ce ne sont pas des prévisions, et aucune note globale n'est attribuée.</div>
+</header>
+<main>
+  <section class="mesures" aria-label="Mesures">
+    <div class="actions">
+      <button type="button" id="b-zero" class="principal">Tout remettre à la législation actuelle</button>
+      <button type="button" id="b-copier">Copier le scénario (JSON)</button>
+      <button type="button" id="b-exact" hidden>Calcul exact (serveur local)</button>
+    </div>
+    <div id="groupes"></div>
+  </section>
+  <section class="effets" aria-label="Effets">
+    <div class="tuiles" id="tuiles"></div>
+    <div class="panneau">
+      <div class="entete-graphe">
+        <h3 id="titre-graphe">Écart au compte de référence</h3>
+        <label for="choix-ind" class="vide">Indicateur
+          <select id="choix-ind"></select>
+        </label>
+      </div>
+      <svg class="graphe" id="graphe" viewBox="0 0 720 260" role="img" aria-label="Écart annuel de l'indicateur choisi"></svg>
+    </div>
+    <div class="panneau table-wrap">
+      <h3>Tous les indicateurs (écarts au compte de référence)</h3>
+      <table id="tableau"></table>
+    </div>
+    <div class="deux">
+      <div class="panneau">
+        <h3>Effets directs, avant bouclage</h3>
+        <table id="directs"></table>
+        <h3 style="margin-top:14px">Niveau de vie par décile (mesures socio-fiscales, statique)</h3>
+        <svg class="graphe" id="deciles" viewBox="0 0 360 200" role="img" aria-label="Variation du niveau de vie par décile"></svg>
+        <p class="vide" id="deciles-note"></p>
+      </div>
+      <div class="panneau">
+        <h3>Ménages types (cas fictifs, revenus 2024)</h3>
+        <table id="profils"></table>
+        <h3 style="margin-top:14px">Rétroactions européennes (2026)</h3>
+        <table id="europe"></table>
+      </div>
+    </div>
+    <div class="panneau">
+      <h3>Mesures retenues, niveau de preuve et limites</h3>
+      <ul class="liste-limites" id="limites"></ul>
+    </div>
+    <div class="panneau">
+      <h3>Hypothèses communes</h3>
+      <ul class="liste-limites" id="hypotheses"></ul>
+    </div>
+  </section>
+</main>
+<footer id="pied"></footer>
+<script id="donnees" type="application/json">__DONNEES__</script>
+<script>
+"use strict";
+const D = JSON.parse(document.getElementById("donnees").textContent);
+const ANS = Object.keys(D.reference.pib).map(Number).sort((a, b) => a - b);
+
+// Curseurs : clé des variantes précalculées, libellé, bornes, pas, valeur neutre (législation actuelle), unité, aide
+const CURSEURS = [
+  {g: "Dépenses et transferts publics", k: "depense_publique", lib: "Consommation publique", min: -2, max: 2, pas: 0.1, neutre: 0, u: " pt de PIB", aide: "Dépenses de fonctionnement et emploi publics, dès 2024", cat: "depense_publique"},
+  {g: "Dépenses et transferts publics", k: "transferts_menages", lib: "Transferts aux ménages (non ciblés)", min: -1, max: 1, pas: 0.1, neutre: 0, u: " pt de PIB", aide: "Dès 2024", cat: "transferts_menages"},
+  {g: "Fiscalité", k: "taux_is", lib: "Taux normal de l'impôt sur les sociétés", min: 15, max: 33.3, pas: 0.1, neutre: 25.8, u: " %", aide: "Actuel : 25,8 % (contributions comprises), dès 2024", cat: "taux_is"},
+  {g: "Fiscalité", k: "ir_premiere_tranche", lib: "Impôt sur le revenu : taux de la première tranche", min: 9, max: 15, pas: 0.5, neutre: 11, u: " %", aide: "Actuel : 11 %", cat: "bareme_ir"},
+  {g: "Fiscalité", k: "ir_seuils", lib: "Impôt sur le revenu : revalorisation des seuils", min: -3, max: 3, pas: 0.5, neutre: 0, u: " %", aide: "Seuils des tranches, décote, plafond du quotient familial (négatif : gel relatif)", cat: "bareme_ir"},
+  {g: "Prestations", k: "rsa", lib: "Montant forfaitaire du RSA", min: -10, max: 25, pas: 1, neutre: 0, u: " %", aide: "Variation du montant", cat: "rsa"},
+  {g: "Prestations", k: "prime_activite", lib: "Montant forfaitaire de la prime d'activité", min: -10, max: 25, pas: 1, neutre: 0, u: " %", aide: "Variation du montant", cat: "prime_activite"},
+  {g: "Prestations", k: "allocations_familiales", lib: "Base des allocations familiales", min: -10, max: 25, pas: 1, neutre: 0, u: " %", aide: "Variation de la BMAF", cat: "allocations_familiales"},
+  {g: "Retraites", k: "age_legal", lib: "Âge légal de départ (cible)", min: 62, max: 66, pas: 0.25, neutre: 64, u: " ans", aide: "Actuel : 64 ans à partir de la génération 1969 ; la cible est atteinte à +3 mois par génération", cat: "age_legal"},
+  {g: "Économie et environnement", k: "salaires", lib: "Hausse générale des salaires (2024)", min: -2, max: 5, pas: 0.5, neutre: 0, u: " %", aide: "Choc ponctuel", cat: "salaires"},
+  {g: "Économie et environnement", k: "reindustrialisation", lib: "Objectif de réindustrialisation", min: 0, max: 20, pas: 1, neutre: 0, u: " %", aide: "Baisse des parts importées de huit filières industrielles, en 5 ans, avec investissement et surcoût de 10 %", cat: "reindustrialisation"},
+  {g: "Économie et environnement", k: "energie_import", lib: "Prix de l'énergie importée (hypothèse)", min: -20, max: 50, pas: 5, neutre: 0, u: " %", aide: "Choc d'environnement, pas une mesure", cat: "energie_import"},
+];
+const IND = {
+  pib: ["PIB en volume", "%"], emploi_milliers: ["Emploi", "milliers"], chomage: ["Taux de chômage", "pt"], pc: ["Prix à la consommation", "%"],
+  rdb: ["Revenu disponible des ménages (valeur)", "%"], solde_pib: ["Solde public", "pt de PIB"], dette_pib: ["Dette publique", "pt de PIB"],
+  c: ["Consommation des ménages", "%"], fbcf: ["Investissement", "%"], x: ["Exportations", "%"], m: ["Importations", "%"], salaire: ["Salaire moyen", "%"]
+};
+const etat = {};
+CURSEURS.forEach(c => etat[c.k] = c.neutre);
+
+function fmt(v, dec = 2, signe = true) {
+  if (v === null || v === undefined || isNaN(v)) return "—";
+  const s = Math.abs(v) < 0.5 * Math.pow(10, -dec) ? 0 : v;
+  return (signe && s > 0 ? "+" : s < 0 ? "−" : "") + Math.abs(s).toLocaleString("fr-FR", {minimumFractionDigits: dec, maximumFractionDigits: dec});
+}
+function classe(v, sensPositif = 1) { if (Math.abs(v) < 1e-6) return "nul"; return v * sensPositif > 0 ? "pos" : "neg"; }
+
+// points de la grille d'un curseur : [(écart à la valeur neutre, variante)] avec 0 → variante nulle
+function grille(c) {
+  const vs = D.variantes[c.k] || {};
+  const pts = Object.keys(vs).map(k => ({x: parseFloat(k) - c.neutre, v: vs[k]}));
+  pts.push({x: 0, v: null});
+  return pts.sort((a, b) => a.x - b.x);
+}
+// interpolation linéaire (et extrapolation par le point le plus proche au-delà de la grille)
+function poids(c) {
+  const x = etat[c.k] - c.neutre, P = grille(c);
+  if (Math.abs(x) < 1e-9) return [];
+  for (let i = 0; i < P.length - 1; i++) {
+    if (x >= P[i].x && x <= P[i + 1].x) {
+      const w = (x - P[i].x) / (P[i + 1].x - P[i].x);
+      return [[P[i].v, 1 - w], [P[i + 1].v, w]].filter(p => p[0] && p[1] > 1e-9);
+    }
+  }
+  const bord = x < P[0].x ? P[0] : P[P.length - 1];
+  return bord.v ? [[bord.v, x / bord.x]] : [];
+}
+function combiner() {
+  const r = {ecarts: {}, directs: {ir: 0, prest: 0, pensions: 0}, deciles: Array(10).fill(0), nv: Array(10).fill(0), profils: {}, europe: {bce: 0, tl: 0, dem: 0}, actives: []};
+  Object.keys(IND).forEach(i => r.ecarts[i] = Object.fromEntries(ANS.map(a => [a, 0])));
+  CURSEURS.forEach(c => {
+    const P = poids(c);
+    if (!P.length) return;
+    r.actives.push(c);
+    P.forEach(([v, w]) => {
+      Object.keys(IND).forEach(i => ANS.forEach(a => r.ecarts[i][a] += w * (v.ecarts[i][a] || 0)));
+      const st = v.statique || {};
+      r.directs.ir += w * (st["impot_revenu_M€"] || 0);
+      r.directs.prest += w * (st["prestations_versees_M€"] || 0);
+      if (st["pensions_M€"]) r.directs.pensions += w * (st["pensions_M€"][ANS[ANS.length - 1]] || 0);
+      (v.distribution || []).forEach((d, j) => { r.deciles[j] += w * d.variation_euros_par_uc; r.nv[j] = d.niveau_de_vie_moyen; });
+      (v.profils || []).forEach(p => { r.profils[p.profil] = r.profils[p.profil] || {lib: p.libelle, base: p.revenu_disponible_approche_actuel, d: 0}; r.profils[p.profil].d += w * p.variation_revenu_disponible; });
+      const e = (v.europe || []).find(x => +x.annee === 2026);
+      if (e) { r.europe.bce += w * e.taux_bce; r.europe.tl += w * e.taux_long_fr; r.europe.dem += w * e.demande_ue; }
+    });
+  });
+  return r;
+}
+
+function construireCurseurs() {
+  const zone = document.getElementById("groupes");
+  const groupes = [...new Set(CURSEURS.map(c => c.g))];
+  zone.innerHTML = groupes.map(g => `<div class="panneau groupe"><h2>${g}</h2>${CURSEURS.filter(c => c.g === g).map(c => `
+    <div class="curseur">
+      <label for="c-${c.k}"><span>${c.lib}</span><output id="o-${c.k}" for="c-${c.k}"></output></label>
+      <input type="range" id="c-${c.k}" min="${c.min}" max="${c.max}" step="${c.pas}" value="${c.neutre}">
+      <small>${c.aide}</small>
+    </div>`).join("")}</div>`).join("");
+  CURSEURS.forEach(c => {
+    const el = document.getElementById("c-" + c.k);
+    el.addEventListener("input", () => { etat[c.k] = parseFloat(el.value); maj(); });
+  });
+}
+function majSorties() {
+  CURSEURS.forEach(c => {
+    const o = document.getElementById("o-" + c.k), v = etat[c.k];
+    const neutre = Math.abs(v - c.neutre) < 1e-9;
+    const dec = c.pas < 0.5 ? 1 : c.pas < 1 ? 2 : 0;
+    const txt = (c.neutre !== 0 ? v.toLocaleString("fr-FR", {maximumFractionDigits: 2}) : fmt(v, c.pas < 1 ? (c.pas < 0.5 ? 1 : 1) : 0)) + c.u;
+    const manque = !neutre && !Object.keys(D.variantes[c.k] || {}).length;
+    o.textContent = neutre ? "actuel" + (c.neutre !== 0 ? ` (${c.neutre.toLocaleString("fr-FR")}${c.u})` : "") : txt + (manque ? " (non calculé)" : "");
+    o.className = neutre ? "neutre" : "";
+  });
+}
+function tuiles(r) {
+  const fin = ANS[ANS.length - 1], mi = 2026;
+  const T = [
+    ["PIB", "pib", "%", 1, 2], ["Emploi", "emploi_milliers", "milliers", 1, 0], ["Chômage", "chomage", "pt", -1, 2],
+    ["Prix à la consommation", "pc", "%", 0, 2], ["Solde public", "solde_pib", "pt de PIB", 1, 2], ["Dette publique", "dette_pib", "pt de PIB", -1, 1]];
+  document.getElementById("tuiles").innerHTML = T.map(([lib, k, u, sens, dec]) => {
+    const v1 = r.ecarts[k][mi], v2 = r.ecarts[k][fin];
+    return `<div class="tuile"><span class="lib">${lib}, ${fin}</span><span class="val ${sens ? classe(v2, sens) : "nul"}">${fmt(v2, dec)}</span><span class="det">${u} · ${mi} : ${fmt(v1, dec)}</span></div>`;
+  }).join("");
+}
+function graphe(r) {
+  const k = document.getElementById("choix-ind").value, [lib, u] = IND[k];
+  document.getElementById("titre-graphe").textContent = `${lib} : écart au compte de référence (${u})`;
+  const ys = ANS.map(a => r.ecarts[k][a]);
+  const W = 720, H = 260, g = 52, d = 18, h = 18, b = 32;
+  let lo = Math.min(0, ...ys), hi = Math.max(0, ...ys);
+  if (hi - lo < 1e-6) { hi = 1; lo = -1; }
+  const pad = (hi - lo) * 0.12; hi += pad; lo -= pad;
+  const pas = Math.pow(10, Math.floor(Math.log10((hi - lo) / 4))), mult = [1, 2, 2.5, 5, 10].find(m => (hi - lo) / (m * pas) <= 6) * pas;
+  const sx = a => g + (a - ANS[0]) / (ANS[ANS.length - 1] - ANS[0]) * (W - g - d), sy = y => h + (hi - y) / (hi - lo) * (H - h - b);
+  let s = "";
+  for (let t = Math.ceil(lo / mult) * mult; t <= hi; t += mult) s += `<line class="grille" x1="${g}" x2="${W - d}" y1="${sy(t)}" y2="${sy(t)}"/><text class="axe" x="${g - 6}" y="${sy(t) + 4}" text-anchor="end">${fmt(t, mult < 0.1 ? 2 : mult < 1 ? 1 : 0, false)}</text>`;
+  ANS.forEach(a => s += `<text class="axe" x="${sx(a)}" y="${H - 10}" text-anchor="middle">${a}</text>`);
+  s += `<line class="zero" x1="${g}" x2="${W - d}" y1="${sy(0)}" y2="${sy(0)}"/>`;
+  const pts = ANS.map((a, i) => `${sx(a)},${sy(ys[i])}`).join(" ");
+  s += `<polygon class="aire" points="${sx(ANS[0])},${sy(0)} ${pts} ${sx(ANS[ANS.length - 1])},${sy(0)}"/><polyline class="courbe" points="${pts}"/>`;
+  ANS.forEach((a, i) => s += `<circle class="point" cx="${sx(a)}" cy="${sy(ys[i])}" r="${i === ANS.length - 1 ? 4.5 : 3}"/>`);
+  const yl = ys[ys.length - 1];
+  s += `<text class="axe" x="${sx(ANS[ANS.length - 1]) - 6}" y="${sy(yl) - 9}" text-anchor="end" style="font-weight:600;fill:var(--encre)">${fmt(yl, k === "emploi_milliers" ? 0 : 2)}</text>`;
+  document.getElementById("graphe").innerHTML = s;
+}
+function tableau(r) {
+  const entete = `<tr><th>Indicateur</th>${ANS.map(a => `<th>${a}</th>`).join("")}<th>Unité</th></tr>`;
+  const lignes = Object.entries(IND).map(([k, [lib, u]]) => `<tr><td>${lib}</td>${ANS.map(a => `<td>${fmt(r.ecarts[k][a], k === "emploi_milliers" ? 0 : 2)}</td>`).join("")}<td>${u}</td></tr>`).join("");
+  document.getElementById("tableau").innerHTML = entete + lignes;
+}
+function directs(r) {
+  const fin = ANS[ANS.length - 1];
+  document.getElementById("directs").innerHTML =
+    `<tr><th>Poste</th><th>Montant</th></tr>
+     <tr><td>Impôt sur le revenu (revenus 2024)</td><td class="${classe(r.directs.ir)}">${fmt(r.directs.ir / 1000, 2)} Md€</td></tr>
+     <tr><td>Prestations versées (RSA, prime d'activité, allocations familiales)</td><td>${fmt(r.directs.prest / 1000, 2)} Md€</td></tr>
+     <tr><td>Pensions de droit direct en ${fin}</td><td>${fmt(r.directs.pensions / 1000, 1)} Md€</td></tr>`;
+  const svg = document.getElementById("deciles"), note = document.getElementById("deciles-note");
+  if (r.deciles.every(v => Math.abs(v) < 0.5)) { svg.innerHTML = `<text class="axe" x="180" y="100" text-anchor="middle">Aucune mesure socio-fiscale retenue</text>`; note.textContent = ""; return; }
+  const W = 360, H = 200, g = 44, d = 8, h = 12, b = 26, m = Math.max(...r.deciles.map(Math.abs)) * 1.15;
+  const sy = y => h + (m - y) / (2 * m) * (H - h - b), bw = (W - g - d) / 10;
+  let s = `<line class="zero" x1="${g}" x2="${W - d}" y1="${sy(0)}" y2="${sy(0)}"/>`;
+  [m / 1.15, -m / 1.15].forEach(t => s += `<text class="axe" x="${g - 4}" y="${sy(t) + 4}" text-anchor="end">${fmt(t, 0)}</text>`);
+  r.deciles.forEach((v, j) => {
+    const y0 = sy(0), y1 = sy(v);
+    s += `<rect class="${v >= 0 ? "barre-pos" : "barre-neg"}" x="${g + j * bw + 3}" y="${Math.min(y0, y1)}" width="${bw - 6}" height="${Math.abs(y1 - y0)}"><title>Décile ${j + 1} : ${fmt(v, 0)} €/UC/an (${fmt(v / r.nv[j] * 100, 2)} %)</title></rect>`;
+    s += `<text class="axe" x="${g + j * bw + bw / 2}" y="${H - 8}" text-anchor="middle">D${j + 1}</text>`;
+  });
+  svg.innerHTML = s;
+  note.textContent = `€ par unité de consommation et par an. Premier décile : ${fmt(r.deciles[0], 0)} € (${fmt(r.deciles[0] / r.nv[0] * 100, 2)} %) ; dernier décile : ${fmt(r.deciles[9], 0)} € (${fmt(r.deciles[9] / r.nv[9] * 100, 2)} %).`;
+}
+function profils(r) {
+  const P = Object.values(r.profils);
+  const tab = document.getElementById("profils");
+  if (!P.length) { tab.innerHTML = `<tr><td class="vide">Calculés pour les mesures d'impôt sur le revenu et de prestations.</td></tr>`; }
+  else tab.innerHTML = `<tr><th>Profil</th><th>Revenu disp. actuel (€/an)</th><th>Variation (€/an)</th></tr>` +
+    P.map(p => `<tr><td>${p.lib}</td><td>${Math.round(p.base).toLocaleString("fr-FR")}</td><td class="${classe(p.d)}">${fmt(p.d, 0)}</td></tr>`).join("");
+  document.getElementById("europe").innerHTML = `<tr><th>Variable</th><th>Écart</th></tr>
+    <tr><td>Taux directeur de la BCE</td><td>${fmt(r.europe.bce, 2)} pt</td></tr>
+    <tr><td>Taux long français</td><td>${fmt(r.europe.tl, 2)} pt</td></tr>
+    <tr><td>Demande des partenaires européens</td><td>${fmt(r.europe.dem, 2)} %</td></tr>`;
+}
+function limites(r) {
+  const ul = document.getElementById("limites");
+  if (!r.actives.length) { ul.innerHTML = `<li class="vide">Aucune mesure : la trajectoire est celle du compte de référence.</li>`; return; }
+  ul.innerHTML = r.actives.map(c => { const m = D.catalogue[c.cat]; return `<li><strong>${c.lib}</strong> (${etat[c.k].toLocaleString("fr-FR")}${c.u}) <span class="chip">${m.preuve}</span><br>${m.limites}</li>`; }).join("") +
+    (r.actives.length > 1 ? `<li><strong>Combinaison de ${r.actives.length} mesures</strong> : effets additionnés. Pour un calcul exact avec interactions, exécuter le scénario copié avec <code>python3 -m simulateur.executer</code>.</li>` : "");
+}
+function maj() {
+  majSorties();
+  const r = combiner();
+  tuiles(r); graphe(r); tableau(r); directs(r); profils(r); limites(r);
+}
+function scenarioJSON() {
+  const mes = [];
+  CURSEURS.forEach(c => {
+    const v = etat[c.k]; if (Math.abs(v - c.neutre) < 1e-9) return;
+    const P = {
+      depense_publique: {type: "depense_publique", parametres: {points_pib: v, debut: 2024}},
+      transferts_menages: {type: "transferts_menages", parametres: {points_pib: v, debut: 2024}},
+      taux_is: {type: "taux_is", parametres: {taux: v, debut: 2024}},
+      ir_premiere_tranche: {type: "bareme_ir", parametres: {taux: {"1": v / 100}}},
+      ir_seuils: {type: "bareme_ir", parametres: {seuils_facteur: 1 + v / 100, decote_facteur: 1 + v / 100, plafond_qf_facteur: 1 + v / 100}},
+      rsa: {type: "rsa", parametres: {facteur: 1 + v / 100}}, prime_activite: {type: "prime_activite", parametres: {facteur: 1 + v / 100}},
+      allocations_familiales: {type: "allocations_familiales", parametres: {facteur: 1 + v / 100}},
+      age_legal: {type: "age_legal", parametres: {regle: v === 62 ? "2010" : String(v)}},
+      salaires: {type: "salaires", parametres: {hausse: v / 100, debut: 2024}},
+      reindustrialisation: {type: "reindustrialisation", parametres: {baisse_parts_importees: v / 100, duree: 5, surcout: 0.10, debut: 2024}},
+      energie_import: {type: "energie_import", parametres: {hausse: v / 100, debut: 2024}}}[c.k];
+    mes.push(P);
+  });
+  return JSON.stringify({nom: "Scénario composé dans l'interface de test", base: 2022, horizon: 2030,
+    hypotheses: {fermeture_offre: 0.15, europe: true, incertitude: 0}, mesures: mes}, null, 1);
+}
+document.getElementById("b-zero").addEventListener("click", () => {
+  CURSEURS.forEach(c => { etat[c.k] = c.neutre; document.getElementById("c-" + c.k).value = c.neutre; }); maj();
+});
+document.getElementById("b-copier").addEventListener("click", async (ev) => {
+  const b = ev.currentTarget;
+  try { await navigator.clipboard.writeText(scenarioJSON()); b.textContent = "Scénario copié"; }
+  catch (e) { b.textContent = "Copie refusée par le navigateur"; }
+  setTimeout(() => b.textContent = "Copier le scénario (JSON)", 2200);
+});
+// calcul exact : disponible seulement quand la page est servie par simulateur.serveur (http://localhost)
+if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
+  const bx = document.getElementById("b-exact");
+  bx.hidden = false;
+  bx.addEventListener("click", async () => {
+    bx.textContent = "Calcul en cours (jusqu'à quelques minutes)…"; bx.disabled = true;
+    try {
+      const r = await fetch("/executer", {method: "POST", headers: {"Content-Type": "application/json"}, body: scenarioJSON()});
+      const html = await r.text();
+      const w = window.open("", "_blank");
+      if (w) { w.document.write(html); w.document.close(); } else { document.open(); document.write(html); document.close(); }
+    } catch (e) { bx.textContent = "Échec du calcul : vérifier le serveur local"; }
+    bx.disabled = false; setTimeout(() => bx.textContent = "Calcul exact (serveur local)", 3000);
+  });
+}
+const sel = document.getElementById("choix-ind");
+sel.innerHTML = Object.entries(IND).map(([k, [lib]]) => `<option value="${k}">${lib}</option>`).join("");
+sel.addEventListener("change", maj);
+document.getElementById("hypotheses").innerHTML = D.hypotheses.map(h => `<li>${h}</li>`).join("");
+document.getElementById("pied").textContent = D.pied;
+construireCurseurs();
+// état d'exemple à l'ouverture : une mesure de chaque nature, pour montrer toutes les sorties
+Object.assign(etat, {depense_publique: 0.5, ir_premiere_tranche: 12, rsa: 10, age_legal: 64});
+CURSEURS.forEach(c => document.getElementById("c-" + c.k).value = etat[c.k]);
+maj();
+</script>
+</body>
+</html>

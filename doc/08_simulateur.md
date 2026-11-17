@@ -1,4 +1,4 @@
-# Phase 8 — Préparation du simulateur (prototype 0.1)
+# Phase 8 — Préparation du simulateur (prototype 0.2, avec interface de test)
 
 **État : prototype fonctionnel, en ligne de commande.** Un scénario décrit en JSON est exécuté par l'ensemble des
 modèles (M1, M4, M8-M12). Le résultat est restitué dans un fichier JSON et dans une page HTML autonome, avec la fiche
@@ -6,6 +6,37 @@ de transparence exigée par le cahier des charges (§ 17.1).
 
 Il n'y a pas encore de service en ligne : ni serveur, ni comptes, ni file d'attente de calculs.
 Code : dossier `simulateur/`. Exemples : dossier `scenarios/`.
+
+## 0. Interface de test (17 novembre 2026)
+
+**Page interactive.** On compose un scénario avec douze curseurs et les effets s'affichent immédiatement :
+- tuiles de synthèse et graphique par indicateur ;
+- tableau 2023-2030 ;
+- effets directs et niveau de vie par décile ;
+- ménages types ;
+- rétroactions européennes ;
+- niveau de preuve et limites de chaque mesure retenue.
+
+Elle est publiée comme page autonome et générée par `python3 -m simulateur.interface`.
+
+**Mode de calcul : par addition de variantes élémentaires.**
+- Chaque mesure a été simulée seule par la chaîne complète (M1, M4/M10, M9, M8, M11) sur une grille de deux à quatre intensités (`python3 -m simulateur.precalcul`, environ 40 minutes, 37 simulations).
+- L'interface interpole linéairement entre les points de la grille et additionne les mesures.
+- Les interactions entre mesures sont ignorées. C'est indiqué en tête de page et dans la liste des mesures dès que deux mesures sont combinées.
+
+**Calcul exact.**
+- Le bouton « Copier le scénario (JSON) » produit le scénario au format de `simulateur.executer`.
+- En local, `python3 -m simulateur.serveur` sert l'interface sur http://localhost:8765. Le bouton « Calcul exact » y lance alors la simulation complète du scénario composé, interactions comprises, et affiche la page de restitution.
+
+**Curseurs.**
+- Consommation publique, transferts aux ménages.
+- Taux de l'impôt sur les sociétés.
+- Impôt sur le revenu : taux de la première tranche et revalorisation des seuils.
+- RSA, prime d'activité, allocations familiales.
+- Âge légal de 62 à 66 ans.
+- Salaires.
+- Réindustrialisation.
+- Prix de l'énergie importée.
 
 ## 1. Utilisation
 
