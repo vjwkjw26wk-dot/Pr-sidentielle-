@@ -78,6 +78,9 @@ def main():
     for k, v in (d.get("references") or {}).items():
         v["court"] = courts.get(k, k)
         v["niveaux"] = {i: {int(a): x for a, x in s_.items()} for i, s_ in v["niveaux"].items()}
+    from simulateur import programmes as PG
+    d["programmes"] = {"date": PG.DATE, "regles": PG.REGLES, "liste": PG.PROGRAMMES,
+                       "non_traduits": [list(x) for x in PG.NON_TRADUITS]}
     f_inc = RACINE / "outputs" / "incertitude_variantes.json"
     if f_inc.exists():
         d["incertitude"] = json.loads(f_inc.read_text()).get("mediane", {})

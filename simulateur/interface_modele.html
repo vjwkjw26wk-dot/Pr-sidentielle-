@@ -100,6 +100,8 @@ svg .leg { fill: var(--doux); font-size: 11px; font-family: var(--f-texte); }
 .bilan p { margin: 0; max-width: 95ch; }
 .bilan .robuste { border-left: 3px solid var(--hausse); padding-left: 10px; }
 .bilan .fragile { border-left: 3px solid var(--alerte); padding-left: 10px; }
+#txt-prog .fragile { border-left: 3px solid var(--alerte); padding-left: 10px; }
+#txt-prog ul { margin: 4px 0 6px 18px; padding: 0; } #txt-prog li { margin: 2px 0; } #txt-prog summary { cursor: pointer; font-weight: 600; }
 .tuile .ref-val { font-size: .76rem; color: var(--doux); }
 .legende { display: flex; gap: 14px; flex-wrap: wrap; font-size: .8rem; color: var(--doux); }
 .legende span::before { content: ""; display: inline-block; width: 18px; height: 0; border-top: 2px solid var(--accent); vertical-align: middle; margin-right: 5px; }
@@ -137,6 +139,11 @@ svg .cmp { fill: none; stroke-width: 2; }
       <button type="button" id="b-copier">Copier le scénario (JSON)</button>
       <button type="button" id="b-lien">Lien de partage</button>
       <button type="button" id="b-exact" hidden>Calcul exact (serveur)</button>
+    </div>
+    <div class="panneau" id="p-prog">
+      <label for="choix-prog" class="vide" style="display:block;margin-bottom:6px">Charger les propositions d'un candidat (traduction approximative)</label>
+      <select id="choix-prog" style="width:100%"></select>
+      <div id="txt-prog" class="note"></div>
     </div>
     <div class="panneau">
       <label for="choix-ref" class="vide" style="display:block;margin-bottom:6px">Trajectoire de comparaison</label>
@@ -489,7 +496,33 @@ sel.value = "dette_pib";
 sel.addEventListener("change", () => graphe(window.__dernier));
 document.getElementById("hypotheses").innerHTML = D.hypotheses.map(h => `<li>${esc(h)}</li>`).join("");
 document.getElementById("pied").textContent = D.pied;
-document.getElementById("b-zero").addEventListener("click", () => { D.curseurs.forEach(c => etat[c.cle] = c.actuel); maj(); });
+document.getElementById("b-zero").addEventListener("click", () => { D.curseurs.forEach(c => etat[c.cle] = c.actuel); document.getElementById("choix-prog").value = ""; afficherProg(""); maj(); });
+// ---------- propositions des candidats
+const PG = D.programmes || {liste: [], regles: [], non_traduits: []};
+const selP = document.getElementById("choix-prog");
+const ordreP = PG.liste.slice().sort((a, b) => a.tri.localeCompare(b.tri, "fr"));
+selP.innerHTML = `<option value="">Aucun (curseurs libres)</option>` + ordreP.map(p => `<option value="${p.id}">${esc(p.candidat)} (${esc(p.parti)})</option>`).join("");
+function afficherProg(id) {
+  const box = document.getElementById("txt-prog"), p = PG.liste.find(x => x.id === id);
+  if (!p) {
+    box.innerHTML = `<p>Candidats présentés par ordre alphabétique, avec les mêmes règles de traduction (état des sources au ${esc(PG.date || "")}). Non traduits faute de chiffrage disponible : ${PG.non_traduits.map(x => esc(x[0])).join(" ; ")}.</p>`;
+    return;
+  }
+  const lien = s => `<li><a href="${esc(s[1])}" target="_blank" rel="noopener">${esc(s[0])}</a></li>`;
+  box.innerHTML = `<p><strong>${esc(p.candidat)}</strong> — ${esc(p.parti)}. ${esc(p.total_annonce)}</p>
+   <details open><summary>Traduction en curseurs</summary><ul>${p.correspondance.map(x => `<li>${esc(x)}</li>`).join("")}</ul></details>
+   <details><summary>Non représenté dans le modèle (${p.non_represente.length})</summary><ul>${p.non_represente.map(x => `<li>${esc(x)}</li>`).join("")}</ul></details>
+   <details><summary>Sources</summary><ul>${p.sources.map(lien).join("")}</ul></details>
+   <details><summary>Règles communes de traduction</summary><ul>${PG.regles.map(x => `<li>${esc(x)}</li>`).join("")}</ul></details>
+   <p class="fragile">Les curseurs restent modifiables. Ce jeu ne reproduit pas fidèlement le programme : il ne retient que les mesures chiffrées et représentables.</p>`;
+}
+selP.addEventListener("change", () => {
+  const p = PG.liste.find(x => x.id === selP.value);
+  D.curseurs.forEach(c => etat[c.cle] = c.actuel);
+  if (p) Object.entries(p.curseurs).forEach(([k, v]) => { if (k in etat) etat[k] = v; });
+  afficherProg(selP.value); maj();
+});
+afficherProg("");
 document.getElementById("b-copier").addEventListener("click", async () => {
   const txt = JSON.stringify(scenarioJSON(), null, 1);
   try { await navigator.clipboard.writeText(txt); document.getElementById("b-copier").textContent = "Copié"; } catch (e) { prompt("Scénario :", txt); }

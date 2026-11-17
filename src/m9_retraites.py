@@ -45,6 +45,16 @@ TRANCHES = [(55, 59), (60, 64), (65, 69), (70, 74)]
 # ------------------------------------------------------------------------------------------------------------------
 # 1. Règles
 # ------------------------------------------------------------------------------------------------------------------
+# Calage de la boucle de cohérence (17 novembre 2026). M9 attribue aux départs supplémentaires (ou évités) la pension
+# moyenne de leur génération : l'abrogation de la réforme de 2023 (règle « 2023 » → « 2010 ») y coûte 17,5 Md€ en
+# 2027 et 23,8 Md€ en 2030, contre 8,2 Md€ (Institut Montaigne, scénario médian) et 14,1 Md€ (étude d'impact du
+# gouvernement) pour l'ensemble des dispositions. Les départs à l'âge légal concernent surtout des carrières
+# incomplètes (décote, pensions plus faibles) et une partie des personnes concernées serait passée par le chômage ou
+# l'invalidité. L'écart de masse des pensions dû à une réforme d'âge est donc multiplié par 0,55 (moyenne des deux
+# rapports). Les effets sur l'activité ne sont pas modifiés (validés hors échantillon, 2020-2025).
+COEF_PENSION_MARGINALE = 0.55
+
+
 def aod(g: int, regle: str = "actuelle") -> float:
     """Âge d'ouverture des droits (années décimales) de la génération g.
     regle : "actuelle" (LFSS 2026), "2023" (loi de 2023 sans suspension), "2010" (62 ans), ou un nombre (cible
@@ -375,5 +385,5 @@ def liens_m8(mod, annees, regle="actuelle", regle_ref="actuelle", act=None, pens
         pa[t] = float(obs[B]) * pa_r / pa_B
         d = pa_r - act.population_active(t, regle_ref)
         emp[t] = k * d / 1e3
-        dp[t] = (pens.masse(t, regle, **kw)[1] - pens.masse(t, regle_ref, **kw)[1]) / 1e6
+        dp[t] = COEF_PENSION_MARGINALE * (pens.masse(t, regle, **kw)[1] - pens.masse(t, regle_ref, **kw)[1]) / 1e6
     return dict(population_active=pd.Series(pa), emploi_additionnel=pd.Series(emp), ajust_prestations=pd.Series(dp))

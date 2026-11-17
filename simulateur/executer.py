@@ -30,6 +30,7 @@ from simulateur import catalogue as CAT  # noqa: E402
 _MODELES = {}
 FIN_REF = 2025           # dernière année observée : les montants en euros des mesures sont exprimés en euros de 2025
 COUT_AGENT_PUBLIC = 56.0          # k€ par agent et par an (rémunération et cotisations, ordre de grandeur 2025)
+COUT_PUBLIC_POINT_SMIC = 660.0   # M€ par point de SMIC : allègements de cotisations (400) et masse salariale publique (260), Institut Montaigne 2022
 PART_SMIC_DIFFUSION = 0.11        # hausse de la masse salariale moyenne pour 1 de hausse du SMIC (diffusion comprise, hypothèse D)
 RENDEMENT_POINT_TVA = 8_200.0     # M€ par point de taux normal (80 % de la TVA nette de 206 Md€ au taux de 20 %)
 REPERCUSSION_TVA, PART_TAUX_NORMAL = 0.8, 0.55
@@ -40,6 +41,7 @@ RENDEMENT_SUCCESSIONS = 18_000.0  # M€ (droits de mutation à titre gratuit)
 DEPENSE_ASSURANCE_CHOMAGE = 40_000.0
 EFFET_CHOMAGE_STRUCTUREL = 0.1    # points de chômage structurel pour 10 % de variation des allocations (hypothèse D, 0-0,3)
 DEPENSE_ASPA = 4_100.0
+REPERCUSSION_IMPOTS_PRODUCTION = 0.5   # part répercutée sur les prix de la valeur ajoutée marchande (hypothèse D)
 RENDEMENT_POINT_TVA_REDUITE, PART_TAUX_REDUITS = 5_000.0, 0.35
 COMPENSATION_PRODUCTIVITE_HORAIRE = 0.7   # part de la baisse de durée absorbée sans embauche : productivité horaire, intensification, heures supplémentaires (35 heures : environ 350 000 emplois pour −10 % d'heures ; hypothèse D)
 PART_HORS_UE, REPERCUSSION_DOUANE, RECETTE_NETTE_DOUANE = 0.45, 0.8, 0.38
@@ -85,9 +87,11 @@ def modele(base: int) -> M8.Modele:
     return _MODELES[base]
 
 
-def _serie_g(mod, ex, points, debut):
+def _serie_g(mod, ex, points, debut, montee=1):
+    """Consommation publique modifiée de `points` de PIB à partir de `debut`, atteints linéairement en `montee` ans."""
     g_part = mod.T.Fd.loc[mod.P, ["P3_S13", "P3_S15"]].values.sum() + mod.T.Fm.loc[mod.P, ["P3_S13", "P3_S15"]].values.sum()
-    return ex.conso_publique * pd.Series({t: (1 + points / 100 * mod.macro.pib_cp[mod.B] / g_part if t >= debut else 1.0)
+    frac = lambda t: min(1.0, (t - debut + 1) / max(1, montee)) if t >= debut else 0.0  # noqa: E731
+    return ex.conso_publique * pd.Series({t: 1 + frac(t) * points / 100 * mod.macro.pib_cp[mod.B] / g_part
                                           for t in ex.conso_publique.index})
 
 
@@ -176,7 +180,7 @@ def construire(scenario: dict, mod, central=None, journal=None):
             var.conso_publique = _serie_g(mod, var, float(p["points_pib"]), debut)
         elif t in ("depense_fonction", "emploi_public"):
             md = float(p["md"]) if t == "depense_fonction" else float(p["milliers"]) * COUT_AGENT_PUBLIC / 1e3
-            var.conso_publique = _serie_g(mod, var, md * 1e3 / pib0 * 100, debut)
+            var.conso_publique = _serie_g(mod, var, md * 1e3 / pib0 * 100, debut, int(p.get("montee", 1)))
         elif t == "investissement_public":
             md = float(p["md"])
             f = 1 + md * 1e3 / float(m_.p_fbcf[A0]) / float(var.autres_investissements[A0])
@@ -210,6 +214,9 @@ def construire(scenario: dict, mod, central=None, journal=None):
             choc_w[debut] = choc_w.get(debut, 0.0) + float(np.log1p(float(p["hausse"])))
         elif t == "smic":
             choc_w[debut] = choc_w.get(debut, 0.0) + float(np.log1p(PART_SMIC_DIFFUSION * float(p["hausse"])))
+            # coût public direct : allègements généraux indexés sur le SMIC et bas salaires publics
+            ajouter_recette_apu(debut, -float(p["hausse"]) * 100 * COUT_PUBLIC_POINT_SMIC)
+            comport["smic_cout_public_M€"] = float(p["hausse"]) * 100 * COUT_PUBLIC_POINT_SMIC
         elif t == "cotisations_employeurs":
             md = float(p["md"])
             d1, d61 = float(mod.men.d1[A0]), float(mod.men.d61[A0])
@@ -255,6 +262,14 @@ def construire(scenario: dict, mod, central=None, journal=None):
             base_r = var.autres_depenses_pib
             var.autres_depenses_pib = pd.Series({a: float(base_r.get(a, ratio0)) + (SUBVENTION_LOGEMENT * md * 1e3 / pib0 if a >= debut else 0.0)
                                                  for a in var.population_active.index})
+        elif t == "impots_production":
+            md = float(p["md"])
+            ajouter_recette_apu(debut, md * 1e3)
+            va_m = float(m_.pib_cp[A0]) * 0.8
+            cal = var.calage
+            cal["prix"][debut] = cal["prix"].get(debut, 0.0) + float(np.log1p(REPERCUSSION_IMPOTS_PRODUCTION * md * 1e3 / va_m))
+        elif t == "recettes_neutres":
+            ajouter_recette_apu(debut, float(p["md"]) * 1e3)
         elif t == "taxe_carbone":
             rec = float(p["euros_tonne"]) * RENDEMENT_EURO_TONNE
             ajouter_niveau("impots_produits", debut, rec / float(apu.d2rec[A0]))

@@ -109,15 +109,15 @@ MESURES.update({
         "libelle": "Revalorisation du SMIC (au-delà de la règle)",
         "parametres": {"hausse": "hausse relative (ex. 0.05)", "debut": "année"},
         "modules": ["M8"], "preuve": "D (diffusion : 11 % de la masse salariale concernée, hypothèse)",
-        "limites": "Pas d'effet spécifique sur l'emploi peu qualifié ni sur la prime d'activité ; effet distributif non calculé."},
+        "limites": "Coût public direct (allègements indexés sur le SMIC, bas salaires publics) : 0,66 Md€ par point, d'après le chiffrage de l'Institut Montaigne (2022) ; à moyen terme, le tassement des salaires sur le SMIC peut porter ce coût bien au-delà (17 à 21 Md€ pour +14,4 % selon la même source). Pas d'effet spécifique sur l'emploi peu qualifié ni sur la prime d'activité ; effet distributif non calculé."},
     "point_indice": {
         "libelle": "Point d'indice de la fonction publique",
         "parametres": {"hausse": "hausse relative (ex. 0.03)", "debut": "année"},
         "modules": ["M8"], "preuve": "A (masse salariale publique), B", "limites": "Effet distributif non calculé."},
     "emploi_public": {
         "libelle": "Emplois publics supplémentaires",
-        "parametres": {"milliers": "nombre d'agents (milliers)", "debut": "année"},
-        "modules": ["M8", "M11"], "preuve": "B", "limites": "Coût moyen de 56 000 € par agent ; effets sur la qualité des services non mesurés."},
+        "parametres": {"milliers": "nombre d'agents (milliers)", "debut": "année", "montee": "années pour atteindre l'effectif visé (défaut du curseur : 5)"},
+        "modules": ["M8", "M11"], "preuve": "B", "limites": "Coût moyen de 56 000 € par agent ; variation atteinte linéairement en cinq ans (recrutements ou non-remplacements de départs) ; effets sur la qualité des services non mesurés."},
     "investissement_public": {
         "libelle": "Investissement public",
         "parametres": {"md": "Md€ par an", "debut": "année"},
@@ -168,6 +168,16 @@ MESURES.update({
         "parametres": {"milliers": "logements par an", "debut": "année"},
         "modules": ["M8"], "preuve": "B (effet de demande), D (coût 170 k€ par logement, subvention publique 25 %)",
         "limites": "Effets sur les loyers, la mobilité et le pouvoir d'achat des locataires non modélisés."},
+    "impots_production": {
+        "libelle": "Impôts de production (CVAE, CFE, C3S, taxe foncière des entreprises)",
+        "parametres": {"md": "variation du rendement en Md€ (négatif : baisse)", "debut": "année"},
+        "modules": ["M8"], "preuve": "B (rendement : environ 16 Md€ pour CVAE, CFE et C3S), D (répercussion de 50 % sur les prix de la valeur ajoutée)",
+        "limites": "Effet sur l'investissement et la localisation des activités non modélisé au-delà de l'effet prix ; compensation aux collectivités non représentée."},
+    "recettes_neutres": {
+        "libelle": "Recettes ou économies sans effet direct sur la demande intérieure",
+        "parametres": {"md": "Md€ par an (positif : amélioration du solde)", "debut": "année"},
+        "modules": ["M8"], "preuve": "D (montant annoncé, non vérifié)",
+        "limites": "Ligne de transparence : contribution au budget de l'Union européenne, lutte contre la fraude, prélèvements exceptionnels ou taxes non représentées par ailleurs. Seul le solde public est modifié ; la faisabilité et les effets indirects ne sont pas évalués."},
 })
 
 # Curseurs de l'interface : (clé, groupe, libellé, unité, min, max, pas, valeur actuelle, points précalculés, mesure)
@@ -181,7 +191,7 @@ def _m(t, **p):
 
 CURSEURS = [
     # Dépenses publiques
-    ("emploi_public", 0, "Emplois publics", "milliers", -200, 200, 10, 0, [-100, 100], lambda v: _m("emploi_public", milliers=v)),
+    ("emploi_public", 0, "Emplois publics (atteints en 5 ans)", "milliers", -500, 200, 10, 0, [-100, 100, -400], lambda v: _m("emploi_public", milliers=v, montee=5)),
     ("point_indice", 0, "Point d'indice des fonctionnaires", "%", -3, 10, 0.5, 0, [5], lambda v: _m("point_indice", hausse=v / 100)),
     ("sante", 0, "Dépenses de santé", "Md€/an", -20, 30, 1, 0, [10], lambda v: _m("depense_fonction", fonction="santé", md=v)),
     ("education", 0, "Dépenses d'éducation", "Md€/an", -20, 30, 1, 0, [10], lambda v: _m("depense_fonction", fonction="éducation", md=v)),
@@ -197,7 +207,7 @@ CURSEURS = [
      lambda v: _m("bareme_ir", seuils_facteur=1 + v / 100, decote_facteur=1 + v / 100, plafond_qf_facteur=1 + v / 100)),
     ("csg_activite", 1, "CSG sur les revenus d'activité", "points", -3, 3, 0.1, 0, [-1, 1], lambda v: _m("csg", activite_points=v, retraite_points=0.0)),
     ("csg_retraite", 1, "CSG sur les pensions (taux plein)", "points", -3, 3, 0.1, 0, [-1, 1], lambda v: _m("csg", activite_points=0.0, retraite_points=v)),
-    ("tva", 1, "Taux normal de TVA", "points", -5, 5, 0.5, 0, [-2, 2], lambda v: _m("tva", points=v)),
+    ("tva", 1, "Taux normal de TVA", "points", -5, 5, 0.1, 0, [-2, 2], lambda v: _m("tva", points=v)),
     # Capital et patrimoine
     ("pfu", 2, "Flat tax sur les revenus du capital (part IR)", "points", -5, 15, 0.5, 0, [-4, 5], lambda v: _m("pfu", points=v)),
     ("isf", 2, "Impôt sur la fortune (taux moyen, remplace l'IFI)", "%", 0, 2, 0.05, 0, [0.5, 1.0], lambda v: _m("isf", taux_moyen=v)),
@@ -216,17 +226,20 @@ CURSEURS = [
     ("aides_logement", 4, "Aides au logement", "%", -20, 30, 1, 0, [-10, 10], lambda v: _m("aides_logement", facteur=1 + v / 100)),
     ("minimum_vieillesse", 4, "Minimum vieillesse (ASPA)", "%", -10, 50, 1, 0, [10, 25], lambda v: _m("minimum_vieillesse", hausse=v / 100)),
     ("assurance_chomage", 4, "Allocations chômage", "%", -30, 20, 1, 0, [-10, 10], lambda v: _m("assurance_chomage", variation=v / 100)),
-    ("transferts_menages", 4, "Transferts non ciblés aux ménages", "pt de PIB", -1, 1, 0.1, 0, [-1, 1], lambda v: _m("transferts_menages", points_pib=v)),
+    ("transferts_menages", 4, "Transferts non ciblés aux ménages", "pt de PIB", -1, 1, 0.05, 0, [-1, 1], lambda v: _m("transferts_menages", points_pib=v)),
     # Retraites
     ("age_legal", 5, "Âge légal de départ (cible)", "ans", 60, 67, 1, 64, [60, 62, 65, 66], lambda v: _m("age_legal", age=v, mode="progressif")),
     ("age_legal_immediat", 5, "Âge légal : retour immédiat (sans transition)", "ans", 60, 64, 1, 64, [60, 62], lambda v: _m("age_legal", age=v, mode="immediat")),
-    ("indexation_pensions", 5, "Indexation des pensions (écart à l'inflation, 5 ans)", "pt/an", -2, 2, 0.1, 0, [-1, 1],
+    ("indexation_pensions", 5, "Indexation des pensions (écart à l'inflation, 5 ans)", "pt/an", -2, 2, 0.05, 0, [-1, 1],
      lambda v: _m("indexation_pensions", points=v, duree=5)),
     # Environnement et hypothèses
     ("temps_travail", 3, "Durée légale du travail", "h/semaine", 32, 39, 0.5, 35, [32, 37], lambda v: _m("temps_travail", heures=v, montee=2)),
     ("droits_douane", 3, "Droits de douane hors UE (avec riposte)", "%", 0, 30, 1, 0, [10, 20], lambda v: _m("droits_douane", taux=v / 100, riposte=True)),
     ("tva_reduite", 1, "Taux réduits de TVA", "points", -3, 5, 0.5, 0, [-2, 2], lambda v: _m("tva_reduite", points=v)),
     ("logements_sociaux", 0, "Logements sociaux supplémentaires", "milliers/an", 0, 150, 5, 0, [50], lambda v: _m("logements_sociaux", milliers=v)),
+    ("impots_production", 3, "Impôts de production", "Md€/an", -30, 10, 1, 0, [-15], lambda v: _m("impots_production", md=v)),
+    ("recettes_neutres", 6, "Recettes ou économies sans effet sur la demande (UE, fraude, prélèvements exceptionnels)", "Md€/an", -10, 30, 1, 0, [10],
+     lambda v: _m("recettes_neutres", md=v)),
     ("taxe_carbone", 6, "Taxe carbone (hausse)", "€/t CO2", -45, 150, 5, 0, [50, 100], lambda v: _m("taxe_carbone", euros_tonne=v)),
     ("energie_import", 6, "Prix de l'énergie importée (hypothèse)", "%", -30, 60, 5, 0, [-20, 20, 50], lambda v: _m("energie_import", hausse=v / 100)),
 ]
@@ -259,7 +272,7 @@ def reforme_openfisca(mesures: list) -> tuple[dict | None, tuple]:
             par["prestations_sociales.solidarite_insertion.minima_sociaux.rsa.rsa_m.montant_de_base_du_rsa"] = {"facteur": float(p["facteur"]), "debut": "2024-10-01"}
             calc.add("prest")
         elif t == "prime_activite":
-            par["prestations_sociales.solidarite_insertion.minima_sociaux.ppa.pa_m.montant_de_base"] = {"facteur": float(p["facteur"]), "debut": "2024-10-01"}
+            par["prestations_sociales.solidarite_insertion.minima_sociaux.ppa.pa_m.montant_de_base"] = {"facteur": float(p["facteur"]), "debut": "2024-01-01"}
             calc.add("prest")
         elif t == "allocations_familiales":
             par["prestations_sociales.prestations_familiales.bmaf.bmaf"] = {"facteur": float(p["facteur"]), "debut": "2024-10-01"}
