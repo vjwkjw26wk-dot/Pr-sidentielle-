@@ -37,6 +37,13 @@ RHO_DEFAUT = 0.15   # fermeture d'offre des projections (sensibilité : 0 et 1)
 AMORTI_FERMETURE = 0.3   # terme proportionnel du correcteur, limite les dépassements (calibré par simulation)
 OKUN = 1.5      # points de PIB par point de chômage (ordre de grandeur des estimations françaises de la loi d'Okun)
 PRODUITS_NM = ["CPA_L68A", "CPA_L68B", "CPA_O", "CPA_P", "CPA_Q86", "CPA_Q87_88"]
+# Importations non concurrentes (audit de novembre 2026) : houille, pétrole et gaz bruts, produits raffinés, électricité
+# et gaz distribué. Leur part importée par produit ne s'ajuste pas au facteur commun φ, et leur prix est exclu du prix
+# relatif de l'équation d'importations : une hausse du prix de l'énergie importée ne crée pas de substitution vers la
+# production nationale d'autres produits (avant correction : +1 point de PIB fictif pour un choc de +50 %).
+NON_CONCURRENTS = ("CPA_B", "CPA_C19", "CPA_D")
+DELAI_CAPACITES = 2      # années entre la décision d'investir et la mise en service d'une capacité industrielle (hypothèse D,
+#                          ordre de grandeur des projets industriels : 18 mois à 4 ans)
 CAT = {"C": ["P3_S14"], "G": ["P3_S13", "P3_S15"], "I": ["P51G"], "S": ["P52", "P53"], "X": ["P6"]}
 
 
@@ -177,6 +184,9 @@ class Modele:
         Atot = self.Ad0 + self.Am0
         self.Atot = Atot
         self.part_imp_ci = np.divide(self.Am0, Atot, out=np.zeros_like(Atot), where=Atot > 0)
+        self.concurrent = np.array([0.0 if p in NON_CONCURRENTS else 1.0 for p in self.P])
+        imp0 = self.Am0 @ self.x0 + sum(self.Fm[k] for k in CAT)
+        self.poids_pm_nc = imp0 * self.concurrent / (imp0 * self.concurrent).sum()   # pondération du prix des importations concurrentes
         # branche de chaque produit
         inv = {p: b for b, ps in S.VERS_A64.items() for p in ps}
         self.br_prod = np.array([inv.get(p, "NM") for p in P])
@@ -252,14 +262,15 @@ class Modele:
     def _leontief(self, phi, fact_imp):
         """Production et importations pour une demande finale par catégorie (volumes, prix de base)."""
         n = len(self.P)
-        pim = np.clip(self.part_imp_ci * phi * fact_imp[:, None], 0, 1)
+        phi_p = 1.0 + (phi - 1.0) * self.concurrent            # φ ne s'applique qu'aux importations concurrentes
+        pim = np.clip(self.part_imp_ci * phi_p[:, None] * fact_imp[:, None], 0, 1)
         Am = self.Atot * pim
         Ad = self.Atot - Am
         fd = np.zeros(n)
         fm = np.zeros(n)
         for k in CAT:
             v = self.struct[k] * self.dem[k]
-            sh = np.clip(self.part_imp[k] * (phi if k != "X" else 1.0) * fact_imp, 0, 1)
+            sh = np.clip(self.part_imp[k] * (phi_p if k != "X" else 1.0) * fact_imp, 0, 1)
             fd += v * (1 - sh)
             fm += v * sh
         x = np.linalg.solve(np.eye(n) - Ad, fd)
@@ -291,12 +302,15 @@ class Modele:
              "pc": {t: m.p_c[t] for t in range(B - 3, B + 1)},
              "C": {t: m.c[t] for t in range(B - 3, B + 1)},
              "rdb": {t: men.rdb[t] for t in range(B - 3, B + 1)},
+             "rdbc": {t: men.rdb[t] for t in range(B - 3, B + 1)},
              "X": {t: m.x[t] for t in range(B - 3, B + 1)}, "M": {t: m.m[t] for t in range(B - 3, B + 1)},
              "u": {t: m.chomage[t] for t in range(B - 3, B + 1)},
              "px": {t: m.p_x[t] for t in range(B - 3, B + 1)}, "pm_agg": {t: m.p_m[t] for t in range(B - 3, B + 1)},
+             "pm_nc": {t: m.p_m[t] for t in range(B - 3, B + 1)},
              "ppib": {t: m.p_pib[t] for t in range(B - 3, B + 1)}, "pib": {t: m.pib[t] for t in range(B - 3, B + 1)},
              "emploi": {t: em.emploi[t] for t in range(B - 3, B + 1)}}
         A["ebe"] = {t: men.ebe[t] for t in range(B - 3, B + 1)}
+        self.A_courant = A
         A["d4"] = {t: men.d4[t] for t in range(B - 3, B + 1)}
         # constantes recalées : résidu moyen des 3 dernières années observées (hors 2020-2021)
         self.c_rev = {}
@@ -330,6 +344,14 @@ class Modele:
         fbcf_br_B = sum(self.hist[b].i_cp[B] for b in BR)
         conv_I = dem0["I"] / m.fbcf_cp[B]                    # passage comptes nationaux → tableau (prix de base)
         I_autres_B = dem0["I"] - fbcf_br_B * conv_I
+        # investissement des ménages (logement, M14 / audit 2026) : endogène, équation du lot 7 sur le revenu disponible
+        dl = self.eq["logement"].data
+        I_men_B = float(dl.i_cp[B]) * conv_I                      # part ménages de la FBCF « autres » (prix de base)
+        A["Imen"] = {t: float(np.exp(dl.iv[t])) for t in range(B - 3, B + 1)}
+        rl = r["logement"]
+        res_l = [(dl.iv[a] - dl.iv[a - 1]) - (rl["const"] + rl["dlrdb"] * (dl.rdbr[a] - dl.rdbr[a - 1]) + rl["ecart_1"] * (dl.iv[a - 1] - dl.rdbr[a - 1]))
+                 for a in [x for x in range(B - 6, B + 1) if x not in (2020, 2021)][-3:]]
+        c_log = float(np.mean(res_l))
         fact_imp = np.array([ex.parts_importees.get(p, 1.0) for p in P])
         R = ex.reindustrialisation
         imp_prod0 = self.Am0 @ self.x0 + sum(self.Fm[k] for k in CAT)          # importations par produit, base
@@ -379,11 +401,18 @@ class Modele:
                 niv["Z"] = niv.get("Z", 0.0) + (rho * g1 + AMORTI_FERMETURE * (g1 - g2)) * OKUN / 100
             Z_dem = niv.get("Z", 0.0) * (sum(self.va0) + sum(self.tx0))
             if R:
-                prog = min(1.0, max(0.0, (t - R["debut"] + 1) / R.get("duree", 5)))
+                # délai de construction (audit 2026) : les capacités sont financées et construites pendant `delai` ans
+                # (2 ans par défaut) avant de produire ; la substitution aux importations suit les capacités en service.
+                L_ = int(R.get("delai", DELAI_CAPACITES))
+                prog_f = lambda a: min(1.0, max(0.0, (a - R["debut"] + 1 - L_) / R.get("duree", 5)))  # noqa: E731
+                prog = prog_f(t)
                 fact_imp = np.array([1 - (1 - R["produits"].get(p, 1.0)) * prog for p in P])
                 croiss_m = hist_vol[t - 1]["M"] / M_B
-                va_cap = (1 - fact_imp) * imp_prod0 * croiss_m * self.av      # VA des capacités nouvelles (prix de base)
-                I_cap_prod = kappa * np.maximum(va_cap - va_cap_prec, 0) + delta_k * kappa * va_cap_prec
+                va_cap = (1 - fact_imp) * imp_prod0 * croiss_m * self.av      # VA des capacités en service (prix de base)
+                # capacités en construction : investissement réparti sur le délai, en avance sur la production
+                va_fut = (1 - np.array([1 - (1 - R["produits"].get(p, 1.0)) * prog_f(t + L_) for p in P])) * imp_prod0 * croiss_m * self.av
+                va_fut_prec = (1 - np.array([1 - (1 - R["produits"].get(p, 1.0)) * prog_f(t - 1 + L_) for p in P])) * imp_prod0 * croiss_m * self.av
+                I_cap_prod = kappa * np.maximum(va_fut - va_fut_prec, 0) + delta_k * kappa * va_cap_prec
                 I_cap = float(I_cap_prod.sum())
                 I_cap_br = {b: float(I_cap_prod[self.br_prod == b].sum()) for b in BR}
                 surcout_prod = 1 + R.get("surcout", 0.0) * np.divide(va_cap, self.va0, out=np.zeros(len(P)), where=self.va0 > 0)
@@ -404,6 +433,7 @@ class Modele:
                 pc = m.p_c[B] * pc_idx * float(np.exp(_niv(ex, "prix_conso", t)))
                 px = m.p_x[B] * px_idx
                 pm_agg = m.p_m[B] * float((pm * (self.Am0 @ self.x0 + sum(self.Fm[k] for k in CAT))).sum() / (self.Am0 @ self.x0 + sum(self.Fm[k] for k in CAT)).sum())
+                pm_nc = m.p_m[B] * float((pm * self.poids_pm_nc).sum())
                 # ---- 2. salaires (secteur marchand, par tête)
                 qm = sum(q_br.values()); nm = sum(n_br.values())
                 prod_m = qm / nm
@@ -471,7 +501,8 @@ class Modele:
                 # ---- 4. demande finale
                 rc = r["consommation"]
                 rdb = self._rdb(t, w_new, n_new, niv, hist_vol, A, ex, pc, mb)
-                rdbr, rdbr1 = rdb / pc, A["rdb"][t - 1] / A["pc"][t - 1]
+                rdb_c = rdb + self._conso_effectif(ex, t)          # hétérogénéité des propensions (M14)
+                rdbr, rdbr1 = rdb_c / pc, A["rdbc"][t - 1] / A["pc"][t - 1]
                 u_cur = prev["u"] if it == 0 else u_cur
                 dC = rc["const"] + rc["dlrdb"] * np.log(rdbr / rdbr1) + rc.get("du", 0.0) * (u_cur - prev["u"]) + ecm("c", rc["ecart_1"] * (np.log(A["C"][t - 1]) - np.log(rdbr1))) + _cal(ex, "c", t)
                 C_cn = A["C"][t - 1] * np.exp(dC)
@@ -481,14 +512,21 @@ class Modele:
                 X_cn = A["X"][t - 1] * np.exp(dX)
                 G_idx = float(ex.conso_publique[t]) / float(ex.conso_publique[B])
                 fbcf_br = sum(I_new[b] / self.hist[b].i[B] * self.hist[b].i_cp[B] for b in BR) * conv_I
-                I_tot = fbcf_br + I_autres_B * float(ex.autres_investissements[t]) / float(ex.autres_investissements[B]) + I_cap
+                dIm = (rl["const"] + c_log + rl["dlrdb"] * np.log(rdbr / rdbr1)
+                       + ecm("log", rl["ecart_1"] * (np.log(A["Imen"][t - 1]) - np.log(rdbr1))) + _cal(ex, "logement", t))
+                Imen = A["Imen"][t - 1] * np.exp(dIm)
+                # FBCF « autres » (APU, ISBLSM, ménages) : l'indice exogène s'applique au total de l'année de base, de sorte que
+                # les mesures (investissement public, logements sociaux) gardent leur montant ; la part des ménages est
+                # remplacée par sa valeur endogène.
+                I_tot = (fbcf_br + I_autres_B * float(ex.autres_investissements[t]) / float(ex.autres_investissements[B]) - I_men_B
+                         + I_men_B * Imen / A["Imen"][B] + I_cap)
                 self.dem = {"C": dem0["C"] * C_cn / m.c[B] + 0.6 * Z_dem, "G": dem0["G"] * G_idx, "I": I_tot + 0.4 * Z_dem, "S": dem0["S"] + _cal(ex, "stocks", t) * sum(self.va0),
                             "X": dem0["X"] * X_cn / m.x[B]}
                 # ---- 5. importations (équation agrégée) et production
                 rm = r["importations"]
                 D = sum(w_ * v for w_, v in zip(E.CONTENU_IMPORT.values(), (self.dem["C"] / dem0["C"] * m.c[B], self.dem["G"] / dem0["G"] * m.g[B],
                                                                             (self.dem["I"] + self.dem["S"]) / (dem0["I"] + dem0["S"]) * m.fbc[B], X_cn)))
-                lprel, lprel1 = np.log(pm_agg / ppib_est), np.log(A["pm_agg"][t - 1] / A["ppib"][t - 1])
+                lprel, lprel1 = np.log(pm_nc / ppib_est), np.log(A["pm_nc"][t - 1] / A["ppib"][t - 1])
                 dM = (rm["const"] + rm["dld"] * np.log(D / A["D"][t - 1]) + rm["dlprel"] * (lprel - lprel1)
                       + ecm("m", rm["lm_1"] * np.log(A["M"][t - 1]) + rm["ld_1"] * np.log(A["D"][t - 1]) + rm["lprel_1"] * lprel1)
                       + rm["t"] * (t - 2010) + _cal(ex, "m", t))
@@ -535,7 +573,10 @@ class Modele:
                 hb["k"][t] = hb["k"][t - 1] * (1 - delta) + I_new[b] + i_cap_vol
             A["w"][t], A["pva_m"][t], A["prod_m"][t], A["pc"][t] = w, pva_m, prod_m, pc
             A["C"][t], A["rdb"][t], A["X"][t], A["M"][t], A["u"][t] = C_cn, rdb, X_cn, M_cn, u_cur
+            A["rdbc"][t] = rdb_c
+            A["Imen"][t] = Imen
             A["px"][t], A["pm_agg"][t], A["D"][t], A["ppib"][t] = px, pm_agg, D, ppib_est
+            A["pm_nc"][t] = pm_nc
             A["ebe"][t], A["d4"][t] = self._revenus_patrimoine(t, A, ex, pc)
             pib_vol = (sum(q_br.values()) / sum(H[b]["q"][B] for b in BR) * sum(self.va_br0[b] for b in BR) + q_nm) / sum(self.va_br0.values())
             A["pib"][t] = m.pib[B] * pib_vol
@@ -549,7 +590,17 @@ class Modele:
             ind_nom = sum(q_br[b] / H[b]["q"][B] * self.hist[b].va_cp[B] * pva[b] / H[b]["pva"][B] for b in IND)
             ind_B = sum(self.hist[b].va_cp[B] for b in IND)
             part_ind = 100 * ind_B / m.pib_cp[B] * (ind_nom / ind_B) / A["pib_nom_idx"][t]
-            res.append(dict(annee=t, part_industrie=part_ind, emploi_industrie=sum(n_br[b] for b in IND),
+            # comptes d'agents (audit 2026) : RNB, épargne et capacité de financement des ménages, solde extérieur
+            if not hasattr(self, "_rp0"):
+                import m14_heterogeneite as H14
+                self._rp0 = H14.revenus_primaires_nets(B)
+            rev_prim = self._rp0 * fp["pib_nominal"] - fp["dividendes_non_residents"]
+            c_nom = C_cn * pc
+            i_men_nom = float(dl.i_cp[B]) * Imen / A["Imen"][B] * pi_idx
+            ext = dict(rnb=fp["pib_nominal"] + rev_prim, revenus_primaires_nets=rev_prim, epargne_menages=rdb - c_nom,
+                       taux_epargne=100 * (rdb - c_nom) / rdb, investissement_menages=i_men_nom,
+                       capacite_menages=rdb - c_nom - i_men_nom, solde_exterieur=px * X_cn - pm_agg * M_cn + rev_prim)
+            res.append(dict(annee=t, **ext, part_industrie=part_ind, emploi_industrie=sum(n_br[b] for b in IND),
                             vol_industrie=sum(q_br[b] for b in IND) / sum(H[b]["q"][B] for b in IND), supplement_demande_fermeture=Z_dem, tuc_industrie=tuc_m, pib=A["pib"][t], c=C_cn, x=X_cn, m=M_cn, fbcf=m.fbcf[B] * I_tot / dem0["I"], emploi=emploi, chomage=u_cur,
                             salaire=w, pc=pc, pva_m=pva_m, px=px, rdb=rdb, phi=phi, **fp))
         self.H, self.A = H, A
@@ -577,11 +628,38 @@ class Modele:
         autres = ebe + d4 + (mb.d7 + mb.autres) * pib_nom
         mm = ex.mesure_menages or {}
         d62 = mb.d62 * prest + self._extra(ex, "ajust_prestations", t) + mm.get("prestations", 0.0) * self._idx_mesure(mm, pib_nom, t)
+        autres += self._profits(ex, t, pib_nom)["menages"]
         d61 = mb.d61 * masse * (1 if ex.taux_cotisations is None else float(ex.taux_cotisations.get(t, 1.0)))
         base_imp = (mb.d1 * masse + ebe + d4 + d62)
         d5 = mb.d5 * base_imp / (mb.d1 + mb.ebe + mb.d4 + mb.d62) + mm.get("impots", 0.0) * self._idx_mesure(mm, pib_nom, t) \
             + _niv(ex, "impots_menages_pib", t) / 100 * self.macro.pib_cp[self.B] * pib_nom
         return d1 + autres + d62 - d61 - d5
+
+    def _profits(self, ex, t, pib_nom=None):
+        """Supplément de profits après impôt dû aux mesures (M€ courants) et sa répartition (M14) : dividendes reçus par
+        les ménages résidents, versés aux non-résidents, conservés par les entreprises."""
+        mm = ex.mesure_menages or {}
+        g = mm.get("profits", 0.0)
+        if not g:
+            return {"menages": 0.0, "non_residents": 0.0, "conserve": 0.0, "autres_residents": 0.0}
+        if pib_nom is None:
+            pib_nom = self.A_courant["pib_nom_idx"][t]
+        import m14_heterogeneite as H14
+        montee = min(1.0, max(0.0, (t - mm.get("debut", 0) + 1) / 3))    # distribution progressive (3 ans)
+        part = H14.DISTRIBUTION_PROFITS[mm.get("variante_distribution", "central")] * montee
+        return H14.dividendes_menages(g * self._idx_mesure(mm, pib_nom, t), part)
+
+    def _conso_effectif(self, ex, t):
+        """Correction du revenu pris en compte par l'équation de consommation (M14) : profil des propensions par décile
+        appliqué aux gains et pertes de la microsimulation, propension du dernier centile pour les dividendes."""
+        mm = ex.mesure_menages or {}
+        if not mm:
+            return 0.0
+        import m14_heterogeneite as H14
+        pib_nom = self.A_courant["pib_nom_idx"][t]
+        v = mm.get("conso", 0.0) * self._idx_mesure(mm, pib_nom, t)
+        v += self._profits(ex, t, pib_nom)["menages"] * (H14.facteur_top1(mm.get("variante_pmc", "central")) - 1)
+        return v
 
     def _tuc(self, b, t, q, H):
         """TUC simulé : TUC_B × (production / production de base) / (capacité / capacité de base), capacité ∝ capital
@@ -668,7 +746,7 @@ class Modele:
         solde = tr - te
         niv["dette"] = niv["dette"] - solde + _cal(ex, "dette", t)
         return dict(recettes=tr, depenses=te, solde=solde, solde_pib=solde / pibn * 100, dette=niv["dette"], dette_pib=niv["dette"] / pibn * 100,
-                    is_=is_t, cotisations=d61, tva_etc=d2, prestations=d62, interets=d41, pib_nominal=pibn,
+                    is_=is_t, dividendes_non_residents=self._profits(ex, t, pib_nom)["non_residents"], cotisations=d61, tva_etc=d2, prestations=d62, interets=d41, pib_nominal=pibn,
                     taux_apparent=niv["taux_app"] * 100)
 
 

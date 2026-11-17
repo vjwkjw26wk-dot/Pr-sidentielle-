@@ -78,16 +78,15 @@ Grandeurs dérivées : indexation de court terme sur les prix à la consommation
 
 ### Consommation des ménages (volume)
 
-Variable expliquée : Δln consommation ; 23 observations ; R² = 0.69 ; écart type résiduel = 0.7 % ; autocorrélation des résidus (Breusch-Godfrey, p) = 0.07.
+Variable expliquée : Δln consommation ; 23 observations ; R² = 0.62 ; écart type résiduel = 0.8 % ; autocorrélation des résidus (Breusch-Godfrey, p) = 0.36.
 
 | Variable | Coefficient | Écart type | t |
 |---|---|---|---|
-| const | -0.052 | 0.042 | -1.2 |
-| dlrdb | 0.784 | 0.194 | 4.0 |
-| du | -0.005 | 0.002 | -2.2 |
-| ecart_1 | -0.307 | 0.223 | -1.4 |
+| const | -0.037 | 0.040 | -0.9 |
+| dlrdb | 0.853 | 0.205 | 4.2 |
+| ecart_1 | -0.218 | 0.211 | -1.0 |
 
-Grandeurs dérivées : propension marginale de court terme (élasticité) = 0.784 ; vitesse λ = -0.307.
+Grandeurs dérivées : propension marginale de court terme (élasticité) = 0.853 ; vitesse λ = -0.218.
 
 ### Importations (volume)
 
@@ -132,6 +131,18 @@ Variable expliquée : Δln prix de la consommation ; 27 observations ; R² = 0.6
 
 Grandeurs dérivées : transmission immédiate b0 = 0.179 ; transmission l'année suivante b1 = 0.182 ; part transmise l'année même θ = 0.495 ; sur 1998-2019 seulement : b0 = 0.274 ; sur 1998-2019 seulement : b1 = -0.054.
 
+### Investissement des ménages (logement)
+
+Variable expliquée : Δln FBCF des ménages ; 23 observations ; R² = 0.26 ; écart type résiduel = 3.8 % ; autocorrélation des résidus (Breusch-Godfrey, p) = 0.18.
+
+| Variable | Coefficient | Écart type | t |
+|---|---|---|---|
+| const | -0.668 | 0.483 | -1.4 |
+| dlrdb | 1.484 | 0.350 | 4.2 |
+| ecart_1 | -0.282 | 0.202 | -1.4 |
+
+Grandeurs dérivées : élasticité de court terme au revenu disponible réel = 1.484 ; vitesse λ = -0.282.
+
 ## 2. Tests rétrospectifs
 
 ### A. Estimation 1997-2012, simulation 2013-2019
@@ -143,7 +154,7 @@ Grandeurs dérivées : transmission immédiate b0 = 0.179 ; transmission l'anné
 | FBCF des branches marchandes | +2.8 % | +1.5 % | 1.5 | 1.2 | -8.7 % | -0.6 % |
 | FBCF des sociétés non financières | +2.4 % | +1.5 % | 2.3 | 1.1 | -5.8 % | -0.8 % |
 | Salaire moyen par tête | +1.3 % | +1.7 % | 0.7 | 1.1 | +3.3 % | +7.9 % |
-| Consommation des ménages | +1.2 % | +1.4 % | 0.7 | 0.8 | +1.4 % | +6.0 % |
+| Consommation des ménages | +1.2 % | +1.3 % | 0.6 | 0.8 | +0.5 % | +6.0 % |
 | Importations | +3.7 % | +4.0 % | 1.0 | 1.2 | +2.1 % | +6.7 % |
 | Exportations | +3.1 % | +3.1 % | 0.8 | 1.1 | -0.4 % | +6.7 % |
 
@@ -156,7 +167,7 @@ Grandeurs dérivées : transmission immédiate b0 = 0.179 ; transmission l'anné
 | FBCF des branches marchandes | +1.9 % | +1.9 % | 1.4 | 2.1 | +0.1 % | +2.6 % |
 | FBCF des sociétés non financières | +2.1 % | +5.5 % | 6.9 | 1.8 | +10.7 % | +0.5 % |
 | Salaire moyen par tête | +4.1 % | +3.3 % | 0.8 | 2.1 | -2.4 % | -6.1 % |
-| Consommation des ménages | +1.9 % | +2.8 % | 1.5 | 1.3 | +3.0 % | -0.4 % |
+| Consommation des ménages | +1.9 % | +2.5 % | 1.8 | 1.3 | +1.9 % | -0.4 % |
 | Importations | +2.6 % | +4.9 % | 2.3 | 4.6 | +7.0 % | +5.2 % |
 | Exportations | +4.7 % | +2.7 % | 2.0 | 2.3 | -5.9 % | -2.9 % |
 

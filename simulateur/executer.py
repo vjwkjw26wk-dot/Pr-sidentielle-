@@ -60,9 +60,11 @@ VARIABLES = {"pib": "PIB en volume (M€ 2015)", "c": "Consommation des ménages
              "interets_pib": "Charge d'intérêts de la dette (% du PIB)", "taux_apparent": "Taux apparent de la dette (%)",
              "pensions_pib": "Pensions de droit direct (% du PIB)", "retraites_pour_100_actifs": "Retraités pour 100 actifs",
              "part_industrie": "Industrie manufacturière (% du PIB, valeur ajoutée)", "emploi_industrie": "Emploi industriel (milliers)",
-             "population_active": "Population active (milliers)"}
+             "population_active": "Population active (milliers)", "rnb": "Revenu national brut, en valeur (M€)",
+             "taux_epargne": "Taux d'épargne des ménages (% du RDB)", "solde_exterieur_pib": "Solde extérieur courant (% du PIB)"}
 EN_POINTS = {"chomage", "solde_pib", "dette_pib", "tuc_industrie", "croissance", "inflation", "recettes_pib", "depenses_pib",
-             "interets_pib", "taux_apparent", "pensions_pib", "retraites_pour_100_actifs", "part_industrie"}
+             "interets_pib", "taux_apparent", "pensions_pib", "retraites_pour_100_actifs", "part_industrie", "taux_epargne",
+             "solde_exterieur_pib"}
 
 
 def derivees(mod, r, ex, pensions_M, retraites_k):
@@ -77,6 +79,8 @@ def derivees(mod, r, ex, pensions_M, retraites_k):
         r[k + "_pib"] = r[k] / r.pib_nominal * 100
     r["pensions_pib"] = pd.Series(pensions_M).reindex(r.index) / r.pib_nominal * 100
     r["population_active"] = ex.population_active.reindex(r.index)
+    if "solde_exterieur" in r.columns:
+        r["solde_exterieur_pib"] = r.solde_exterieur / r.pib_nominal * 100
     r["retraites_pour_100_actifs"] = pd.Series(retraites_k).reindex(r.index) / r.population_active * 100
     return r
 
@@ -204,9 +208,12 @@ def construire(scenario: dict, mod, central=None, journal=None):
             ajouter_niveau("salaire_public", debut, float(p["hausse"]))
         elif t == "taux_is":
             var.taux_is = pd.Series({a: (M8.S.taux_is().get(a, 25.83) if a < debut else float(p["taux"])) for a in range(2019, max(ans) + 1)})
+            # supplément de profits après impôt (statique, année de la microsimulation), distribué en partie (M14)
+            tau0 = float(ref.taux_is.get(debut, ref.taux_is.iloc[-1]))
+            is0 = 0.15 * float(apu.d5rec[mod.B]) * mod.macro.pib_cp[mm["annee"]] / mod.macro.pib_cp[mod.B]
+            mm["profits"] = mm.get("profits", 0.0) + is0 * (tau0 - float(p["taux"])) / tau0
         elif t == "transferts_menages":
-            mm["prestations"] += float(p["points_pib"]) / 100 * mod.macro.pib_cp[mod.B]
-            mm["annee"] = mod.B
+            mm["prestations"] += float(p["points_pib"]) / 100 * mod.macro.pib_cp[mm["annee"]]
         elif t == "energie_import":
             for prod in ("CPA_B", "CPA_C19", "CPA_D"):
                 var.prix_import[prod] = [x * (1 + float(p["hausse"]) if a >= debut else 1.0) for a, x in zip(var.prix_import.index, var.prix_import[prod])]
@@ -265,6 +272,7 @@ def construire(scenario: dict, mod, central=None, journal=None):
         elif t == "impots_production":
             md = float(p["md"])
             ajouter_recette_apu(debut, md * 1e3)
+            mm["profits"] = mm.get("profits", 0.0) - md * 1e3 * (1 - REPERCUSSION_IMPOTS_PRODUCTION)
             va_m = float(m_.pib_cp[A0]) * 0.8
             cal = var.calage
             cal["prix"][debut] = cal["prix"].get(debut, 0.0) + float(np.log1p(REPERCUSSION_IMPOTS_PRODUCTION * md * 1e3 / va_m))
@@ -383,15 +391,20 @@ def construire(scenario: dict, mod, central=None, journal=None):
         extra = (lambda k, men, ind, foyers: sum(f(k, men, ind, foyers) for f in fonctions)) if fonctions else None
         D = C.distribution(base, r, extra=extra)
         info["distribution"] = D.reset_index().to_dict(orient="records")
+        import m14_heterogeneite as H14
+        mm["conso"] = H14.ajustement_conso(info["distribution"], H.get("pmc", "central"))
+        info["statique"]["ajustement_conso_M€"] = mm["conso"]
         info["statique"].update({"impot_revenu_M€": x["impots"] - perte + analytique["impots"], "prestations_versees_M€": mm["prestations"],
                                  "droits_M€": {v: (r[v] - base[v]) / 1e6 for v in C.PRESTATIONS}})
     info["comportements"] = comport
-    if mm["impots"] or mm["prestations"]:
+    mm["variante_pmc"] = H.get("pmc", "central")
+    mm["variante_distribution"] = H.get("distribution_profits", "central")
+    if mm["impots"] or mm["prestations"] or mm.get("profits") or mm.get("conso"):
         var.mesure_menages = mm
     return ref, var, ans, info
 
 
-VERSION_MODELE = "0.4"
+VERSION_MODELE = "0.5"
 
 
 def empreintes() -> dict:

@@ -312,7 +312,7 @@ function combiner() {
 const TUILES = [["croissance", "Croissance annuelle moyenne 2028-2032", "%", "moy", 1], ["chomage", "Chômage en 2032", "%", FIN, 1],
   ["solde_pib", "Solde public en 2032", "% du PIB", FIN, 1], ["dette_pib", "Dette publique en 2032", "% du PIB", FIN, -1],
   ["inflation", "Inflation moyenne 2028-2032", "%", "moy", 0], ["pensions_pib", "Pensions en 2032", "% du PIB", FIN, 0]];
-const BONS = {pib: 1, croissance: 1, emploi: 1, chomage: -1, solde_pib: 1, dette_pib: -1, interets_pib: -1, rdb: 1, part_industrie: 1, emploi_industrie: 1, recettes_pib: 0, depenses_pib: 0, pensions_pib: 0, inflation: 0, pc: 0};
+const BONS = {rnb: 1, solde_exterieur_pib: 0, taux_epargne: 0, pib: 1, croissance: 1, emploi: 1, chomage: -1, solde_pib: 1, dette_pib: -1, interets_pib: -1, rdb: 1, part_industrie: 1, emploi_industrie: 1, recettes_pib: 0, depenses_pib: 0, pensions_pib: 0, inflation: 0, pc: 0};
 function moy(s) { const L = ANS.filter(a => a >= DEBUT); return L.reduce((x, a) => x + s[a], 0) / L.length; }
 function tuiles(r) {
   document.getElementById("tuiles").innerHTML = TUILES.map(([k, lib, u, quand, bon]) => {
@@ -323,7 +323,7 @@ function tuiles(r) {
       <span class="det ${bon ? cls(d, bon) : "nul"}">${Math.abs(d) < 0.005 ? "inchangé" : sg(d, 2) + (u.startsWith("%") ? " pt" : "")}</span><span class="ref-val">sans changement : ${nf(ref)}</span></div>`;
   }).join("");
 }
-const IND_GRAPHE = ["croissance", "chomage", "solde_pib", "dette_pib", "inflation", "interets_pib", "pensions_pib", "retraites_pour_100_actifs", "part_industrie", "emploi_industrie", "emploi", "pib", "rdb", "recettes_pib", "depenses_pib"];
+const IND_GRAPHE = ["croissance", "chomage", "solde_pib", "dette_pib", "inflation", "interets_pib", "pensions_pib", "retraites_pour_100_actifs", "part_industrie", "emploi_industrie", "emploi", "pib", "rdb", "rnb", "taux_epargne", "solde_exterieur_pib", "recettes_pib", "depenses_pib"];
 const FMI_MAP = {croissance: "NGDP_RPCH", chomage: "LUR_ajuste", inflation: "PCPIPCH", solde_pib: "GGXCNL_NGDP", dette_pib: "GGXWDG_NGDP"};
 function graphe(r) {
   const k = document.getElementById("choix-ind").value;
@@ -359,16 +359,16 @@ function graphe(r) {
   document.getElementById("titre-graphe").textContent = D.libelles[k].replace("(M€ 2015)", "(Md€ de 2015)").replace("(M€)", "(Md€)");
 }
 function tableau(r) {
-  const L = ["croissance", "pib", "emploi", "chomage", "inflation", "rdb", "solde_pib", "dette_pib", "recettes_pib", "depenses_pib", "interets_pib", "taux_apparent",
+  const L = ["croissance", "pib", "rnb", "emploi", "chomage", "inflation", "rdb", "taux_epargne", "solde_exterieur_pib", "solde_pib", "dette_pib", "recettes_pib", "depenses_pib", "interets_pib", "taux_apparent",
              "pensions_pib", "retraites_pour_100_actifs", "population_active", "part_industrie", "emploi_industrie", "c", "fbcf", "x", "m", "salaire"];
   const A = [2025, 2026, 2028, 2030, 2032].filter(a => ANS.includes(a));
   document.getElementById("tableau").innerHTML = `<tr><th>Indicateur</th>${A.map(a => `<th>${a}${a <= OBS ? " (obs.)" : ""}</th>`).join("")}</tr>` +
     L.filter(k => D.reference[k]).map(k => {
       const u = D.unites[k], grand = Math.abs(D.reference[k][FIN]) > 1000;
       const d = grand ? 0 : (u === "points" ? 1 : 1);
-      const val = a => grand ? nf(r.niv[k][a] / (k === "pib" || k === "c" || k === "fbcf" || k === "x" || k === "m" || k === "rdb" ? 1000 : 1), 0) : nf(r.niv[k][a], d);
+      const val = a => grand ? nf(r.niv[k][a] / (k === "pib" || k === "c" || k === "fbcf" || k === "x" || k === "m" || k === "rdb" || k === "rnb" ? 1000 : 1), 0) : nf(r.niv[k][a], d);
       const ec = a => { const e = r.e[k][a]; if (Math.abs(e) < 0.005) return ""; return ` <small class="${BONS[k] ? cls(e, BONS[k]) : "nul"}">(${sg(e, 2)}${u === "points" ? "" : " %"})</small>`; };
-      const lib = D.libelles[k] + ((k === "pib" || k === "c" || k === "fbcf" || k === "x" || k === "m") ? " — Md€ de 2015" : k === "rdb" ? " — Md€" : "");
+      const lib = D.libelles[k] + ((k === "pib" || k === "c" || k === "fbcf" || k === "x" || k === "m") ? " — Md€ de 2015" : (k === "rdb" || k === "rnb") ? " — Md€" : "");
       return `<tr><td>${esc(lib)}</td>${A.map(a => `<td>${val(a)}${a >= DEBUT ? ec(a) : ""}</td>`).join("")}</tr>`;
     }).join("");
 }

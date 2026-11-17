@@ -51,16 +51,16 @@ Limites principales :
 
 Résultats simulés par le modèle complet : outputs/programmes_candidats.md (script tests/programmes_candidats.py).
 
-### Résultats 2032 (modèle complet, écart à la trajectoire inchangée)
+### Résultats 2032 (modèle complet version 0.5, écart à la trajectoire inchangée)
 
 | Candidat | PIB (%) | Chômage (pt) | Emploi (milliers) | Prix (%) | Solde (pt PIB) | Dette (pt PIB) |
 |---|---|---|---|---|---|---|
-| Gabriel Attal | -0.26 | +0.22 | -75 | -0.14 | +0.28 | -0.42 |
-| Raphaël Glucksmann | -0.30 | -1.76 | -175 | +1.55 | -1.61 | +4.27 |
-| Marine Le Pen | -1.66 | -1.03 | -449 | -0.04 | -0.28 | +1.74 |
-| Jean-Luc Mélenchon | -1.07 | -2.75 | -210 | +3.25 | -1.30 | +0.99 |
-| Édouard Philippe | -0.15 | +0.51 | -69 | -0.69 | +0.42 | +0.27 |
-| Bruno Retailleau | -0.92 | +0.93 | -317 | -1.43 | +0.35 | +2.34 |
+| Gabriel Attal | -0.28 | +0.24 | -82 | -0.16 | +0.26 | -0.27 |
+| Raphaël Glucksmann | -0.30 | -1.76 | -175 | +1.53 | -1.61 | +4.25 |
+| Marine Le Pen | -1.63 | -1.05 | -441 | -0.03 | -0.24 | +1.54 |
+| Jean-Luc Mélenchon | -1.02 | -2.83 | -184 | +3.32 | -1.18 | +0.30 |
+| Édouard Philippe | -0.17 | +0.52 | -72 | -0.68 | +0.42 | +0.31 |
+| Bruno Retailleau | -0.92 | +0.94 | -319 | -1.42 | +0.33 | +2.39 |
 
 Lecture des contrôles de cohérence sur ces jeux :
 - Les baisses du chômage associées à des baisses de l'emploi (retour à 62 ou 60 ans) viennent de la réduction de la population active : à court terme, le modèle fait porter l'ajustement sur le chômage, puis la boucle prix-salaires réduit l'emploi. Résultat dépendant des hypothèses (courbe de salaires, absence de substitution entre générations).

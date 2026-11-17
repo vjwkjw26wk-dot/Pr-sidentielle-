@@ -187,7 +187,10 @@ def distribution(base: dict, ref: dict, prestations=PRESTATIONS, extra=None) -> 
                          "variation_euros_par_uc": g.apply(lambda x: np.average(x.delta, weights=x.poids)),
                          "variation_pct": g.apply(lambda x: np.average(x.delta, weights=x.poids) / np.average(x.nv_base, weights=x.poids) * 100),
                          "part_gagnants": g.apply(lambda x: np.average(x.delta > 1, weights=x.poids)),
-                         "part_perdants": g.apply(lambda x: np.average(x.delta < -1, weights=x.poids))})
+                         "part_perdants": g.apply(lambda x: np.average(x.delta < -1, weights=x.poids)),
+                         # masses par décile (M€ par an) : variation totale et revenu de base (niveau de vie × UC)
+                         "masse_M€": g.apply(lambda x: float((x.delta * x.uc * x.poids).sum()) / 1e6),
+                         "revenu_M€": g.apply(lambda x: float((x.nv_base * x.uc * x.poids).sum()) / 1e6)})
 
 
 def mesure_pour_m8(base: dict, ref: dict, prestations=PRESTATIONS) -> dict:

@@ -363,6 +363,35 @@ def revenus_menages(m, men, poste, debut=DEBUT, fin=FIN) -> Equation:
                                                 "long terme : semi-élasticité au taux long (par point)": -res.params["r_1"] / res.params["ecm_1"]})
 
 
+def serie_logement_menages() -> pd.Series:
+    """FBCF des ménages, entrepreneurs individuels compris (M€ courants), Eurostat nasa_10_nf_tr, S14_S15, P51G ;
+    pour l'essentiel investissement en logement (construction neuve, gros entretien)."""
+    import json
+    from telechargement import jsonstat_dict
+    d = jsonstat_dict(json.loads(S.telecharger(
+        S.B + "nasa_10_nf_tr?format=JSON&geo=FR&unit=CP_MEUR&sector=S14_S15&direct=PAID&na_item=P51G&sinceTimePeriod=1995",
+        "eurostat_nasa_P51G_S14S15_FR.json").read_text()))
+    return pd.Series({int(k): float(v) for k, v in d.items()}).sort_index()
+
+
+def investissement_menages(m, debut=DEBUT, fin=FIN) -> Equation:
+    """Investissement des ménages (logement), volume (déflaté par le prix de la FBCF) :
+    Δln I = a + β Δln RDBr + λ (ln I − ln RDBr)_{t−1}.
+    Audit de novembre 2026 : le taux long (niveau ou variation, nominal) n'est pas significatif sur données annuelles
+    1997-2019 (t = 0,3 et 1,4, signe positif) ni 1997-2024 ; il n'est pas retenu (canal du crédit non identifié)."""
+    i = serie_logement_menages()
+    iv = np.log(i / m.p_fbcf.reindex(i.index))
+    rdbr = np.log(m.rdb / m.p_c).reindex(i.index)
+    X = pd.DataFrame({"dlrdb": rdbr.diff(), "ecart_1": (iv - rdbr).shift(1)})
+    y = iv.diff()
+    ok = (i.index >= debut) & (i.index <= fin) & X.notna().all(axis=1) & y.notna()
+    r = _ols(y[ok], X[ok])
+    e = Equation("Investissement des ménages (logement)", "Δln FBCF des ménages", r,
+                 {"élasticité de court terme au revenu disponible réel": r.params["dlrdb"], "vitesse λ": r.params["ecart_1"]})
+    e.data = pd.DataFrame({"i_cp": i, "iv": iv, "rdbr": rdbr})
+    return e
+
+
 def diagnostics(e: Equation) -> dict:
     out = {"n": int(e.res.nobs), "R²": e.res.rsquared, "écart type résiduel": float(np.sqrt(e.res.scale))}
     try:
@@ -379,4 +408,4 @@ def toutes(p=None, m=None, debut=DEBUT, fin=FIN) -> dict:
             "investissement_snf": investissement_snf(m, debut, fin),
             "salaires": salaires(p, m, debut, fin), "consommation": consommation(m, debut, fin),
             "importations": importations(m, debut, fin), "exportations": exportations(m, debut, fin),
-            "transmission": transmission_importations(p, m)}
+            "transmission": transmission_importations(p, m), "logement": investissement_menages(m, debut, fin)}

@@ -74,3 +74,10 @@ faible à court terme.
 - **Dépenses publiques tendancielles.** Elles sont prolongées au rythme 2011-2019. C'est une convention : la loi de
   programmation et les normes de dépense ne sont pas intégrées.
 - **Mesures en euros.** Elles sont exprimées en euros de 2025 et indexées sur le PIB nominal de la référence.
+
+## Version 0.5 (audit de novembre 2026) : cible de taux d'épargne
+
+Au-delà de 2025, la consommation des ménages n'absorbe plus l'écart de croissance au FMI : elle est calée sur une cible
+de taux d'épargne (`taux_epargne_cible` : 17,9 % en 2025, 17,3 % en 2027, 15,5 % en 2031 et au-delà). L'écart de
+croissance est comblé par l'investissement et les exportations. Sans cette cible, le taux d'épargne tombait à 11 % en
+2032. Voir 12_audit_mecanismes.md, sections 3.8 et 4.8.

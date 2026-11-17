@@ -14,6 +14,9 @@ sys.path.insert(0, str(RACINE / "src"))
 from simulateur import catalogue as CAT  # noqa: E402
 
 HYPOTHESES = [
+    "Version 0.5 (audit des mécanismes) : propensions à consommer différentes selon le décile de niveau de vie, distribution d'une "
+    "partie des profits en dividendes (dont 40 % aux non-résidents), investissement en logement des ménages lié au revenu, "
+    "énergie importée traitée comme non substituable, délai de deux ans avant la mise en service de capacités industrielles nouvelles.",
     "Ce n'est pas une prévision : c'est le point de comparaison commun à toutes les mesures, à politique inchangée (aucune mesure "
     "nouvelle après la loi de finances 2026).",
     "2023-2025 : le modèle reproduit les comptes nationaux observés (Insee, comptes annuels publiés en mai 2026) grâce à des termes de "
@@ -78,6 +81,8 @@ def main():
     for k, v in (d.get("references") or {}).items():
         v["court"] = courts.get(k, k)
         v["niveaux"] = {i: {int(a): x for a, x in s_.items()} for i, s_ in v["niveaux"].items()}
+    if "rnb" in d.get("libelles", {}):
+        d["libelles"]["rnb"] = "Revenu national brut, en valeur"
     from simulateur import programmes as PG
     d["programmes"] = {"date": PG.DATE, "regles": PG.REGLES, "liste": PG.PROGRAMMES,
                        "non_traduits": [list(x) for x in PG.NON_TRADUITS]}
@@ -86,7 +91,7 @@ def main():
         d["incertitude"] = json.loads(f_inc.read_text()).get("mediane", {})
     d["pied"] = (f"Modèle « Présidentielle » version {emp['version']} (code {emp['code']}, données {emp['donnees']}), données ouvertes (Insee, Eurostat, DGFiP, DREES, FMI, COR, OpenFisca-France). {n} simulations "
                  f"élémentaires du modèle complet, calculées le {datetime.date.today().strftime('%d/%m/%Y')}. Documentation : 07_validation_integrale.md, "
-                 f"08_simulateur.md, M8_reference.md, M13_comportements.md.")
+                 f"08_simulateur.md, M8_reference.md, M13_comportements.md, 11_coherence_et_programmes.md, 12_audit_mecanismes.md.")
     gabarit = (RACINE / "simulateur" / "interface_modele.html").read_text(encoding="utf-8")
     page = gabarit.replace("__DONNEES__", json.dumps(d, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/"))
     out = RACINE / "outputs" / "interface_test.html"

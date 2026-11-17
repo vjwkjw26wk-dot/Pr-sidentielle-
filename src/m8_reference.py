@@ -175,6 +175,14 @@ CLES_NIVEAU = ["stocks", "pib_nominal"]   # niveaux (part du PIB de base ; log d
 CHOMAGE_LT = 7.0               # chômage de long terme (scénario de référence du COR, stabilisé à 7 % dès 2032)
 
 
+def taux_epargne_cible(t: int) -> float:
+    """Taux d'épargne des ménages de la trajectoire de référence (% du RDB, définition du modèle) : 17,9 % observé en 2025,
+    17,3 % en 2027 (hypothèse du projet de loi de finances pour 2027), puis retour progressif vers 15,5 %, entre ce niveau
+    et la moyenne d'avant la crise sanitaire (environ 15 %), atteint en 2031 (hypothèse D)."""
+    points = {2025: 17.9, 2026: 17.6, 2027: 17.3, 2028: 16.85, 2029: 16.4, 2030: 15.95, 2031: 15.5}
+    return points.get(t, 15.5 if t > 2031 else 17.9)
+
+
 def _cibles(mod, H, fin=2035):
     """Cibles de calage : comptes observés 2023-2025 ; FMI (octobre 2026) pour 2026-2031 : croissance, chômage
     (écart de définition de 2025 entre FMI et Eurostat neutralisé), inflation ; solde public 2026 seulement (les
@@ -220,7 +228,7 @@ def caler(mod, ex, annees, H, iterations=7, journal=print):
         ci = cibles[t]
         for k in cal:
             cal[k][t] = cal[k].get(t - 1, 0.0) if ((t > ANNEE_FMI and k in ("recettes", "depenses")) or (t > FIN_OBSERVE and k in CLES_NIVEAU)) else 0.0
-        for it in range(iterations + (8 if t <= FIN_OBSERVE else 0)):
+        for it in range(iterations + (8 if t <= FIN_OBSERVE else 4)):
             r = mod.simuler(range(mod.B + 1, t + 1), ex)
             s = r.loc[t]
             if t <= FIN_OBSERVE:
@@ -238,9 +246,13 @@ def caler(mod, ex, annees, H, iterations=7, journal=print):
                 cal["dette"][t] += ci["dette"] - s.dette
             else:
                 d = ci["pib_croissance"] - (s.pib / r.pib[t - 1] - 1) * 100
-                # demande : consommation et investissement ; la fuite par les importations est compensée par itération
-                cal["c"][t] += 1.0 * d / 100
-                cal["investissement"][t] += 1.0 * d / 100
+                # Audit de novembre 2026 : la consommation suit une cible de taux d'épargne (TAUX_EPARGNE_CIBLE) ; l'écart de
+                # croissance est comblé par l'investissement et les parts de marché à l'exportation. Auparavant, l'écart était
+                # comblé par la consommation et l'investissement, ce qui faisait tomber le taux d'épargne de 17,9 % (2025) à
+                # 11 % (2032), sans fondement.
+                cal["c"][t] += 0.8 * (s.taux_epargne - taux_epargne_cible(t)) / 100
+                cal["investissement"][t] += 1.6 * d / 100
+                cal["x"][t] += 1.6 * d / 100
                 cal["emploi"][t] += 0.8 * (s.chomage - ci["chomage"]) / 100
                 inf = (s.pc / r.pc[t - 1] - 1) * 100
                 cal["prix"][t] += 0.8 * (ci["inflation"] - inf) / 100

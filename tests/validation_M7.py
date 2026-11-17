@@ -162,7 +162,7 @@ def main():
         L += [f"### {titre}", "", "| Équation | Croissance annuelle observée | Simulée | EAM | EAM naïve | Erreur de niveau en fin de période | Naïve |",
               "|---|---|---|---|---|---|---|"]
         for k, e in eqs.items():
-            if k == "transmission":
+            if k in ("transmission", "logement"):     # logement : équation de M14, validée dans 12_audit_mecanismes.md
                 continue
             if k in ("emploi", "prix_va", "investissement"):
                 df = sim_branches(k, e, p, d_sim, f_sim)

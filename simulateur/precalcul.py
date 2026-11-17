@@ -23,9 +23,10 @@ from simulateur import executer as X, catalogue as CAT  # noqa: E402
 
 INDICATEURS = ["pib", "croissance", "emploi", "chomage", "inflation", "pc", "rdb", "salaire", "c", "fbcf", "x", "m",
                "solde_pib", "dette_pib", "recettes_pib", "depenses_pib", "interets_pib", "taux_apparent", "pensions_pib",
-               "retraites_pour_100_actifs", "part_industrie", "emploi_industrie", "population_active"]
+               "retraites_pour_100_actifs", "part_industrie", "emploi_industrie", "population_active", "rnb", "taux_epargne",
+               "solde_exterieur_pib"]
 HORIZON = 2032
-VERSION = "0.4"
+VERSION = "0.5"
 
 
 def main():
