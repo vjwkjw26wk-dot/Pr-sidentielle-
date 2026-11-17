@@ -83,3 +83,24 @@ Dans le modèle bouclé, l'effet d'un changement d'âge sur la production est pr
 2008-2022 à ±2,3 %. Ses effets sont du même ordre que ceux de l'Insee pour la réforme de 2023. M8 n'a pas de
 fermeture d'offre : présenter une seule colonne de PIB serait trompeur.
 **Limites.** Voir `M9_activite_retraites.md` (durée d'assurance, régimes, réversion non représentés).
+
+## A12 — Fermeture d'offre de moyen terme
+
+**Décision (17 novembre 2026).** Le modèle bouclé reste déterminé par la demande à court terme. À moyen terme, l'écart du
+chômage au chômage structurel est résorbé progressivement par un supplément (ou un retrait) de demande intérieure, réparti
+à 60 % sur la consommation et à 40 % sur l'investissement. Ce supplément est piloté par un correcteur proportionnel-intégral :
+- ρ = 0,3 sur l'écart ;
+- amortissement de 1,0 sur sa variation ;
+- loi d'Okun : 1,5 point de PIB par point de chômage.
+
+Ce terme représente les canaux non modélisés : politique monétaire, conditions de crédit, confiance, compétitivité de
+moyen terme.
+**Justification.** C'est la pratique des modèles institutionnels (Mésange, hypothèses du COR) : à long terme, la
+production suit les facteurs disponibles. Sans fermeture, une hausse de la population active n'est absorbée qu'à 10 %
+par les salaires, et le PIB ne réagit pas. Avec ρ = 0,3 :
+- une population active +1 % donne un PIB +0,9 % en trois ans environ ;
+- une hausse durable de la consommation publique de 1 point de PIB a un multiplicateur de 1,4 la première année, qui retombe à 0,2 à moyen terme (éviction) ;
+- les rétrosimulations 2015-2019 et 2023-2024 sont inchangées à 0,4 point près (le chômage y reste proche de son niveau structurel).
+
+**Statut.** Hypothèse de niveau C/D du cahier des charges, non estimée. Les projections l'activent par défaut ; les
+rétrosimulations et le « modèle de demande » la désactivent (ρ = 0). Sensibilité documentée pour ρ = 0,2 à 0,5.

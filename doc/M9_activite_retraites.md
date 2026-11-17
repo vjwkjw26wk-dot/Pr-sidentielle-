@@ -71,25 +71,25 @@ résidant à l'étranger.
 
 ## 3. Variantes (modèle bouclé, base 2022, écarts à la législation actuelle)
 
-Résultats en 2035 :
+Résultats en 2040. Trois lectures du PIB et du solde public :
+- demande seule (ρ = 0) ;
+- fermeture d'offre (ρ = 0,3, décision A12) ;
+- borne offre : la production suit l'emploi immédiatement.
 
-| Variante | Actifs | Emploi | Pensions | PIB, modèle de demande | PIB, borne offre | Solde public, modèle | Solde, borne offre |
-|---|---|---|---|---|---|---|---|
-| Retour à 62 ans | −983 000 | −792 000 | +45 Md€ | +0,25 % | −2,4 % | −1,9 pt | −3,3 pt |
-| Loi de 2023 sans suspension | +32 000 | +24 000 | −0,5 Md€ | ≈ 0 | +0,09 % | +0,05 pt | +0,1 pt |
-| 65 ans | +367 000 | +326 000 | −6,8 Md€ | +0,04 % | +1,0 % | +0,5 pt | +1,0 pt |
+| Variante | Actifs | Emploi (fermeture) | Pensions | PIB : demande / fermeture / borne | Solde public : demande / fermeture / borne |
+|---|---|---|---|---|---|
+| Retour à 62 ans | −1 078 000 | −919 000 | +49 Md€ | +0,1 % / −2,7 % / −2,7 % | −2,1 / −2,0 / −3,6 pt |
+| Loi de 2023 sans suspension | +7 000 | +18 000 | ≈ 0 | ≈ 0 | +0,04 pt |
+| 65 ans | +560 000 | +420 000 | −12 Md€ | +0,1 % / +1,4 % / +1,6 % | +0,8 / +0,6 / +1,6 pt |
 
-Les pensions des variantes sont calculées avec les prix et salaires simulés par M8 dans le compte central.
+Les pensions sont calculées avec les prix et salaires simulés par M8 dans le compte central.
 
-**Lecture.** Les effets sur les pensions et les cotisations sont robustes : ils reposent sur la démographie, les règles
-et des comportements d'activité bien reproduits.
-
-L'effet sur le PIB dépend de la fermeture du modèle :
-- Dans M8, la production est déterminée par la demande. Les seniors maintenus en emploi touchent un salaire mais ne produisent rien de plus. Un retour à 62 ans y paraît même légèrement favorable à court terme : les pensions versées dépassent les salaires perdus.
-- À long terme, la production suit l'emploi disponible : c'est la « borne offre ».
-
-Ces deux colonnes encadrent l'effet. Il manque une fermeture d'offre dans M8 (production potentielle, taux d'utilisation
-des capacités) pour trancher (décision A11).
+**Lecture.**
+- **Robuste** : les effets sur les pensions et les cotisations. Ils reposent sur la démographie, les règles et des comportements d'activité bien reproduits.
+- **Dépendant de la fermeture** : l'effet sur le PIB.
+  - Avec la fermeture d'offre, il rejoint la borne offre en une dizaine d'années.
+  - En demande seule, un retour à 62 ans paraît même neutre, car les pensions versées compensent les salaires perdus.
+- **Solde public** : avec la fermeture, il est plus proche de la colonne « demande ». La demande supplémentaire qui absorbe les actifs vient en partie de dépenses indexées sur le PIB (convention du compte central).
 
 ## 4. Limites
 

@@ -33,6 +33,9 @@ import m7_equations as E
 import m7_series as S
 from telechargement import jsonstat_dict, telecharger
 
+RHO_DEFAUT = 0.3   # fermeture d'offre des projections (sensibilité : 0 et 1)
+AMORTI_FERMETURE = 1.0   # terme proportionnel du correcteur, limite les dépassements (calibré par simulation)
+OKUN = 1.5      # points de PIB par point de chômage (ordre de grandeur des estimations françaises de la loi d'Okun)
 PRODUITS_NM = ["CPA_L68A", "CPA_L68B", "CPA_O", "CPA_P", "CPA_Q86", "CPA_Q87_88"]
 CAT = {"C": ["P3_S14"], "G": ["P3_S13", "P3_S15"], "I": ["P51G"], "S": ["P52", "P53"], "X": ["P6"]}
 
@@ -90,6 +93,7 @@ class Exogenes:
     reindustrialisation: dict = None       # {"produits": {produit: facteur final sur la part importée}, "debut": année,
     #                                        "duree": années de montée en charge, "surcout": surcoût relatif de la VA produite
     #                                        en France à la place des importations}
+    fermeture_offre: float = 0.0           # ρ : part annuelle de l'écart de chômage résorbée (0 = modèle de demande pur)
     emploi_additionnel: pd.Series = None   # emplois (milliers) hors équations de branche : seniors maintenus en emploi (M9)
     ajust_prestations: pd.Series = None    # variation des prestations versées aux ménages (M€ courants), ex. pensions (M9)
     patrimoine_endogene: bool = False      # revenus du patrimoine des ménages par équations estimées (sinon ∝ PIB nominal)
@@ -314,6 +318,17 @@ class Modele:
             pva = {b: H[b]["pva"][t - 1] for b in BR}
             # réindustrialisation : montée en charge progressive, investissement de capacité, surcoût de production
             I_cap, surcout_prod, I_cap_br = 0.0, np.ones(len(P)), {}
+            # fermeture d'offre (option) : une part ρ de l'écart de chômage au chômage structurel de l'année précédente
+            # est résorbée chaque année par un supplément de demande intérieure (canaux non modélisés : politique
+            # monétaire, conditions de crédit, confiance, compétitivité de moyen terme) ; terme intégral (persistant).
+            rho = ex.fermeture_offre or 0.0
+            if rho:
+                u_s = float(ex.chomage_structurel.get(t - 1, ex.chomage_structurel.iloc[-1]))
+                g1 = hist_vol[t - 1]["u"] - u_s
+                g2 = hist_vol[t - 2]["u"] - float(ex.chomage_structurel.get(t - 2, u_s)) if (t - 2) in hist_vol else g1
+                # correcteur proportionnel-intégral (forme incrémentale) : ρ sur l'écart, AMORTI sur sa variation
+                niv["Z"] = niv.get("Z", 0.0) + (rho * g1 + AMORTI_FERMETURE * (g1 - g2)) * OKUN / 100
+            Z_dem = niv.get("Z", 0.0) * (sum(self.va0) + sum(self.tx0))
             if R:
                 prog = min(1.0, max(0.0, (t - R["debut"] + 1) / R.get("duree", 5)))
                 fact_imp = np.array([1 - (1 - R["produits"].get(p, 1.0)) * prog for p in P])
@@ -413,7 +428,8 @@ class Modele:
                 G_idx = float(ex.conso_publique[t]) / float(ex.conso_publique[B])
                 fbcf_br = sum(I_new[b] / self.hist[b].i[B] * self.hist[b].i_cp[B] for b in BR) * conv_I
                 I_tot = fbcf_br + I_autres_B * float(ex.autres_investissements[t]) / float(ex.autres_investissements[B]) + I_cap
-                self.dem = {"C": dem0["C"] * C_cn / m.c[B], "G": dem0["G"] * G_idx, "I": I_tot, "S": dem0["S"], "X": dem0["X"] * X_cn / m.x[B]}
+                self.dem = {"C": dem0["C"] * C_cn / m.c[B] + 0.6 * Z_dem, "G": dem0["G"] * G_idx, "I": I_tot + 0.4 * Z_dem, "S": dem0["S"],
+                            "X": dem0["X"] * X_cn / m.x[B]}
                 # ---- 5. importations (équation agrégée) et production
                 rm = r["importations"]
                 D = sum(w_ * v for w_, v in zip(E.CONTENU_IMPORT.values(), (self.dem["C"] / dem0["C"] * m.c[B], self.dem["G"] / dem0["G"] * m.g[B],
@@ -474,7 +490,7 @@ class Modele:
             etat["phi"] = phi
             fp = self._finances(t, A, niv, mb, ab, ex, w, n_br, n_nm, pc, pib_vol, q_br, pva)
             tuc_m = sum(self._tuc(b, t, q_br[b], H) * H[b]["q"][B] for b in S.TUC_BRANCHE) / sum(H[b]["q"][B] for b in S.TUC_BRANCHE)
-            res.append(dict(annee=t, tuc_industrie=tuc_m, pib=A["pib"][t], c=C_cn, x=X_cn, m=M_cn, fbcf=m.fbcf[B] * I_tot / dem0["I"], emploi=emploi, chomage=u_cur,
+            res.append(dict(annee=t, supplement_demande_fermeture=Z_dem, tuc_industrie=tuc_m, pib=A["pib"][t], c=C_cn, x=X_cn, m=M_cn, fbcf=m.fbcf[B] * I_tot / dem0["I"], emploi=emploi, chomage=u_cur,
                             salaire=w, pc=pc, pva_m=pva_m, px=px, rdb=rdb, phi=phi, **fp))
         self.H, self.A = H, A
         return pd.DataFrame(res).set_index("annee")
@@ -514,6 +530,8 @@ class Modele:
 
     @staticmethod
     def _extra(ex, nom, t):
+        if nom == "emploi_additionnel" and ex.fermeture_offre:
+            return 0.0      # avec fermeture d'offre, les actifs supplémentaires sont absorbés par la production
         v = getattr(ex, nom, None)
         return 0.0 if v is None else float(v.get(t, 0.0))
 
@@ -611,7 +629,8 @@ def exogenes_projection(mod: Modele, annees, **modifs) -> Exogenes:
     """Compte central conventionnel (et non une prévision) : exogènes prolongés à des rythmes moyens.
     Demande mondiale +3 %/an, prix mondiaux et d'importation +1,5 %/an, consommation publique et autres investissements
     +1 %/an en volume, population active +0,3 %/an, chômage structurel 7,5 %, taux long 3,2 %, taux d'IS inchangé,
-    prestations +1,2 %/an en volume (vieillissement), dépenses publiques autres constantes en part du PIB."""
+    prestations +1,2 %/an en volume (vieillissement), dépenses publiques autres constantes en part du PIB ;
+    fermeture d'offre ρ = 0,3 avec amortissement 1,0 (décision A12 ; ρ = 0 pour le modèle de demande pur)."""
     B, m = mod.B, mod.macro
     ans = list(range(B - 3, max(annees) + 1))
     obs = exogenes_observes(mod, [B])
@@ -626,7 +645,8 @@ def exogenes_projection(mod: Modele, annees, **modifs) -> Exogenes:
                   conso_publique=prol(m.g, 0.01), autres_investissements=prol(obs.autres_investissements, 0.01),
                   population_active=prol(obs.population_active, 0.003),
                   chomage_structurel=pd.Series({t: 7.5 for t in ans}), taux_long=pd.Series({t: (m.taux_long[t] if t <= B else 3.2) for t in ans}),
-                  taux_is=pd.Series({t: (S.taux_is().get(t, 25.83)) for t in ans}), prestations_volume=prol(obs.prestations_volume, 0.012))
+                  taux_is=pd.Series({t: (S.taux_is().get(t, 25.83)) for t in ans}), prestations_volume=prol(obs.prestations_volume, 0.012),
+                  fermeture_offre=RHO_DEFAUT)
     for k, v in modifs.items():
         setattr(ex, k, v)
     return ex

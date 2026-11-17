@@ -80,7 +80,8 @@ def variantes():
     g_part = mod.T.Fd.loc[mod.P, ["P3_S13", "P3_S15"]].values.sum() + mod.T.Fm.loc[mod.P, ["P3_S13", "P3_S15"]].values.sum()
     g.conso_publique = g.conso_publique * pd.Series({t: (1 + 0.01 * pibb / g_part if t >= 2024 else 1.0) for t in g.conso_publique.index})
     L = ["## 2. Variantes (écarts au compte central, base 2022, 2023-2030)", "",
-         "Compte central conventionnel, et non une prévision (`exogenes_projection`). Écarts en % (volumes, prix) ou en points.", ""]
+         "Compte central conventionnel, et non une prévision (`exogenes_projection`), avec fermeture d'offre ρ = 0,3 (amortissement 1,0) "
+         "(résorption progressive de l'écart de chômage au chômage structurel, décision A12). Écarts en % (volumes, prix) ou en points.", ""]
     for nom, ex in vs.items():
         t0 = time.time()
         r = mod.simuler(ans, ex)

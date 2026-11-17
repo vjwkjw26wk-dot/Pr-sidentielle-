@@ -39,31 +39,34 @@ Sources : Eurostat `spr_pns_ben` (OLD_TOT, y compris les retraités résidant à
 
 Compte central : législation actuelle (LFSS 2026), population active issue de M9. Les pensions des variantes sont calculées avec les prix et salaires simulés par M8 dans le compte central.
 
-PIB, modèle de demande : M8 tel quel ; les seniors maintenus en emploi perçoivent un salaire (revenu, cotisations) mais la production reste déterminée par la demande. PIB, borne offre : à long terme, la production suit l'emploi (capital ajusté, productivité moyenne) : + Δemploi / emploi ; le solde public gagne alors le taux de prélèvements apparent sur ce surcroît de PIB. La réalité se situe entre les deux, plus près de la borne offre à long terme.
+PIB, modèle de demande : M8 tel quel ; les seniors maintenus en emploi perçoivent un salaire (revenu, cotisations) mais la production reste déterminée par la demande. PIB, borne offre : à long terme, la production suit l'emploi (capital ajusté, productivité moyenne) : + Δemploi / emploi ; le solde public gagne alors le taux de prélèvements apparent sur ce surcroît de PIB. Fermeture d'offre (ρ = 0,3, amortissement 1,0) : M8 avec résorption progressive de l'écart de chômage au chômage structurel (décision A12) ; les actifs supplémentaires sont absorbés par la hausse de la demande et de la production, et non plus ajoutés directement à l'emploi.
 
 ### Retour à 62 ans
 
-| Année | AOD (génération ayant 63 ans) | Actifs (milliers) | Emplois seniors directs | Emploi total | Chômage (pt) | PIB, modèle de demande | PIB, borne offre | Pensions (Md€) | Solde public, modèle (pt de PIB) | Solde, borne offre | Dette, modèle (pt de PIB) |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| 2027 | 62.00 (1964) | -414 | -361 | -332 | -0.16 | +0.15 % | -1.01 % | +17.8 | -0.80 | -1.41 | +2.10 |
-| 2030 | 62.00 (1967) | -738 | -643 | -609 | -0.24 | +0.11 % | -1.92 % | +24.0 | -1.21 | -2.30 | +4.84 |
-| 2035 | 62.00 (1972) | -983 | -855 | -792 | -0.42 | +0.25 % | -2.39 % | +44.8 | -1.88 | -3.31 | +11.21 |
+| Année | AOD (génération ayant 63 ans) | Actifs (milliers) | Emploi : demande / fermeture d'offre | Chômage (pt) : demande / fermeture | PIB : demande / fermeture / borne offre | Pensions (Md€) | Solde public (pt de PIB) : demande / fermeture / borne offre | Dette (pt de PIB) : demande / fermeture |
+|---|---|---|---|---|---|---|---|---|
+| 2027 | 62.00 (1964) | -414 | -332 / -181 | -0.16 / -0.61 | +0.15 % / -0.65 % / -1.01 % | +17.8 | -0.80 / -0.57 / -1.41 | +2.10 / +1.30 |
+| 2030 | 62.00 (1967) | -738 | -609 / -425 | -0.24 / -0.79 | +0.11 % / -1.66 % / -1.92 % | +24.0 | -1.21 / -0.88 / -2.30 | +4.84 / +3.63 |
+| 2035 | 62.00 (1972) | -983 | -792 / -754 | -0.42 / -0.49 | +0.25 % / -2.35 % / -2.39 % | +44.8 | -1.88 / -1.67 / -3.31 | +11.21 / +9.53 |
+| 2040 | 62.00 (1977) | -1078 | -906 / -919 | -0.41 / -0.27 | +0.12 % / -2.66 % / -2.72 % | +48.7 | -2.06 / -1.98 / -3.63 | +17.93 / +17.19 |
 
 ### Loi de 2023 sans suspension
 
-| Année | AOD (génération ayant 63 ans) | Actifs (milliers) | Emplois seniors directs | Emploi total | Chômage (pt) | PIB, modèle de demande | PIB, borne offre | Pensions (Md€) | Solde public, modèle (pt de PIB) | Solde, borne offre | Dette, modèle (pt de PIB) |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| 2027 | 63.00 (1964) | +72 | +62 | +65 | +0.00 | +0.01 % | +0.21 % | -1.1 | +0.09 | +0.20 | -0.28 |
-| 2030 | 63.75 (1967) | +82 | +71 | +75 | +0.00 | +0.01 % | +0.24 % | -1.5 | +0.12 | +0.24 | -0.60 |
-| 2035 | 64.00 (1972) | +32 | +28 | +24 | +0.02 | +0.00 % | +0.09 % | -0.5 | +0.05 | +0.10 | -0.94 |
+| Année | AOD (génération ayant 63 ans) | Actifs (milliers) | Emploi : demande / fermeture d'offre | Chômage (pt) : demande / fermeture | PIB : demande / fermeture / borne offre | Pensions (Md€) | Solde public (pt de PIB) : demande / fermeture / borne offre | Dette (pt de PIB) : demande / fermeture |
+|---|---|---|---|---|---|---|---|---|
+| 2027 | 63.00 (1964) | +72 | +65 / +37 | +0.00 / +0.09 | +0.01 % / +0.17 % / +0.21 % | -1.1 | +0.09 / +0.05 / +0.20 | -0.28 / -0.15 |
+| 2030 | 63.75 (1967) | +82 | +75 / +63 | +0.00 / +0.04 | +0.01 % / +0.22 % / +0.24 % | -1.5 | +0.12 / +0.09 / +0.24 | -0.60 / -0.36 |
+| 2035 | 64.00 (1972) | +32 | +24 / +36 | +0.02 / -0.02 | +0.00 % / +0.07 % / +0.09 % | -0.5 | +0.05 / +0.06 / +0.10 | -0.94 / -0.79 |
+| 2040 | 64.00 (1977) | +7 | +9 / +18 | -0.01 / -0.03 | +0.01 % / +0.03 % / +0.03 % | -0.0 | +0.03 / +0.04 / +0.04 | -1.01 / -1.00 |
 
 ### 65 ans (+3 mois par génération dès 1964)
 
-| Année | AOD (génération ayant 63 ans) | Actifs (milliers) | Emplois seniors directs | Emploi total | Chômage (pt) | PIB, modèle de demande | PIB, borne offre | Pensions (Md€) | Solde public, modèle (pt de PIB) | Solde, borne offre | Dette, modèle (pt de PIB) |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| 2027 | 63.00 (1964) | +72 | +62 | +65 | +0.00 | +0.01 % | +0.21 % | -1.1 | +0.09 | +0.20 | -0.28 |
-| 2030 | 63.75 (1967) | +126 | +110 | +114 | +0.01 | +0.02 % | +0.36 % | -2.2 | +0.17 | +0.36 | -0.67 |
-| 2035 | 65.00 (1972) | +367 | +319 | +326 | +0.06 | +0.04 % | +1.03 % | -6.8 | +0.49 | +1.02 | -2.29 |
+| Année | AOD (génération ayant 63 ans) | Actifs (milliers) | Emploi : demande / fermeture d'offre | Chômage (pt) : demande / fermeture | PIB : demande / fermeture / borne offre | Pensions (Md€) | Solde public (pt de PIB) : demande / fermeture / borne offre | Dette (pt de PIB) : demande / fermeture |
+|---|---|---|---|---|---|---|---|---|
+| 2027 | 63.00 (1964) | +72 | +65 / +37 | +0.00 / +0.09 | +0.01 % / +0.17 % / +0.21 % | -1.1 | +0.09 / +0.05 / +0.20 | -0.28 / -0.15 |
+| 2030 | 63.75 (1967) | +126 | +114 / +66 | +0.01 / +0.15 | +0.02 % / +0.25 % / +0.36 % | -2.2 | +0.17 / +0.09 / +0.36 | -0.67 / -0.36 |
+| 2035 | 65.00 (1972) | +367 | +326 / +202 | +0.06 / +0.41 | +0.04 % / +0.78 % / +1.03 % | -6.8 | +0.49 / +0.29 / +1.02 | -2.29 / -1.49 |
+| 2040 | 65.00 (1977) | +560 | +516 / +420 | +0.07 / +0.30 | +0.09 % / +1.35 % / +1.56 % | -12.2 | +0.81 / +0.58 / +1.63 | -5.21 / -3.52 |
 
-Durée : 40 s.
+Durée : 60 s.
 

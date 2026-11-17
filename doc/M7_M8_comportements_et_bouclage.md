@@ -1,6 +1,6 @@
-# Lot 7 et M8 — Équations de comportement estimées et modèle bouclé (version 0.3)
+# Lot 7 et M8 — Équations de comportement estimées et modèle bouclé (version 0.4)
 
-**État : version 0.3 (v0.2 : délais de transmission des prix, réindustrialisation avec investissement et surcoût ; v0.3 : taux d'utilisation des capacités). Première version complète et testée de bout en bout. C'est un prototype à consolider : plusieurs paramètres
+**État : version 0.3 (v0.2 : délais de transmission des prix, réindustrialisation avec investissement et surcoût ; v0.3 : taux d'utilisation des capacités ; v0.4 : fermeture d'offre de moyen terme). Première version complète et testée de bout en bout. C'est un prototype à consolider : plusieurs paramètres
 clés ne sont pas identifiés sur les données et sont calibrés ; les grands chocs de prix sont mal reproduits.**
 Code : `src/m7_series.py`, `src/m7_equations.py`, `src/m8_modele.py`. Tests : `tests/validation_M7.py`,
 `tests/validation_M8.py`. Rapports : `resultats/validation_M7.md`, `resultats/validation_M8.md`.
@@ -128,6 +128,32 @@ chômage et les salaires. Il n'y a encore ni contrainte de qualification, ni lim
 - **Réindustrialisation** :
   - sans investissement, le taux d'utilisation monte de 4 points la première année, ce qui pousse les prix à la hausse ;
   - avec l'investissement de capacité, il monte d'un point puis redescend à mesure que les capacités arrivent.
+
+### Fermeture d'offre de moyen terme (v0.4, décision A12)
+
+Option `Exogenes.fermeture_offre` (ρ), active par défaut dans les projections (ρ = 0,3) et inactive dans les
+rétrosimulations. Chaque année, un supplément de demande intérieure Z (consommation 60 %, investissement 40 %) évolue
+selon :
+
+ΔZ = [ρ · (u − u*)₍t−1₎ + 1,0 · Δ(u − u*)₍t−1₎] × 1,5 % du PIB.
+
+Le chômage converge ainsi vers le chômage structurel u*.
+
+Tests de comportement (compte central 2023-2040) :
+
+| Choc | Écart de PIB en 2024 | 2026 | 2030 | 2040 |
+|---|---|---|---|---|
+| Population active +1 % dès 2024 | −0,25 % | +0,86 % | +0,87 % | +0,86 % |
+| Consommation publique +1 point de PIB | +1,41 % | +0,42 % | +0,23 % | +0,21 % |
+
+Avec ρ = 0,5, l'ajustement est plus rapide mais dépasse légèrement sa cible ; avec ρ = 0,2, il est plus lent. Les effets
+de long terme des politiques qui modifient l'offre de travail ou la demande dépendent de cette hypothèse. Elle est donc
+toujours présentée avec la variante ρ = 0 (demande seule).
+
+Conséquence sur les variantes de M8 (2030) : la plupart des effets de demande sont fortement réduits à moyen terme.
+- Dépenses publiques : PIB +0,23 %.
+- Réindustrialisation progressive : PIB +0,44 %, contre +1,4 % sans fermeture.
+- Impôt sur les sociétés : investissement +2,3 %, PIB +0,13 %.
 
 ### Essais écartés (17 novembre 2026)
 
