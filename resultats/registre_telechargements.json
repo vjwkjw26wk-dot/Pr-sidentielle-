@@ -53,6 +53,12 @@
   "sha256": "3df14c80f69afb76a8c6d1f13cd2fb9e861ba9e162bc1e516c6fb2ed77338b00",
   "url": "https://static.data.gouv.fr/resources/limpot-sur-le-revenu-par-collectivite-territoriale-ircom/20260526-131537/ircom-2025-revenus-2024.zip"
  },
+ "eurostat_demo_pjan_FR.json": {
+  "date": "2026-11-17T07:43:11",
+  "octets": 67379,
+  "sha256": "cecd3dfcaac298ff7ea2e623e9a6c0c8e70d19de16530ee069d1e2f84fc0b5a6",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_pjan?format=JSON&geo=FR&sex=F&sex=M&sinceTimePeriod=2003&unit=NR&age=Y15&age=Y16&age=Y17&age=Y18&age=Y19&age=Y20&age=Y21&age=Y22&age=Y23&age=Y24&age=Y25&age=Y26&age=Y27&age=Y28&age=Y29&age=Y30&age=Y31&age=Y32&age=Y33&age=Y34&age=Y35&age=Y36&age=Y37&age=Y38&age=Y39&age=Y40&age=Y41&age=Y42&age=Y43&age=Y44&age=Y45&age=Y46&age=Y47&age=Y48&age=Y49&age=Y50&age=Y51&age=Y52&age=Y53&age=Y54&age=Y55&age=Y56&age=Y57&age=Y58&age=Y59&age=Y60&age=Y61&age=Y62&age=Y63&age=Y64&age=Y65&age=Y66&age=Y67&age=Y68&age=Y69&age=Y70&age=Y71&age=Y72&age=Y73&age=Y74&age=Y75&age=Y76&age=Y77&age=Y78&age=Y79&age=Y80&age=Y81&age=Y82&age=Y83&age=Y84&age=Y85&age=Y86&age=Y87&age=Y88&age=Y89&age=Y90&age=Y91&age=Y92&age=Y93&age=Y94&age=Y95&age=Y96&age=Y97&age=Y98&age=Y99"
+ },
  "eurostat_gov_10a_main_FR.json": {
   "date": "2026-11-16T22:15:50",
   "octets": 10514,
@@ -82,6 +88,18 @@
   "octets": 4360,
   "sha256": "978073dcee6556e3d6db180a5cc1e83a95200f558c166dad80672b63e577745f",
   "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lfsa_argan?format=JSON&geo=FR&time=2024&sex=F&sex=M&age=Y15-19&age=Y20-24&age=Y25-29&age=Y30-34&age=Y35-39&age=Y40-44&age=Y45-49&age=Y50-54&age=Y55-59&age=Y60-64&age=Y65-69&age=Y70-74&citizen=TOTAL"
+ },
+ "eurostat_lfsa_argan_FR_long.json": {
+  "date": "2026-11-17T07:43:07",
+  "octets": 12625,
+  "sha256": "841e02e35d1230125e6443fcffc75eef577226996e91575084d2c258fda68c03",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lfsa_argan?format=JSON&geo=FR&sex=F&sex=M&citizen=TOTAL&sinceTimePeriod=2003&age=Y15-19&age=Y20-24&age=Y25-29&age=Y30-34&age=Y35-39&age=Y40-44&age=Y45-49&age=Y50-54&age=Y55-59&age=Y60-64&age=Y65-69&age=Y70-74"
+ },
+ "eurostat_lfsa_ergan_FR_long.json": {
+  "date": "2026-11-17T07:43:09",
+  "octets": 12589,
+  "sha256": "6f4c373864fa1a9cd0346d511c8f89f189aabf714f9ccbd281ddd414268ae15d",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lfsa_ergan?format=JSON&geo=FR&sex=F&sex=M&citizen=TOTAL&sinceTimePeriod=2003&age=Y15-19&age=Y20-24&age=Y25-29&age=Y30-34&age=Y35-39&age=Y40-44&age=Y45-49&age=Y50-54&age=Y55-59&age=Y60-64&age=Y65-69&age=Y70-74"
  },
  "eurostat_lfsi_emp_a_FR.json": {
   "date": "2026-11-16T22:15:55",
@@ -221,6 +239,18 @@
   "sha256": "1dbf2534ca679c5cec2408aa0ad0fbff849f8835654148649c0d34fdd5364a47",
   "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nrg_bal_c?format=JSON&geo=FR&unit=KTOE&siec=TOTAL&siec=O4000XBIO&siec=G3000&siec=E7000&siec=C0000X0350-0370&siec=N900H&siec=RA000&nrg_bal=GIC&nrg_bal=IMP&nrg_bal=EXP&nrg_bal=PPRD&nrg_bal=FC_IND_E&nrg_bal=FC_TRA_E&nrg_bal=FC_OTH_HH_E&nrg_bal=FC_OTH_CP_E&nrg_bal=FC_E&sinceTimePeriod=1990"
  },
+ "eurostat_spr_exp_pens_FR.json": {
+  "date": "2026-11-17T07:43:13",
+  "octets": 12050,
+  "sha256": "bb166ca45b8bd12bad4a893b85078c31383a9c2bb3ca3173330ca4a59dba15c4",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/spr_exp_pens?format=JSON&geo=FR&unit=MIO_EUR&sinceTimePeriod=2000"
+ },
+ "eurostat_spr_pns_ben_FR.json": {
+  "date": "2026-11-17T07:43:12",
+  "octets": 22784,
+  "sha256": "2ad3c28524a9b9c98c31bcc508758da55917f4861d78b61978b7530c31db27ce",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/spr_pns_ben?format=JSON&geo=FR&sinceTimePeriod=2000"
+ },
  "eurostat_une_rt_a_FR.json": {
   "date": "2026-11-16T22:06:29",
   "octets": 4058,
@@ -232,6 +262,12 @@
   "octets": 19692,
   "sha256": "9fb982b55e2bbf193ff96866b14997e34f03c5cd88252d27a6dde021a1125887",
   "url": "https://www.bdm.insee.fr/series/sdmx/data/SERIES_BDM/001688526"
+ },
+ "insee_bdm_001763852.xml": {
+  "date": "2026-11-17T07:46:14",
+  "octets": 49451,
+  "sha256": "134f3d77ef1a824164793f71a8384e24fbd4fd9db4bf4883e06eb93b692854ce",
+  "url": "https://www.bdm.insee.fr/series/sdmx/data/SERIES_BDM/001763852"
  },
  "insee_ip2108.xlsx": {
   "date": "2026-11-16T15:51:09",

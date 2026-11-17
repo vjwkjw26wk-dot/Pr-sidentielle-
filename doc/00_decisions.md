@@ -71,3 +71,15 @@ observées, et la tendance de productivité de chaque branche est un paramètre 
 en cinq ans selon la période d'estimation ; le recalage ramène l'erreur du modèle complet à −0,9 % sur 2015-2019.
 **Limites.** Voir `M7_M8_comportements_et_bouclage.md` : pas de délais de transmission des prix (l'inflation 2023 est
 manquée), pas de contraintes d'offre (les variantes de réindustrialisation sont des majorants), pas de politique monétaire.
+
+## A11 — Activité des seniors et retraites
+
+**Décision (17 novembre 2026).** Les taux d'activité de 55 à 74 ans sont modélisés relativement à l'âge d'ouverture des
+droits de chaque génération (profil estimé sur 2003-2019, part du profil liée à l'AOD estimée à 0,75-0,78). Les pensions
+de droit direct sont calculées par génération (salaire de référence à la liquidation, revalorisation sur les prix).
+Dans le modèle bouclé, l'effet d'un changement d'âge sur la production est présenté sous deux fermetures : demande
+(M8 tel quel) et offre (la production suit l'emploi à long terme).
+**Justification.** Le modèle reproduit les taux d'activité hors échantillon (2020-2025) et la masse des pensions
+2008-2022 à ±2,3 %. Ses effets sont du même ordre que ceux de l'Insee pour la réforme de 2023. M8 n'a pas de
+fermeture d'offre : présenter une seule colonne de PIB serait trompeur.
+**Limites.** Voir `M9_activite_retraites.md` (durée d'assurance, régimes, réversion non représentés).

@@ -90,6 +90,8 @@ class Exogenes:
     reindustrialisation: dict = None       # {"produits": {produit: facteur final sur la part importée}, "debut": année,
     #                                        "duree": années de montée en charge, "surcout": surcoût relatif de la VA produite
     #                                        en France à la place des importations}
+    emploi_additionnel: pd.Series = None   # emplois (milliers) hors équations de branche : seniors maintenus en emploi (M9)
+    ajust_prestations: pd.Series = None    # variation des prestations versées aux ménages (M€ courants), ex. pensions (M9)
     patrimoine_endogene: bool = False      # revenus du patrimoine des ménages par équations estimées (sinon ∝ PIB nominal)
     theta_import: float = None             # part des variations de prix d'importation répercutée l'année même (défaut : estimée)
     phi_impose: pd.Series = None           # facteur commun des parts importées imposé (repris d'un compte central)
@@ -423,7 +425,8 @@ class Modele:
                 q_new = {b: H[b]["q"][B] * va_prod[self.br_prod == b].sum() / self.va_br0[b] for b in BR}
                 q_nm = va_prod[self.br_prod == "NM"].sum()
                 n_nm = self.n_nm0 * q_nm / self.va_br0["NM"]
-                emploi = sum(n_new.values()) + n_nm
+                niv["n_nm"] = n_nm
+                emploi = sum(n_new.values()) + n_nm + self._extra(ex, "emploi_additionnel", t)
                 u_new = 100 * (1 - emploi / float(ex.population_active[t]))
                 # ---- amortissement et convergence
                 ecart = abs(np.log(sum(q_new.values()) / sum(q_br.values()))) + abs(np.log(w_new / w)) + abs(u_new - u_cur) / 100
@@ -469,18 +472,23 @@ class Modele:
         prestations : indexées sur les prix de l'année précédente × volume exogène + allocations chômage ∝ chômeurs ;
         cotisations ∝ rémunérations ; impôts ∝ (rémunérations + revenu mixte + patrimoine + prestations)."""
         B = self.B
-        emploi_t = sum(n_br.values()) + niv["n_nm"]
+        emploi_t = sum(n_br.values()) + niv["n_nm"] + self._extra(ex, "emploi_additionnel", t)
         masse = (w / A["w"][B]) * (emploi_t / A["emploi"][B])
         pib_nom = A["pib_nom_idx"][t]                         # PIB nominal (indice, base B)
         prest = (A["pc"][t - 1] / A["pc"][B]) * float(ex.prestations_volume[t]) / float(ex.prestations_volume[B])
         d1 = mb.d1 * masse
         ebe, d4 = self._revenus_patrimoine(t, A, ex, pc)
         autres = ebe + d4 + (mb.d7 + mb.autres) * pib_nom
-        d62 = mb.d62 * prest
+        d62 = mb.d62 * prest + self._extra(ex, "ajust_prestations", t)
         d61 = mb.d61 * masse * (1 if ex.taux_cotisations is None else float(ex.taux_cotisations.get(t, 1.0)))
         base_imp = (mb.d1 * masse + ebe + d4 + d62)
         d5 = mb.d5 * base_imp / (mb.d1 + mb.ebe + mb.d4 + mb.d62)
         return d1 + autres + d62 - d61 - d5
+
+    @staticmethod
+    def _extra(ex, nom, t):
+        v = getattr(ex, nom, None)
+        return 0.0 if v is None else float(v.get(t, 0.0))
 
     def _revenus_patrimoine(self, t, A, ex, pc):
         """Excédent et revenu mixte, revenus de la propriété nets des ménages.
@@ -509,7 +517,7 @@ class Modele:
         cotisations ∝ masse salariale ; autres recettes ∝ PIB nominal. Dépenses : rémunérations publiques ∝ salaire moyen
         × emploi non marchand ; autres consommations ∝ volume × prix ; prestations ; intérêts = taux apparent × dette."""
         B = self.B
-        emploi_t = sum(n_br.values()) + n_nm
+        emploi_t = sum(n_br.values()) + n_nm + self._extra(ex, "emploi_additionnel", t)
         masse = (w / A["w"][B]) * (emploi_t / A["emploi"][B])
         pib_nom = A["pib_nom_idx"][t]
         cons_nom = A["C"][t] / A["C"][B] * pc / A["pc"][B]
@@ -528,7 +536,7 @@ class Modele:
         d1p = ab.d1pay * (w / A["w"][B]) * (n_nm / self.n_nm0)
         g_vol = float(ex.conso_publique[t]) / float(ex.conso_publique[B])
         p3_autres = (ab.p3 - ab.d1pay) * g_vol * pc / A["pc"][B]
-        d62 = ab.d62pay * prest
+        d62 = ab.d62pay * prest + self._extra(ex, "ajust_prestations", t)
         # taux apparent de la dette : rejoint progressivement le taux de marché (renouvellement d'environ 1/8 de la dette par an)
         if "taux_app" not in niv:
             niv["taux_app"] = ab.d41pay / self.apu.dette[B - 1]

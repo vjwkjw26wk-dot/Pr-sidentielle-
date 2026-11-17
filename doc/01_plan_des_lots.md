@@ -1,13 +1,13 @@
 # Plan des lots et état d'avancement
 
 Statuts : **construit** (code, données, validation chiffrée livrés) · **en partie construit** · **à faire** · **bloqué**.
-Mise à jour : 16 novembre 2026, nuit (prestations v1.1 ; lot 6 ; lot 7 ; modèle bouclé M8 v0.1).
+Mise à jour : 17 novembre 2026 (M8 v0.2 ; M9 activité et retraites v0.1).
 
 | Lot | Contenu | Critère de validation | Statut |
 |---|---|---|---|
 | 0 | Cadre : décisions, registre des données, dépôt, téléchargement scripté avec empreintes | — | construit |
 | 1 | M1 Démographie v2 : cohortes 0-120 ans, méthode Insee 2026, générateur de scénarios ; population active à taux constants | Réplication des scénarios Insee ; identité démographique exacte | **construit** — 29 scénarios reproduits (population totale ≤ 3,4·10⁻⁵) ; générateur exact dans les directions Insee (voir `M1_demographie.md`) |
-| 2 | Taux d'activité par âge sensibles aux règles de retraite ; composition des ménages | Projections de population active de l'Insee ; nombre de ménages observé | à faire |
+| 2 | Taux d'activité par âge sensibles aux règles de retraite ; retraites | Taux d'activité observés (hors échantillon) ; masse des pensions | **en partie construit (M9 v0.1)** — activité des 55-74 ans fonction de l'AOD par génération (estimée 2003-2019 ; hors échantillon 2020-2025 à 0-3 points) ; retraités et pensions de droit direct par génération (2008-2022 à ±2,3 %) ; couplé à M8 ; variantes 62 ans / loi 2023 / 65 ans (voir `M9_activite_retraites.md`). Reste : durée d'assurance, régimes, réversion, composition des ménages |
 | 3 | Cadre comptable T0 : comptes des secteurs, administrations publiques, dette | Identités exactes ; agrégats 2023-2025 reproduits | **en partie construit** — comptes non financiers 2019-2025, patrimoine financier net, dette : identités exactes, agrégats conformes à l'Insee (voir `M3_cadre_comptable.md`). Reste (3b) : bilans par instrument, matrice de qui à qui |
 | 4 | Population de ménages et de foyers fiscaux | Marges publiées reproduites ; biais sur distributions jointes mesurés | **construit pour l'impôt sur le revenu, sous réserve (v1.3)** — vrais ménages du recensement 2022, revenus ancrés sur la DGFiP ; impôt au barème +2 % au total, conforme par décile (test) ; capital et réductions calés ; familles au sens de la CAF et loyers imputés pour les prestations (v1) ; 3 M de foyers hors champ : à faire (voir `M4_population.md`) |
 | 5 | Législation socio-fiscale (OpenFisca-France 177, licence AGPL-3.0) | Cas types ; masses d'impôts et de prestations face aux comptes publics | **en partie construit** — 11 cas types sur 11 conformes à l'euro près ; IR : barème +2 %, impôt net 92,4 contre 91,7 Md€ ; prestations v1.1 (4 sous-échantillons de 0,5 %, erreur d'échantillonnage 1-2 %) : RSA (recours apparent 57 % en foyers, 68 % en masse ; DREES 63-67 %), allocations familiales (4,64 contre 4,7 M), aides au logement (94 % du versé) cohérents ; prime d'activité : éligibles encore sous-estimés d'environ 25 % (cause non tranchée, documentée) ; non-recours et AAH : à faire |
@@ -21,6 +21,6 @@ Depuis le 16 novembre 2026 après-midi, le réseau est ouvert : PyPI, Insee, Eur
 
 **L'espace de travail n'est pas conservé d'une session à l'autre** (le code du lot 1 v1 a été perdu ainsi). Le code est donc versé dans le projet sous `modele/code/`, et les données brutes ne sont jamais conservées : elles sont retéléchargées par script, et leurs empreintes SHA-256 sont consignées dans `modele/resultats/registre_telechargements.json`. Une révision des données publiées est ainsi détectée.
 
-Pour reconstruire : cloner le dépôt (ou copier `modele/code/`), installer `openfisca-france statsmodels pandas scipy openpyxl`, puis exécuter `python3 tests/validation_M1.py`, `python3 tests/validation_M3.py`, `python3 tests/validation_lot5_cas_types.py` , `python3 tests/validation_M4.py`, `validation_prestations.py`, `validation_M5.py`, `validation_M7.py` et `validation_M8.py` (premier lancement de M4 : téléchargement du recensement, 650 Mo, environ 17 min).
+Pour reconstruire : cloner le dépôt (ou copier `modele/code/`), installer `openfisca-france statsmodels pandas scipy openpyxl`, puis exécuter `python3 tests/validation_M1.py`, `python3 tests/validation_M3.py`, `python3 tests/validation_lot5_cas_types.py` , `python3 tests/validation_M4.py`, `validation_prestations.py`, `validation_M5.py`, `validation_M7.py`, `validation_M8.py` et `validation_M9.py` (premier lancement de M4 : téléchargement du recensement, 650 Mo, environ 17 min).
 
 **Dépôt Git** : le code, les tests, la documentation et les rapports sont versionnés dans `vjwkjw26wk-dot/Pr-sidentielle-` (branche `main`), qui fait référence pour le code ; le projet en garde une copie (décision A8).
