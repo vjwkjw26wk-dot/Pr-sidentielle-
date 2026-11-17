@@ -26,11 +26,12 @@ Variable expliquée : Δln prix VA ; 575 observations ; R² = 0.40 ; écart type
 | Variable | Coefficient | Écart type | t |
 |---|---|---|---|
 | const | -0.007 | 0.015 | -0.5 |
-| dlclu | 0.677 | 0.115 | 5.9 |
-| dlq | 0.124 | 0.071 | 1.8 |
-| ecm_1 | -0.115 | 0.056 | -2.0 |
+| dlclu | 0.670 | 0.113 | 5.9 |
+| dlq | 0.109 | 0.072 | 1.5 |
+| tucd | 0.001 | 0.001 | 1.7 |
+| ecm_1 | -0.117 | 0.057 | -2.0 |
 
-Grandeurs dérivées : transmission de court terme du coût salarial unitaire = 0.677 ; effet de court terme de la demande (volume) = 0.124 ; vitesse de retour de la marge λ = -0.115 ; version libre : transmission de long terme (1 = homogénéité) = 0.745.
+Grandeurs dérivées : transmission de court terme du coût salarial unitaire = 0.670 ; effet de court terme de la demande (volume) = 0.109 ; effet d'un point de TUC au-dessus de la normale (industrie) = 0.001 ; vitesse de retour de la marge λ = -0.117 ; version libre : transmission de long terme (1 = homogénéité) = 0.745.
 
 ### Investissement (FBCF en volume), 25 branches : accélérateur
 
@@ -138,7 +139,7 @@ Grandeurs dérivées : transmission immédiate b0 = 0.179 ; transmission l'anné
 | Équation | Croissance annuelle observée | Simulée | EAM | EAM naïve | Erreur de niveau en fin de période | Naïve |
 |---|---|---|---|---|---|---|
 | Emploi (25 branches) | +0.8 % | +1.3 % | 0.5 | 0.6 | +3.7 % | +0.3 % |
-| Prix de la valeur ajoutée (25 branches) | +0.6 % | +1.1 % | 1.1 | 0.5 | +3.3 % | +2.2 % |
+| Prix de la valeur ajoutée (25 branches) | +0.6 % | +1.1 % | 1.2 | 0.5 | +3.5 % | +2.2 % |
 | FBCF des branches marchandes | +2.8 % | +1.5 % | 1.5 | 1.2 | -8.7 % | -0.6 % |
 | FBCF des sociétés non financières | +2.4 % | +1.5 % | 2.3 | 1.1 | -5.8 % | -0.8 % |
 | Salaire moyen par tête | +1.3 % | +1.7 % | 0.7 | 1.1 | +3.3 % | +7.9 % |

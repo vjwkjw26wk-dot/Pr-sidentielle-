@@ -75,9 +75,11 @@ Résultats en 2035 :
 
 | Variante | Actifs | Emploi | Pensions | PIB, modèle de demande | PIB, borne offre | Solde public, modèle | Solde, borne offre |
 |---|---|---|---|---|---|---|---|
-| Retour à 62 ans | −983 000 | −820 000 | +38 Md€ | +0,15 % | −2,5 % | −1,8 pt | −3,2 pt |
-| Loi de 2023 sans suspension | +32 000 | +18 000 | −2,2 Md€ | ≈ 0 | +0,06 % | +0,1 pt | +0,1 pt |
-| 65 ans | +367 000 | +330 000 | −5,9 Md€ | +0,06 % | +1,0 % | +0,5 pt | +1,0 pt |
+| Retour à 62 ans | −983 000 | −792 000 | +45 Md€ | +0,25 % | −2,4 % | −1,9 pt | −3,3 pt |
+| Loi de 2023 sans suspension | +32 000 | +24 000 | −0,5 Md€ | ≈ 0 | +0,09 % | +0,05 pt | +0,1 pt |
+| 65 ans | +367 000 | +326 000 | −6,8 Md€ | +0,04 % | +1,0 % | +0,5 pt | +1,0 pt |
+
+Les pensions des variantes sont calculées avec les prix et salaires simulés par M8 dans le compte central.
 
 **Lecture.** Les effets sur les pensions et les cotisations sont robustes : ils reposent sur la démographie, les règles
 et des comportements d'activité bien reproduits.
@@ -93,5 +95,5 @@ des capacités) pour trancher (décision A11).
 
 - Pas de durée d'assurance, de décote ni de surcote, ni de distinction entre régimes ; les retraites complémentaires sont indexées comme les régimes de base ; pas de réversion.
 - Taux d'activité avant 55 ans maintenus à leur dernier niveau observé ; tendance des sorties précoces gelée après 2025.
-- Prix et salaires utilisés pour les pensions futures : conventionnels, non bouclés avec M8.
+- Prix et salaires des pensions futures : ceux du compte central de M8 (un seul passage, sans itération variante par variante).
 - Pas de solde du système de retraite au sens du Conseil d'orientation des retraites (COR) : les pensions et les cotisations sont incluses dans le compte des administrations publiques de M8.

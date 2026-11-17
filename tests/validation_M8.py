@@ -50,7 +50,8 @@ def retro(base, fin, fin_estimation):
         L.append(f"| {lib} | {go * 100:+.1f} % | {gs * 100:+.1f} % | {(r[v][fin] / o[v][fin] - 1) * 100:+.1f} % |")
     L += [f"| Taux de chômage en {fin} | {o.chomage[fin]:.1f} % | {r.chomage[fin]:.1f} % | {r.chomage[fin] - o.chomage[fin]:+.1f} point |",
           f"| Solde public en {fin} (% du PIB) | {o.solde_pib[fin]:.1f} | {r.solde_pib[fin]:.1f} | {r.solde_pib[fin] - o.solde_pib[fin]:+.1f} point |",
-          f"| Dette publique en {fin} (% du PIB) | {o.dette_pib[fin]:.1f} | {r.dette_pib[fin]:.1f} | {r.dette_pib[fin] - o.dette_pib[fin]:+.1f} points |", ""]
+          f"| Dette publique en {fin} (% du PIB) | {o.dette_pib[fin]:.1f} | {r.dette_pib[fin]:.1f} | {r.dette_pib[fin] - o.dette_pib[fin]:+.1f} points |",
+          f"| Taux d'utilisation des capacités, industrie, en {fin} | {M.S.tuc().manuf[fin]:.1f} % | {r.tuc_industrie[fin]:.1f} % | {r.tuc_industrie[fin] - M.S.tuc().manuf[fin]:+.1f} point |", ""]
     return L
 
 
@@ -83,12 +84,12 @@ def variantes():
     for nom, ex in vs.items():
         t0 = time.time()
         r = mod.simuler(ans, ex)
-        L += [f"### {nom}", "", "| Année | PIB | Consommation | Investissement | Exportations | Importations | Emploi (milliers) | Chômage (pt) | Prix conso. | Salaire | Solde public (pt de PIB) | Dette (pt de PIB) |",
-              "|---|---|---|---|---|---|---|---|---|---|---|---|"]
+        L += [f"### {nom}", "", "| Année | PIB | Consommation | Investissement | Exportations | Importations | Emploi (milliers) | Chômage (pt) | TUC industrie (pt) | Prix conso. | Salaire | Solde public (pt de PIB) | Dette (pt de PIB) |",
+              "|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
         for t in (2024, 2026, 2028, 2030):
             e = lambda v: (r[v][t] / central[v][t] - 1) * 100  # noqa: E731
             L.append(f"| {t} | {e('pib'):+.2f} % | {e('c'):+.2f} % | {e('fbcf'):+.2f} % | {e('x'):+.2f} % | {e('m'):+.2f} % | "
-                     f"{r.emploi[t] - central.emploi[t]:+.0f} | {r.chomage[t] - central.chomage[t]:+.2f} | {e('pc'):+.2f} % | {e('salaire'):+.2f} % | "
+                     f"{r.emploi[t] - central.emploi[t]:+.0f} | {r.chomage[t] - central.chomage[t]:+.2f} | {r.tuc_industrie[t] - central.tuc_industrie[t]:+.1f} | {e('pc'):+.2f} % | {e('salaire'):+.2f} % | "
                      f"{r.solde_pib[t] - central.solde_pib[t]:+.2f} | {r.dette_pib[t] - central.dette_pib[t]:+.2f} |")
         L.append("")
     return L, central

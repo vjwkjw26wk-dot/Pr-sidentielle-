@@ -257,6 +257,36 @@
   "sha256": "6b41e185e1f7ea087ce17b7e74fbccf577c64745e45c859b968df91311c00f9b",
   "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/une_rt_a?format=JSON&geo=FR&age=Y15-74&sex=T&unit=PC_ACT&sinceTimePeriod=1980"
  },
+ "insee_bdm_001586739.xml": {
+  "date": "2026-11-17T08:06:26",
+  "octets": 19789,
+  "sha256": "0f97122885f0c3745e406a234545643734b712701322fde53bf854aa8a2ce70c",
+  "url": "https://www.bdm.insee.fr/series/sdmx/data/SERIES_BDM/001586739"
+ },
+ "insee_bdm_001586741.xml": {
+  "date": "2026-11-17T08:06:26",
+  "octets": 14673,
+  "sha256": "e1294171fc7eecd968d3ee0286c79f885432d6e27f30258ab44323cc3915d204",
+  "url": "https://www.bdm.insee.fr/series/sdmx/data/SERIES_BDM/001586741"
+ },
+ "insee_bdm_001586743.xml": {
+  "date": "2026-11-17T08:06:27",
+  "octets": 14707,
+  "sha256": "54d5cb65fab755275393c3e3ec2aa8221c78a1ad4c8d4b52644baf7e123396ae",
+  "url": "https://www.bdm.insee.fr/series/sdmx/data/SERIES_BDM/001586743"
+ },
+ "insee_bdm_001586745.xml": {
+  "date": "2026-11-17T08:06:27",
+  "octets": 14622,
+  "sha256": "5e55693065ddbf74d6c1ead0936de2a855e8d701b112c4265333ebcfc0fdda01",
+  "url": "https://www.bdm.insee.fr/series/sdmx/data/SERIES_BDM/001586745"
+ },
+ "insee_bdm_001586747.xml": {
+  "date": "2026-11-17T08:06:28",
+  "octets": 14631,
+  "sha256": "fe920aff427157dde070f9911854d1acda95c375a2efbc56e815ab99fa2028de",
+  "url": "https://www.bdm.insee.fr/series/sdmx/data/SERIES_BDM/001586747"
+ },
  "insee_bdm_001688526.xml": {
   "date": "2026-11-16T22:07:55",
   "octets": 19692,

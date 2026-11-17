@@ -55,14 +55,14 @@ def main():
     base = R.liens_m8(mod, ans, "actuelle", "actuelle", act, P, k)
     central = mod.simuler(ans, M8.exogenes_projection(mod, ans, population_active=base["population_active"]))
     L += ["## 3. Variantes de règle de retraite dans le modèle bouclé (écarts à la législation actuelle)", "",
-          "Compte central : législation actuelle (LFSS 2026), population active issue de M9. Prix et salaires de M9 pour "
-          "les pensions : tendance conventionnelle (+1,7 % et +2,7 % par an), non bouclée avec M8 dans cette version.", "",
+          "Compte central : législation actuelle (LFSS 2026), population active issue de M9. Les pensions des variantes sont "
+          "calculées avec les prix et salaires simulés par M8 dans le compte central.", "",
           "PIB, modèle de demande : M8 tel quel ; les seniors maintenus en emploi perçoivent un salaire (revenu, cotisations) mais "
           "la production reste déterminée par la demande. PIB, borne offre : à long terme, la production suit l'emploi "
           "(capital ajusté, productivité moyenne) : + Δemploi / emploi ; le solde public gagne alors le taux de prélèvements "
           "apparent sur ce surcroît de PIB. La réalité se situe entre les deux, plus près de la borne offre à long terme.", ""]
     for nom, regle in (("Retour à 62 ans", "2010"), ("Loi de 2023 sans suspension", "2023"), ("65 ans (+3 mois par génération dès 1964)", "65")):
-        l = R.liens_m8(mod, ans, regle, "actuelle", act, P, k)
+        l = R.liens_m8(mod, ans, regle, "actuelle", act, P, k, central=central)
         r = mod.simuler(ans, M8.exogenes_projection(mod, ans, **l))
         L += [f"### {nom}", "", "| Année | AOD (génération ayant 63 ans) | Actifs (milliers) | Emplois seniors directs | Emploi total | Chômage (pt) | PIB, modèle de demande | PIB, borne offre | Pensions (Md€) | Solde public, modèle (pt de PIB) | Solde, borne offre | Dette, modèle (pt de PIB) |",
               "|---|---|---|---|---|---|---|---|---|---|---|---|"]

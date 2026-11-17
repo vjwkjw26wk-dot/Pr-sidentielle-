@@ -298,13 +298,26 @@ class Pensions:
 # ------------------------------------------------------------------------------------------------------------------
 # 5. Liens avec le modèle bouclé M8
 # ------------------------------------------------------------------------------------------------------------------
-def liens_m8(mod, annees, regle="actuelle", regle_ref="actuelle", act=None, pens=None, part_emploi=None):
+def trajectoires_m8(pens, resultat, pc_base, B):
+    """Prix (indice des prix hors tabac prolongé par l'évolution des prix à la consommation simulés) et salaires moyens
+    simulés par M8 (même définition que l'historique de M9 : rémunérations / salariés des branches marchandes)."""
+    prix = {t: pens._prix(t) for t in range(1940, B + 1)}
+    sal = {t: pens._sal(t) for t in range(1940, B + 1)}
+    for t in resultat.index:
+        prix[t] = pens._prix(B) * resultat.pc[t] / pc_base
+        sal[t] = float(resultat.salaire[t])
+    return prix, sal
+
+
+def liens_m8(mod, annees, regle="actuelle", regle_ref="actuelle", act=None, pens=None, part_emploi=None, central=None):
     """Séries à passer à `m8_modele.Exogenes` pour une règle de retraite :
     - population_active (milliers) : niveau observé de l'année de base × évolution de la population active 15-74 ans
       de M9 (démographie Insee centrale, taux d'activité par âge, règle de retraite) ;
     - emploi_additionnel (milliers) : part `part_emploi` (estimée sur 2010-2019) des actifs seniors supplémentaires par
       rapport à la règle de référence, maintenus en emploi (hors équations de branche) ;
-    - ajust_prestations (M€) : écart de masse des pensions de droit direct par rapport à la règle de référence."""
+    - ajust_prestations (M€) : écart de masse des pensions de droit direct par rapport à la règle de référence, calculé
+      avec les prix et salaires du compte central de M8 (`central`) s'il est fourni, sinon avec des tendances
+      conventionnelles (+1,7 % et +2,7 % par an)."""
     import m8_modele as M8
     act = act or ActiviteSeniors()
     pens = pens or Pensions(act)
@@ -313,6 +326,10 @@ def liens_m8(mod, annees, regle="actuelle", regle_ref="actuelle", act=None, pens
     obs = M8.exogenes_observes(mod, [B]).population_active
     pa_B = act.population_active(B, "actuelle")
     pa, emp, dp = {}, {}, {}
+    kw = {}
+    if central is not None:
+        prix, sal = trajectoires_m8(pens, central, mod.macro.p_c[B], B)
+        kw = {"prix": prix, "salaires": sal}
     for t in range(B - 3, max(annees) + 1):
         if t <= B:
             pa[t] = float(obs[t])
@@ -321,5 +338,5 @@ def liens_m8(mod, annees, regle="actuelle", regle_ref="actuelle", act=None, pens
         pa[t] = float(obs[B]) * pa_r / pa_B
         d = pa_r - act.population_active(t, regle_ref)
         emp[t] = k * d / 1e3
-        dp[t] = (pens.masse(t, regle)[1] - pens.masse(t, regle_ref)[1]) / 1e6
+        dp[t] = (pens.masse(t, regle, **kw)[1] - pens.masse(t, regle_ref, **kw)[1]) / 1e6
     return dict(population_active=pd.Series(pa), emploi_additionnel=pd.Series(emp), ajust_prestations=pd.Series(dp))

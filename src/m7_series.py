@@ -166,3 +166,21 @@ def demande_mondiale_adressee() -> pd.DataFrame:
     idx = np.exp(np.log1p(d.croissance / 100).cumsum())
     d["indice"] = idx / idx[2015] * 100
     return d
+
+
+TUC_IDBANK = {"manuf": "001586739", "agro": "001586741", "equip": "001586743", "transport": "001586745", "autres": "001586747"}
+TUC_BRANCHE = {"C10-C12": "agro", "C26": "equip", "C27": "equip", "C28": "equip", "C29_C30": "transport",
+               "C13-C15": "autres", "C16-C18": "autres", "C20": "autres", "C21": "autres", "C22_C23": "autres",
+               "C24_C25": "autres", "C31-C33": "autres", "C19": "manuf"}
+
+
+def tuc() -> pd.DataFrame:
+    """Taux d'utilisation des capacités de production (%, CVS, moyenne annuelle des enquêtes trimestrielles de
+    conjoncture dans l'industrie, Insee), industrie manufacturière et quatre regroupements."""
+    out = {}
+    for k, idb in TUC_IDBANK.items():
+        s = bdm(idb)
+        s = s.groupby(s.index.str[:4]).mean()
+        s.index = s.index.astype(int)
+        out[k] = s
+    return pd.DataFrame(out)

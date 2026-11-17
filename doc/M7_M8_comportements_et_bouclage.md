@@ -1,6 +1,6 @@
-# Lot 7 et M8 — Équations de comportement estimées et modèle bouclé (version 0.2)
+# Lot 7 et M8 — Équations de comportement estimées et modèle bouclé (version 0.3)
 
-**État : version 0.2 (délais de transmission des prix, réindustrialisation avec investissement et surcoût). Première version complète et testée de bout en bout. C'est un prototype à consolider : plusieurs paramètres
+**État : version 0.3 (v0.2 : délais de transmission des prix, réindustrialisation avec investissement et surcoût ; v0.3 : taux d'utilisation des capacités). Première version complète et testée de bout en bout. C'est un prototype à consolider : plusieurs paramètres
 clés ne sont pas identifiés sur les données et sont calibrés ; les grands chocs de prix sont mal reproduits.**
 Code : `src/m7_series.py`, `src/m7_equations.py`, `src/m8_modele.py`. Tests : `tests/validation_M7.py`,
 `tests/validation_M8.py`. Rapports : `resultats/validation_M7.md`, `resultats/validation_M8.md`.
@@ -32,7 +32,7 @@ l'autocorrélation (Newey-West).
 |---|---|---|
 | Emploi par branche (personnes) | Élasticité de court terme à la production 0,26 (t = 6) ; retour vers la cible au rythme de 21 % par an ; long terme proportionnel à la production, corrigé d'une tendance de productivité propre à chaque branche | **estimé** ; rendements constants imposés (la version libre donne 0,44, biaisée par la colinéarité avec les tendances) |
 | — effet du coût réel du travail | Élasticité de long terme −0,4 | **calibré** : non identifié (la version libre donne −0,21, non robuste) ; valeur au milieu des estimations françaises de l'élasticité de substitution capital-travail |
-| Prix de la valeur ajoutée par branche | Transmission immédiate du coût salarial unitaire 0,68 (t = 6) ; homogénéité de long terme imposée (la version libre donne 0,75) ; retour de la marge vers sa norme de 12 % par an | **estimé** |
+| Prix de la valeur ajoutée par branche | Transmission immédiate du coût salarial unitaire 0,67 (t = 6) ; homogénéité de long terme imposée (la version libre donne 0,75) ; retour de la marge vers sa norme de 12 % par an ; v0.3 : un point de taux d'utilisation des capacités au-dessus de la normale relève les prix de la valeur ajoutée industrielle de 0,15 % (t = 1,7 ; 0,27 %, t = 3,1, sur 1997-2012) | **estimé** ; effet des capacités faible et peu précis |
 | Investissement par branche | Accélérateur : élasticité de court terme à la production 0,67 (t = 3,3), effet retardé 0,26 | **estimé** |
 | Investissement des sociétés non financières (agrégat) | Élasticité de long terme au coût d'usage du capital −0,18 (t = −3) ; effet du taux de marge positif mais non significatif | **estimé, fragile** (23 observations ; prévision hors échantillon médiocre) |
 | Salaire moyen par tête (secteur marchand) | Indexation de court terme sur les prix à la consommation 0,39 ; retour de la part des salaires vers sa norme de 9 % par an | **estimé** |
@@ -98,6 +98,7 @@ chômage et les salaires. Il n'y a encore ni contrainte de qualification, ni lim
 | Salaire moyen | +5,2 % | −2,8 % |
 | Revenu disponible brut | +0,1 % | −7,9 % |
 | Chômage ; solde public ; dette | +0,4 pt ; 0,0 pt ; +1,9 pt | +0,6 pt ; +1,7 pt ; +2,0 pt |
+| **v0.3** : PIB ; emploi ; prix ; dette | +0,1 % ; 0,0 % ; +0,5 % ; +0,4 pt | −3,5 % ; −0,6 % ; −2,9 % ; +2,0 pt |
 
 **Lecture.**
 - **2015-2019, régime ordinaire** : le modèle bouclé reproduit la croissance, l'emploi, les prix et le solde public à moins de 1,5 % ou 0,5 point près sur cinq ans. Il surestime la croissance des salaires d'environ 1 point par an.
@@ -107,6 +108,26 @@ chômage et les salaires. Il n'y a encore ni contrainte de qualification, ni lim
     - Les exportations sont mal suivies. La demande mondiale approchée par les importations de l'Union européenne baisse en 2023, alors que les exportations françaises progressent (aéronautique, énergie).
     - Le revenu des ménages est sous-estimé. Les revenus de la propriété (+15 % par an, avec la hausse des taux) et les loyers imputés ne sont indexés que sur le PIB nominal.
     - Par conséquent, le PIB est trop bas.
+
+### Capacités de production (v0.3)
+
+- **Données** : taux d'utilisation des capacités de l'industrie manufacturière et de quatre regroupements de branches (enquête trimestrielle de conjoncture dans l'industrie de l'Insee, CVS, 1990-2025).
+- **Dans le modèle** :
+  - le taux d'utilisation des 13 branches industrielles = production / capacité, normalisé au niveau observé de l'année de base ;
+  - la capacité suit le capital installé en début d'année, avec une tendance de productivité du capital estimée sur les 8 dernières années observées ;
+  - l'investissement de capacité de la réindustrialisation s'ajoute au capital des branches concernées.
+- **Effets estimés** :
+  - prix de la valeur ajoutée : effet faible, ci-dessus ;
+  - investissement : aucun effet propre une fois l'accélérateur pris en compte ;
+  - importations : effet de signe contraire à l'attendu, non significatif.
+  Seul l'effet sur les prix est donc retenu.
+- **Conséquence** : sur ces données annuelles, la contrainte de capacité est faible. Le modèle reste principalement tiré par la demande, et une fermeture d'offre reste nécessaire pour le long terme (variantes de retraite, décision A11).
+- **Rétrosimulation** :
+  - 2015-2019 un peu améliorée : PIB +0,1 %, emploi 0,0 %, dette +0,4 point ;
+  - le taux d'utilisation simulé reste 3,6 points sous l'observé en 2019 : la tendance de capacité est mal estimée sur une base qui inclut la crise de 2009.
+- **Réindustrialisation** :
+  - sans investissement, le taux d'utilisation monte de 4 points la première année, ce qui pousse les prix à la hausse ;
+  - avec l'investissement de capacité, il monte d'un point puis redescend à mesure que les capacités arrivent.
 
 ### Essais écartés (17 novembre 2026)
 
@@ -155,8 +176,8 @@ Effets à cinq ans (2028) :
 ## 6. Suite
 
 1. Exportations : traitement spécifique des grands contrats (aéronautique) et des prix des concurrents hors énergie.
-2. Contraintes d'offre : taux d'utilisation des capacités et capital par branche dans les décisions d'investissement et
-   de prix ; qualifications ; mécanisme expliquant la substitution aux importations (coûts relatifs, aides).
+2. Fermeture d'offre de long terme (production potentielle, retour progressif vers le plein emploi des facteurs),
+   qualifications, mécanisme expliquant la substitution aux importations (coûts relatifs, aides).
 3. Activité et retraites : population active issue de M1 et des taux d'activité par âge sensibles aux règles de retraite ;
    pensions, cotisations, dépenses de retraite.
 4. Comptes physiques de l'énergie (`nrg_bal_c`, téléchargé) reliés aux branches.

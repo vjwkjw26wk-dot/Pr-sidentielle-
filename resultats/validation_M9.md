@@ -37,7 +37,7 @@ Sources : Eurostat `spr_pns_ben` (OLD_TOT, y compris les retraités résidant à
 
 ## 3. Variantes de règle de retraite dans le modèle bouclé (écarts à la législation actuelle)
 
-Compte central : législation actuelle (LFSS 2026), population active issue de M9. Prix et salaires de M9 pour les pensions : tendance conventionnelle (+1,7 % et +2,7 % par an), non bouclée avec M8 dans cette version.
+Compte central : législation actuelle (LFSS 2026), population active issue de M9. Les pensions des variantes sont calculées avec les prix et salaires simulés par M8 dans le compte central.
 
 PIB, modèle de demande : M8 tel quel ; les seniors maintenus en emploi perçoivent un salaire (revenu, cotisations) mais la production reste déterminée par la demande. PIB, borne offre : à long terme, la production suit l'emploi (capital ajusté, productivité moyenne) : + Δemploi / emploi ; le solde public gagne alors le taux de prélèvements apparent sur ce surcroît de PIB. La réalité se situe entre les deux, plus près de la borne offre à long terme.
 
@@ -45,25 +45,25 @@ PIB, modèle de demande : M8 tel quel ; les seniors maintenus en emploi perçoiv
 
 | Année | AOD (génération ayant 63 ans) | Actifs (milliers) | Emplois seniors directs | Emploi total | Chômage (pt) | PIB, modèle de demande | PIB, borne offre | Pensions (Md€) | Solde public, modèle (pt de PIB) | Solde, borne offre | Dette, modèle (pt de PIB) |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 2027 | 62.00 (1964) | -414 | -361 | -337 | -0.14 | +0.13 % | -1.03 % | +16.6 | -0.77 | -1.39 | +2.06 |
-| 2030 | 62.00 (1967) | -738 | -643 | -618 | -0.22 | +0.07 % | -1.96 % | +22.0 | -1.17 | -2.26 | +4.74 |
-| 2035 | 62.00 (1972) | -983 | -855 | -820 | -0.34 | +0.15 % | -2.49 % | +38.4 | -1.77 | -3.20 | +10.93 |
+| 2027 | 62.00 (1964) | -414 | -361 | -332 | -0.16 | +0.15 % | -1.01 % | +17.8 | -0.80 | -1.41 | +2.10 |
+| 2030 | 62.00 (1967) | -738 | -643 | -609 | -0.24 | +0.11 % | -1.92 % | +24.0 | -1.21 | -2.30 | +4.84 |
+| 2035 | 62.00 (1972) | -983 | -855 | -792 | -0.42 | +0.25 % | -2.39 % | +44.8 | -1.88 | -3.31 | +11.21 |
 
 ### Loi de 2023 sans suspension
 
 | Année | AOD (génération ayant 63 ans) | Actifs (milliers) | Emplois seniors directs | Emploi total | Chômage (pt) | PIB, modèle de demande | PIB, borne offre | Pensions (Md€) | Solde public, modèle (pt de PIB) | Solde, borne offre | Dette, modèle (pt de PIB) |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 2027 | 63.00 (1964) | +72 | +62 | +65 | +0.00 | +0.01 % | +0.21 % | -1.0 | +0.09 | +0.20 | -0.28 |
-| 2030 | 63.75 (1967) | +82 | +71 | +74 | +0.01 | +0.01 % | +0.23 % | -1.8 | +0.13 | +0.25 | -0.59 |
-| 2035 | 64.00 (1972) | +32 | +28 | +18 | +0.03 | -0.02 % | +0.06 % | -2.2 | +0.08 | +0.13 | -0.96 |
+| 2027 | 63.00 (1964) | +72 | +62 | +65 | +0.00 | +0.01 % | +0.21 % | -1.1 | +0.09 | +0.20 | -0.28 |
+| 2030 | 63.75 (1967) | +82 | +71 | +75 | +0.00 | +0.01 % | +0.24 % | -1.5 | +0.12 | +0.24 | -0.60 |
+| 2035 | 64.00 (1972) | +32 | +28 | +24 | +0.02 | +0.00 % | +0.09 % | -0.5 | +0.05 | +0.10 | -0.94 |
 
 ### 65 ans (+3 mois par génération dès 1964)
 
 | Année | AOD (génération ayant 63 ans) | Actifs (milliers) | Emplois seniors directs | Emploi total | Chômage (pt) | PIB, modèle de demande | PIB, borne offre | Pensions (Md€) | Solde public, modèle (pt de PIB) | Solde, borne offre | Dette, modèle (pt de PIB) |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 2027 | 63.00 (1964) | +72 | +62 | +65 | +0.00 | +0.01 % | +0.21 % | -1.0 | +0.09 | +0.20 | -0.28 |
-| 2030 | 63.75 (1967) | +126 | +110 | +115 | +0.01 | +0.02 % | +0.36 % | -2.4 | +0.18 | +0.36 | -0.66 |
-| 2035 | 65.00 (1972) | +367 | +319 | +330 | +0.05 | +0.06 % | +1.04 % | -5.9 | +0.47 | +1.00 | -2.25 |
+| 2027 | 63.00 (1964) | +72 | +62 | +65 | +0.00 | +0.01 % | +0.21 % | -1.1 | +0.09 | +0.20 | -0.28 |
+| 2030 | 63.75 (1967) | +126 | +110 | +114 | +0.01 | +0.02 % | +0.36 % | -2.2 | +0.17 | +0.36 | -0.67 |
+| 2035 | 65.00 (1972) | +367 | +319 | +326 | +0.06 | +0.04 % | +1.03 % | -6.8 | +0.49 | +1.02 | -2.29 |
 
-Durée : 36 s.
+Durée : 40 s.
 

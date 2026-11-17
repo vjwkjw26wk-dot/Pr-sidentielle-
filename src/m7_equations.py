@@ -120,9 +120,21 @@ def emploi(p, debut=DEBUT, fin=FIN, sigma=SIGMA_TRAVAIL, mesure="n") -> Equation
 #    Δln pva = a_i + α0 Δln clu + α1 Δln q + λ [ln pva − ln clu]_{t−1}
 #    Long terme : prix = coût salarial unitaire × marge propre à la branche (homogénéité testée).
 # --------------------------------------------------------------------------------------------------------------
+def tension_capacites(d) -> pd.Series:
+    """Écart du taux d'utilisation des capacités (enquête Insee) à sa moyenne 1995-2019 de la branche, en points ;
+    0 pour les branches hors industrie manufacturière (pas d'enquête)."""
+    T = S.tuc()
+    moy = T.loc[1995:2019].mean()
+    return pd.Series([float(T.loc[a, S.TUC_BRANCHE[b]] - moy[S.TUC_BRANCHE[b]]) if (b in S.TUC_BRANCHE and a in T.index) else 0.0
+                      for b, a in zip(d.branche, d.annee)], index=d.index)
+
+
 def prix_va(p, debut=DEBUT, fin=FIN) -> Equation:
+    """Δln pva = a_i + α0 Δln clu + α1 Δln q + γ (TUC − TUC moyen) + λ [ln pva − ln clu]_{t−1}
+    γ : tension sur les capacités (industrie manufacturière, enquête Insee ; nulle ailleurs)."""
     d = _prep_panel(p, debut, fin)
-    X = pd.DataFrame({"dlclu": d.dlclu, "dlq": d.dlq, "ecm_1": d.lpva_1 - d.lclu_1})
+    d["tucd"] = tension_capacites(d)
+    X = pd.DataFrame({"dlclu": d.dlclu, "dlq": d.dlq, "tucd": d.tucd, "ecm_1": d.lpva_1 - d.lclu_1})
     X = pd.concat([X, pd.get_dummies(d.branche, prefix="fe", drop_first=True, dtype=float)], axis=1)
     ok = X.notna().all(axis=1)
     r = sm.WLS(d.dlpva[ok], sm.add_constant(X[ok]), weights=_poids_branche(d)[ok]).fit(cov_type="cluster", cov_kwds={"groups": d.annee[ok]})
@@ -131,6 +143,7 @@ def prix_va(p, debut=DEBUT, fin=FIN) -> Equation:
     return Equation("Prix de la valeur ajoutée, 25 branches", "Δln prix VA", r,
                     {"transmission de court terme du coût salarial unitaire": r.params["dlclu"],
                      "effet de court terme de la demande (volume)": r.params["dlq"],
+                     "effet d'un point de TUC au-dessus de la normale (industrie)": r.params["tucd"],
                      "vitesse de retour de la marge λ": r.params["ecm_1"],
                      "version libre : transmission de long terme (1 = homogénéité)": -rl.params["lclu_1"] / rl.params["lpva_1"]})
 

@@ -166,6 +166,18 @@ class Modele:
         ans_g = [t for t in range(B - 10, B + 1) if t not in (2020, 2021, 2022)][-8:]
         re, rp, ri = (self.eq[k].res.params for k in ("emploi", "prix_va", "investissement"))
         self.c_emp, self.c_prix, self.c_inv, self.g_prod = {}, {}, {}, {}
+        # taux d'utilisation des capacités (industrie manufacturière, enquête Insee) : niveau de base, moyenne de
+        # référence 1995-2019 et croissance tendancielle de la capacité à capital donné (g_cap)
+        TUC = S.tuc()
+        self.tuc_moy = TUC.loc[1995:2019].mean()
+        self.tuc_B, self.g_cap = {}, {}
+        for b, grp in S.TUC_BRANCHE.items():
+            h = self.hist[b]
+            serie = TUC[grp]
+            self.tuc_B[b] = float(serie[B])
+            self.g_cap[b] = float(np.mean([np.log(h.q[t] / h.q[t - 1]) - np.log(h.k[t - 1] / h.k[t - 2]) - np.log(serie[t] / serie[t - 1])
+                                           for t in ans_g]))
+        tucd = lambda b, t: float(TUC.loc[t, S.TUC_BRANCHE[b]] - self.tuc_moy[S.TUC_BRANCHE[b]]) if b in S.TUC_BRANCHE else 0.0  # noqa: E731
         for b in self.BR:
             h = self.hist[b]
             ln, lq, lpva, li, lk = np.log(h.n), np.log(h.q), np.log(h.va_cp / h.q), np.log(h.i), np.log(h.k)
@@ -179,7 +191,7 @@ class Modele:
                 res_e.append((ln[t] - ln[t - 1]) - (re["dlq"] * (lq[t] - lq[t - 1]) + re["dlq_1"] * (lq[t - 1] - lq[t - 2])
                                                    + re["dlh_1"] * (ln[t - 1] - ln[t - 2]) + re["ecm_1"] * z))
                 res_p.append((lpva[t] - lpva[t - 1]) - (rp["dlclu"] * (lclu[t] - lclu[t - 1]) + rp["dlq"] * (lq[t] - lq[t - 1])
-                                                       + rp["ecm_1"] * (lpva[t - 1] - lclu[t - 1])))
+                                                       + rp.get("tucd", 0.0) * tucd(b, t) + rp["ecm_1"] * (lpva[t - 1] - lclu[t - 1])))
                 res_i.append((li[t] - li[t - 1]) - (ri["dlq"] * (lq[t] - lq[t - 1]) + ri["dlq_1"] * (lq[t - 1] - lq[t - 2])
                                                    + ri["li_1"] * li[t - 1] + ri["lk_1"] * lk[t - 1] + ri["lq_1"] * lq[t - 1]))
             self.c_emp[b], self.c_prix[b], self.c_inv[b] = map(lambda v: float(np.mean(v)), (res_e, res_p, res_i))
@@ -301,13 +313,15 @@ class Modele:
             w = A["w"][t - 1]
             pva = {b: H[b]["pva"][t - 1] for b in BR}
             # réindustrialisation : montée en charge progressive, investissement de capacité, surcoût de production
-            I_cap, surcout_prod = 0.0, np.ones(len(P))
+            I_cap, surcout_prod, I_cap_br = 0.0, np.ones(len(P)), {}
             if R:
                 prog = min(1.0, max(0.0, (t - R["debut"] + 1) / R.get("duree", 5)))
                 fact_imp = np.array([1 - (1 - R["produits"].get(p, 1.0)) * prog for p in P])
                 croiss_m = hist_vol[t - 1]["M"] / M_B
                 va_cap = (1 - fact_imp) * imp_prod0 * croiss_m * self.av      # VA des capacités nouvelles (prix de base)
-                I_cap = float((kappa * np.maximum(va_cap - va_cap_prec, 0) + delta_k * kappa * va_cap_prec).sum())
+                I_cap_prod = kappa * np.maximum(va_cap - va_cap_prec, 0) + delta_k * kappa * va_cap_prec
+                I_cap = float(I_cap_prod.sum())
+                I_cap_br = {b: float(I_cap_prod[self.br_prod == b].sum()) for b in BR}
                 surcout_prod = 1 + R.get("surcout", 0.0) * np.divide(va_cap, self.va0, out=np.zeros(len(P)), where=self.va0 > 0)
                 va_cap_t = va_cap
             for it in range(iterations):
@@ -358,7 +372,9 @@ class Modele:
                     # prix de la VA
                     clu = cn * n_new[b] / q_br[b]
                     clu1 = cn_1 * hb["n"][t - 1] / hb["q"][t - 1]
-                    dp = self.c_prix[b] + rp["dlclu"] * np.log(clu / clu1) + rp["dlq"] * (lq - lq1) + rp["ecm_1"] * (np.log(hb["pva"][t - 1]) - np.log(clu1))
+                    tucd_b = self._tuc(b, t, q_br[b], H) - self.tuc_moy[S.TUC_BRANCHE[b]] if b in S.TUC_BRANCHE else 0.0
+                    dp = (self.c_prix[b] + rp["dlclu"] * np.log(clu / clu1) + rp["dlq"] * (lq - lq1) + rp.get("tucd", 0.0) * tucd_b
+                          + rp["ecm_1"] * (np.log(hb["pva"][t - 1]) - np.log(clu1)))
                     pva_new[b] = hb["pva"][t - 1] * np.exp(dp)
                     # investissement (accélérateur) + coût d'usage
                     di = (self.c_inv[b] + ri["dlq"] * (lq - lq1) + ri["dlq_1"] * (lq1 - lq2) + ri["li_1"] * np.log(hb["i"][t - 1])
@@ -442,7 +458,10 @@ class Modele:
                 hb["q"][t], hb["n"][t], hb["pva"][t], hb["i"][t] = q_br[b], n_br[b], pva[b], I_new[b]
                 hb["cn"][t] = hb["cn"][B] * w / A["w"][B]
                 delta = 1 - (self.hist[b].k[B] - self.hist[b].i[B]) / self.hist[b].k[B - 1]
-                hb["k"][t] = hb["k"][t - 1] * (1 - delta) + I_new[b]
+                # capital : investissement de la branche + investissement de capacité (réindustrialisation), converti
+                # des prix de base du tableau en volume des comptes de branche au prorata de la FBCF de base
+                i_cap_vol = I_cap_br.get(b, 0.0) * self.hist[b].i[B] / max(self.hist[b].i_cp[B] * conv_I, 1e-9)
+                hb["k"][t] = hb["k"][t - 1] * (1 - delta) + I_new[b] + i_cap_vol
             A["w"][t], A["pva_m"][t], A["prod_m"][t], A["pc"][t] = w, pva_m, prod_m, pc
             A["C"][t], A["rdb"][t], A["X"][t], A["M"][t], A["u"][t] = C_cn, rdb, X_cn, M_cn, u_cur
             A["px"][t], A["pm_agg"][t], A["D"][t], A["ppib"][t] = px, pm_agg, D, ppib_est
@@ -454,7 +473,8 @@ class Modele:
                            "q": dict(q_br), "q_nm": q_nm, "n_nm": n_nm, "u": u_cur}
             etat["phi"] = phi
             fp = self._finances(t, A, niv, mb, ab, ex, w, n_br, n_nm, pc, pib_vol, q_br, pva)
-            res.append(dict(annee=t, pib=A["pib"][t], c=C_cn, x=X_cn, m=M_cn, fbcf=m.fbcf[B] * I_tot / dem0["I"], emploi=emploi, chomage=u_cur,
+            tuc_m = sum(self._tuc(b, t, q_br[b], H) * H[b]["q"][B] for b in S.TUC_BRANCHE) / sum(H[b]["q"][B] for b in S.TUC_BRANCHE)
+            res.append(dict(annee=t, tuc_industrie=tuc_m, pib=A["pib"][t], c=C_cn, x=X_cn, m=M_cn, fbcf=m.fbcf[B] * I_tot / dem0["I"], emploi=emploi, chomage=u_cur,
                             salaire=w, pc=pc, pva_m=pva_m, px=px, rdb=rdb, phi=phi, **fp))
         self.H, self.A = H, A
         return pd.DataFrame(res).set_index("annee")
@@ -484,6 +504,13 @@ class Modele:
         base_imp = (mb.d1 * masse + ebe + d4 + d62)
         d5 = mb.d5 * base_imp / (mb.d1 + mb.ebe + mb.d4 + mb.d62)
         return d1 + autres + d62 - d61 - d5
+
+    def _tuc(self, b, t, q, H):
+        """TUC simulé : TUC_B × (production / production de base) / (capacité / capacité de base), capacité ∝ capital
+        installé en début d'année × exp(g_cap (t − B))."""
+        B = self.B
+        cap = (H[b]["k"][t - 1] / H[b]["k"][B - 1]) * np.exp(self.g_cap[b] * (t - B))
+        return self.tuc_B[b] * (q / H[b]["q"][B]) / cap
 
     @staticmethod
     def _extra(ex, nom, t):
