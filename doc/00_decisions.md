@@ -104,3 +104,19 @@ par les salaires, et le PIB ne réagit pas. Avec ρ = 0,3 :
 
 **Statut.** Hypothèse de niveau C/D du cahier des charges, non estimée. Les projections l'activent par défaut ; les
 rétrosimulations et le « modèle de demande » la désactivent (ρ = 0). Sensibilité documentée pour ρ = 0,2 à 0,5.
+
+## A13 — Couplage micro-macro par variations de montants
+
+**Décision (17 novembre 2026).** Une réforme socio-fiscale est évaluée en deux temps.
+1. M4 et OpenFisca calculent, ménage par ménage, la variation statique de l'impôt sur le revenu et des prestations
+   (revenus 2024, législation actuelle contre réforme). Les prestations sont converties en montants versés par le recours
+   apparent mesuré en législation actuelle.
+2. Ces variations, indexées sur le PIB nominal, entrent dans les revenus des ménages et les comptes publics de M8.
+
+Le sens inverse (revalorisation des revenus de M4 par M8) est reporté.
+**Justification.** OpenFisca à cette taille d'échantillon demande plusieurs minutes et environ 3 Go par calcul. Il ne peut
+pas tourner à chaque itération annuelle de M8. Le transfert de montants conserve le détail législatif et la
+distribution, tout en gardant M8 rapide. L'erreur liée à l'absence de revalorisation reste du second ordre pour des
+réformes paramétriques évaluées sur quelques années.
+**Limites.** Voir `M10_couplage_micro_macro.md`. La sensibilité de l'impôt aux seuils du barème est sous-estimée
+d'environ 30 % par rapport aux chiffrages officiels.

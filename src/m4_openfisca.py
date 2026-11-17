@@ -14,10 +14,46 @@ _TBS = None
 
 
 def tbs():
+    """Système socio-fiscal. Si la variable d'environnement M4_REFORME désigne un fichier JSON
+    {"debut": "AAAA-MM-JJ", "parametres": {chemin: valeur}}, les paramètres sont modifiés à partir de cette date
+    (réforme paramétrique ; voir `appliquer_reforme`)."""
     global _TBS
     if _TBS is None:
+        import json
+        import os
         _TBS = FranceTaxBenefitSystem()
+        chemin = os.environ.get("M4_REFORME")
+        if chemin:
+            r = json.loads(open(chemin, encoding="utf-8").read())
+            appliquer_reforme(_TBS, r["parametres"], r.get("debut", "2024-01-01"))
     return _TBS
+
+
+def noeud(parametres, chemin: str):
+    """Paramètre OpenFisca désigné par un chemin pointé ; « brackets[i] » sélectionne une tranche de barème."""
+    import re
+    n = parametres
+    for morceau in chemin.split("."):
+        m = re.fullmatch(r"(\w+)\[(\d+)\]", morceau)
+        if m:
+            n = getattr(n, m.group(1))[int(m.group(2))]
+        else:
+            n = getattr(n, morceau)
+    return n
+
+
+def appliquer_reforme(T, parametres: dict, debut: str = "2024-01-01"):
+    """Modifie en place les paramètres de T : {chemin: valeur} (valeur absolue) ou {chemin: {"facteur": x}} (valeur
+    de la législation en vigueur multipliée par x)."""
+    from openfisca_core import periods
+    for chemin, v in parametres.items():
+        p = noeud(T.parameters, chemin)
+        d = debut
+        if isinstance(v, dict):
+            d = v.get("debut", debut)
+            v = p(d) * v["facteur"] if "facteur" in v else v["valeur"]
+        p.update(start=periods.instant(d), value=v)
+    return T
 
 
 STATUT = {"1": "marie", "2": "pacse", "3": "celibataire", "4": "veuf", "5": "divorce", "6": "celibataire"}

@@ -93,6 +93,7 @@ class Exogenes:
     reindustrialisation: dict = None       # {"produits": {produit: facteur final sur la part importée}, "debut": année,
     #                                        "duree": années de montée en charge, "surcout": surcoût relatif de la VA produite
     #                                        en France à la place des importations}
+    mesure_menages: dict = None            # {"impots": ΔM€, "prestations": ΔM€} de la microsimulation (M10), indexés sur le PIB nominal
     fermeture_offre: float = 0.0           # ρ : part annuelle de l'écart de chômage résorbée (0 = modèle de demande pur)
     emploi_additionnel: pd.Series = None   # emplois (milliers) hors équations de branche : seniors maintenus en emploi (M9)
     ajust_prestations: pd.Series = None    # variation des prestations versées aux ménages (M€ courants), ex. pensions (M9)
@@ -515,10 +516,11 @@ class Modele:
         d1 = mb.d1 * masse
         ebe, d4 = self._revenus_patrimoine(t, A, ex, pc)
         autres = ebe + d4 + (mb.d7 + mb.autres) * pib_nom
-        d62 = mb.d62 * prest + self._extra(ex, "ajust_prestations", t)
+        mm = ex.mesure_menages or {}
+        d62 = mb.d62 * prest + self._extra(ex, "ajust_prestations", t) + mm.get("prestations", 0.0) * self._idx_mesure(mm, pib_nom)
         d61 = mb.d61 * masse * (1 if ex.taux_cotisations is None else float(ex.taux_cotisations.get(t, 1.0)))
         base_imp = (mb.d1 * masse + ebe + d4 + d62)
-        d5 = mb.d5 * base_imp / (mb.d1 + mb.ebe + mb.d4 + mb.d62)
+        d5 = mb.d5 * base_imp / (mb.d1 + mb.ebe + mb.d4 + mb.d62) + mm.get("impots", 0.0) * self._idx_mesure(mm, pib_nom)
         return d1 + autres + d62 - d61 - d5
 
     def _tuc(self, b, t, q, H):
@@ -527,6 +529,11 @@ class Modele:
         B = self.B
         cap = (H[b]["k"][t - 1] / H[b]["k"][B - 1]) * np.exp(self.g_cap[b] * (t - B))
         return self.tuc_B[b] * (q / H[b]["q"][B]) / cap
+
+    def _idx_mesure(self, mm, pib_nom):
+        """Montant d'une mesure évaluée sur les revenus de l'année mm["annee"], indexé sur le PIB nominal simulé."""
+        a = mm.get("annee", self.B)
+        return pib_nom * self.macro.pib_cp[self.B] / self.macro.pib_cp[a]
 
     @staticmethod
     def _extra(ex, nom, t):
@@ -573,7 +580,9 @@ class Modele:
         tau, tau0 = float(ex.taux_is.get(t, ex.taux_is.iloc[-1])), float(ex.taux_is.get(B, 25.0))
         is0 = 0.15 * ab.d5rec                                   # part de l'IS dans les impôts courants sur le revenu (≈ 15 % ; ordre de grandeur, à caler sur les comptes de l'État)
         is_t = is0 * (ebe_m / ebe_m0) * (tau / tau0)
+        mm = ex.mesure_menages or {}
         d5_men = (ab.d5rec - is0) * (mb.d1 * masse + A["ebe"][t] + A["d4"][t] + mb.d62 * prest) / (mb.d1 + mb.ebe + mb.d4 + mb.d62)
+        d5_men += mm.get("impots", 0.0) * self._idx_mesure(mm, pib_nom)
         d2 = ab.d2rec * cons_nom
         d61 = ab.d61rec * masse * (1 if ex.taux_cotisations is None else float(ex.taux_cotisations.get(t, 1.0)))
         autres_r = (ab.tr - ab.d2rec - ab.d5rec - ab.d61rec) * pib_nom
@@ -581,7 +590,7 @@ class Modele:
         d1p = ab.d1pay * (w / A["w"][B]) * (n_nm / self.n_nm0)
         g_vol = float(ex.conso_publique[t]) / float(ex.conso_publique[B])
         p3_autres = (ab.p3 - ab.d1pay) * g_vol * pc / A["pc"][B]
-        d62 = ab.d62pay * prest + self._extra(ex, "ajust_prestations", t)
+        d62 = ab.d62pay * prest + self._extra(ex, "ajust_prestations", t) + mm.get("prestations", 0.0) * self._idx_mesure(mm, pib_nom)
         # taux apparent de la dette : rejoint progressivement le taux de marché (renouvellement d'environ 1/8 de la dette par an)
         if "taux_app" not in niv:
             niv["taux_app"] = ab.d41pay / self.apu.dette[B - 1]
