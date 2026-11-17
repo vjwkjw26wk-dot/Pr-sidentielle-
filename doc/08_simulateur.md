@@ -4,7 +4,8 @@
 modèles (M1, M4, M8-M12). Le résultat est restitué dans un fichier JSON et dans une page HTML autonome, avec la fiche
 de transparence exigée par le cahier des charges (§ 17.1).
 
-Il n'y a pas encore de service en ligne : ni serveur, ni comptes, ni file d'attente de calculs.
+Il n'y a pas encore de service public en ligne. Un serveur de calcul exact tourne en local ; sa recette de
+déploiement en conteneur est prête (`09_deploiement.md`).
 Code : dossier `simulateur/`. Exemples : dossier `scenarios/`.
 
 ## 0. Interface de test
@@ -78,16 +79,16 @@ Code : dossier `simulateur/`. Exemples : dossier `scenarios/`.
 
 | Groupe | Curseurs | Traitement |
 |---|---|---|
-| Dépenses publiques | emplois publics ; point d'indice ; santé, éducation, défense, autres (Md€) ; investissement public | consommation publique (M8, M11) ; investissement : demande et dépense, sans effet de long terme sur la productivité |
-| Impôts des ménages | taux des tranches 1 à 4 de l'IR ; revalorisation des seuils ; CSG sur l'activité et sur les pensions ; TVA (taux normal) | IR : OpenFisca ; CSG : microdonnées, assiettes calées sur les totaux nationaux ; TVA : rendement agrégé, répercussion sur les prix de 80 %, répartition selon la consommation |
+| Dépenses publiques | emplois publics ; point d'indice ; santé, éducation, défense, autres (Md€) ; investissement public | consommation publique (M8, M11) ; investissement : demande, dépense et effet d'offre du capital public (v0.4) ; logements sociaux (v0.4) |
+| Impôts des ménages | taux des tranches 1 à 4 de l'IR ; revalorisation des seuils ; CSG sur l'activité et sur les pensions ; TVA (taux normal ; taux réduits en v0.4) | IR : OpenFisca ; CSG : microdonnées, assiettes calées sur les totaux nationaux ; TVA : rendement agrégé, répercussion sur les prix de 80 %, répartition selon la consommation |
 | Capital et patrimoine | flat tax ; ISF ; successions ; IS | assiettes agrégées et M13 ; IS : coût d'usage (M8) |
-| Entreprises et travail | cotisations patronales ; SMIC ; hausse générale des salaires ; relocalisation industrielle | coût du travail (M8) ; diffusion du SMIC : 11 % de la masse salariale (hypothèse D) |
+| Entreprises et travail | cotisations patronales ; SMIC ; hausse générale des salaires ; relocalisation industrielle ; durée légale du travail (v0.4) ; droits de douane hors UE (v0.4) | coût du travail (M8) ; diffusion du SMIC : 11 % de la masse salariale (hypothèse D) ; durée du travail : 70 % de la baisse absorbée sans embauche (D) ; douanes : prix d'importation et riposte stylisée (D) |
 | Prestations | RSA ; prime d'activité ; allocations familiales ; aides au logement ; minimum vieillesse ; allocations chômage ; transferts | OpenFisca, ou variation proportionnelle des montants calculés ; chômage : dépense et chômage structurel (0,1 point pour 10 %) |
 | Retraites | âge légal (progressif ou immédiat) ; indexation des pensions | M9, par génération |
 | Environnement | taxe carbone ; prix de l'énergie importée | prix et recettes (M8) ; tableaux entrées-sorties (M5) |
 
-Non modélisés à ce stade : durée du travail (32 heures), droits de douane, TVA à taux réduits, logement social, mesures
-réglementaires.
+Non modélisés à ce stade : mesures réglementaires (normes, droit du travail, urbanisme), politique migratoire,
+fiscalité locale, dépenses par fonction avec des effets propres (santé, éducation).
 
 ## 1. Utilisation
 
@@ -99,12 +100,19 @@ python3 -m simulateur.executer scenarios/exemple_A_relance.json
 Format du scénario :
 
 ```json
-{"nom": "...", "description": "...", "base": 2022, "horizon": 2030,
- "hypotheses": {"fermeture_offre": 0.15, "europe": true, "incertitude": 0, "profils": true},
- "mesures": [{"type": "depense_publique", "parametres": {"points_pib": 1.0, "debut": 2024}}, ...]}
+{"nom": "...", "description": "...", "horizon": 2032,
+ "hypotheses": {"fermeture_offre": 0.15, "europe": true, "incertitude": 0, "profils": true, "reference": "inchangee"},
+ "mesures": [{"type": "depense_publique", "parametres": {"points_pib": 1.0, "debut": 2028}}, ...]}
 ```
 
-`incertitude` donne le nombre de tirages Monte-Carlo (0 = aucun ; 20 à 40 recommandés ; environ 15 s par tirage).
+ou, depuis l'interface (bouton « Copier le scénario ») :
+
+```json
+{"horizon": 2032, "hypotheses": {...}, "curseurs": [{"cle": "sante", "valeur": 10}, {"cle": "age_legal", "valeur": 62}]}
+```
+
+`incertitude` donne le nombre de tirages Monte-Carlo (0 = aucun ; 20 à 40 recommandés ; 15 à 60 s par tirage).
+`reference` : `inchangee`, `oat_bas`, `oat_haut` ou `redressement` (voir `M8_reference.md`).
 
 ## 2. Catalogue des mesures (`simulateur/catalogue.py`)
 
@@ -119,8 +127,12 @@ Format du scénario :
 | `energie_import` | choc de prix (environnement) | M5, M8 | A, B |
 | `reindustrialisation` | objectif de substitution d'importations | M5, M8 | D |
 | `salaires` | hausse générale ponctuelle | M8 | B |
+| `csg`, `tva`, `tva_reduite`, `taxe_carbone`, `pfu`, `isf`, `successions` | prélèvements (v0.3-0.4) | M10 (microdonnées), M8, M13 | A à D selon la mesure |
+| `cotisations_employeurs`, `smic`, `temps_travail`, `droits_douane` | travail et commerce (v0.3-0.4) | M8 | B, D |
+| `depense_fonction`, `emploi_public`, `point_indice`, `investissement_public`, `logements_sociaux` | dépenses (v0.3-0.4) | M8, M11 | B, D |
+| `aides_logement`, `minimum_vieillesse`, `assurance_chomage`, `indexation_pensions` | prestations et pensions (v0.3) | M4, M9, M10, M8 | A, B, D |
 
-Chaque mesure porte ses limites propres. Elles sont reproduites dans la restitution.
+Chaque mesure porte ses limites propres (`catalogue.MESURES`). Elles sont reproduites dans la restitution.
 
 ## 3. Contenu de la restitution
 
@@ -173,17 +185,16 @@ Aucune note globale n'est attribuée.
 
 ## 6. Reste à faire avant une ouverture au public
 
-1. **Interface.**
-   - Comparaison de scénarios côte à côte.
-   - Intervalles d'incertitude dans la page.
-   - Prise en compte des interactions sans serveur local : grille croisée, ou calcul à la demande hébergé.
-2. **Catalogue.** Durée du travail, droits de douane, taux réduits de TVA, logement, mesures réglementaires.
-3. **Profils types.** Les étendre à la CSG, à la TVA et aux pensions.
-4. **Ménages.** Distribution de la TVA et de la taxe carbone à partir des enquêtes Budget de famille, au lieu de taux
-   d'épargne approchés.
-5. **Trajectoire de référence.**
-   - Sensibilité au taux de l'OAT.
-   - Emploi industriel par branche.
-   - Normes de dépense de la loi de programmation.
-6. **Revue scientifique externe** des modèles et du catalogue, avant toute diffusion.
-7. **Versionnement** des résultats et des données.
+1. **Relecture scientifique externe** (`10_dossier_relecture.md`). Elle ne peut pas être conduite par l'équipe qui a
+   construit le modèle.
+2. **Mise en ligne d'un service public de calcul exact** (`09_deploiement.md`) : hébergement, file d'attente, cache des
+   scénarios. Il faut un serveur et une décision du porteur du projet.
+3. **Incertitude propre à chaque mesure**, au lieu d'un rapport médian commun.
+4. **Compléments de modélisation** :
+   - normes de dépense de la loi de programmation ;
+   - courbe de taux à terme ;
+   - effets propres des dépenses de santé et d'éducation ;
+   - émissions de gaz à effet de serre ;
+   - loyers.
+5. **Validation distributive** : comparaison avec l'enquête Revenus fiscaux et sociaux ; exécution croisée de variantes
+   publiées par Mésange et l'OFCE.

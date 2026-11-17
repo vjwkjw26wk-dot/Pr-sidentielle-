@@ -1,6 +1,6 @@
-# Lot 7 et M8 — Équations de comportement estimées et modèle bouclé (version 0.4)
+# Lot 7 et M8 — Équations de comportement estimées et modèle bouclé (version 0.5)
 
-**État : version 0.3 (v0.2 : délais de transmission des prix, réindustrialisation avec investissement et surcoût ; v0.3 : taux d'utilisation des capacités ; v0.4 : fermeture d'offre de moyen terme). Première version complète et testée de bout en bout. C'est un prototype à consolider : plusieurs paramètres
+**État : version 0.5 (v0.2 : délais de transmission des prix, réindustrialisation avec investissement et surcoût ; v0.3 : taux d'utilisation des capacités ; v0.4 : fermeture d'offre de moyen terme ; v0.5 : équation de consommation corrigée, termes de calage et d'ancrage, mesures en niveau — TVA, carbone, point d'indice, impôts des ménages — ; trajectoire de référence : `M8_reference.md`). Première version complète et testée de bout en bout. C'est un prototype à consolider : plusieurs paramètres
 clés ne sont pas identifiés sur les données et sont calibrés ; les grands chocs de prix sont mal reproduits.**
 Code : `src/m7_series.py`, `src/m7_equations.py`, `src/m8_modele.py`. Tests : `tests/validation_M7.py`,
 `tests/validation_M8.py`. Rapports : `resultats/validation_M7.md`, `resultats/validation_M8.md`.
@@ -141,6 +141,7 @@ Profils de réponse (calibrage de phase 7) :
 | Choc | 1 an | 2 ans | 3 ans | 5 ans | 7 ans | 12 ans |
 |---|---|---|---|---|---|---|
 | Consommation publique +1 pt de PIB : écart de PIB | +1,40 % | +0,91 % | +0,77 % | +0,52 % | +0,39 % | +0,31 % |
+| — v0.5 (consommation corrigée, référence recalée 2028-2032) | +1,21 % | +0,85 % | +0,76 % | +0,59 % | — | — |
 | Demande seule (ρ = 0) | +1,39 % | +1,38 % | +1,36 % | +1,30 % | +1,24 % | +1,13 % |
 | Population active +1 % : écart de PIB | −0,25 % | — | +0,56 % | +0,76 % | +0,82 % | +0,81 % |
 

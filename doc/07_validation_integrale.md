@@ -77,7 +77,8 @@ Les paramètres estimés sont tirés dans leur loi estimée. Les paramètres cal
   - grands chocs de prix (2022-2024) ;
   - exportations en période de reprise sectorielle (aéronautique) ;
   - revenus du patrimoine ;
-  - réactions comportementales aux réformes socio-fiscales (non modélisées) ;
+  - réactions comportementales aux réformes socio-fiscales : prises en compte pour les hauts revenus et les patrimoines
+    (M13, élasticités de la littérature, en fourchette), pas pour l'offre de travail des autres ménages ;
   - flux physiques d'énergie et de matières (non modélisés) ;
   - long terme au-delà de 10 ans (volumes non chaînés).
 
@@ -89,7 +90,7 @@ Les paramètres estimés sont tirés dans leur loi estimée. Les paramètres cal
 | Données ouvertes, reproductibilité | oui : téléchargement scripté, empreintes, tests rejouables, dépôt Git |
 | Cohérence comptable | oui : identités vérifiées (M3, M5, M8) |
 | Validation rétrospective sur plusieurs années | oui pour 2015-2019 ; échec documenté pour 2023-2024 |
-| Incertitudes | partiel : paramètres seulement |
+| Incertitudes | partiel : paramètres seulement ; marges affichées dans l'interface (§ 5 bis) |
 | Comparaison à des modèles de référence | partielle : multiplicateurs comparés aux publications, pas d'exécution croisée |
 | Neutralité | oui : mêmes méthodes pour toutes les mesures ; pas de note globale ; exemples de scénarios symétriques |
 | Distinction entre résultats robustes et dépendants d'hypothèses | oui : section 4 et fiche de transparence de chaque simulation |
