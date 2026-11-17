@@ -25,13 +25,14 @@ INDICATEURS = ["pib", "croissance", "emploi", "chomage", "inflation", "pc", "rdb
                "solde_pib", "dette_pib", "recettes_pib", "depenses_pib", "interets_pib", "taux_apparent", "pensions_pib",
                "retraites_pour_100_actifs", "part_industrie", "emploi_industrie", "population_active"]
 HORIZON = 2032
+VERSION = "0.4"
 
 
 def main():
     sortie = RACINE / "outputs" / "variantes_elementaires.json"
     res = json.loads(sortie.read_text()) if sortie.exists() else {}
-    if res.get("version") != "0.3":
-        res = {"version": "0.3", "variantes": {}}
+    if res.get("version") != VERSION:
+        res = {"version": VERSION, "variantes": {}}
     t0 = time.time()
     seule = sys.argv[1:]
     hyp = {"europe": True, "incertitude": 0, "profils": True}
@@ -43,6 +44,15 @@ def main():
         res["libelles"] = {i: X.VARIABLES[i] for i in INDICATEURS}
         res["transparence"] = r["transparence"]
         sortie.write_text(json.dumps(res, ensure_ascii=False, default=float), encoding="utf-8")
+    import m8_reference as RF
+    res.setdefault("references", {})
+    for nom, lib in RF.VARIANTES_REFERENCE.items():
+        if nom in res["references"] or (seule and "references" not in seule):
+            continue
+        r = X.executer({"nom": nom, "horizon": HORIZON, "hypotheses": {**hyp, "reference": nom, "profils": False}, "mesures": []})
+        res["references"][nom] = {"libelle": lib, "niveaux": {i: r["trajectoires"][i]["reference"] for i in INDICATEURS}}
+        sortie.write_text(json.dumps(res, ensure_ascii=False, default=float), encoding="utf-8")
+        print(f"référence {nom}", flush=True)
     for c in CAT.CURSEURS:
         cle = c["cle"]
         if seule and cle not in seule:

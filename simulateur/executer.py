@@ -40,6 +40,12 @@ RENDEMENT_SUCCESSIONS = 18_000.0  # M€ (droits de mutation à titre gratuit)
 DEPENSE_ASSURANCE_CHOMAGE = 40_000.0
 EFFET_CHOMAGE_STRUCTUREL = 0.1    # points de chômage structurel pour 10 % de variation des allocations (hypothèse D, 0-0,3)
 DEPENSE_ASPA = 4_100.0
+RENDEMENT_POINT_TVA_REDUITE, PART_TAUX_REDUITS = 5_000.0, 0.35
+COMPENSATION_PRODUCTIVITE_HORAIRE = 0.7   # part de la baisse de durée absorbée sans embauche : productivité horaire, intensification, heures supplémentaires (35 heures : environ 350 000 emplois pour −10 % d'heures ; hypothèse D)
+PART_HORS_UE, REPERCUSSION_DOUANE, RECETTE_NETTE_DOUANE = 0.45, 0.8, 0.38
+PART_EXPORT_HORS_UE, ELAST_EXPORT_DOUANE = 0.40, 0.8
+COUT_LOGEMENT_SOCIAL, SUBVENTION_LOGEMENT = 170.0, 0.25    # k€ par logement ; part financée par la dépense publique
+ELAST_CAPITAL_PUBLIC, PART_CAPITAL_PUBLIC, DEPRECIATION_PUBLIQUE = 0.08, 0.55, 0.04
 DEBUT_DEFAUT = 2028      # premier budget voté après l'élection présidentielle de 2027
 HORIZON_DEFAUT = 2032    # fin du mandat
 VARIABLES = {"pib": "PIB en volume (M€ 2015)", "c": "Consommation des ménages", "fbcf": "Investissement", "x": "Exportations",
@@ -111,10 +117,14 @@ def construire(scenario: dict, mod, central=None, journal=None):
     ages = [m for m in mesures if m["type"] == "age_legal"]
     import m8_reference as RF
     R = RF.compte_reference(mod, range(mod.B + 1, max(2035, max(ans)) + 1), journal=(journal.append if journal is not None else (lambda *a: None)))
-    ref = copy.deepcopy(R["exogenes"])
+    nom_ref = scenario.get("hypotheses", {}).get("reference", "inchangee")
+    ref = RF.exogenes_variante(mod, range(mod.B + 1, max(2035, max(ans)) + 1), nom_ref,
+                               journal=(journal.append if journal is not None else (lambda *a: None)))
+    info["reference"] = RF.VARIANTES_REFERENCE[nom_ref]
     ref.fermeture_offre = rho
     var = copy.deepcopy(ref)
-    central = R["trajectoire"] if central is None else central
+    if central is None:
+        central = R["trajectoire"] if nom_ref == "inchangee" else mod.simuler(range(mod.B + 1, max(2035, max(ans)) + 1), ref)
     info["pensions_reference"] = R["pensions"]
     if ages:
         import m9_retraites as R9
@@ -171,6 +181,18 @@ def construire(scenario: dict, mod, central=None, journal=None):
             md = float(p["md"])
             f = 1 + md * 1e3 / float(m_.p_fbcf[A0]) / float(var.autres_investissements[A0])
             var.autres_investissements = pd.Series({a: v * (f if a >= debut else 1.0) for a, v in var.autres_investissements.items()})
+            # effet d'offre du capital public : élasticité de la production au capital public 0,08 (Bom et Ligthart
+            # 2014, méta-analyse ; 0,12 pour les infrastructures), capital public net ≈ 55 % du PIB, dépréciation 4 %/an,
+            # capital productif l'année suivant l'investissement ; transmis comme gain de productivité par tête
+            kg, niv_prev, prod = 0.0, 0.0, {}
+            for a in sorted(idx_nom):
+                niv_a = ELAST_CAPITAL_PUBLIC / PART_CAPITAL_PUBLIC * kg / (pib0 / 1e3) if a > debut else 0.0
+                prod[a] = niv_a - niv_prev
+                niv_prev = niv_a
+                kg = kg * (1 - DEPRECIATION_PUBLIQUE) + (md if a >= debut else 0.0)
+            base_p = var.productivite if var.productivite is not None else pd.Series(dtype=float)
+            var.productivite = pd.Series({a: float(base_p.get(a, 0.0)) + prod.get(a, 0.0) for a in var.population_active.index})
+            info["statique"]["capital_public_productivite_%"] = {int(a): float(sum(v for b2, v in prod.items() if b2 <= a) * 100) for a in prod}
             base_r = var.autres_depenses_pib
             var.autres_depenses_pib = pd.Series({a: float(base_r.get(a, ratio0)) + (md * 1e3 / pib0 if a >= debut else 0.0)
                                                  for a in var.population_active.index})
@@ -199,8 +221,40 @@ def construire(scenario: dict, mod, central=None, journal=None):
             rec = float(p["points"]) * RENDEMENT_POINT_TVA
             ajouter_niveau("impots_produits", debut, rec / float(apu.d2rec[A0]))
             ajouter_niveau("prix_conso", debut, float(np.log1p(REPERCUSSION_TVA * PART_TAUX_NORMAL * float(p["points"]) / 120)))
-            extras.append(("consommation", -rec))
+            extras.append(("tva_normale", -rec))
             comport["tva_M€"] = rec
+        elif t == "tva_reduite":
+            rec = float(p["points"]) * RENDEMENT_POINT_TVA_REDUITE
+            ajouter_niveau("impots_produits", debut, rec / float(apu.d2rec[A0]))
+            ajouter_niveau("prix_conso", debut, float(np.log1p(REPERCUSSION_TVA * PART_TAUX_REDUITS * float(p["points"]) / 108)))
+            extras.append(("tva_reduite", -rec))
+        elif t == "temps_travail":
+            dh = float(p["heures"]) / 35.0 - 1.0
+            n = int(p.get("montee", 2))
+            perte = (1 - COMPENSATION_PRODUCTIVITE_HORAIRE) * dh          # productivité par tête (log approx.)
+            base_p = var.productivite if var.productivite is not None else pd.Series(dtype=float)
+            var.productivite = pd.Series({a: float(base_p.get(a, 0.0)) + (perte / n if debut <= a < debut + n else 0.0)
+                                          for a in var.population_active.index})
+            # fonction publique : embauches compensatrices (coût en points de PIB)
+            cout = -perte * float(apu.d1pay[A0]) / pib0 * 100
+            var.conso_publique = _serie_g(mod, var, cout, debut)
+            comport["temps_travail_productivite_%"] = perte * 100
+        elif t == "droits_douane":
+            tau = float(p["taux"])
+            f = 1 + tau * PART_HORS_UE * REPERCUSSION_DOUANE
+            for prod in var.prix_import.columns:
+                var.prix_import[prod] = [x * (f if a >= debut else 1.0) for a, x in zip(var.prix_import.index, var.prix_import[prod])]
+            ajouter_recette_apu(debut, tau * PART_HORS_UE * float(m_.m_cp[A0]) * RECETTE_NETTE_DOUANE)
+            if p.get("riposte", True):
+                g = 1 - ELAST_EXPORT_DOUANE * tau * PART_EXPORT_HORS_UE
+                var.demande_mondiale = pd.Series({a: v * (g if a >= debut else 1.0) for a, v in var.demande_mondiale.items()})
+        elif t == "logements_sociaux":
+            md = float(p["milliers"]) * COUT_LOGEMENT_SOCIAL / 1e3
+            f = 1 + md * 1e3 / float(m_.p_fbcf[A0]) / float(var.autres_investissements[A0])
+            var.autres_investissements = pd.Series({a: v * (f if a >= debut else 1.0) for a, v in var.autres_investissements.items()})
+            base_r = var.autres_depenses_pib
+            var.autres_depenses_pib = pd.Series({a: float(base_r.get(a, ratio0)) + (SUBVENTION_LOGEMENT * md * 1e3 / pib0 if a >= debut else 0.0)
+                                                 for a in var.population_active.index})
         elif t == "taxe_carbone":
             rec = float(p["euros_tonne"]) * RENDEMENT_EURO_TONNE
             ajouter_niveau("impots_produits", debut, rec / float(apu.d2rec[A0]))
@@ -260,7 +314,7 @@ def construire(scenario: dict, mod, central=None, journal=None):
     if choc_w:
         var.choc_salaire = pd.Series(choc_w)
     if niveaux:
-        var.niveaux = niveaux
+        var.niveaux = {**(var.niveaux or {}), **niveaux}
     # --- mesures des ménages : microsimulation (OpenFisca) et mesures analytiques sur les mêmes microdonnées
     reforme, calc = CAT.reforme_openfisca(mesures)
     csg = [m for m in mesures if m["type"] == "csg"]
@@ -322,6 +376,24 @@ def construire(scenario: dict, mod, central=None, journal=None):
     return ref, var, ans, info
 
 
+VERSION_MODELE = "0.4"
+
+
+def empreintes() -> dict:
+    """Version du modèle et empreintes du code et des données (reproductibilité, version 0.4) : SHA-256 tronqué de
+    chaque module de src/ et simulateur/, et du registre des téléchargements (chaque fichier de données y figure
+    avec son URL, sa date et son SHA-256)."""
+    import hashlib
+    import pathlib as _p
+    rac = _p.Path(__file__).resolve().parents[1]
+    code = {f"{d}/{f.name}": hashlib.sha256(f.read_bytes()).hexdigest()[:12]
+            for d in ("src", "simulateur") for f in sorted((rac / d).glob("*.py"))}
+    reg = rac / "data" / "raw" / "_registre.json"
+    tout = hashlib.sha256("".join(code.values()).encode()).hexdigest()[:12]
+    return {"version": VERSION_MODELE, "code": tout, "modules": code,
+            "donnees": hashlib.sha256(reg.read_bytes()).hexdigest()[:12] if reg.exists() else None}
+
+
 def depuis_curseurs(scenario: dict) -> dict:
     """Traduit un scénario de l'interface ({"curseurs": [{"cle", "valeur"}]}) en mesures du catalogue."""
     if "curseurs" not in scenario:
@@ -371,17 +443,22 @@ def executer(scenario: dict) -> dict:
         def f_ref(mod_, ans_, rho):
             sc["hypotheses"]["fermeture_offre"] = rho
             return construire(sc, mod_)[0]
-        df = MC.monte_carlo(mod, ans, {"scenario": (f_var, f_ref)}, n=n, horizons=tuple(a for a in (ans[1], ans[3] if len(ans) > 3 else ans[-1], ans[-1])))
+        df = MC.monte_carlo(mod, ans, {"scenario": (f_var, f_ref)}, n=n, horizons=tuple(sorted({a for a in (DEBUT_DEFAUT, DEBUT_DEFAUT + 2, ans[-1]) if a in ans})))
         tir = df[df.tirage > 0]
         incert = {int(a): {col: [float(g[col].quantile(0.05)), float(g[col].quantile(0.95))] for col in ("pib", "emploi", "prix", "solde", "dette")}
                   for a, g in tir.groupby("annee")}
     profils_res = None
     reforme, _ = CAT.reforme_openfisca(scenario.get("mesures", []))
-    if reforme and H.get("profils", True):
+    ANALYTIQUES = ("csg", "tva", "tva_reduite", "taxe_carbone", "indexation_pensions", "aides_logement")
+    mes_ = scenario.get("mesures", [])
+    if H.get("profils", True) and (reforme or any(m["type"] in ANALYTIQUES for m in mes_)):
         from simulateur import profils
         profils_res = profils.comparer(reforme)
+        aj = profils.ajustements_analytiques(mes_, profils_res)
+        for pr_ in profils_res:
+            pr_["variation_revenu_disponible"] += aj[pr_["profil"]]
     return {"scenario": scenario, "trajectoires": traj, "distribution": info["distribution"], "statique": info["statique"],
-            "comportements": info.get("comportements"),
+            "comportements": info.get("comportements"), "version": empreintes(), "reference": info.get("reference"),
             "profils": profils_res,
             "europe": europe, "incertitude": incert, "transparence": transparence(scenario), "duree_s": round(time.time() - t0),
             "journal": journal}

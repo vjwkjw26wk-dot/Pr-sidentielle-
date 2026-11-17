@@ -1,12 +1,43 @@
 {
  "nom": "Exemple B — consolidation par la dépense, baisse de l'IS et âge légal à 65 ans",
- "description": "Scénario illustratif (non attribué à un programme) : consommation publique −1 point de PIB, taux d'IS ramené à 20 %, barème de l'impôt sur le revenu non revalorisé (−2 %), âge légal porté à 65 ans, dès 2024.",
- "base": 2022, "horizon": 2030,
- "hypotheses": {"fermeture_offre": 0.15, "europe": true, "incertitude": 0},
+ "description": "Scénario illustratif (non attribué à un programme) : consommation publique −1 point de PIB, taux d'IS ramené à 20 %, barème de l'impôt sur le revenu non revalorisé (−2 %), âge légal porté à 65 ans (3 mois par génération), à partir de 2028.",
+ "horizon": 2032,
+ "hypotheses": {
+  "fermeture_offre": 0.15,
+  "europe": true,
+  "incertitude": 20,
+  "profils": true
+ },
  "mesures": [
-  {"type": "depense_publique", "parametres": {"points_pib": -1.0, "debut": 2024}},
-  {"type": "taux_is", "parametres": {"taux": 20, "debut": 2024}},
-  {"type": "bareme_ir", "parametres": {"seuils_facteur": 0.98, "decote_facteur": 0.98, "plafond_qf_facteur": 0.98}},
-  {"type": "age_legal", "parametres": {"regle": "65"}}
+  {
+   "type": "depense_publique",
+   "parametres": {
+    "points_pib": -1.0,
+    "debut": 2028
+   }
+  },
+  {
+   "type": "taux_is",
+   "parametres": {
+    "taux": 20,
+    "debut": 2028
+   }
+  },
+  {
+   "type": "bareme_ir",
+   "parametres": {
+    "seuils_facteur": 0.98,
+    "decote_facteur": 0.98,
+    "plafond_qf_facteur": 0.98
+   }
+  },
+  {
+   "type": "age_legal",
+   "parametres": {
+    "age": 65,
+    "mode": "progressif",
+    "debut": 2028
+   }
+  }
  ]
 }

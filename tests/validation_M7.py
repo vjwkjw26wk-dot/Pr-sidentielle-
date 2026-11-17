@@ -82,7 +82,7 @@ def sim_macro(nom, eq, m, debut, fin):
         rdbr, lc, u = np.log(m.rdb / m.p_c), np.log(m.c), m.chomage
         v = lc.copy()
         for t in range(debut, fin + 1):
-            v[t] = v[t - 1] + r["const"] + r["dlrdb"] * (rdbr[t] - rdbr[t - 1]) + r["du"] * (u[t] - u[t - 1]) + r["ecart_1"] * (v[t - 1] - rdbr[t - 1])
+            v[t] = v[t - 1] + r["const"] + r["dlrdb"] * (rdbr[t] - rdbr[t - 1]) + r.get("du", 0.0) * (u[t] - u[t - 1]) + r["ecart_1"] * (v[t - 1] - rdbr[t - 1])
         obs = m.c
     elif nom == "importations":
         ld, lprel, lm = np.log(E.demande_ponderee(m)), np.log(m.p_m / m.p_pib), np.log(m.m)

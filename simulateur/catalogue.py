@@ -94,7 +94,7 @@ MESURES.update({
         "libelle": "Taux normal de TVA",
         "parametres": {"points": "variation du taux normal (points)", "debut": "année"},
         "modules": ["M8"], "preuve": "B (rendement), D (répercussion sur les prix : 80 %, répartition selon la consommation)",
-        "limites": "Taux réduits non distingués ; répartition par décile selon des taux d'épargne approchés."},
+        "limites": "Taux réduits non distingués ; répartition par décile selon la structure de consommation par quintile (enquête Budget des familles 2015, Eurostat)."},
     "taxe_carbone": {
         "libelle": "Composante carbone des taxes sur l'énergie",
         "parametres": {"euros_tonne": "hausse en euros par tonne de CO2", "debut": "année"},
@@ -148,6 +148,26 @@ MESURES.update({
         "parametres": {"facteur": "facteur sur les montants versés"},
         "modules": ["M4", "M10", "M8"], "preuve": "A (montants calculés par OpenFisca), D (variation proportionnelle des montants)",
         "limites": "Variation proportionnelle des aides calculées : pas d'entrée ni de sortie d'éligibilité ; effet sur les loyers non modélisé."},
+    "temps_travail": {
+        "libelle": "Durée légale du travail",
+        "parametres": {"heures": "durée hebdomadaire (35 actuellement)", "debut": "année", "montee": "années de mise en place"},
+        "modules": ["M8"], "preuve": "D (70 % de la baisse absorbée sans embauche — productivité horaire, intensification, heures supplémentaires —, calé sur l'ordre de grandeur des 35 heures ; salaires mensuels maintenus)",
+        "limites": "Pas d'aides publiques d'accompagnement ; heures supplémentaires, temps partiel et négociations de branche non modélisés ; effet sur la fonction publique par embauches compensatrices."},
+    "droits_douane": {
+        "libelle": "Droits de douane sur les importations hors Union européenne",
+        "parametres": {"taux": "droit additionnel (ex. 0.1)", "riposte": "riposte symétrique des partenaires (booléen)", "debut": "année"},
+        "modules": ["M5", "M8"], "preuve": "D (part hors UE des importations 45 %, répercussion 80 %, recette nette pour la France 38 %, élasticité des exportations 0,8)",
+        "limites": "Relève de la compétence de l'Union européenne ; pas de détournement de commerce ni de change ; riposte stylisée."},
+    "tva_reduite": {
+        "libelle": "Taux réduits de TVA (5,5 % et 10 %)",
+        "parametres": {"points": "variation des deux taux (points)", "debut": "année"},
+        "modules": ["M8"], "preuve": "B (rendement : 5 Md€ par point), D (répercussion 80 %, répartition)",
+        "limites": "Les deux taux varient ensemble ; répartition par décile approchée."},
+    "logements_sociaux": {
+        "libelle": "Construction de logements sociaux supplémentaires",
+        "parametres": {"milliers": "logements par an", "debut": "année"},
+        "modules": ["M8"], "preuve": "B (effet de demande), D (coût 170 k€ par logement, subvention publique 25 %)",
+        "limites": "Effets sur les loyers, la mobilité et le pouvoir d'achat des locataires non modélisés."},
 })
 
 # Curseurs de l'interface : (clé, groupe, libellé, unité, min, max, pas, valeur actuelle, points précalculés, mesure)
@@ -203,6 +223,10 @@ CURSEURS = [
     ("indexation_pensions", 5, "Indexation des pensions (écart à l'inflation, 5 ans)", "pt/an", -2, 2, 0.1, 0, [-1, 1],
      lambda v: _m("indexation_pensions", points=v, duree=5)),
     # Environnement et hypothèses
+    ("temps_travail", 3, "Durée légale du travail", "h/semaine", 32, 39, 0.5, 35, [32, 37], lambda v: _m("temps_travail", heures=v, montee=2)),
+    ("droits_douane", 3, "Droits de douane hors UE (avec riposte)", "%", 0, 30, 1, 0, [10, 20], lambda v: _m("droits_douane", taux=v / 100, riposte=True)),
+    ("tva_reduite", 1, "Taux réduits de TVA", "points", -3, 5, 0.5, 0, [-2, 2], lambda v: _m("tva_reduite", points=v)),
+    ("logements_sociaux", 0, "Logements sociaux supplémentaires", "milliers/an", 0, 150, 5, 0, [50], lambda v: _m("logements_sociaux", milliers=v)),
     ("taxe_carbone", 6, "Taxe carbone (hausse)", "€/t CO2", -45, 150, 5, 0, [50, 100], lambda v: _m("taxe_carbone", euros_tonne=v)),
     ("energie_import", 6, "Prix de l'énergie importée (hypothèse)", "%", -30, 60, 5, 0, [-20, 20, 50], lambda v: _m("energie_import", hausse=v / 100)),
 ]

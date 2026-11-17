@@ -87,3 +87,42 @@ def comparer(reforme: dict | None) -> list:
     b = calculer(reforme) if reforme else a
     return [{"profil": k, "libelle": PROFILS[k][0], **{f"{v}_actuel": a[k][v] for v in a[k]},
              "variation_revenu_disponible": b[k]["revenu_disponible_approche"] - a[k]["revenu_disponible_approche"]} for k in PROFILS]
+
+
+def ajustements_analytiques(mesures: list, actuel: list) -> dict:
+    """Variations de revenu disponible des profils (€/an) dues aux mesures non calculées par OpenFisca (version 0.4) :
+    CSG (assiette brute approchée : salaire imposable / 0,78 × 98,25 % ; pensions au taux plein seulement au-delà du
+    seuil de revenu, non atteint par le profil retraité), TVA et taxe carbone (consommation du profil selon son quintile,
+    enquête Budget des familles via Eurostat, répercussion de 80 % pour la TVA), indexation des pensions (première
+    année), aides au logement (variation proportionnelle). Les effets sur les prix des autres mesures ne sont pas inclus."""
+    sys.path.insert(0, str(RACINE / "src"))
+    import m10_couplage as C
+    from simulateur import executer as X
+    pr = C.profils_consommation()
+    out = {k: 0.0 for k in PROFILS}
+    rd = {p["profil"]: p["revenu_disponible_approche_actuel"] for p in actuel}
+    al = {p["profil"]: p.get("aide_logement_actuel", 0.0) for p in actuel}
+    def decile(r):          # décile approché du profil d'après son revenu disponible par unité de consommation
+        seuils = [12_000, 15_000, 17_500, 19_500, 21_500, 24_000, 27_000, 31_000, 38_000]
+        return sum(r > x for x in seuils)
+    for k, (lib, adultes, couple, n_enf) in PROFILS.items():
+        uc = 1 + 0.5 * (len(adultes) - 1) + 0.3 * n_enf
+        d = decile(rd[k] / uc)
+        cons = rd[k] * pr["consommation"][d] / pr["consommation"][4]   # consommation relative à la médiane
+        cons = min(cons, rd[k]) * 0.85
+        for m in mesures:
+            t, p = m["type"], m.get("parametres", {})
+            if t == "csg":
+                out[k] -= sum(a.get("salaire", 0) / 0.78 * 0.9825 for a in adultes) * float(p.get("activite_points", 0)) / 100
+            elif t == "tva":
+                out[k] -= cons * pr["tva_normale"][d] * X.REPERCUSSION_TVA * float(p["points"]) / 120
+            elif t == "tva_reduite":
+                out[k] -= cons * pr["tva_reduite"][d] * X.REPERCUSSION_TVA * float(p["points"]) / 108
+            elif t == "taxe_carbone":
+                part_moy = sum(pr["energie"]) / 10
+                out[k] -= cons * pr["energie"][d] / part_moy * float(p["euros_tonne"]) * X.RENDEMENT_EURO_TONNE * 1e6 / 1_640e9
+            elif t == "indexation_pensions":
+                out[k] += sum(a.get("retraite", 0) * 0.93 for a in adultes) * float(p["points"]) / 100
+            elif t == "aides_logement":
+                out[k] += (float(p["facteur"]) - 1) * al[k]
+    return out

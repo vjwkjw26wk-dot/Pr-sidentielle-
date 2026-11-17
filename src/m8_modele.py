@@ -124,6 +124,14 @@ def _niv(ex, k, t) -> float:
     return float(c[k].get(t, 0.0))
 
 
+def _part_calage_emploi(ex, b, t) -> float:
+    """Après l'année d'ancrage, le terme de calage de l'emploi (écart entre l'emploi du modèle et la cible de chômage)
+    est porté par les branches hors industrie manufacturière, dont l'emploi a expliqué l'essentiel de l'écart
+    2019-2025 ; l'emploi industriel suit ses propres équations."""
+    a = getattr(ex, "ancrage", None)
+    return 0.0 if (a is not None and t > a and b.startswith("C")) else 1.0
+
+
 def _cal(ex, k, t) -> float:
     """Terme de calage de l'année t (0 si absent)."""
     c = getattr(ex, "calage", None)
@@ -426,7 +434,7 @@ class Modele:
                     g_b = self.g_prod[b] + (0.0 if ex.productivite is None else float(ex.productivite.get(t, 0.0)))
                     dn = (self.c_emp[b] + re["dlq"] * (lq - lq1) + re["dlq_1"] * (lq1 - lq2) + re["dlh_1"] * (np.log(hb["n"][t - 1]) - np.log(hb["n"][t - 2]))
                           + ecm(("n", b), re["ecm_1"] * (np.log(hb["n"][t - 1]) - lq1 + E.SIGMA_TRAVAIL * lrc1 + self.g_prod[b] * (t - 1 - B)))
-                          - (g_b - self.g_prod[b]) + _cal(ex, "emploi", t))
+                          - (g_b - self.g_prod[b]) + _cal(ex, "emploi", t) * _part_calage_emploi(ex, b, t))
                     n_new[b] = hb["n"][t - 1] * np.exp(dn)
                     # prix de la VA
                     clu = cn * n_new[b] / q_br[b]
@@ -465,7 +473,7 @@ class Modele:
                 rdb = self._rdb(t, w_new, n_new, niv, hist_vol, A, ex, pc, mb)
                 rdbr, rdbr1 = rdb / pc, A["rdb"][t - 1] / A["pc"][t - 1]
                 u_cur = prev["u"] if it == 0 else u_cur
-                dC = rc["const"] + rc["dlrdb"] * np.log(rdbr / rdbr1) + rc["du"] * (u_cur - prev["u"]) + ecm("c", rc["ecart_1"] * (np.log(A["C"][t - 1]) - np.log(rdbr1))) + _cal(ex, "c", t)
+                dC = rc["const"] + rc["dlrdb"] * np.log(rdbr / rdbr1) + rc.get("du", 0.0) * (u_cur - prev["u"]) + ecm("c", rc["ecart_1"] * (np.log(A["C"][t - 1]) - np.log(rdbr1))) + _cal(ex, "c", t)
                 C_cn = A["C"][t - 1] * np.exp(dC)
                 rx = r["exportations"]
                 pw = float(ex.prix_mondial[t]) / float(ex.prix_mondial[t - 1])
@@ -571,7 +579,8 @@ class Modele:
         d62 = mb.d62 * prest + self._extra(ex, "ajust_prestations", t) + mm.get("prestations", 0.0) * self._idx_mesure(mm, pib_nom, t)
         d61 = mb.d61 * masse * (1 if ex.taux_cotisations is None else float(ex.taux_cotisations.get(t, 1.0)))
         base_imp = (mb.d1 * masse + ebe + d4 + d62)
-        d5 = mb.d5 * base_imp / (mb.d1 + mb.ebe + mb.d4 + mb.d62) + mm.get("impots", 0.0) * self._idx_mesure(mm, pib_nom, t)
+        d5 = mb.d5 * base_imp / (mb.d1 + mb.ebe + mb.d4 + mb.d62) + mm.get("impots", 0.0) * self._idx_mesure(mm, pib_nom, t) \
+            + _niv(ex, "impots_menages_pib", t) / 100 * self.macro.pib_cp[self.B] * pib_nom
         return d1 + autres + d62 - d61 - d5
 
     def _tuc(self, b, t, q, H):
@@ -636,7 +645,7 @@ class Modele:
         is_t = is0 * (ebe_m / ebe_m0) * (tau / tau0)
         mm = ex.mesure_menages or {}
         d5_men = (ab.d5rec - is0) * (mb.d1 * masse + A["ebe"][t] + A["d4"][t] + mb.d62 * prest) / (mb.d1 + mb.ebe + mb.d4 + mb.d62)
-        d5_men += mm.get("impots", 0.0) * self._idx_mesure(mm, pib_nom, t)
+        d5_men += mm.get("impots", 0.0) * self._idx_mesure(mm, pib_nom, t) + _niv(ex, "impots_menages_pib", t) / 100 * self.macro.pib_cp[self.B] * pib_nom
         d2 = ab.d2rec * cons_nom * (1 + _niv(ex, "impots_produits", t))
         d61 = ab.d61rec * masse * (1 if ex.taux_cotisations is None else float(ex.taux_cotisations.get(t, 1.0)))
         autres_r = (ab.tr - ab.d2rec - ab.d5rec - ab.d61rec) * pib_nom

@@ -1,4 +1,4 @@
-# Phase 7 — Rapport de validation intégrale (version 0.1, 17 novembre 2026)
+# Phase 7 — Rapport de validation intégrale (version 0.2, 17 novembre 2026)
 
 Ce rapport rassemble les tests de tous les modules et répond au critère d'acceptation du cahier des charges : des écarts
 quantifiés et expliqués. Il distingue ce qui est validé, ce qui est plausible sans être vérifiable, et ce qui ne l'est
@@ -25,12 +25,14 @@ pas. Chaque ligne renvoie à un rapport détaillé du dossier `resultats/`.
 
 | Choc (1 point de PIB) | Ce modèle : 1re année | 3e année | Références |
 |---|---|---|---|
-| Consommation ou emploi publics | +1,40 % | +0,77 % | OFCE (e-mod.fr) : 1,2 la première année pour l'investissement et l'emploi publics, en milieu de cycle |
+| Consommation ou emploi publics (v0.2 : équation de consommation corrigée, référence recalée) | +1,21 % | +0,76 % (5e année : +0,59 %) | Insee-DG Trésor : environ 0,9 la première année pour une baisse de dépense ; OFCE (e-mod.fr) : 0,6 à 1,2 selon la composition |
+| — version 0.1 (pour mémoire) | +1,40 % | +0,77 % | |
 | Transferts aux ménages | +0,54 % | ≈ +0,2 % | ordre de grandeur des modèles keynésiens : 0,5 à 1 |
 | Impôt sur le revenu (+13,6 Md€, 0,5 pt de PIB) | −0,23 % de PIB (multiplicateur ≈ 0,5) | −0,18 % | 0,5 à 0,8 pour les prélèvements sur les ménages |
 
 **Lecture.**
-- **Multiplicateur de la dépense publique la première année** : il est un peu au-dessus de la fourchette publiée, qui va de 0,8 (variante TVA) à 1,2 (variantes investissement et emploi publics) pour l'OFCE en milieu de cycle. La consommation publique a un faible contenu en importations dans le tableau entrées-sorties, et le modèle n'a ni anticipations ni réaction budgétaire.
+- **Version 0.2** : la variation contemporaine du chômage est retirée de l'équation de consommation (biais de simultanéité ; sa version retardée n'est pas significative). Le multiplicateur de première année passe de 1,40 à 1,21, dans le haut de la fourchette publiée.
+- **Version 0.1** : le multiplicateur de la dépense publique la première année était un peu au-dessus de la fourchette publiée, qui va de 0,8 (variante TVA) à 1,2 (variantes investissement et emploi publics) pour l'OFCE en milieu de cycle. La consommation publique a un faible contenu en importations dans le tableau entrées-sorties, et le modèle n'a ni anticipations ni réaction budgétaire.
 - **Profil dans le temps** : il est proche de celui des modèles macroéconométriques français après le recalibrage de la fermeture d'offre (décision A12).
 - **Prélèvements sur les ménages** : leur multiplicateur est dans la fourchette.
 - **Sources des références** : OFCE, « Petit précis de politique budgétaire par tous les temps », Revue de l'OFCE, 2011 ; Conseil des prélèvements obligatoires, rapport sur la TVA, 2015 (variantes e-mod.fr) ; modèle Mésange, Insee et DG Trésor, 2017.
@@ -92,9 +94,40 @@ Les paramètres estimés sont tirés dans leur loi estimée. Les paramètres cal
 | Neutralité | oui : mêmes méthodes pour toutes les mesures ; pas de note globale ; exemples de scénarios symétriques |
 | Distinction entre résultats robustes et dépendants d'hypothèses | oui : section 4 et fiche de transparence de chaque simulation |
 
+## 5 bis. Validations ajoutées en version 0.2 (simulateur 0.4)
+
+1. **Recalage 2023-2025** (`M8_reference.md`). La trajectoire de référence reproduit les comptes observés :
+   - croissance 1,6 / 1,5 / 0,8 % ;
+   - solde public −5,4 / −5,8 / −5,1 % du PIB ;
+   - dette 109,5 / 112,6 / 115,7 % du PIB.
+
+   Il s'agit d'un calage par termes correctifs. Ce n'est donc pas une validation des équations : celle-ci reste celle
+   du § 1 (2023-2024 non validé pour les prix et les exportations).
+2. **Approximation additive de l'interface** (`resultats/validation_additivite.md`, 4 scénarios combinés).
+   - Pour les scénarios A, B et D, l'écart entre la somme des mesures et le calcul complet est inférieur à 0,1 point
+     pour tous les indicateurs en 2032.
+   - Le scénario C combine la relocalisation industrielle, les droits de douane et le prix de l'énergie. L'écart y
+     atteint 1,1 point de PIB et 4,6 points de dette, car la relocalisation impose les parts importées et neutralise la
+     substitution par les prix. L'interface affiche un avertissement pour cette combinaison.
+3. **Marges d'incertitude des écarts** (`outputs/incertitude_variantes.json`).
+   - Méthode : Monte-Carlo, 20 tirages, sur 7 mesures représentatives.
+   - Demi-largeur médiane de l'intervalle à 90 %, rapportée à l'écart central en 2032 : PIB 49 %, emploi 48 %,
+     prix 52 %, solde public 43 %.
+   - L'interface applique ces rapports à toutes les mesures. Les effets budgétaires directs (avant bouclage) ne sont
+     pas concernés.
+4. **Trajectoires de comparaison.** Elles servent à tester la sensibilité au taux de l'OAT (±1 point à partir de 2027)
+   et à un redressement d'ampleur FMI.
+   - Le redressement apporte un effort ex ante d'environ 4,3 points de PIB en 2031.
+   - Selon le modèle, le solde ne s'améliore que de 2,3 points et la dette de 1 point seulement, car le PIB recule de
+     2,8 %.
+   - Ce résultat dépend fortement du multiplicateur et de l'absence de réaction de la politique monétaire dans cette
+     variante.
+
 ## 6. Travaux de validation restants
 
 1. Incertitude de spécification : variantes d'équations, comparaison de fermetures.
 2. Exécution croisée de variantes publiées (fiches de variantes Mésange, OFCE), avec l'écart expliqué.
 3. Rétrosimulation longue (2000-2019) avec une base entrées-sorties ancienne.
 4. Validation distributive : niveau de vie par décile comparé à l'enquête Revenus fiscaux et sociaux de l'Insee.
+5. Relecture scientifique externe (`10_dossier_relecture.md`).
+6. Incertitude propre à chaque mesure, au lieu d'un rapport médian commun.

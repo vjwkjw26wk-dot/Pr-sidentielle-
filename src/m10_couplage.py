@@ -248,8 +248,57 @@ def total_prestation(base: dict, v: str, facteur: float) -> float:
     return (facteur - 1) * base[v] * RECOURS_MASSE[v] / 1e6
 
 
-TAUX_EPARGNE_DECILE = [0.0, 0.03, 0.05, 0.07, 0.09, 0.11, 0.13, 0.16, 0.20, 0.30]   # hypothèse D (ordre de grandeur Insee)
-PART_ENERGIE_DECILE = [0.10, 0.10, 0.095, 0.09, 0.085, 0.08, 0.075, 0.07, 0.065, 0.055]  # part de l'énergie dans la consommation
+def _eurostat_quintiles(code, annee, **sel):
+    """Valeurs par quintile de revenu (QU1..QU5) d'une table Eurostat (France)."""
+    import itertools
+    import json as _j
+    from telechargement import telecharger
+    f = telecharger(f"https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/{code}?geo=FR&format=JSON&lang=en",
+                    f"eurostat_{code}_FR.json")
+    j = _j.loads(f.read_text())
+    dims, size = j["id"], j["size"]
+    cats = {k: j["dimension"][k]["category"]["index"] for k in dims}
+    out = {}
+    for combo in itertools.product(*[list(cats[k].items()) for k in dims]):
+        d = dict(zip(dims, [c for c, _ in combo]))
+        if d.get("time") != annee or any(d.get(k) != v for k, v in sel.items()):
+            continue
+        idx = 0
+        for (c, i), sz in zip(combo, size):
+            idx = idx * sz + i
+        v = j["value"].get(str(idx))
+        if v is not None and d.get("quant_inc", "").startswith("QU"):
+            out[d["quant_inc"]] = float(v)
+    return [out[f"QU{q}"] for q in range(1, 6)]
+
+
+def profils_consommation():
+    """Profils par décile (version 0.3, enquête Budget des familles 2015 via Eurostat) :
+    - consommation / revenu disponible : 1 − taux d'épargne médian par quintile (Eurostat icw_sr_03, statistiques
+      expérimentales 2015 ; seul le profil relatif est utilisé, les montants étant recalés sur le total national) ;
+    - part de l'assiette du taux normal de TVA : consommation hors alimentation (CP01), loyers réels et imputés
+      (CP041, CP042), santé (CP06), éducation (CP10), restauration (CP111) ;
+    - part de l'assiette des taux réduits : alimentation et restauration ;
+    - part de l'énergie : énergie du logement (CP045) et 55 % de l'utilisation des véhicules (CP072, carburants).
+    Chaque quintile est attribué aux deux déciles qui le composent."""
+    sr = _eurostat_quintiles("icw_sr_03", "2015", unit="PC_DI")
+    q = {c: _eurostat_quintiles("hbs_str_t223", "2015", coicop=c, unit="PM") for c in
+         ("CP01", "CP041", "CP042", "CP045", "CP06", "CP072", "CP10", "CP111")}
+    cons = [1 - x / 100 for x in sr]
+    normal = [(1000 - q["CP01"][i] - q["CP041"][i] - q["CP042"][i] - q["CP06"][i] - q["CP10"][i] - q["CP111"][i]) / 1000 for i in range(5)]
+    reduit = [(q["CP01"][i] + q["CP111"][i]) / 1000 for i in range(5)]
+    energie = [(q["CP045"][i] + 0.55 * q["CP072"][i]) / 1000 for i in range(5)]
+    dec = lambda L: [L[i // 2] for i in range(10)]  # noqa: E731
+    return {"consommation": dec(cons), "tva_normale": dec(normal), "tva_reduite": dec(reduit), "energie": dec(energie)}
+
+
+_PROFILS = {}
+
+
+def _profil(nom):
+    if not _PROFILS:
+        _PROFILS.update(profils_consommation())
+    return _PROFILS[nom]
 
 
 def extra_profil(total_M: float, profil: str):
@@ -263,10 +312,9 @@ def extra_profil(total_M: float, profil: str):
         cum = men.poids.reindex(ordre).cumsum() / men.poids.sum()
         dec = pd.Series(np.minimum((cum * 10).astype(int), 9), index=ordre).reindex(men.index)
         rev = (nv * men.uc).clip(lower=0)
-        if profil == "consommation":
-            w = rev * (1 - dec.map(lambda d: TAUX_EPARGNE_DECILE[d]))
-        elif profil == "energie":
-            w = rev * (1 - dec.map(lambda d: TAUX_EPARGNE_DECILE[d])) * dec.map(lambda d: PART_ENERGIE_DECILE[d])
+        if profil in ("consommation", "tva_normale", "tva_reduite", "energie"):
+            cons = rev * dec.map(lambda d: _profil("consommation")[d])
+            w = cons if profil == "consommation" else cons * dec.map(lambda d: _profil(profil)[d])
         elif profil == "haut_decile":
             w = (men.rfr ** 1.5).where(cum.reindex(men.index) >= 0.9, 0.0)
         elif profil == "top1":

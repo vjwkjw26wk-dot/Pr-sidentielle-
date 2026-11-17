@@ -290,3 +290,56 @@ def compte_reference(mod, annees, journal=print):
     f.write_bytes(pickle.dumps({k: v for k, v in d.items() if k != "trajectoire"}))
     _CACHE[cle] = d
     return d
+
+
+# ------------------------------------------------------------------------------------------------------------------
+# Variantes de la trajectoire de référence (version 1.1)
+# ------------------------------------------------------------------------------------------------------------------
+VARIANTES_REFERENCE = {
+    "inchangee": "Politique inchangée, OAT à 10 ans au dernier niveau observé",
+    "oat_bas": "Politique inchangée, OAT à 10 ans 1 point plus bas à partir de 2027",
+    "oat_haut": "Politique inchangée, OAT à 10 ans 1 point plus haut à partir de 2027",
+    "redressement": "Redressement d'ampleur FMI : effort ex ante égal à l'écart entre le solde projeté par le FMI et "
+                    "celui de la trajectoire inchangée (2027-2031, puis maintenu), moitié par la consommation publique, "
+                    "moitié par les impôts des ménages ; l'activité et les recettes réagissent à ce redressement",
+}
+
+
+def exogenes_variante(mod, annees, nom, journal=print):
+    """Exogènes de la trajectoire de référence `nom` (voir VARIANTES_REFERENCE), dérivés de la trajectoire inchangée."""
+    R = compte_reference(mod, annees, journal=journal)
+    ex = copy.deepcopy(R["exogenes"])
+    if nom == "inchangee":
+        return ex
+    if nom in ("oat_bas", "oat_haut"):
+        d = -1.0 if nom == "oat_bas" else 1.0
+        ex.taux_long = pd.Series({t: v + (d if t >= ANNEE_FMI + 1 else 0.0) for t, v in ex.taux_long.items()})
+        return ex
+    if nom == "redressement":
+        import hashlib
+        import pickle
+        f = RACINE / "outputs" / f"reference_redressement_{mod.B}_{max(annees)}.pkl"
+        emp = R["empreinte"]
+        if f.exists():
+            d = pickle.loads(f.read_bytes())
+            if d.get("empreinte") == emp:
+                return d["exogenes"]
+        F = R["hypotheses"]["fmi"]["GGXCNL_NGDP"]["FRA"]
+        g0 = ex.conso_publique.copy()
+        part_g = float(mod.macro.g_cp[FIN_OBSERVE] / mod.macro.pib_cp[FIN_OBSERVE]) if "g_cp" in mod.macro else 0.235
+        effort = {t: 0.0 for t in annees}
+        ex.niveaux = {"impots_menages_pib": pd.Series({t: 0.0 for t in annees})}
+        def appliquer(t):
+            ex.niveaux["impots_menages_pib"][t] = effort[t] / 2
+            ex.conso_publique[t] = g0[t] * (1 - effort[t] / 2 / 100 / part_g)
+        ref_s = R["trajectoire"].solde_pib
+        for t in sorted(annees):
+            if t <= ANNEE_FMI:
+                continue
+            # effort ex ante : écart entre le solde projeté par le FMI et celui de la trajectoire inchangée
+            effort[t] = max(0.0, F[t] - float(ref_s[t])) if t <= FIN_FMI else effort[t - 1]
+            appliquer(t)
+            journal(f"redressement {t} : effort ex ante {effort[t]:.2f} pt de PIB")
+        f.write_bytes(pickle.dumps({"exogenes": ex, "empreinte": emp, "effort": effort}))
+        return ex
+    raise ValueError(nom)

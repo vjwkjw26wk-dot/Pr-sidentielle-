@@ -70,7 +70,18 @@ def main():
     d["fmi"]["LUR_ajuste"] = {str(a): round(v - du, 2) for a, v in F["LUR"]["FRA"].items() if 2023 <= a <= 2032}
     d["hypotheses"] = HYPOTHESES
     n = sum(len(v) for v in d["variantes"].values())
-    d["pied"] = (f"Modèle « Présidentielle », données ouvertes (Insee, Eurostat, DGFiP, DREES, FMI, COR, OpenFisca-France). {n} simulations "
+    from simulateur import executer as X
+    emp = X.empreintes()
+    d["version"] = {k: emp[k] for k in ("version", "code", "donnees")}
+    courts = {"inchangee": "Politique inchangée (OAT 4,9 %)", "oat_bas": "Politique inchangée, OAT 3,9 %",
+              "oat_haut": "Politique inchangée, OAT 5,9 %", "redressement": "Redressement d'ampleur FMI"}
+    for k, v in (d.get("references") or {}).items():
+        v["court"] = courts.get(k, k)
+        v["niveaux"] = {i: {int(a): x for a, x in s_.items()} for i, s_ in v["niveaux"].items()}
+    f_inc = RACINE / "outputs" / "incertitude_variantes.json"
+    if f_inc.exists():
+        d["incertitude"] = json.loads(f_inc.read_text()).get("mediane", {})
+    d["pied"] = (f"Modèle « Présidentielle » version {emp['version']} (code {emp['code']}, données {emp['donnees']}), données ouvertes (Insee, Eurostat, DGFiP, DREES, FMI, COR, OpenFisca-France). {n} simulations "
                  f"élémentaires du modèle complet, calculées le {datetime.date.today().strftime('%d/%m/%Y')}. Documentation : 07_validation_integrale.md, "
                  f"08_simulateur.md, M8_reference.md, M13_comportements.md.")
     gabarit = (RACINE / "simulateur" / "interface_modele.html").read_text(encoding="utf-8")

@@ -1,4 +1,4 @@
-# Phase 8 — Préparation du simulateur (prototype 0.3, avec interface de test)
+# Phase 8 — Préparation du simulateur (prototype 0.4, avec interface de test)
 
 **État : prototype fonctionnel, en ligne de commande.** Un scénario décrit en JSON est exécuté par l'ensemble des
 modèles (M1, M4, M8-M12). Le résultat est restitué dans un fichier JSON et dans une page HTML autonome, avec la fiche
@@ -7,7 +7,42 @@ de transparence exigée par le cahier des charges (§ 17.1).
 Il n'y a pas encore de service en ligne : ni serveur, ni comptes, ni file d'attente de calculs.
 Code : dossier `simulateur/`. Exemples : dossier `scenarios/`.
 
-## 0. Interface de test (version 0.3, 17 novembre 2026)
+## 0. Interface de test
+
+### Version 0.4 (17 novembre 2026, après-midi)
+
+1. **Crédibilité du modèle.**
+   - Équation de consommation : la variation contemporaine du chômage est retirée (simultanéité). Le multiplicateur
+     de dépense publique devient 1,2 la première année, 0,85 la deuxième et 0,6 la cinquième, contre 1,4 / 0,93 /
+     0,55 auparavant.
+   - Emploi industriel de référence : environ −1 % par an au lieu de −1,8 %. Après 2025, le terme de calage de
+     l'emploi est porté par les branches hors industrie.
+   - Investissement public : il a désormais un effet d'offre via le capital public (élasticité de la production 0,08,
+     capital public 55 % du PIB, dépréciation 4 %).
+2. **Trajectoires de comparaison au choix.**
+   - Politique inchangée, avec l'OAT à 4,9 %, à 3,9 % ou à 5,9 %.
+   - Redressement d'ampleur FMI : effort ex ante égal à l'écart avec le solde du FMI (environ 4 points de PIB en
+     2031), moitié dépenses, moitié impôts. Selon le modèle, cet effort ne réduit le déficit de 2031 que d'environ
+     2,3 points, car l'activité recule (PIB −2,8 %, chômage +2,3 points en 2031).
+3. **Nouvelles mesures** : durée légale du travail, droits de douane hors UE (avec riposte), taux réduits de TVA,
+   logements sociaux. Le catalogue compte 39 curseurs.
+4. **Ménages.**
+   - La TVA et la taxe carbone sont réparties selon la structure de consommation par quintile (enquête Budget des
+     familles 2015 et taux d'épargne par quintile, Eurostat).
+   - Les ménages types intègrent la CSG, la TVA, la taxe carbone, l'indexation des pensions et les aides au logement.
+5. **Interface.**
+   - Comparaison de trois scénarios enregistrés (table et graphique).
+   - Lien de partage, qui encode les curseurs et la trajectoire de comparaison.
+   - Marges d'incertitude à 90 %, estimées par Monte-Carlo sur 7 mesures représentatives
+     (`simulateur/incertitude_variantes.py`).
+   - Bouton de calcul exact, actif dès qu'un serveur répond.
+6. **Reproductibilité.** Chaque résultat porte la version du modèle et les empreintes du code et des données.
+   - Serveur : points d'accès `/sante` et `/api/executer`.
+   - Déploiement par conteneur : `09_deploiement.md`.
+   - Dossier de relecture externe : `10_dossier_relecture.md`.
+   - Validation de l'approximation additive : `resultats/validation_additivite.md`.
+
+### Version 0.3 (17 novembre 2026, matin)
 
 **Changements depuis la version 0.2.** Ils répondent aux retours de l'utilisateur du 17 novembre 2026.
 1. **Calendrier.**
@@ -98,23 +133,31 @@ Chaque mesure porte ses limites propres. Elles sont reproduites dans la restitut
 
 Aucune note globale n'est attribuée.
 
-## 4. Exemples symétriques (prototype 0.2 : ancienne référence, mesures en 2024 — à refaire sur la référence 1.0)
+## 4. Exemples symétriques (version 0.4 : référence recalée, mesures en 2028, 20 tirages d'incertitude)
 
-| | A — relance : dépense +1 pt, RSA +10 %, retour à 62 ans | B — consolidation : dépense −1 pt, IS 20 %, barème non revalorisé, 65 ans |
+| | A — relance : dépense +1 pt, RSA +10 %, âge légal 62 ans (progressif) | B — consolidation : dépense −1 pt, IS 20 %, barème non revalorisé, âge légal 65 ans |
 |---|---|---|
-| PIB 2024 / 2026 / 2030 | +1,30 % / +0,45 % / −0,62 % | −1,39 % / −0,61 % / −0,04 % |
-| Chômage 2026 | −1,4 pt | +0,8 pt |
-| Prix à la consommation 2030 | +2,8 % | −1,2 % |
-| Solde public 2026 / 2030 | −0,76 / −1,17 pt | −0,02 / +0,17 pt |
-| Dette 2030 | +1,7 pt | +1,6 pt |
+| PIB 2028 / 2030 / 2032 | +1,35 % / +0,41 % / −0,36 % | −1,21 % / −0,54 % / −0,34 % |
+| Intervalle à 90 % du PIB en 2032 | −1,24 à +0,02 % | −0,45 à +0,17 % |
+| Chômage 2028 / 2032 | −1,9 / −2,3 pt | +1,0 / +0,7 pt |
+| Prix à la consommation 2032 | +2,4 % | −1,1 % |
+| Solde public 2028 / 2032 | −0,60 / −1,07 pt | −0,03 / +0,18 pt |
+| Dette 2032 | +0,6 pt (intervalle −6,5 à +2,8) | +2,2 pt (intervalle +1,0 à +5,5) |
 | Effet direct | RSA : +1,9 Md€ versés ; 1er décile +163 €/UC/an | impôt sur le revenu : +2,7 Md€ ; 10e décile −174 €/UC/an |
-| Temps de calcul | 233 s | 148 s |
+| Temps de calcul (avec incertitude) | 21 min | 22 min |
 
 **Lecture.**
-- **Scénario B** : la baisse de la dépense améliore le solde public, mais la baisse de l'IS et le bouclage macroéconomique effacent l'essentiel de ce gain. La dette augmente aussi, faute de croissance nominale.
-- **Scénario A** : il réduit nettement le chômage. Le retour à 62 ans retire des actifs, ce qui tend le marché du travail et fait monter prix et salaires. Il détériore le solde public.
-
-Ces résultats illustrent la mécanique et doivent être lus avec leurs incertitudes (`07_validation_integrale.md`).
+- **Scénario A.**
+  - Il soutient l'activité à court terme.
+  - Le retour progressif à 62 ans réduit la population active, ce qui abaisse nettement le chômage, tend le marché du
+    travail et fait monter prix et salaires.
+  - À la fin du mandat, le PIB est légèrement inférieur à la référence et le déficit plus élevé d'un point.
+  - La dette ne monte guère, sous l'effet de l'inflation.
+- **Scénario B.**
+  - Il pèse sur l'activité à court terme.
+  - L'amélioration du solde est faible : la baisse de l'IS et le bouclage macroéconomique effacent l'essentiel du gain.
+  - La dette augmente faute de croissance nominale.
+- **Dans les deux cas**, les effets sur la dette en fin de mandat sont très incertains (larges intervalles).
 
 ## 5. Performance et architecture
 

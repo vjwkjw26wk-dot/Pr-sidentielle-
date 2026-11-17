@@ -261,7 +261,11 @@ def consommation(m, debut=DEBUT, fin=FIN) -> Equation:
     rdbr = np.log(m.rdb / m.p_c)
     lc = np.log(m.c)
     y = lc.diff()
-    X = pd.DataFrame({"dlrdb": rdbr.diff(), "du": m.chomage.diff(), "ecart_1": (lc - rdbr).shift(1)})
+    # Version 0.5 (novembre 2026) : la variation contemporaine du chômage (coefficient −0,005, t = −2,2) est retirée :
+    # elle est biaisée par la simultanéité (un choc de consommation fait baisser le chômage la même année) et sa version
+    # retardée n'est pas significative (t = 1,2, signe opposé). Avec elle, le multiplicateur de dépense publique de
+    # première année atteignait 1,4, au-dessus des modèles de référence (Insee-DG Trésor : 0,9 ; OFCE : 0,6 à 1,2).
+    X = pd.DataFrame({"dlrdb": rdbr.diff(), "ecart_1": (lc - rdbr).shift(1)})
     ok = (m.index >= debut) & (m.index <= fin)
     r = _ols(y[ok], X[ok])
     return Equation("Consommation des ménages (volume)", "Δln consommation", r,
