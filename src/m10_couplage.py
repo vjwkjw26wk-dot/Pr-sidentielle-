@@ -43,8 +43,11 @@ PRESTATIONS = ("rsa", "ppa", "af", "aide_logement")
 # Travailleurs (un processus par simulation OpenFisca, contrainte de mémoire)
 # ------------------------------------------------------------------------------------------------------------------
 def _travailleur(tache: str, nom: str = "base", k: int = 0, var: str = ""):
-    if tache == "ir":
+    if tache in ("ir", "tmi"):
         import validation_M4 as v4
+        if tache == "tmi":
+            v4.VARS = ("nbptr", "ir_taux_marginal", "rni", "ip_net")
+            nom = "tmi_" + nom
         d = pd.read_pickle(v4.TMP / "prep.pkl")
         r = v4.simuler(d["ind"], d["fo"], d["tot"], d["f8tk"], d["reste"], d["dep"], 0.8)
         r.to_pickle(TMP / f"ir_{nom}.pkl")

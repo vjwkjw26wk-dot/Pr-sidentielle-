@@ -77,11 +77,23 @@
   "sha256": "d552556a60ec7e202897e72085ef29edbb295c4f02f600083c1c81566be26083",
   "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/gov_10dd_edpt1?format=JSON&geo=FR&sector=S13&na_item=GD&unit=MIO_EUR&sinceTimePeriod=1995"
  },
+ "eurostat_irt_lt_mcby_a_EA.json": {
+  "date": "2026-11-17T09:28:30",
+  "octets": 4592,
+  "sha256": "c2f95bb6e6250951ee4a19a6da0f757572d1d4d0b192d0c0e207cfa6eb7139f2",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/irt_lt_mcby_a?format=JSON&geo=EA&geo=FR&geo=DE&sinceTimePeriod=1994"
+ },
  "eurostat_irt_lt_mcby_a_FR.json": {
   "date": "2026-11-16T22:06:31",
   "octets": 4748,
   "sha256": "cb9792822f3645313bdc6b593144c678f5c24d2541fa300b9cbc7b080472f606",
   "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/irt_lt_mcby_a?format=JSON&geo=FR&geo=DE&sinceTimePeriod=1980"
+ },
+ "eurostat_irt_st_a_EA.json": {
+  "date": "2026-11-17T09:28:29",
+  "octets": 3664,
+  "sha256": "0f6586f41845c6fd1331b0a6eab04acae1fbdf7f39dac51ea8caf0381d34c10a",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/irt_st_a?format=JSON&geo=EA&int_rt=IRT_M3&sinceTimePeriod=1994"
  },
  "eurostat_lfsa_argan_FR_2024.json": {
   "date": "2026-11-16T16:00:38",
@@ -238,6 +250,12 @@
   "octets": 38510,
   "sha256": "1dbf2534ca679c5cec2408aa0ad0fbff849f8835654148649c0d34fdd5364a47",
   "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nrg_bal_c?format=JSON&geo=FR&unit=KTOE&siec=TOTAL&siec=O4000XBIO&siec=G3000&siec=E7000&siec=C0000X0350-0370&siec=N900H&siec=RA000&nrg_bal=GIC&nrg_bal=IMP&nrg_bal=EXP&nrg_bal=PPRD&nrg_bal=FC_IND_E&nrg_bal=FC_TRA_E&nrg_bal=FC_OTH_HH_E&nrg_bal=FC_OTH_CP_E&nrg_bal=FC_E&sinceTimePeriod=1990"
+ },
+ "eurostat_prc_hicp_aind_EA.json": {
+  "date": "2026-11-17T09:28:28",
+  "octets": 5406,
+  "sha256": "64750e28d568d7cac5eb4e43e683e2e80608225d2b53239e75a7cda9a803fe47",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_aind?format=JSON&geo=EA&geo=FR&coicop=CP00&unit=RCH_A_AVG&sinceTimePeriod=1996"
  },
  "eurostat_spr_exp_pens_FR.json": {
   "date": "2026-11-17T07:43:13",

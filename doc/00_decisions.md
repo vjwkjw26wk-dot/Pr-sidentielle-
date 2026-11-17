@@ -118,5 +118,15 @@ Le sens inverse (revalorisation des revenus de M4 par M8) est reporté.
 pas tourner à chaque itération annuelle de M8. Le transfert de montants conserve le détail législatif et la
 distribution, tout en gardant M8 rapide. L'erreur liée à l'absence de revalorisation reste du second ordre pour des
 réformes paramétriques évaluées sur quelques années.
-**Limites.** Voir `M10_couplage_micro_macro.md`. La sensibilité de l'impôt aux seuils du barème est sous-estimée
-d'environ 30 % par rapport aux chiffrages officiels.
+**Limites.** Voir `M10_couplage_micro_macro.md`. La sensibilité de l'impôt aux seuils du barème est inférieure d'environ
+15 % à un calcul direct ; l'essentiel de l'écart aux chiffrages officiels (30 %) vient de différences de champ.
+
+## A14 — Couplage France-zone euro réduit
+
+**Décision (17 novembre 2026).** La zone euro est représentée par une règle de taux de la BCE estimée, une transmission
+estimée au taux long français, une prime de risque calibrée sur la dette, et la demande des partenaires résumée par des
+élasticités. Il n'y a pas de modèle multi-pays.
+**Justification.** Pour une mesure française, les canaux européens de premier ordre sont la réaction monétaire, les taux
+et la demande adressée. Un modèle multi-pays (comme le modèle NiGEM ou les modèles de la Commission européenne) n'est
+pas disponible en données ouvertes, et sa construction serait disproportionnée à ce stade.
+**Limites.** Voir `M11_europe.md`.

@@ -34,15 +34,25 @@ Temps de calcul : environ 6 minutes pour la législation actuelle (mise en cache
 | Réforme | Effet statique | Repère externe | Lecture |
 |---|---|---|---|
 | Législation actuelle | Impôt net 92,4 Md€ | 91,7 Md€ (DGFiP) | conforme |
-| Barème non revalorisé (seuils, décote, plafond du quotient familial −2 %) | +2,7 Md€ | ≈ 4 Md€ pour 2,1 % (projet de loi de finances pour 2027) ; 1,9 Md€ pour le gel de 2026, face à 0,9 % d'inflation (Bercy, Haut Conseil des finances publiques) | **sensibilité sous-estimée d'environ 30 %** |
+| Barème non revalorisé (seuils, décote, plafond du quotient familial −2 %) | +2,7 Md€ | ≈ 4 Md€ pour 2,1 % (projet de loi de finances pour 2027) ; 1,9 Md€ pour le gel de 2026, face à 0,9 % d'inflation (Bercy, Haut Conseil des finances publiques) ; calcul direct à partir de la répartition des foyers par taux marginal ≈ 3,2 Md€ | écart d'environ 30 % aux chiffrages officiels, ramené à environ 15 % après correction des différences de champ (voir ci-dessous) |
 | Première tranche de 11 % à 14 % | +13,6 Md€ | ordre de grandeur cohérent : la baisse de 14 % à 11 % de 2020 avait été chiffrée à 5 Md€, mais elle était partiellement compensée par un abaissement du seuil de la tranche à 30 % | à confirmer |
 | RSA +10 % | droits +2,8 Md€ ; versé +1,9 Md€ | ≈ 10 % de 11,9 Md€ versés = 1,2 Md€ à recours constant, davantage avec les nouveaux éligibles | plausible, un peu élevé (RSA déjà surestimé de 8 % en nombre) |
 
-**Sous-estimation de la sensibilité aux seuils.** Causes probables :
-- foyers trop peu nombreux juste au-dessus des seuils d'entrée dans l'impôt ;
-- 3 millions de foyers absents du champ ;
-- seuils associés non revalorisés dans le test (abattement de 10 % plafonné, seuils de la décote, réductions) ;
-- écart d'années de revenus : 2024 dans M4, 2025-2026 pour les repères.
+**Sensibilité aux seuils : diagnostic (17 novembre 2026).**
+- **Répartition des foyers par taux marginal d'imposition.** Elle est reproduite :
+
+  | | 0 % | 11 % | 30 % | 41 % | 45 % |
+  |---|---|---|---|---|---|
+  | M4 (M de foyers) | 13,6 | 20,8 | 6,8 | 0,40 | 0,08 |
+  | DGFiP (M de foyers) | 13,5 | 20,7 | 6,4 | 0,42 | 0,06 |
+
+  La densité des foyers par tranche de revenu fiscal est, elle, calée par construction sur l'IRCOM.
+- **Calcul direct.** À partir de cette répartition, le calcul donne environ 3,2 Md€ pour −2 %. M4 donne 2,7 Md€, soit −15 %. L'écart restant vient des interactions entre la décote et le plafonnement du quotient familial, que le calcul direct ignore.
+- **Différences de champ avec les chiffrages officiels**, qui expliquent le reste de l'écart :
+  - revenus 2025-2026, plus élevés de 5 à 8 % que les revenus 2024 de M4 ;
+  - autres paramètres indexés avec le barème (abattements de 10 % sur les salaires et les pensions, seuils divers) ;
+  - 3 millions de foyers absents du champ.
+- **Conclusion.** Pas de biais structurel identifié dans la population. Les chiffrages de réformes du barème sont à lire avec une marge d'environ −15 %. Aucune correction ad hoc n'est appliquée.
 
 C'est la première vérification de la *sensibilité* de M4 à une réforme. Jusqu'ici, seul le *niveau* de l'impôt avait été
 validé.
@@ -64,4 +74,4 @@ validé.
 
 1. Sens macro → micro : revaloriser les salaires et pensions de M4, et repondérer l'emploi, avec les trajectoires de M8.
 2. CSG et cotisations des salariés dans M4. OpenFisca les calcule, mais les salaires bruts doivent être reconstitués.
-3. Corriger la sensibilité aux seuils : comparer la densité des foyers autour des seuils de la décote et de la première tranche aux statistiques de la DGFiP par tranche de revenu.
+3. Revaloriser avec le barème l'ensemble des paramètres indexés (abattements, seuils), pour reproduire exactement le périmètre des chiffrages officiels.
