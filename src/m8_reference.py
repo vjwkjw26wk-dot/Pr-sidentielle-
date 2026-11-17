@@ -5,9 +5,10 @@ non recalé) par une trajectoire :
 1. recalée sur les comptes observés 2023-2025 (Insee, comptes annuels publiés en mai 2026) : des termes de calage
    (`Exogenes.calage`) sont ajoutés aux équations de consommation, d'investissement, d'exportations, d'importations,
    d'emploi, de prix et de salaires, et aux recettes, dépenses et à la dette publiques, pour reproduire l'observé ;
-2. calée en 2026 sur la prévision du FMI (Perspectives de l'économie mondiale, octobre 2026) : croissance, chômage,
-   inflation, solde public ;
-3. projetée librement à partir de 2027 par le modèle bouclé, sans nouvelle mesure après la loi de finances 2026 :
+2. calée de 2026 à 2031 sur les projections du FMI (Perspectives de l'économie mondiale, octobre 2026) pour la
+   croissance, le chômage et l'inflation (solde public : 2026 seulement), puis sur les hypothèses de long terme du COR
+   (productivité +0,7 %/an, chômage convergeant vers 7 %) ; les finances publiques sont calculées par le modèle ;
+3. sans nouvelle mesure après la loi de finances 2026, avec les exogènes suivants :
    - démographie (Insee, projection centrale 2021) : population active et masse des pensions de droit direct par
      génération (module M9, législation actuelle, revalorisation sur les prix) ;
    - environnement international : croissance de la zone euro et inflation selon le FMI (2027-2031, puis dernier
@@ -15,8 +16,9 @@ non recalé) par une trajectoire :
    - taux de l'OAT à 10 ans maintenu au dernier niveau mensuel observé (Eurostat), le taux apparent de la dette le
      rejoignant progressivement ;
    - consommation publique en volume et prestations hors pensions à leur rythme moyen 2011-2019 ;
-   - les termes de calage en croissance s'annulent après 2026 (les écarts de niveau persistent) ; les termes de
-     calage des recettes et des dépenses (en points de PIB) restent à leur valeur de 2026.
+   - les termes de calage des recettes et des dépenses (en points de PIB) restent à leur valeur de 2026 ;
+   - termes de rappel des équations ancrés sur l'écart à l'équilibre constaté fin 2025 (`Exogenes.ancrage`).
+Documentation : doc/M8_reference.md.
 Ce n'est pas une prévision : c'est le point de comparaison commun à toutes les mesures, avec ses propres incertitudes.
 """
 from __future__ import annotations
@@ -204,9 +206,8 @@ def _cibles(mod, H, fin=2035):
 
 
 def caler(mod, ex, annees, H, iterations=7, journal=print):
-    """Termes de calage année par année. Renvoie une copie de ex et le diagnostic.
-    Après FIN_FMI, les termes de calage en croissance sont maintenus à leur moyenne des trois dernières années
-    calées (les tendances corrigées sont supposées durables) ; ceux des recettes et dépenses à leur valeur de 2026."""
+    """Termes de calage année par année (toutes les années de `_cibles`). Renvoie une copie de ex et le diagnostic.
+    Les termes des recettes et des dépenses restent à leur valeur de 2026 ; les termes en niveau à leur valeur de 2025."""
     ex = copy.deepcopy(ex)
     ex.ancrage = FIN_OBSERVE
     cal = {k: pd.Series(dtype=float) for k in CLES_CROISSANCE + CLES_NIVEAU + ["recettes", "depenses", "dette"]}
