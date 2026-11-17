@@ -39,7 +39,7 @@ def telecharger(url: str, nom: str, force: bool = False, essais: int = 3) -> pat
     derniere = None
     for i in range(essais):
         try:
-            req = urllib.request.Request(url, headers={"User-Agent": "modele-france/0.1"})
+            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (compatible; modele-france/0.1)", "Accept": "application/json, */*"})
             with urllib.request.urlopen(req, timeout=180) as r:
                 contenu = r.read()
             break

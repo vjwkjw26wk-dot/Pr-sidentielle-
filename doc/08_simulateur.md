@@ -1,4 +1,4 @@
-# Phase 8 — Préparation du simulateur (prototype 0.2, avec interface de test)
+# Phase 8 — Préparation du simulateur (prototype 0.3, avec interface de test)
 
 **État : prototype fonctionnel, en ligne de commande.** Un scénario décrit en JSON est exécuté par l'ensemble des
 modèles (M1, M4, M8-M12). Le résultat est restitué dans un fichier JSON et dans une page HTML autonome, avec la fiche
@@ -7,36 +7,52 @@ de transparence exigée par le cahier des charges (§ 17.1).
 Il n'y a pas encore de service en ligne : ni serveur, ni comptes, ni file d'attente de calculs.
 Code : dossier `simulateur/`. Exemples : dossier `scenarios/`.
 
-## 0. Interface de test (17 novembre 2026)
+## 0. Interface de test (version 0.3, 17 novembre 2026)
 
-**Page interactive.** On compose un scénario avec douze curseurs et les effets s'affichent immédiatement :
-- tuiles de synthèse et graphique par indicateur ;
-- tableau 2023-2030 ;
-- effets directs et niveau de vie par décile ;
-- ménages types ;
-- rétroactions européennes ;
-- niveau de preuve et limites de chaque mesure retenue.
+**Changements depuis la version 0.2.** Ils répondent aux retours de l'utilisateur du 17 novembre 2026.
+1. **Calendrier.**
+   - Les mesures entrent en vigueur en 2028 par défaut ; l'horizon est 2032, fin du mandat.
+   - Corrections : les mesures socio-fiscales s'appliquaient dès 2023, faute d'année de début ; une réforme d'âge
+     légal modifiait les comportements avant son entrée en vigueur.
+2. **Trajectoire sans changement de politique** (`M8_reference.md`).
+   - Elle est recalée sur 2023-2025, calée sur le FMI jusqu'en 2031, pilotée par la démographie, au taux de marché
+     actuel.
+   - Elle est affichée en niveaux, au centre de l'interface ; les mesures s'y superposent.
+3. **Retraites.**
+   - Âge légal de 60 à 67 ans, avec retour progressif (3 mois par génération) ou immédiat.
+   - Indexation des pensions et minimum vieillesse.
+   - Nouveaux indicateurs : pensions en part du PIB, retraités pour 100 actifs.
+4. **Catalogue étendu à 35 curseurs** (tableau ci-dessous).
+5. **Réactions des hauts revenus et des patrimoines** (M13, `M13_comportements.md`), en fourchette.
+6. **Bilan automatique.**
+   - Il porte sur la trajectoire sans changement, puis sur ce que changent les mesures : activité, emploi, finances
+     publiques, prix, ménages, retraites, industrie.
+   - Il sépare ce qui est plutôt robuste de ce qui dépend des hypothèses.
+7. **Canaux de confiance et d'anticipation** : épargne de précaution, prime de risque, climat des affaires,
+   acceptabilité (part des ménages perdants).
+   - Ils sont chiffrés en fourchette indicative, à partir des écarts de déficit et de dette, et ne sont pas ajoutés au
+     résultat central.
+   - Faute de mesure fiable, le climat des affaires n'est pas chiffré.
 
-Elle est publiée comme page autonome et générée par `python3 -m simulateur.interface`.
+**Mode de calcul.**
+- Chaque curseur est simulé seul par la chaîne complète, aux points de sa grille (`python3 -m simulateur.precalcul`).
+- L'interface interpole entre les points (0 à la valeur actuelle) et additionne les effets. Les interactions entre
+  mesures sont ignorées.
+- Le calcul exact se fait en local : `python3 -m simulateur.serveur`, bouton « Calcul exact ». Il accepte le JSON
+  copié depuis l'interface, au format `{"curseurs": [{"cle", "valeur"}]}`.
 
-**Mode de calcul : par addition de variantes élémentaires.**
-- Chaque mesure a été simulée seule par la chaîne complète (M1, M4/M10, M9, M8, M11) sur une grille de deux à quatre intensités (`python3 -m simulateur.precalcul`, environ 60 minutes, 36 simulations).
-- L'interface interpole linéairement entre les points de la grille et additionne les mesures.
-- Les interactions entre mesures sont ignorées. C'est indiqué en tête de page et dans la liste des mesures dès que deux mesures sont combinées.
+| Groupe | Curseurs | Traitement |
+|---|---|---|
+| Dépenses publiques | emplois publics ; point d'indice ; santé, éducation, défense, autres (Md€) ; investissement public | consommation publique (M8, M11) ; investissement : demande et dépense, sans effet de long terme sur la productivité |
+| Impôts des ménages | taux des tranches 1 à 4 de l'IR ; revalorisation des seuils ; CSG sur l'activité et sur les pensions ; TVA (taux normal) | IR : OpenFisca ; CSG : microdonnées, assiettes calées sur les totaux nationaux ; TVA : rendement agrégé, répercussion sur les prix de 80 %, répartition selon la consommation |
+| Capital et patrimoine | flat tax ; ISF ; successions ; IS | assiettes agrégées et M13 ; IS : coût d'usage (M8) |
+| Entreprises et travail | cotisations patronales ; SMIC ; hausse générale des salaires ; relocalisation industrielle | coût du travail (M8) ; diffusion du SMIC : 11 % de la masse salariale (hypothèse D) |
+| Prestations | RSA ; prime d'activité ; allocations familiales ; aides au logement ; minimum vieillesse ; allocations chômage ; transferts | OpenFisca, ou variation proportionnelle des montants calculés ; chômage : dépense et chômage structurel (0,1 point pour 10 %) |
+| Retraites | âge légal (progressif ou immédiat) ; indexation des pensions | M9, par génération |
+| Environnement | taxe carbone ; prix de l'énergie importée | prix et recettes (M8) ; tableaux entrées-sorties (M5) |
 
-**Calcul exact.**
-- Le bouton « Copier le scénario (JSON) » produit le scénario au format de `simulateur.executer`.
-- En local, `python3 -m simulateur.serveur` sert l'interface sur http://localhost:8765. Le bouton « Calcul exact » y lance alors la simulation complète du scénario composé, interactions comprises, et affiche la page de restitution.
-
-**Curseurs.**
-- Consommation publique, transferts aux ménages.
-- Taux de l'impôt sur les sociétés.
-- Impôt sur le revenu : taux de la première tranche et revalorisation des seuils.
-- RSA, prime d'activité, allocations familiales.
-- Âge légal de 62 à 66 ans.
-- Salaires.
-- Réindustrialisation.
-- Prix de l'énergie importée.
+Non modélisés à ce stade : durée du travail (32 heures), droits de douane, TVA à taux réduits, logement social, mesures
+réglementaires.
 
 ## 1. Utilisation
 
@@ -82,7 +98,7 @@ Chaque mesure porte ses limites propres. Elles sont reproduites dans la restitut
 
 Aucune note globale n'est attribuée.
 
-## 4. Exemples symétriques (illustratifs, non attribués à un programme)
+## 4. Exemples symétriques (prototype 0.2 : ancienne référence, mesures en 2024 — à refaire sur la référence 1.0)
 
 | | A — relance : dépense +1 pt, RSA +10 %, retour à 62 ans | B — consolidation : dépense −1 pt, IS 20 %, barème non revalorisé, 65 ans |
 |---|---|---|
@@ -114,8 +130,17 @@ Ces résultats illustrent la mécanique et doivent être lus avec leurs incertit
 
 ## 6. Reste à faire avant une ouverture au public
 
-1. Interface web : une interface de test existe (§ 0). Restent à faire : la comparaison de scénarios côte à côte, la prise en compte des interactions sans serveur local (grille croisée ou calcul à la demande hébergé) et les intervalles d'incertitude dans la page.
-2. Élargir le catalogue : TVA, CSG, cotisations, investissement public, emploi public, dépenses par fonction, énergie et climat, logement.
-3. Effets distributifs complets : CSG, cotisations, TVA par décile.
-4. Revue scientifique externe des modèles et du catalogue (cahier des charges, phase 7), avant toute diffusion.
-5. Versionnement des résultats et des données, et suivi des révisions des sources.
+1. **Interface.**
+   - Comparaison de scénarios côte à côte.
+   - Intervalles d'incertitude dans la page.
+   - Prise en compte des interactions sans serveur local : grille croisée, ou calcul à la demande hébergé.
+2. **Catalogue.** Durée du travail, droits de douane, taux réduits de TVA, logement, mesures réglementaires.
+3. **Profils types.** Les étendre à la CSG, à la TVA et aux pensions.
+4. **Ménages.** Distribution de la TVA et de la taxe carbone à partir des enquêtes Budget de famille, au lieu de taux
+   d'épargne approchés.
+5. **Trajectoire de référence.**
+   - Sensibilité au taux de l'OAT.
+   - Emploi industriel par branche.
+   - Normes de dépense de la loi de programmation.
+6. **Revue scientifique externe** des modèles et du catalogue, avant toute diffusion.
+7. **Versionnement** des résultats et des données.

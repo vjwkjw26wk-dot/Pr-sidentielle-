@@ -91,50 +91,85 @@ th { color: var(--doux); font-weight: 500; }
 .vide { color: var(--doux); font-size: .9rem; }
 footer { max-width: 1320px; margin: 0 auto; padding: 0 24px 28px; color: var(--doux); font-size: .8rem; }
 @media (prefers-reduced-motion: no-preference) { .tuile .val { transition: color .2s; } }
+
+svg .ref { fill: none; stroke: var(--doux); stroke-width: 2; stroke-dasharray: 5 4; }
+svg .fmi { fill: var(--surface); stroke: var(--alerte); stroke-width: 1.6; }
+svg .observe { fill: var(--trait); opacity: .45; }
+svg .leg { fill: var(--doux); font-size: 11px; font-family: var(--f-texte); }
+.bilan { display: grid; gap: 8px; }
+.bilan p { margin: 0; max-width: 95ch; }
+.bilan .robuste { border-left: 3px solid var(--hausse); padding-left: 10px; }
+.bilan .fragile { border-left: 3px solid var(--alerte); padding-left: 10px; }
+.tuile .ref-val { font-size: .76rem; color: var(--doux); }
+.legende { display: flex; gap: 14px; flex-wrap: wrap; font-size: .8rem; color: var(--doux); }
+.legende span::before { content: ""; display: inline-block; width: 18px; height: 0; border-top: 2px solid var(--accent); vertical-align: middle; margin-right: 5px; }
+.legende .l-ref::before { border-top: 2px dashed var(--doux); }
+.legende .l-fmi::before { width: 8px; height: 8px; border: 1.6px solid var(--alerte); border-radius: 50%; }
+.legende .l-obs::before { width: 14px; height: 10px; border: 0; background: var(--trait); }
+.curseur.actif label span:first-child { font-weight: 600; }
+details.groupe > summary { cursor: pointer; font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; color: var(--doux); font-weight: 600; list-style: none; display: flex; justify-content: space-between; }
+details.groupe > summary::-webkit-details-marker { display: none; }
+details.groupe > summary .compte { color: var(--accent); }
+#psy td:last-child, #directs td:first-child { white-space: normal; } #psy td:first-child { width: 62%; }
+.note { font-size: .8rem; color: var(--doux); margin: 6px 0 0; }
 </style>
 </head>
 <body>
 <header>
   <h1>Simulateur de politiques publiques — interface de test</h1>
-  <p class="sous">Composez un ensemble de mesures et lisez leurs effets sur l'économie française de 2023 à 2030, en écart à une trajectoire de référence à législation inchangée (base 2022).</p>
-  <div class="bandeau"><strong>Version de test.</strong> Les effets affichés additionnent des simulations précalculées mesure par mesure par le modèle complet (ménages, branches, finances publiques, zone euro), interpolées entre les points calculés. Les interactions entre mesures sont ignorées. Ce ne sont pas des prévisions, et aucune note globale n'est attribuée.</div>
+  <p class="sous">La trajectoire de l'économie française de 2023 à 2032 sans changement de politique, et ce que changeraient les mesures que vous choisissez (entrée en vigueur en 2028, premier budget du prochain mandat).</p>
+  <div class="bandeau"><strong>Version de test.</strong> 2023-2025 : comptes observés. 2026-2031 : croissance, chômage et inflation du FMI (octobre 2026), finances publiques calculées par le modèle sans nouvelle mesure. Les effets des mesures additionnent des simulations précalculées mesure par mesure par le modèle complet ; les interactions entre mesures sont ignorées. Ce ne sont pas des prévisions, et aucune note globale n'est attribuée.</div>
 </header>
 <main>
   <section class="mesures" aria-label="Mesures">
     <div class="actions">
-      <button type="button" id="b-zero" class="principal">Tout remettre à la législation actuelle</button>
+      <button type="button" id="b-zero" class="principal">Tout remettre à la politique actuelle</button>
       <button type="button" id="b-copier">Copier le scénario (JSON)</button>
       <button type="button" id="b-exact" hidden>Calcul exact (serveur local)</button>
     </div>
-    <div id="groupes"></div>
+    <div id="groupes" class="mesures"></div>
   </section>
   <section class="effets" aria-label="Effets">
+    <div class="panneau bilan" id="bilan" aria-live="polite"></div>
     <div class="tuiles" id="tuiles"></div>
     <div class="panneau">
       <div class="entete-graphe">
-        <h3 id="titre-graphe">Écart au compte de référence</h3>
+        <h3 id="titre-graphe">Trajectoire</h3>
         <label for="choix-ind" class="vide">Indicateur
           <select id="choix-ind"></select>
         </label>
       </div>
-      <svg class="graphe" id="graphe" viewBox="0 0 720 260" role="img" aria-label="Écart annuel de l'indicateur choisi"></svg>
+      <svg class="graphe" id="graphe" viewBox="0 0 720 270" role="img" aria-label="Trajectoire de l'indicateur choisi"></svg>
+      <div class="legende"><span class="l-sc">Avec les mesures</span><span class="l-ref">Sans changement de politique</span><span class="l-fmi">Projection du FMI (oct. 2026)</span><span class="l-obs">Années observées</span></div>
     </div>
-    <div class="panneau table-wrap">
-      <h3>Tous les indicateurs (écarts au compte de référence)</h3>
-      <table id="tableau"></table>
+    <div class="panneau">
+      <h3>Tous les indicateurs</h3>
+      <div class="table-wrap"><table id="tableau"></table></div>
+      <p class="note">Valeur avec les mesures ; entre parenthèses, l'écart à la trajectoire sans changement de politique.</p>
     </div>
     <div class="deux">
       <div class="panneau">
-        <h3>Effets directs, avant bouclage</h3>
-        <table id="directs"></table>
-        <h3 style="margin-top:14px">Niveau de vie par décile (mesures socio-fiscales, statique)</h3>
+        <h3>Niveau de vie par décile (effet direct)</h3>
         <svg class="graphe" id="deciles" viewBox="0 0 360 200" role="img" aria-label="Variation du niveau de vie par décile"></svg>
-        <p class="vide" id="deciles-note"></p>
+        <p class="vide" id="txt-deciles"></p>
+        <h3 style="margin-top:12px">Effets directs sur les comptes publics (avant bouclage)</h3>
+        <table id="directs"></table>
       </div>
       <div class="panneau">
         <h3>Ménages types (cas fictifs, revenus 2024)</h3>
         <table id="profils"></table>
-        <h3 style="margin-top:14px">Rétroactions européennes (2026)</h3>
+        <h3 style="margin-top:14px">Réactions des hauts revenus et des patrimoines</h3>
+        <table id="comport"></table>
+        <p class="note">Rendement net des réactions (optimisation, moindre déclaration, départs) : fourchette basse, centrale, haute (module M13). Seule la valeur centrale est intégrée aux résultats.</p>
+      </div>
+    </div>
+    <div class="deux">
+      <div class="panneau">
+        <h3>Confiance et anticipations (non inclus dans les résultats)</h3>
+        <div id="psy"></div>
+      </div>
+      <div class="panneau">
+        <h3>Rétroactions européennes (2030)</h3>
         <table id="europe"></table>
       </div>
     </div>
@@ -143,248 +178,264 @@ footer { max-width: 1320px; margin: 0 auto; padding: 0 24px 28px; color: var(--d
       <ul class="liste-limites" id="limites"></ul>
     </div>
     <div class="panneau">
-      <h3>Hypothèses communes</h3>
+      <h3>Hypothèses de la trajectoire sans changement de politique</h3>
       <ul class="liste-limites" id="hypotheses"></ul>
     </div>
   </section>
 </main>
 <footer id="pied"></footer>
-<script id="donnees" type="application/json">__DONNEES__</script>
 <script>
-"use strict";
-const D = JSON.parse(document.getElementById("donnees").textContent);
+const D = __DONNEES__;
 const ANS = Object.keys(D.reference.pib).map(Number).sort((a, b) => a - b);
-
-// Curseurs : clé des variantes précalculées, libellé, bornes, pas, valeur neutre (législation actuelle), unité, aide
-const CURSEURS = [
-  {g: "Dépenses et transferts publics", k: "depense_publique", lib: "Consommation publique", min: -2, max: 2, pas: 0.1, neutre: 0, u: " pt de PIB", aide: "Dépenses de fonctionnement et emploi publics, dès 2024", cat: "depense_publique"},
-  {g: "Dépenses et transferts publics", k: "transferts_menages", lib: "Transferts aux ménages (non ciblés)", min: -1, max: 1, pas: 0.1, neutre: 0, u: " pt de PIB", aide: "Dès 2024", cat: "transferts_menages"},
-  {g: "Fiscalité", k: "taux_is", lib: "Taux normal de l'impôt sur les sociétés", min: 15, max: 33.3, pas: 0.1, neutre: 25.8, u: " %", aide: "Actuel : 25,8 % (contributions comprises), dès 2024", cat: "taux_is"},
-  {g: "Fiscalité", k: "ir_premiere_tranche", lib: "Impôt sur le revenu : taux de la première tranche", min: 9, max: 15, pas: 0.5, neutre: 11, u: " %", aide: "Actuel : 11 %", cat: "bareme_ir"},
-  {g: "Fiscalité", k: "ir_seuils", lib: "Impôt sur le revenu : revalorisation des seuils", min: -3, max: 3, pas: 0.5, neutre: 0, u: " %", aide: "Seuils des tranches, décote, plafond du quotient familial (négatif : gel relatif)", cat: "bareme_ir"},
-  {g: "Prestations", k: "rsa", lib: "Montant forfaitaire du RSA", min: -10, max: 25, pas: 1, neutre: 0, u: " %", aide: "Variation du montant", cat: "rsa"},
-  {g: "Prestations", k: "prime_activite", lib: "Montant forfaitaire de la prime d'activité", min: -10, max: 25, pas: 1, neutre: 0, u: " %", aide: "Variation du montant", cat: "prime_activite"},
-  {g: "Prestations", k: "allocations_familiales", lib: "Base des allocations familiales", min: -10, max: 25, pas: 1, neutre: 0, u: " %", aide: "Variation de la BMAF", cat: "allocations_familiales"},
-  {g: "Retraites", k: "age_legal", lib: "Âge légal de départ (cible)", min: 62, max: 66, pas: 0.25, neutre: 64, u: " ans", aide: "Actuel : 64 ans à partir de la génération 1969 ; la cible est atteinte à +3 mois par génération", cat: "age_legal"},
-  {g: "Économie et environnement", k: "salaires", lib: "Hausse générale des salaires (2024)", min: -2, max: 5, pas: 0.5, neutre: 0, u: " %", aide: "Choc ponctuel", cat: "salaires"},
-  {g: "Économie et environnement", k: "reindustrialisation", lib: "Objectif de réindustrialisation", min: 0, max: 20, pas: 1, neutre: 0, u: " %", aide: "Baisse des parts importées de huit filières industrielles, en 5 ans, avec investissement et surcoût de 10 %", cat: "reindustrialisation"},
-  {g: "Économie et environnement", k: "energie_import", lib: "Prix de l'énergie importée (hypothèse)", min: -20, max: 50, pas: 5, neutre: 0, u: " %", aide: "Choc d'environnement, pas une mesure", cat: "energie_import"},
-];
-const IND = {
-  pib: ["PIB en volume", "%"], emploi_milliers: ["Emploi", "milliers"], chomage: ["Taux de chômage", "pt"], pc: ["Prix à la consommation", "%"],
-  rdb: ["Revenu disponible des ménages (valeur)", "%"], solde_pib: ["Solde public", "pt de PIB"], dette_pib: ["Dette publique", "pt de PIB"],
-  c: ["Consommation des ménages", "%"], fbcf: ["Investissement", "%"], x: ["Exportations", "%"], m: ["Importations", "%"], salaire: ["Salaire moyen", "%"]
-};
+const FIN = ANS[ANS.length - 1], DEBUT = 2028, OBS = D.fin_observe;
 const etat = {};
-CURSEURS.forEach(c => etat[c.k] = c.neutre);
+D.curseurs.forEach(c => etat[c.cle] = c.actuel);
+const nf = (x, d = 1) => (x === null || x === undefined || isNaN(x)) ? "–" : x.toLocaleString("fr-FR", {minimumFractionDigits: d, maximumFractionDigits: d});
+const sg = (x, d = 1) => (x > 0 ? "+" : x < 0 ? "−" : "") + nf(Math.abs(x), d);
+const cls = (x, bon) => Math.abs(x) < 1e-9 ? "nul" : ((bon === undefined ? x > 0 : (bon > 0 ? x > 0 : x < 0)) ? "pos" : "neg");
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
 
-function fmt(v, dec = 2, signe = true) {
-  if (v === null || v === undefined || isNaN(v)) return "—";
-  const s = Math.abs(v) < 0.5 * Math.pow(10, -dec) ? 0 : v;
-  return (signe && s > 0 ? "+" : s < 0 ? "−" : "") + Math.abs(s).toLocaleString("fr-FR", {minimumFractionDigits: dec, maximumFractionDigits: dec});
+// ---------- curseurs
+function construireCurseurs() {
+  const zone = document.getElementById("groupes");
+  const gr = {};
+  D.curseurs.forEach(c => { (gr[c.groupe] = gr[c.groupe] || []).push(c); });
+  zone.innerHTML = Object.entries(gr).map(([g, L], i) => `<details class="panneau groupe" ${i < 3 ? "open" : ""}><summary><span>${esc(g)}</span><span class="compte" data-g="${esc(g)}"></span></summary>` +
+    L.map(c => `<div class="curseur" id="c-${c.cle}"><label for="r-${c.cle}"><span>${esc(c.libelle)}</span><output id="o-${c.cle}"></output></label>
+      <input type="range" id="r-${c.cle}" min="${c.min}" max="${c.max}" step="${c.pas}" value="${c.actuel}">
+      <small>Actuel : ${nf(c.actuel, c.pas < 1 ? 1 : 0)} ${esc(c.unite)}${D.variantes[c.cle] ? "" : " — (non calculé)"}</small></div>`).join("") + `</details>`).join("");
+  D.curseurs.forEach(c => {
+    const r = document.getElementById("r-" + c.cle);
+    r.addEventListener("input", () => { etat[c.cle] = parseFloat(r.value); maj(); });
+  });
 }
-function classe(v, sensPositif = 1) { if (Math.abs(v) < 1e-6) return "nul"; return v * sensPositif > 0 ? "pos" : "neg"; }
+function afficherCurseurs() {
+  const comptes = {};
+  D.curseurs.forEach(c => {
+    const o = document.getElementById("o-" + c.cle), v = etat[c.cle], d = c.pas < 1 ? (c.pas < 0.1 ? 2 : 1) : 0;
+    const actif = Math.abs(v - c.actuel) > 1e-9;
+    o.textContent = actif ? `${nf(v, d)} ${c.unite}` : "actuel";
+    o.className = actif ? "" : "neutre";
+    document.getElementById("c-" + c.cle).classList.toggle("actif", actif);
+    document.getElementById("r-" + c.cle).value = v;
+    if (actif) comptes[c.groupe] = (comptes[c.groupe] || 0) + 1;
+  });
+  document.querySelectorAll("summary .compte").forEach(e => { const n = comptes[e.dataset.g] || 0; e.textContent = n ? `${n} mesure${n > 1 ? "s" : ""}` : ""; });
+}
 
-// points de la grille d'un curseur : [(écart à la valeur neutre, variante)] avec 0 → variante nulle
-function grille(c) {
-  const vs = D.variantes[c.k] || {};
-  const pts = Object.keys(vs).map(k => ({x: parseFloat(k) - c.neutre, v: vs[k]}));
-  pts.push({x: 0, v: null});
-  return pts.sort((a, b) => a.x - b.x);
+// ---------- interpolation : liste de (point, poids), l'état actuel valant 0
+function poids(c, v) {
+  const V = D.variantes[c.cle] || {};
+  const pts = c.points.filter(p => V[String(p)] !== undefined).map(p => ({x: p, k: String(p)}));
+  if (!pts.length || Math.abs(v - c.actuel) < 1e-9) return [];
+  const all = pts.concat([{x: c.actuel, k: null}]).sort((a, b) => a.x - b.x);
+  let i = all.findIndex(p => p.x >= v);
+  if (i <= 0) i = (i === 0 && all[0].x === v) ? 1 : (i === -1 ? all.length - 1 : 1);
+  const a = all[i - 1], b = all[i];
+  const t = (v - a.x) / (b.x - a.x);
+  const out = [];
+  if (a.k !== null) out.push([a.k, 1 - t]);
+  if (b.k !== null) out.push([b.k, t]);
+  return out;
 }
-// interpolation linéaire (et extrapolation par le point le plus proche au-delà de la grille)
-function poids(c) {
-  const x = etat[c.k] - c.neutre, P = grille(c);
-  if (Math.abs(x) < 1e-9) return [];
-  for (let i = 0; i < P.length - 1; i++) {
-    if (x >= P[i].x && x <= P[i + 1].x) {
-      const w = (x - P[i].x) / (P[i + 1].x - P[i].x);
-      return [[P[i].v, 1 - w], [P[i + 1].v, w]].filter(p => p[0] && p[1] > 1e-9);
-    }
-  }
-  const bord = x < P[0].x ? P[0] : P[P.length - 1];
-  return bord.v ? [[bord.v, x / bord.x]] : [];
-}
+
+// ---------- combinaison
 function combiner() {
-  const r = {ecarts: {}, directs: {ir: 0, prest: 0, pensions: 0}, deciles: Array(10).fill(0), nv: Array(10).fill(0), profils: {}, europe: {bce: 0, tl: 0, dem: 0}, actives: []};
-  Object.keys(IND).forEach(i => r.ecarts[i] = Object.fromEntries(ANS.map(a => [a, 0])));
-  CURSEURS.forEach(c => {
-    const P = poids(c);
-    if (!P.length) return;
+  const r = {e: {}, directs: {ir: 0, prest: 0, pensions: 0}, nv: Array(10).fill(0), perd: Array(10).fill(0), gagn: Array(10).fill(0), aDistrib: false,
+             profils: {}, europe: {bce: 0, tl: 0, dem: 0}, actives: [], comport: []};
+  Object.keys(D.reference).forEach(k => r.e[k] = Object.fromEntries(ANS.map(a => [a, 0])));
+  r.e.emploi_milliers = Object.fromEntries(ANS.map(a => [a, 0]));
+  r.e.emploi_industrie_milliers = Object.fromEntries(ANS.map(a => [a, 0]));
+  D.curseurs.forEach(c => {
+    const L = poids(c, etat[c.cle]);
+    if (!L.length) return;
     r.actives.push(c);
-    P.forEach(([v, w]) => {
-      Object.keys(IND).forEach(i => ANS.forEach(a => r.ecarts[i][a] += w * (v.ecarts[i][a] || 0)));
+    L.forEach(([k, w]) => {
+      const v = D.variantes[c.cle][k];
+      Object.entries(v.ecarts).forEach(([ind, s]) => { if (!r.e[ind]) return; ANS.forEach(a => r.e[ind][a] += w * (s[a] || 0)); });
       const st = v.statique || {};
       r.directs.ir += w * (st["impot_revenu_M€"] || 0);
       r.directs.prest += w * (st["prestations_versees_M€"] || 0);
-      if (st["pensions_M€"]) r.directs.pensions += w * (st["pensions_M€"][ANS[ANS.length - 1]] || 0);
-      (v.distribution || []).forEach((d, j) => { r.deciles[j] += w * d.variation_euros_par_uc; r.nv[j] = d.niveau_de_vie_moyen; });
+      r.directs.pensions += w * ((st["pensions_M€"] || {})[2030] || 0);
+      (v.distribution || []).forEach((d, i) => { r.nv[i] += w * d.variation_euros_par_uc; r.perd[i] = Math.max(r.perd[i], d.part_perdants || 0); r.gagn[i] = Math.max(r.gagn[i], d.part_gagnants || 0); r.aDistrib = true; });
       (v.profils || []).forEach(p => { r.profils[p.profil] = r.profils[p.profil] || {lib: p.libelle, base: p.revenu_disponible_approche_actuel, d: 0}; r.profils[p.profil].d += w * p.variation_revenu_disponible; });
-      const e = (v.europe || []).find(x => +x.annee === 2026);
-      if (e) { r.europe.bce += w * e.taux_bce; r.europe.tl += w * e.taux_long_fr; r.europe.dem += w * e.demande_ue; }
+      const eu = (v.europe || []).find(x => x.annee === 2030);
+      if (eu) { r.europe.bce += w * (eu.taux_bce || 0); r.europe.tl += w * (eu.taux_long_fr || 0); r.europe.dem += w * (eu.demande_ue || 0); }
+      Object.entries(v.comportements || {}).forEach(([nom, x]) => { if (x && typeof x === "object" && x["statique_M€"] !== undefined) r.comport.push({nom, w, x}); });
     });
+  });
+  // niveaux avec mesures
+  r.niv = {};
+  Object.keys(D.reference).forEach(k => {
+    const u = D.unites[k];
+    r.niv[k] = Object.fromEntries(ANS.map(a => [a, u === "points" ? D.reference[k][a] + r.e[k][a] : D.reference[k][a] * (1 + r.e[k][a] / 100)]));
   });
   return r;
 }
 
-function construireCurseurs() {
-  const zone = document.getElementById("groupes");
-  const groupes = [...new Set(CURSEURS.map(c => c.g))];
-  zone.innerHTML = groupes.map(g => `<div class="panneau groupe"><h2>${g}</h2>${CURSEURS.filter(c => c.g === g).map(c => `
-    <div class="curseur">
-      <label for="c-${c.k}"><span>${c.lib}</span><output id="o-${c.k}" for="c-${c.k}"></output></label>
-      <input type="range" id="c-${c.k}" min="${c.min}" max="${c.max}" step="${c.pas}" value="${c.neutre}">
-      <small>${c.aide}</small>
-    </div>`).join("")}</div>`).join("");
-  CURSEURS.forEach(c => {
-    const el = document.getElementById("c-" + c.k);
-    el.addEventListener("input", () => { etat[c.k] = parseFloat(el.value); maj(); });
-  });
-}
-function majSorties() {
-  CURSEURS.forEach(c => {
-    const o = document.getElementById("o-" + c.k), v = etat[c.k];
-    const neutre = Math.abs(v - c.neutre) < 1e-9;
-    const dec = c.pas < 0.5 ? 1 : c.pas < 1 ? 2 : 0;
-    const txt = (c.neutre !== 0 ? v.toLocaleString("fr-FR", {maximumFractionDigits: 2}) : fmt(v, c.pas < 1 ? (c.pas < 0.5 ? 1 : 1) : 0)) + c.u;
-    const manque = !neutre && !Object.keys(D.variantes[c.k] || {}).length;
-    o.textContent = neutre ? "actuel" + (c.neutre !== 0 ? ` (${c.neutre.toLocaleString("fr-FR")}${c.u})` : "") : txt + (manque ? " (non calculé)" : "");
-    o.className = neutre ? "neutre" : "";
-  });
-}
+// ---------- affichage
+const TUILES = [["croissance", "Croissance annuelle moyenne 2028-2032", "%", "moy", 1], ["chomage", "Chômage en 2032", "%", FIN, 1],
+  ["solde_pib", "Solde public en 2032", "% du PIB", FIN, 1], ["dette_pib", "Dette publique en 2032", "% du PIB", FIN, -1],
+  ["inflation", "Inflation moyenne 2028-2032", "%", "moy", 0], ["pensions_pib", "Pensions en 2032", "% du PIB", FIN, 0]];
+const BONS = {pib: 1, croissance: 1, emploi: 1, chomage: -1, solde_pib: 1, dette_pib: -1, interets_pib: -1, rdb: 1, part_industrie: 1, emploi_industrie: 1, recettes_pib: 0, depenses_pib: 0, pensions_pib: 0, inflation: 0, pc: 0};
+function moy(s) { const L = ANS.filter(a => a >= DEBUT); return L.reduce((x, a) => x + s[a], 0) / L.length; }
 function tuiles(r) {
-  const fin = ANS[ANS.length - 1], mi = 2026;
-  const T = [
-    ["PIB", "pib", "%", 1, 2], ["Emploi", "emploi_milliers", "milliers", 1, 0], ["Chômage", "chomage", "pt", -1, 2],
-    ["Prix à la consommation", "pc", "%", 0, 2], ["Solde public", "solde_pib", "pt de PIB", 1, 2], ["Dette publique", "dette_pib", "pt de PIB", -1, 1]];
-  document.getElementById("tuiles").innerHTML = T.map(([lib, k, u, sens, dec]) => {
-    const v1 = r.ecarts[k][mi], v2 = r.ecarts[k][fin];
-    return `<div class="tuile"><span class="lib">${lib}, ${fin}</span><span class="val ${sens ? classe(v2, sens) : "nul"}">${fmt(v2, dec)}</span><span class="det">${u} · ${mi} : ${fmt(v1, dec)}</span></div>`;
+  document.getElementById("tuiles").innerHTML = TUILES.map(([k, lib, u, quand, bon]) => {
+    const v = quand === "moy" ? moy(r.niv[k]) : r.niv[k][quand], ref = quand === "moy" ? moy(D.reference[k]) : D.reference[k][quand];
+    const d = v - ref;
+    return `<div class="tuile"><span class="lib">${lib}</span><span class="val">${nf(v)} <small style="font-size:.8rem;font-weight:400">${u}</small></span>
+      <span class="det ${bon ? cls(d, bon) : "nul"}">${Math.abs(d) < 0.005 ? "inchangé" : sg(d, 2) + (u.startsWith("%") ? " pt" : "")}</span><span class="ref-val">sans changement : ${nf(ref)}</span></div>`;
   }).join("");
 }
+const IND_GRAPHE = ["croissance", "chomage", "solde_pib", "dette_pib", "inflation", "interets_pib", "pensions_pib", "retraites_pour_100_actifs", "part_industrie", "emploi_industrie", "emploi", "pib", "rdb", "recettes_pib", "depenses_pib"];
+const FMI_MAP = {croissance: "NGDP_RPCH", chomage: "LUR_ajuste", inflation: "PCPIPCH", solde_pib: "GGXCNL_NGDP", dette_pib: "GGXWDG_NGDP"};
 function graphe(r) {
-  const k = document.getElementById("choix-ind").value, [lib, u] = IND[k];
-  document.getElementById("titre-graphe").textContent = `${lib} : écart au compte de référence (${u})`;
-  const ys = ANS.map(a => r.ecarts[k][a]);
-  const W = 720, H = 260, g = 52, d = 18, h = 18, b = 32;
-  let lo = Math.min(0, ...ys), hi = Math.max(0, ...ys);
-  if (hi - lo < 1e-6) { hi = 1; lo = -1; }
-  const pad = (hi - lo) * 0.12; hi += pad; lo -= pad;
-  const pas = Math.pow(10, Math.floor(Math.log10((hi - lo) / 4))), mult = [1, 2, 2.5, 5, 10].find(m => (hi - lo) / (m * pas) <= 6) * pas;
-  const sx = a => g + (a - ANS[0]) / (ANS[ANS.length - 1] - ANS[0]) * (W - g - d), sy = y => h + (hi - y) / (hi - lo) * (H - h - b);
-  let s = "";
-  for (let t = Math.ceil(lo / mult) * mult; t <= hi; t += mult) s += `<line class="grille" x1="${g}" x2="${W - d}" y1="${sy(t)}" y2="${sy(t)}"/><text class="axe" x="${g - 6}" y="${sy(t) + 4}" text-anchor="end">${fmt(t, mult < 0.1 ? 2 : mult < 1 ? 1 : 0, false)}</text>`;
-  ANS.forEach(a => s += `<text class="axe" x="${sx(a)}" y="${H - 10}" text-anchor="middle">${a}</text>`);
-  s += `<line class="zero" x1="${g}" x2="${W - d}" y1="${sy(0)}" y2="${sy(0)}"/>`;
-  const pts = ANS.map((a, i) => `${sx(a)},${sy(ys[i])}`).join(" ");
-  s += `<polygon class="aire" points="${sx(ANS[0])},${sy(0)} ${pts} ${sx(ANS[ANS.length - 1])},${sy(0)}"/><polyline class="courbe" points="${pts}"/>`;
-  ANS.forEach((a, i) => s += `<circle class="point" cx="${sx(a)}" cy="${sy(ys[i])}" r="${i === ANS.length - 1 ? 4.5 : 3}"/>`);
-  const yl = ys[ys.length - 1];
-  s += `<text class="axe" x="${sx(ANS[ANS.length - 1]) - 6}" y="${sy(yl) - 9}" text-anchor="end" style="font-weight:600;fill:var(--encre)">${fmt(yl, k === "emploi_milliers" ? 0 : 2)}</text>`;
-  document.getElementById("graphe").innerHTML = s;
+  const k = document.getElementById("choix-ind").value;
+  const W = 720, H = 270, g = 50, dr = 18, h = 20, b = 30;
+  const ref = ANS.map(a => D.reference[k][a]), sc = ANS.map(a => r.niv[k][a]);
+  const fmi = FMI_MAP[k] && D.fmi[FMI_MAP[k]] ? ANS.map(a => D.fmi[FMI_MAP[k]][a]) : [];
+  const vals = ref.concat(sc).concat(fmi.filter(x => x !== undefined && x !== null));
+  let lo = Math.min(...vals), hi = Math.max(...vals);
+  const marge = (hi - lo) * 0.12 || Math.abs(hi) * 0.05 || 1; lo -= marge; hi += marge;
+  const X = i => g + i * (W - g - dr) / (ANS.length - 1), Y = v => h + (hi - v) / (hi - lo) * (H - h - b);
+  const pas = (() => { const s = (hi - lo) / 5, p = Math.pow(10, Math.floor(Math.log10(s))); return [1, 2, 2.5, 5, 10].map(m => m * p).find(m => m >= s); })();
+  let svg = "";
+  const iObs = ANS.indexOf(OBS);
+  if (iObs >= 0) svg += `<rect class="observe" x="${X(0) - 8}" y="${h}" width="${X(iObs) - X(0) + 16}" height="${H - h - b}"/>`;
+  for (let v = Math.ceil(lo / pas) * pas; v <= hi; v += pas) svg += `<line class="grille" x1="${g}" x2="${W - dr}" y1="${Y(v)}" y2="${Y(v)}"/><text class="axe" x="${g - 6}" y="${Y(v) + 4}" text-anchor="end">${nf(v, pas < 1 ? 1 : 0)}</text>`;
+  if (lo < 0 && hi > 0) svg += `<line class="zero" x1="${g}" x2="${W - dr}" y1="${Y(0)}" y2="${Y(0)}"/>`;
+  ANS.forEach((a, i) => svg += `<text class="axe" x="${X(i)}" y="${H - 10}" text-anchor="middle">${a}</text>`);
+  svg += `<line class="grille" x1="${X(ANS.indexOf(DEBUT))}" x2="${X(ANS.indexOf(DEBUT))}" y1="${h}" y2="${H - b}" style="stroke-dasharray:2 3"/><text class="leg" x="${X(ANS.indexOf(DEBUT)) + 4}" y="${h + 10}">mesures</text>`;
+  svg += `<path class="ref" d="${ref.map((v, i) => (i ? "L" : "M") + X(i) + " " + Y(v)).join(" ")}"/>`;
+  svg += `<path class="courbe" d="${sc.map((v, i) => (i ? "L" : "M") + X(i) + " " + Y(v)).join(" ")}"/>`;
+  fmi.forEach((v, i) => { if (v !== undefined && v !== null && ANS[i] > OBS) svg += `<circle class="fmi" cx="${X(i)}" cy="${Y(v)}" r="3.6"><title>FMI ${ANS[i]} : ${nf(v)}</title></circle>`; });
+  sc.forEach((v, i) => svg += `<circle class="point" cx="${X(i)}" cy="${Y(v)}" r="2.6"><title>${ANS[i]} : ${nf(v, 2)}</title></circle>`);
+  svg += `<text class="axe" x="${X(ANS.length - 1)}" y="${Y(sc[sc.length - 1]) - 8}" text-anchor="end" style="font-weight:600;fill:var(--encre)">${nf(sc[sc.length - 1])}</text>`;
+  document.getElementById("graphe").innerHTML = svg;
+  document.getElementById("titre-graphe").textContent = D.libelles[k];
 }
 function tableau(r) {
-  const entete = `<tr><th>Indicateur</th>${ANS.map(a => `<th>${a}</th>`).join("")}<th>Unité</th></tr>`;
-  const lignes = Object.entries(IND).map(([k, [lib, u]]) => `<tr><td>${lib}</td>${ANS.map(a => `<td>${fmt(r.ecarts[k][a], k === "emploi_milliers" ? 0 : 2)}</td>`).join("")}<td>${u}</td></tr>`).join("");
-  document.getElementById("tableau").innerHTML = entete + lignes;
+  const L = ["croissance", "pib", "emploi", "chomage", "inflation", "rdb", "solde_pib", "dette_pib", "recettes_pib", "depenses_pib", "interets_pib", "taux_apparent",
+             "pensions_pib", "retraites_pour_100_actifs", "population_active", "part_industrie", "emploi_industrie", "c", "fbcf", "x", "m", "salaire"];
+  const A = [2025, 2026, 2028, 2030, 2032].filter(a => ANS.includes(a));
+  document.getElementById("tableau").innerHTML = `<tr><th>Indicateur</th>${A.map(a => `<th>${a}${a <= OBS ? " (obs.)" : ""}</th>`).join("")}</tr>` +
+    L.filter(k => D.reference[k]).map(k => {
+      const u = D.unites[k], grand = Math.abs(D.reference[k][FIN]) > 1000;
+      const d = grand ? 0 : (u === "points" ? 1 : 1);
+      const val = a => grand ? nf(r.niv[k][a] / (k === "pib" || k === "c" || k === "fbcf" || k === "x" || k === "m" || k === "rdb" ? 1000 : 1), 0) : nf(r.niv[k][a], d);
+      const ec = a => { const e = r.e[k][a]; if (Math.abs(e) < 0.005) return ""; return ` <small class="${BONS[k] ? cls(e, BONS[k]) : "nul"}">(${sg(e, 2)}${u === "points" ? "" : " %"})</small>`; };
+      const lib = D.libelles[k] + ((k === "pib" || k === "c" || k === "fbcf" || k === "x" || k === "m") ? " — Md€ de 2015" : k === "rdb" ? " — Md€" : "");
+      return `<tr><td>${esc(lib)}</td>${A.map(a => `<td>${val(a)}${a >= DEBUT ? ec(a) : ""}</td>`).join("")}</tr>`;
+    }).join("");
 }
 function directs(r) {
-  const fin = ANS[ANS.length - 1];
-  document.getElementById("directs").innerHTML =
-    `<tr><th>Poste</th><th>Montant</th></tr>
-     <tr><td>Impôt sur le revenu (revenus 2024)</td><td class="${classe(r.directs.ir)}">${fmt(r.directs.ir / 1000, 2)} Md€</td></tr>
-     <tr><td>Prestations versées (RSA, prime d'activité, allocations familiales)</td><td>${fmt(r.directs.prest / 1000, 2)} Md€</td></tr>
-     <tr><td>Pensions de droit direct en ${fin}</td><td>${fmt(r.directs.pensions / 1000, 1)} Md€</td></tr>`;
-  const svg = document.getElementById("deciles"), note = document.getElementById("deciles-note");
-  if (r.deciles.every(v => Math.abs(v) < 0.5)) { svg.innerHTML = `<text class="axe" x="180" y="100" text-anchor="middle">Aucune mesure socio-fiscale retenue</text>`; note.textContent = ""; return; }
-  const W = 360, H = 200, g = 44, d = 8, h = 12, b = 26, m = Math.max(...r.deciles.map(Math.abs)) * 1.15;
-  const sy = y => h + (m - y) / (2 * m) * (H - h - b), bw = (W - g - d) / 10;
-  let s = `<line class="zero" x1="${g}" x2="${W - d}" y1="${sy(0)}" y2="${sy(0)}"/>`;
-  [m / 1.15, -m / 1.15].forEach(t => s += `<text class="axe" x="${g - 4}" y="${sy(t) + 4}" text-anchor="end">${fmt(t, 0)}</text>`);
-  r.deciles.forEach((v, j) => {
-    const y0 = sy(0), y1 = sy(v);
-    s += `<rect class="${v >= 0 ? "barre-pos" : "barre-neg"}" x="${g + j * bw + 3}" y="${Math.min(y0, y1)}" width="${bw - 6}" height="${Math.abs(y1 - y0)}"><title>Décile ${j + 1} : ${fmt(v, 0)} €/UC/an (${fmt(v / r.nv[j] * 100, 2)} %)</title></rect>`;
-    s += `<text class="axe" x="${g + j * bw + bw / 2}" y="${H - 8}" text-anchor="middle">D${j + 1}</text>`;
-  });
-  svg.innerHTML = s;
-  note.textContent = `€ par unité de consommation et par an. Premier décile : ${fmt(r.deciles[0], 0)} € (${fmt(r.deciles[0] / r.nv[0] * 100, 2)} %) ; dernier décile : ${fmt(r.deciles[9], 0)} € (${fmt(r.deciles[9] / r.nv[9] * 100, 2)} %).`;
+  const T = document.getElementById("directs");
+  T.innerHTML = `<tr><th>Poste (montants annuels, euros 2024-2025)</th><th>Montant</th></tr>
+    <tr><td>Impôts et prélèvements des ménages (après réactions)</td><td class="${cls(r.directs.ir)}">${sg(r.directs.ir / 1000)} Md€</td></tr>
+    <tr><td>Prestations versées</td><td>${sg(r.directs.prest / 1000)} Md€</td></tr>
+    <tr><td>Pensions de droit direct (2030)</td><td>${sg(r.directs.pensions / 1000)} Md€</td></tr>`;
+  const S = document.getElementById("deciles");
+  S.style.display = r.aDistrib ? "" : "none";
+  if (!r.aDistrib) { S.innerHTML = ""; document.getElementById("txt-deciles").textContent = "Calculé pour les mesures qui touchent directement les revenus des ménages (impôts, CSG, TVA, prestations, pensions)."; return; }
+  const m = Math.max(...r.nv.map(Math.abs)) || 1;
+  const W = 360, H = 200, h0 = 100;
+  let s = `<line class="zero" x1="20" x2="${W - 6}" y1="${h0}" y2="${h0}"/>`;
+  r.nv.forEach((v, i) => { const x = 24 + i * 33, hh = Math.abs(v) / m * 80; s += `<rect class="${v >= 0 ? "barre-pos" : "barre-neg"}" x="${x}" y="${v >= 0 ? h0 - hh : h0}" width="24" height="${Math.max(hh, 0.5)}"><title>D${i + 1} : ${sg(v, 0)} €/UC/an</title></rect><text class="axe" x="${x + 12}" y="${H - 4}" text-anchor="middle">D${i + 1}</text>`; });
+  s += `<text class="axe" x="22" y="14">${sg(m, 0)}</text><text class="axe" x="22" y="${H - 18}">${sg(-m, 0)}</text>`;
+  S.innerHTML = s;
+  const pp = r.perd.reduce((a, b) => a + b, 0) / 10, pg = r.gagn.reduce((a, b) => a + b, 0) / 10;
+  document.getElementById("txt-deciles").textContent = `€ par unité de consommation et par an, avant effets macroéconomiques. 1er décile : ${sg(r.nv[0], 0)} € ; 10e décile : ${sg(r.nv[9], 0)} €. Ménages perdants (au moins une mesure) : environ ${nf(pp * 100, 0)} % ; gagnants : environ ${nf(pg * 100, 0)} %.`;
 }
 function profils(r) {
-  const P = Object.values(r.profils);
-  const tab = document.getElementById("profils");
-  if (!P.length) { tab.innerHTML = `<tr><td class="vide">Calculés pour les mesures d'impôt sur le revenu et de prestations.</td></tr>`; }
-  else tab.innerHTML = `<tr><th>Profil</th><th>Revenu disp. actuel (€/an)</th><th>Variation (€/an)</th></tr>` +
-    P.map(p => `<tr><td>${p.lib}</td><td>${Math.round(p.base).toLocaleString("fr-FR")}</td><td class="${classe(p.d)}">${fmt(p.d, 0)}</td></tr>`).join("");
+  const P = Object.values(r.profils), T = document.getElementById("profils");
+  T.innerHTML = P.length ? `<tr><th>Profil</th><th>Revenu disp. actuel (€/an)</th><th>Variation (€/an)</th></tr>` + P.map(p => `<tr><td>${esc(p.lib)}</td><td>${Math.round(p.base).toLocaleString("fr-FR")}</td><td class="${cls(p.d)}">${sg(p.d, 0)}</td></tr>`).join("")
+    : `<tr><td class="vide">Calculés pour les mesures d'impôt sur le revenu et de prestations (barème, RSA, prime d'activité, allocations familiales).</td></tr>`;
+  const C = document.getElementById("comport");
+  const lib = {pfu: "Flat tax sur le capital", isf: "Impôt sur la fortune", successions: "Droits de succession", ir_tranche_3: "IR, 3e tranche", ir_tranche_4: "IR, tranche supérieure"};
+  C.innerHTML = r.comport.length ? `<tr><th>Mesure</th><th>Statique</th><th>Net : bas</th><th>central</th><th>haut</th></tr>` + r.comport.map(({nom, w, x}) =>
+    `<tr><td>${esc(lib[nom] || nom)}${x.departs_foyers ? `<br><small class="vide">départs nets : ${nf(w * x.departs_foyers.basse / 1000, 1)} à ${nf(w * x.departs_foyers.haute / 1000, 1)} milliers de foyers</small>` : ""}</td><td>${sg(w * x["statique_M€"] / 1000)} Md€</td><td>${sg(w * x["net_haute_M€"] / 1000)}</td><td><strong>${sg(w * x["net_centrale_M€"] / 1000)}</strong></td><td>${sg(w * x["net_basse_M€"] / 1000)}</td></tr>`).join("")
+    : `<tr><td class="vide">Concerne les mesures sur les tranches supérieures de l'impôt sur le revenu, la flat tax, l'impôt sur la fortune et les successions.</td></tr>`;
   document.getElementById("europe").innerHTML = `<tr><th>Variable</th><th>Écart</th></tr>
-    <tr><td>Taux directeur de la BCE</td><td>${fmt(r.europe.bce, 2)} pt</td></tr>
-    <tr><td>Taux long français</td><td>${fmt(r.europe.tl, 2)} pt</td></tr>
-    <tr><td>Demande des partenaires européens</td><td>${fmt(r.europe.dem, 2)} %</td></tr>`;
+    <tr><td>Taux directeur de la BCE</td><td>${sg(r.europe.bce, 2)} pt</td></tr><tr><td>Taux long français</td><td>${sg(r.europe.tl, 2)} pt</td></tr>
+    <tr><td>Demande des partenaires européens</td><td>${sg(r.europe.dem, 2)} %</td></tr>`;
+}
+function psy(r) {
+  const ds = moy(r.e.solde_pib), dd = r.e.dette_pib[FIN], dette = r.niv.dette_pib[FIN];
+  const Z = document.getElementById("psy");
+  if (!r.actives.length) { Z.innerHTML = `<p class="vide">Ces canaux s'appliquent à l'écart de déficit et de dette créé par les mesures.</p>`; return; }
+  const ric = [0, 0.3].map(k => k * 0.8 * ds);                       // anticipations d'impôts futurs : part du déficit épargnée
+  const prime = [3, 10].map(bp => bp / 100 * dd);                     // points de base de prime par point de dette, en pb
+  const interet = prime.map(p => p / 100 * 0.5 * dette / 100 * 100);  // pt de PIB en 2032 (moitié de la dette refinancée)
+  Z.innerHTML = `<p class="note" style="margin-top:0">Effets possibles en plus des résultats affichés, selon des hypothèses de comportement débattues. Fourchettes indicatives, à lire avec prudence.</p>
+   <table><tr><th>Canal</th><th>Effet possible (2032)</th></tr>
+   <tr><td><strong>Épargne de précaution des ménages</strong><br><small class="vide">Si les ménages anticipent des impôts futurs, ils épargnent une partie (0 à 30 %) du déficit supplémentaire.</small></td><td>PIB ${sg(ric[0], 2)} à ${sg(ric[1], 2)} %</td></tr>
+   <tr><td><strong>Confiance des marchés</strong><br><small class="vide">Prime de risque de 3 (central, inclus) à 10 points de base par point de dette supplémentaire.</small></td><td>Taux long ${sg(prime[0] / 100, 2)} à ${sg(prime[1] / 100, 2)} pt ; intérêts ${sg(interet[0], 2)} à ${sg(interet[1], 2)} pt de PIB</td></tr>
+   <tr><td><strong>Climat des affaires</strong><br><small class="vide">Les changements fréquents ou importants de fiscalité des entreprises peuvent peser sur l'investissement au-delà de leur effet direct ; aucune mesure fiable n'est disponible.</small></td><td>non chiffré</td></tr>
+   <tr><td><strong>Acceptabilité</strong><br><small class="vide">Part des ménages qui perdent du revenu disponible et hausse des prix visible.</small></td><td>${r.aDistrib ? `perdants ≈ ${nf(r.perd.reduce((a, b) => a + b, 0) * 10, 0)} % des ménages` : "–"} ; prix ${sg(r.e.pc[FIN], 1)} %</td></tr></table>
+   <p class="note">Repère : la prime de l'OAT sur le Bund est passée d'environ 70 à 170 points de base entre octobre 2025 et octobre 2026 ; cette hausse est intégrée dans la trajectoire sans changement de politique.</p>`;
+}
+function bilan(r) {
+  const B = document.getElementById("bilan");
+  const R = D.reference;
+  const gR = moy(R.croissance), gS = moy(r.niv.croissance);
+  const ent = `<h3>Bilan de la simulation</h3>`;
+  const base = `<p><strong>Sans changement de politique</strong>, la croissance serait d'environ ${nf(gR)} % par an de 2028 à 2032 et le chômage de ${nf(R.chomage[FIN])} % en 2032, mais le déficit public passerait de ${nf(-R.solde_pib[OBS])} % du PIB en ${OBS} à ${nf(-R.solde_pib[FIN])} % en ${FIN} et la dette de ${nf(R.dette_pib[OBS], 0)} % à ${nf(R.dette_pib[FIN], 0)} % du PIB, principalement sous l'effet de la charge d'intérêts (${nf(R.interets_pib[OBS])} % du PIB en ${OBS}, ${nf(R.interets_pib[FIN])} % en ${FIN}), de la dynamique tendancielle des dépenses et des pensions (${nf(R.retraites_pour_100_actifs[FIN], 0)} retraités pour 100 actifs en ${FIN}). L'industrie manufacturière passerait de ${nf(R.part_industrie[OBS])} % à ${nf(R.part_industrie[FIN])} % du PIB.</p>`;
+  if (!r.actives.length) { B.innerHTML = ent + base + `<p class="vide">Choisissez des mesures à gauche pour voir ce qu'elles changent.</p>`; return; }
+  const dP = r.e.pib[FIN], dU = r.e.chomage[FIN], dE = r.e.emploi_milliers[FIN], dS = r.niv.solde_pib[FIN] - R.solde_pib[FIN], dD = r.e.dette_pib[FIN];
+  const dPc = r.e.pc[FIN], dP1 = r.e.pib[DEBUT];
+  const sens = (x, p, n) => x > 0.005 ? p : x < -0.005 ? n : "inchangé";
+  const mes = r.actives.map(c => `${c.libelle.toLowerCase()} (${nf(etat[c.cle], c.pas < 1 ? 1 : 0)} ${c.unite})`).join(", ");
+  let t = `<p><strong>Avec ${r.actives.length} mesure${r.actives.length > 1 ? "s" : ""}</strong> — ${esc(mes)} :</p><ul class="liste-limites">`;
+  t += `<li><strong>Activité :</strong> le PIB serait ${sg(dP1, 2)} % en ${DEBUT} et ${sg(dP, 2)} % en ${FIN} par rapport à la trajectoire sans changement (croissance moyenne ${nf(gS, 2)} % par an au lieu de ${nf(gR, 2)} %). Emploi : ${sg(dE, 0)} milliers ; chômage ${nf(r.niv.chomage[FIN])} % (${sg(dU, 2)} pt).</li>`;
+  t += `<li><strong>Finances publiques :</strong> solde ${nf(r.niv.solde_pib[FIN])} % du PIB en ${FIN} (${sg(dS, 2)} pt), dette ${nf(r.niv.dette_pib[FIN], 1)} % du PIB (${sg(dD, 1)} pt). Effets directs avant bouclage : impôts des ménages ${sg(r.directs.ir / 1000)} Md€, prestations ${sg(r.directs.prest / 1000)} Md€.</li>`;
+  t += `<li><strong>Prix :</strong> niveau des prix ${sg(dPc, 2)} % en ${FIN}.</li>`;
+  if (r.aDistrib) t += `<li><strong>Ménages (effet direct) :</strong> ${sg(r.nv[0], 0)} € par unité de consommation et par an pour le 1er décile, ${sg(r.nv[4], 0)} € pour le 5e, ${sg(r.nv[9], 0)} € pour le 10e.</li>`;
+  if (Math.abs(r.e.pensions_pib[FIN]) > 0.01 || Math.abs(r.e.retraites_pour_100_actifs[FIN]) > 0.05) t += `<li><strong>Retraites :</strong> pensions ${nf(r.niv.pensions_pib[FIN])} % du PIB en ${FIN} (${sg(r.e.pensions_pib[FIN], 2)} pt), ${nf(r.niv.retraites_pour_100_actifs[FIN], 0)} retraités pour 100 actifs (${sg(r.e.retraites_pour_100_actifs[FIN], 1)}).</li>`;
+  if (Math.abs(r.e.part_industrie[FIN]) > 0.01) t += `<li><strong>Industrie :</strong> ${nf(r.niv.part_industrie[FIN])} % du PIB en ${FIN} (${sg(r.e.part_industrie[FIN], 2)} pt), emploi industriel ${sg(r.e.emploi_industrie_milliers[FIN], 0)} milliers.</li>`;
+  t += `</ul>`;
+  t += `<p class="robuste"><strong>Plutôt robuste :</strong> les montants budgétaires directs et les effets par décile des mesures fiscales et sociales (législation et microdonnées).</p>`;
+  t += `<p class="fragile"><strong>Dépend des hypothèses :</strong> l'ampleur et la durée des effets sur l'activité et l'emploi, les réactions des hauts revenus (fourchettes ci-dessous), les effets de confiance${r.actives.length > 1 ? ", et les interactions entre mesures, ignorées ici (utiliser le calcul exact)" : ""}.</p>`;
+  B.innerHTML = ent + base + t;
 }
 function limites(r) {
   const ul = document.getElementById("limites");
-  if (!r.actives.length) { ul.innerHTML = `<li class="vide">Aucune mesure : la trajectoire est celle du compte de référence.</li>`; return; }
-  ul.innerHTML = r.actives.map(c => { const m = D.catalogue[c.cat]; return `<li><strong>${c.lib}</strong> (${etat[c.k].toLocaleString("fr-FR")}${c.u}) <span class="chip">${m.preuve}</span><br>${m.limites}</li>`; }).join("") +
-    (r.actives.length > 1 ? `<li><strong>Combinaison de ${r.actives.length} mesures</strong> : effets additionnés. Pour un calcul exact avec interactions, exécuter le scénario copié avec <code>python3 -m simulateur.executer</code>.</li>` : "");
+  ul.innerHTML = r.actives.length ? r.actives.map(c => { const m = D.catalogue[c.type] || {}; return `<li><strong>${esc(c.libelle)}</strong> (${nf(etat[c.cle], c.pas < 1 ? 1 : 0)} ${esc(c.unite)}) <span class="chip">${esc(m.preuve || "")}</span><br>${esc(m.limites || "")}</li>`; }).join("")
+    : `<li class="vide">Aucune mesure : la trajectoire est celle sans changement de politique.</li>`;
 }
 function maj() {
-  majSorties();
+  afficherCurseurs();
   const r = combiner();
-  tuiles(r); graphe(r); tableau(r); directs(r); profils(r); limites(r);
+  bilan(r); tuiles(r); graphe(r); tableau(r); directs(r); profils(r); psy(r); limites(r);
+  window.__dernier = r;
 }
 function scenarioJSON() {
-  const mes = [];
-  CURSEURS.forEach(c => {
-    const v = etat[c.k]; if (Math.abs(v - c.neutre) < 1e-9) return;
-    const P = {
-      depense_publique: {type: "depense_publique", parametres: {points_pib: v, debut: 2024}},
-      transferts_menages: {type: "transferts_menages", parametres: {points_pib: v, debut: 2024}},
-      taux_is: {type: "taux_is", parametres: {taux: v, debut: 2024}},
-      ir_premiere_tranche: {type: "bareme_ir", parametres: {taux: {"1": v / 100}}},
-      ir_seuils: {type: "bareme_ir", parametres: {seuils_facteur: 1 + v / 100, decote_facteur: 1 + v / 100, plafond_qf_facteur: 1 + v / 100}},
-      rsa: {type: "rsa", parametres: {facteur: 1 + v / 100}}, prime_activite: {type: "prime_activite", parametres: {facteur: 1 + v / 100}},
-      allocations_familiales: {type: "allocations_familiales", parametres: {facteur: 1 + v / 100}},
-      age_legal: {type: "age_legal", parametres: {regle: v === 62 ? "2010" : String(v)}},
-      salaires: {type: "salaires", parametres: {hausse: v / 100, debut: 2024}},
-      reindustrialisation: {type: "reindustrialisation", parametres: {baisse_parts_importees: v / 100, duree: 5, surcout: 0.10, debut: 2024}},
-      energie_import: {type: "energie_import", parametres: {hausse: v / 100, debut: 2024}}}[c.k];
-    mes.push(P);
-  });
-  return JSON.stringify({nom: "Scénario composé dans l'interface de test", base: 2022, horizon: 2030,
-    hypotheses: {fermeture_offre: 0.15, europe: true, incertitude: 0}, mesures: mes}, null, 1);
+  const mes = D.curseurs.filter(c => Math.abs(etat[c.cle] - c.actuel) > 1e-9).map(c => ({cle: c.cle, valeur: etat[c.cle]}));
+  return {nom: "Scénario composé dans l'interface de test", horizon: FIN, hypotheses: {fermeture_offre: 0.15, europe: true, incertitude: 0, profils: true}, curseurs: mes};
 }
-document.getElementById("b-zero").addEventListener("click", () => {
-  CURSEURS.forEach(c => { etat[c.k] = c.neutre; document.getElementById("c-" + c.k).value = c.neutre; }); maj();
-});
-document.getElementById("b-copier").addEventListener("click", async (ev) => {
-  const b = ev.currentTarget;
-  try { await navigator.clipboard.writeText(scenarioJSON()); b.textContent = "Scénario copié"; }
-  catch (e) { b.textContent = "Copie refusée par le navigateur"; }
-  setTimeout(() => b.textContent = "Copier le scénario (JSON)", 2200);
-});
-// calcul exact : disponible seulement quand la page est servie par simulateur.serveur (http://localhost)
-if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
-  const bx = document.getElementById("b-exact");
-  bx.hidden = false;
-  bx.addEventListener("click", async () => {
-    bx.textContent = "Calcul en cours (jusqu'à quelques minutes)…"; bx.disabled = true;
-    try {
-      const r = await fetch("/executer", {method: "POST", headers: {"Content-Type": "application/json"}, body: scenarioJSON()});
-      const html = await r.text();
-      const w = window.open("", "_blank");
-      if (w) { w.document.write(html); w.document.close(); } else { document.open(); document.write(html); document.close(); }
-    } catch (e) { bx.textContent = "Échec du calcul : vérifier le serveur local"; }
-    bx.disabled = false; setTimeout(() => bx.textContent = "Calcul exact (serveur local)", 3000);
-  });
-}
-const sel = document.getElementById("choix-ind");
-sel.innerHTML = Object.entries(IND).map(([k, [lib]]) => `<option value="${k}">${lib}</option>`).join("");
-sel.addEventListener("change", maj);
-document.getElementById("hypotheses").innerHTML = D.hypotheses.map(h => `<li>${h}</li>`).join("");
-document.getElementById("pied").textContent = D.pied;
+// ---------- démarrage
 construireCurseurs();
-// état d'exemple à l'ouverture : une mesure de chaque nature, pour montrer toutes les sorties
-Object.assign(etat, {depense_publique: 0.5, ir_premiere_tranche: 12, rsa: 10, age_legal: 64});
-CURSEURS.forEach(c => document.getElementById("c-" + c.k).value = etat[c.k]);
+const sel = document.getElementById("choix-ind");
+sel.innerHTML = IND_GRAPHE.filter(k => D.reference[k]).map(k => `<option value="${k}">${esc(D.libelles[k])}</option>`).join("");
+sel.value = "dette_pib";
+sel.addEventListener("change", () => graphe(window.__dernier));
+document.getElementById("hypotheses").innerHTML = D.hypotheses.map(h => `<li>${esc(h)}</li>`).join("");
+document.getElementById("pied").textContent = D.pied;
+document.getElementById("b-zero").addEventListener("click", () => { D.curseurs.forEach(c => etat[c.cle] = c.actuel); maj(); });
+document.getElementById("b-copier").addEventListener("click", async () => {
+  const txt = JSON.stringify(scenarioJSON(), null, 1);
+  try { await navigator.clipboard.writeText(txt); document.getElementById("b-copier").textContent = "Copié"; } catch (e) { prompt("Scénario :", txt); }
+  setTimeout(() => document.getElementById("b-copier").textContent = "Copier le scénario (JSON)", 1500);
+});
+if (["localhost", "127.0.0.1"].includes(location.hostname)) {
+  const b = document.getElementById("b-exact"); b.hidden = false;
+  b.addEventListener("click", async () => {
+    b.textContent = "Calcul en cours (quelques minutes)…"; b.disabled = true;
+    const rep = await fetch("/executer", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(scenarioJSON())});
+    const html = await rep.text(); const w = window.open(); w.document.write(html); w.document.close();
+    b.textContent = "Calcul exact (serveur local)"; b.disabled = false;
+  });
+}
+(D.depart || []).forEach(([k, v]) => etat[k] = v);
 maj();
 </script>
 </body>

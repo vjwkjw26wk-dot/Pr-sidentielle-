@@ -28,12 +28,49 @@ import m8_modele as M8  # noqa: E402
 from simulateur import catalogue as CAT  # noqa: E402
 
 _MODELES = {}
+FIN_REF = 2025           # dernière année observée : les montants en euros des mesures sont exprimés en euros de 2025
+COUT_AGENT_PUBLIC = 56.0          # k€ par agent et par an (rémunération et cotisations, ordre de grandeur 2025)
+PART_SMIC_DIFFUSION = 0.11        # hausse de la masse salariale moyenne pour 1 de hausse du SMIC (diffusion comprise, hypothèse D)
+RENDEMENT_POINT_TVA = 8_200.0     # M€ par point de taux normal (80 % de la TVA nette de 206 Md€ au taux de 20 %)
+REPERCUSSION_TVA, PART_TAUX_NORMAL = 0.8, 0.55
+RENDEMENT_EURO_TONNE = 200.0      # M€ par euro de composante carbone (ordre de grandeur)
+RENDEMENT_POINT_PFU = 600.0       # M€ par point (assiette d'environ 60 Md€)
+ASSIETTE_ISF, RENDEMENT_IFI = 930_000.0, 2_200.0     # M€ : patrimoine taxable au-delà du seuil (ISF 2017 revalorisé) ; IFI remplacé
+RENDEMENT_SUCCESSIONS = 18_000.0  # M€ (droits de mutation à titre gratuit)
+DEPENSE_ASSURANCE_CHOMAGE = 40_000.0
+EFFET_CHOMAGE_STRUCTUREL = 0.1    # points de chômage structurel pour 10 % de variation des allocations (hypothèse D, 0-0,3)
+DEPENSE_ASPA = 4_100.0
+DEBUT_DEFAUT = 2028      # premier budget voté après l'élection présidentielle de 2027
+HORIZON_DEFAUT = 2032    # fin du mandat
 VARIABLES = {"pib": "PIB en volume (M€ 2015)", "c": "Consommation des ménages", "fbcf": "Investissement", "x": "Exportations",
              "m": "Importations", "emploi": "Emploi (milliers)", "chomage": "Taux de chômage (%)", "pc": "Prix à la consommation (indice)",
              "salaire": "Salaire moyen par tête", "rdb": "Revenu disponible brut (M€)", "solde_pib": "Solde public (% du PIB)",
              "dette_pib": "Dette publique (% du PIB)", "recettes": "Recettes publiques (M€)", "depenses": "Dépenses publiques (M€)",
-             "tuc_industrie": "Taux d'utilisation des capacités, industrie (%)"}
-EN_POINTS = {"chomage", "solde_pib", "dette_pib", "tuc_industrie"}
+             "tuc_industrie": "Taux d'utilisation des capacités, industrie (%)",
+             "croissance": "Croissance du PIB en volume (%)", "inflation": "Inflation (prix à la consommation, %)",
+             "recettes_pib": "Recettes publiques (% du PIB)", "depenses_pib": "Dépenses publiques (% du PIB)",
+             "interets_pib": "Charge d'intérêts de la dette (% du PIB)", "taux_apparent": "Taux apparent de la dette (%)",
+             "pensions_pib": "Pensions de droit direct (% du PIB)", "retraites_pour_100_actifs": "Retraités pour 100 actifs",
+             "part_industrie": "Industrie manufacturière (% du PIB, valeur ajoutée)", "emploi_industrie": "Emploi industriel (milliers)",
+             "population_active": "Population active (milliers)"}
+EN_POINTS = {"chomage", "solde_pib", "dette_pib", "tuc_industrie", "croissance", "inflation", "recettes_pib", "depenses_pib",
+             "interets_pib", "taux_apparent", "pensions_pib", "retraites_pour_100_actifs", "part_industrie"}
+
+
+def derivees(mod, r, ex, pensions_M, retraites_k):
+    """Indicateurs dérivés d'une trajectoire simulée (DataFrame M8) : taux de croissance, ratios au PIB, retraites."""
+    r = r.copy()
+    m = mod.macro
+    pib1 = pd.concat([pd.Series({mod.B: float(m.pib[mod.B])}), r.pib])
+    pc1 = pd.concat([pd.Series({mod.B: float(m.p_c[mod.B])}), r.pc])
+    r["croissance"] = (pib1 / pib1.shift(1) - 1).reindex(r.index) * 100
+    r["inflation"] = (pc1 / pc1.shift(1) - 1).reindex(r.index) * 100
+    for k in ("recettes", "depenses", "interets"):
+        r[k + "_pib"] = r[k] / r.pib_nominal * 100
+    r["pensions_pib"] = pd.Series(pensions_M).reindex(r.index) / r.pib_nominal * 100
+    r["population_active"] = ex.population_active.reindex(r.index)
+    r["retraites_pour_100_actifs"] = pd.Series(retraites_k).reindex(r.index) / r.population_active * 100
+    return r
 
 
 def modele(base: int) -> M8.Modele:
@@ -48,79 +85,255 @@ def _serie_g(mod, ex, points, debut):
                                           for t in ex.conso_publique.index})
 
 
+def regle_age(p: dict) -> str:
+    """Règle M9 : {"age": 60, "debut": 2028, "mode": "progressif"|"immediat"} ou ancienne forme {"regle": ...}."""
+    if "age" in p:
+        return f"{float(p['age']):g}@{int(p.get('debut', DEBUT_DEFAUT))}:{p.get('mode', 'progressif')}"
+    return str(p["regle"])
+
+
+def debut_socio_fiscal(mesures) -> int:
+    """Année d'entrée en vigueur commune des mesures de ménages (M10) et des transferts ; la première si plusieurs."""
+    d = [int(m.get("parametres", {}).get("debut", DEBUT_DEFAUT)) for m in mesures
+         if m["type"] in ("bareme_ir", "rsa", "prime_activite", "allocations_familiales", "transferts_menages", "csg", "pfu", "isf",
+                          "aides_logement")]
+    return min(d) if d else DEBUT_DEFAUT
+
+
 def construire(scenario: dict, mod, central=None, journal=None):
     """Exogènes de référence et du scénario, et informations complémentaires (distribution, M9)."""
     H = scenario.get("hypotheses", {})
-    ans = range(mod.B + 1, scenario.get("horizon", 2030) + 1)
+    ans = range(mod.B + 1, scenario.get("horizon", HORIZON_DEFAUT) + 1)
     rho = H.get("fermeture_offre", M8.RHO_DEFAUT)
     mesures = scenario.get("mesures", [])
     info = {"distribution": None, "statique": {}}
     kw = {"fermeture_offre": rho}
     ages = [m for m in mesures if m["type"] == "age_legal"]
-    l9 = None
-    if ages or H.get("demographie_m9", True):
-        import m9_retraites as R
-        act = R.ActiviteSeniors()
-        pens = R.Pensions(act)
+    import m8_reference as RF
+    R = RF.compte_reference(mod, range(mod.B + 1, max(2035, max(ans)) + 1), journal=(journal.append if journal is not None else (lambda *a: None)))
+    ref = copy.deepcopy(R["exogenes"])
+    ref.fermeture_offre = rho
+    var = copy.deepcopy(ref)
+    central = R["trajectoire"] if central is None else central
+    info["pensions_reference"] = R["pensions"]
+    if ages:
+        import m9_retraites as R9
+        act = R9.ActiviteSeniors()
+        pens = R9.Pensions(act)
         k = act.estimer_part_emploi()
-        base9 = R.liens_m8(mod, ans, "actuelle", "actuelle", act, pens, k)
-        kw["population_active"] = base9["population_active"]
-        if ages:
-            if central is None:
-                central = mod.simuler(ans, M8.exogenes_projection(mod, ans, **kw))
-            l9 = R.liens_m8(mod, ans, str(ages[-1]["parametres"]["regle"]), "actuelle", act, pens, k, central=central)
-    ref = M8.exogenes_projection(mod, ans, **kw)
-    var = M8.exogenes_projection(mod, ans, **kw)
-    if l9 is not None:
-        var.population_active = l9["population_active"]
-        var.ajust_prestations = l9["ajust_prestations"]
+        regle = regle_age(ages[-1]["parametres"])
+        l9 = R9.liens_m8(mod, ans, regle, "actuelle", act, pens, k, central=central)
+        base9 = R9.liens_m8(mod, ans, "actuelle", "actuelle", act, pens, k)
+        fact = (l9["population_active"] / base9["population_active"]).reindex(var.population_active.index).fillna(1.0)
+        var.population_active = var.population_active * fact
+        var.ajust_prestations = var.ajust_prestations.add(l9["ajust_prestations"], fill_value=0.0)
         var.emploi_additionnel = l9["emploi_additionnel"]
         info["statique"]["pensions_M€"] = {int(t): float(v) for t, v in l9["ajust_prestations"].items()}
-    mm = {"impots": 0.0, "prestations": 0.0, "annee": 2024, "debut": mod.B + 1}
+        info["regle_age"] = regle
+        info["retraites_variante"] = {t: P9 * pens.masse(t, regle)[0] / pens.masse(t, "actuelle")[0]
+                                      for t, (_, P9) in R["pensions"].items()}
+    mm = {"impots": 0.0, "prestations": 0.0, "annee": 2024, "debut": debut_socio_fiscal(mesures)}
+    m_, apu = mod.macro, mod.apu
+    A0 = FIN_REF                                           # année de référence des montants (euros de 2025)
+    pib0 = float(m_.pib_cp[A0])
+    idx_nom = (central.pib_nominal / pib0).to_dict()       # indexation des montants sur le PIB nominal de référence
+    ab = apu.loc[mod.B]
+    ratio0 = float((ab.te - ab.p3 - ab.d62pay - ab.d41pay) / m_.pib_cp[mod.B])
+    niveaux = {}
+    extras, comport = [], {}
+    analytique = {"impots": 0.0, "prestations": 0.0}
+    def ajouter_niveau(k, debut, v):
+        niveaux.setdefault(k, pd.Series({a: 0.0 for a in var.population_active.index}))
+        for a in niveaux[k].index:
+            if a >= debut:
+                niveaux[k][a] += v
+    def ajouter_transfert(debut, montant_M):                # M€ de 2025, indexés sur le PIB nominal
+        aj = var.ajust_prestations.copy()
+        for a in idx_nom:
+            if a >= debut:
+                aj[a] = aj.get(a, 0.0) + montant_M * idx_nom[a]
+        var.ajust_prestations = aj
+    def ajouter_recette_apu(debut, montant_M):              # recette publique hors revenu des ménages (points de PIB)
+        cal = var.calage
+        for a in idx_nom:
+            if a >= debut:
+                cal["recettes"][a] = cal["recettes"].get(a, 0.0) + montant_M / pib0 * 100
+    choc_w = {}
     for m in mesures:
         t, p = m["type"], m.get("parametres", {})
-        debut = int(p.get("debut", mod.B + 2))
+        debut = int(p.get("debut", DEBUT_DEFAUT))
         if t == "depense_publique":
             var.conso_publique = _serie_g(mod, var, float(p["points_pib"]), debut)
+        elif t in ("depense_fonction", "emploi_public"):
+            md = float(p["md"]) if t == "depense_fonction" else float(p["milliers"]) * COUT_AGENT_PUBLIC / 1e3
+            var.conso_publique = _serie_g(mod, var, md * 1e3 / pib0 * 100, debut)
+        elif t == "investissement_public":
+            md = float(p["md"])
+            f = 1 + md * 1e3 / float(m_.p_fbcf[A0]) / float(var.autres_investissements[A0])
+            var.autres_investissements = pd.Series({a: v * (f if a >= debut else 1.0) for a, v in var.autres_investissements.items()})
+            base_r = var.autres_depenses_pib
+            var.autres_depenses_pib = pd.Series({a: float(base_r.get(a, ratio0)) + (md * 1e3 / pib0 if a >= debut else 0.0)
+                                                 for a in var.population_active.index})
+        elif t == "point_indice":
+            ajouter_niveau("salaire_public", debut, float(p["hausse"]))
         elif t == "taux_is":
             var.taux_is = pd.Series({a: (M8.S.taux_is().get(a, 25.83) if a < debut else float(p["taux"])) for a in range(2019, max(ans) + 1)})
         elif t == "transferts_menages":
             mm["prestations"] += float(p["points_pib"]) / 100 * mod.macro.pib_cp[mod.B]
-            mm["annee"], mm["debut"] = mod.B, debut
+            mm["annee"] = mod.B
         elif t == "energie_import":
             for prod in ("CPA_B", "CPA_C19", "CPA_D"):
                 var.prix_import[prod] = [x * (1 + float(p["hausse"]) if a >= debut else 1.0) for a, x in zip(var.prix_import.index, var.prix_import[prod])]
         elif t == "salaires":
-            var.choc_salaire = pd.Series({debut: float(np.log1p(float(p["hausse"])))})
+            choc_w[debut] = choc_w.get(debut, 0.0) + float(np.log1p(float(p["hausse"])))
+        elif t == "smic":
+            choc_w[debut] = choc_w.get(debut, 0.0) + float(np.log1p(PART_SMIC_DIFFUSION * float(p["hausse"])))
+        elif t == "cotisations_employeurs":
+            md = float(p["md"])
+            d1, d61 = float(mod.men.d1[A0]), float(mod.men.d61[A0])
+            choc_w[debut] = choc_w.get(debut, 0.0) + float(np.log1p(md * 1e3 / d1))
+            base_tc = var.taux_cotisations if var.taux_cotisations is not None else pd.Series(dtype=float)
+            var.taux_cotisations = pd.Series({a: float(base_tc.get(a, 1.0)) * ((1 + md * 1e3 / d61) if a >= debut else 1.0)
+                                              for a in var.population_active.index})
+        elif t == "tva":
+            rec = float(p["points"]) * RENDEMENT_POINT_TVA
+            ajouter_niveau("impots_produits", debut, rec / float(apu.d2rec[A0]))
+            ajouter_niveau("prix_conso", debut, float(np.log1p(REPERCUSSION_TVA * PART_TAUX_NORMAL * float(p["points"]) / 120)))
+            extras.append(("consommation", -rec))
+            comport["tva_M€"] = rec
+        elif t == "taxe_carbone":
+            rec = float(p["euros_tonne"]) * RENDEMENT_EURO_TONNE
+            ajouter_niveau("impots_produits", debut, rec / float(apu.d2rec[A0]))
+            ajouter_niveau("prix_conso", debut, float(np.log1p(rec / float(m_.c_cp[A0]))))
+            extras.append(("energie", -rec))
+            comport["taxe_carbone_M€"] = rec
+        elif t == "pfu":
+            import m13_comportements as B13
+            st = float(p["points"]) * RENDEMENT_POINT_PFU
+            fr = B13.fourchette(B13.part_perdue_pfu, float(p["points"]))
+            net = st * (1 - fr["centrale"])
+            analytique["impots"] += net
+            extras.append(("haut_decile", -net))
+            comport["pfu"] = {"statique_M€": st, **{f"net_{k}_M€": st * (1 - v) for k, v in fr.items()}}
+        elif t == "isf":
+            import m13_comportements as B13
+            st = float(p["taux_moyen"]) / 100 * ASSIETTE_ISF - RENDEMENT_IFI
+            fr = {k: sum(B13.part_perdue_isf(a, niveau=k) for a in range(5)) / 5 for k in ("basse", "centrale", "haute")}
+            net = st * (1 - fr["centrale"])
+            analytique["impots"] += net
+            extras.append(("top1", -net))
+            comport["isf"] = {"statique_M€": st, **{f"net_{k}_M€": st * (1 - v) for k, v in fr.items()}}
+        elif t == "successions":
+            import m13_comportements as B13
+            st = float(p["variation"]) * RENDEMENT_SUCCESSIONS
+            fr = B13.fourchette(B13.part_perdue_successions)
+            ajouter_recette_apu(debut, st * (1 - fr["centrale"]))
+            comport["successions"] = {"statique_M€": st, **{f"net_{k}_M€": st * (1 - v) for k, v in fr.items()}}
+        elif t == "assurance_chomage":
+            v = float(p["variation"])
+            ajouter_transfert(debut, v * DEPENSE_ASSURANCE_CHOMAGE)
+            var.chomage_structurel = pd.Series({a: u + (EFFET_CHOMAGE_STRUCTUREL * v * 10 if a >= debut else 0.0)
+                                                for a, u in var.chomage_structurel.items()})
+        elif t == "minimum_vieillesse":
+            mt = float(p["hausse"]) * DEPENSE_ASPA
+            ajouter_transfert(debut, mt)
+            extras.append(("bas_retraites", mt))
+        elif t == "indexation_pensions":
+            import m9_retraites as R9
+            pens9 = R9.Pensions(R9.ActiviteSeniors())
+            prix, sal = R9.trajectoires_m8(pens9, central, mod.macro.p_c[mod.B], mod.B)
+            n = int(p.get("duree", 5))
+            rev = {a: (float(p["points"]) if debut <= a < debut + n else 0.0) for a in range(1940, max(ans) + 1)}
+            dp = {}
+            for a in ans:
+                if a >= debut:
+                    dp[a] = (pens9.masse(a, "actuelle", salaires=sal, prix=prix, revalo=rev)[1]
+                             - pens9.masse(a, "actuelle", salaires=sal, prix=prix)[1]) / 1e6
+            var.ajust_prestations = var.ajust_prestations.add(pd.Series(dp), fill_value=0.0)
+            info["statique"]["pensions_M€"] = {**info["statique"].get("pensions_M€", {}), **{int(a): float(v) for a, v in dp.items()}}
+            extras.append(("pensions", float(p["points"]) / 100))
         elif t == "reindustrialisation":
-            if central is None:
-                central = mod.simuler(ans, ref)
             prods = p.get("produits", CAT.INDUSTRIE_DEFAUT)
             var.reindustrialisation = {"produits": {x: 1 - float(p["baisse_parts_importees"]) for x in prods}, "debut": debut,
                                        "duree": int(p.get("duree", 5)), "surcout": float(p.get("surcout", 0.10))}
             var.phi_impose = central.phi
+    if choc_w:
+        var.choc_salaire = pd.Series(choc_w)
+    if niveaux:
+        var.niveaux = niveaux
+    # --- mesures des ménages : microsimulation (OpenFisca) et mesures analytiques sur les mêmes microdonnées
     reforme, calc = CAT.reforme_openfisca(mesures)
-    if reforme:
+    csg = [m for m in mesures if m["type"] == "csg"]
+    logt = [m for m in mesures if m["type"] == "aides_logement"]
+    if reforme or csg or logt or extras:
         import m10_couplage as C
         if journal is not None:
             journal.append("microsimulation des ménages (OpenFisca) : quelques minutes")
         base = C.evaluer("base", None)
-        nom = "scn_" + hashlib.sha1(json.dumps(reforme, sort_keys=True).encode()).hexdigest()[:10]
-        r = C.evaluer(nom, reforme, calculer=calc)
+        if reforme:
+            nom = "scn_" + hashlib.sha1(json.dumps(reforme, sort_keys=True).encode()).hexdigest()[:10]
+            r = C.evaluer(nom, reforme, calculer=calc)
+        else:
+            r = base
+        d_ir = (r["ir_net"] - base["ir_net"]) / 1e6
+        # réactions des hauts revenus (M13) aux taux des tranches supérieures
+        import m13_comportements as B13
+        perte = 0.0
+        for m in mesures:
+            if m["type"] == "bareme_ir":
+                for tr, v in (m["parametres"].get("taux") or {}).items():
+                    tr = int(tr)
+                    if tr >= 3:
+                        anc = {3: 0.41, 4: 0.45}[tr]
+                        fr = B13.fourchette(B13.part_perdue_ir, tr, float(v))
+                        perte += d_ir * fr["centrale"]
+                        comport[f"ir_tranche_{tr}"] = {"statique_M€": d_ir, **{f"net_{k}_M€": d_ir * (1 - x) for k, x in fr.items()},
+                                                      "departs_foyers": B13.fourchette(B13.departs_hauts_revenus, tr, float(v), anc)}
+        for m in csg:
+            d, tot = C.csg_foyers(float(m["parametres"].get("activite_points", 0)), float(m["parametres"].get("retraite_points", 0)))
+            r = C.reforme_analytique(r, d, tot)
+            comport["csg_M€"] = tot
         x = C.mesure_pour_m8(base, r)
-        mm["impots"] += x["impots"]
+        mm["impots"] += x["impots"] - perte + analytique["impots"]
         mm["prestations"] += x["prestations"]
-        mm["annee"] = 2024
-        D = C.distribution(base, r)
+        fonctions = []
+        for m in logt:
+            f = float(m["parametres"]["facteur"])
+            mm["prestations"] += C.total_prestation(base, "aide_logement", f)
+            fonctions.append(C.extra_prestation("aide_logement", f))
+        for prof, montant in extras:
+            if prof == "pensions":
+                taux = montant
+                def fp(k, men, ind, foyers, taux=taux):
+                    fo = C._prep()
+                    pf = fo.pensions.reindex(foyers.index).fillna(0).groupby(foyers).sum()
+                    return taux * pf.reindex(men.index).fillna(0) * 1.06
+                fonctions.append(fp)
+            else:
+                fonctions.append(C.extra_profil(montant, prof))
+        extra = (lambda k, men, ind, foyers: sum(f(k, men, ind, foyers) for f in fonctions)) if fonctions else None
+        D = C.distribution(base, r, extra=extra)
         info["distribution"] = D.reset_index().to_dict(orient="records")
-        info["statique"].update({"impot_revenu_M€": x["impots"], "prestations_versees_M€": x["prestations"],
+        info["statique"].update({"impot_revenu_M€": x["impots"] - perte + analytique["impots"], "prestations_versees_M€": mm["prestations"],
                                  "droits_M€": {v: (r[v] - base[v]) / 1e6 for v in C.PRESTATIONS}})
+    info["comportements"] = comport
     if mm["impots"] or mm["prestations"]:
         var.mesure_menages = mm
     return ref, var, ans, info
 
 
+def depuis_curseurs(scenario: dict) -> dict:
+    """Traduit un scénario de l'interface ({"curseurs": [{"cle", "valeur"}]}) en mesures du catalogue."""
+    if "curseurs" not in scenario:
+        return scenario
+    cur = {c["cle"]: c for c in CAT.CURSEURS}
+    sc = dict(scenario)
+    sc["mesures"] = list(scenario.get("mesures", [])) + [cur[x["cle"]]["mesure"](float(x["valeur"])) for x in scenario["curseurs"]]
+    return sc
+
+
 def executer(scenario: dict) -> dict:
+    scenario = depuis_curseurs(scenario)
     t0 = time.time()
     journal = []
     mod = modele(scenario.get("base", 2022))
@@ -133,6 +346,13 @@ def executer(scenario: dict) -> dict:
     else:
         c, v = mod.simuler(ans, ref), mod.simuler(ans, var)
         europe = None
+    P = info["pensions_reference"]
+    pm_ref = {t: P[t][0] for t in P}
+    nb_ref = {t: P[t][1] for t in P}
+    dpm = info["statique"].get("pensions_M€", {})
+    pm_var = {t: pm_ref[t] + dpm.get(t, 0.0) for t in pm_ref}
+    nb_var = info.get("retraites_variante", nb_ref)
+    c, v = derivees(mod, c, ref, pm_ref, nb_ref), derivees(mod, v, var, pm_var, nb_var)
     traj = {}
     for k in VARIABLES:
         traj[k] = {"reference": {int(t): float(c[k][t]) for t in ans}, "scenario": {int(t): float(v[k][t]) for t in ans},
@@ -161,6 +381,7 @@ def executer(scenario: dict) -> dict:
         from simulateur import profils
         profils_res = profils.comparer(reforme)
     return {"scenario": scenario, "trajectoires": traj, "distribution": info["distribution"], "statique": info["statique"],
+            "comportements": info.get("comportements"),
             "profils": profils_res,
             "europe": europe, "incertitude": incert, "transparence": transparence(scenario), "duree_s": round(time.time() - t0),
             "journal": journal}
@@ -180,12 +401,14 @@ def transparence(scenario: dict) -> dict:
     return {
         "mesures": mes,
         "hypotheses": {
-            "compte_de_reference": "Compte central conventionnel, et non une prévision : demande mondiale +3 %/an, prix mondiaux et d'importation +1,5 %/an, "
-                                   "consommation publique et autres investissements +1 %/an en volume, chômage structurel 7,5 %, taux long 3,2 %, "
-                                   "législation inchangée, population active de M9 (législation des retraites actuelle).",
+            "compte_de_reference": "Trajectoire à politique inchangée (aucune mesure nouvelle après la loi de finances 2026), qui n'est pas une prévision : "
+                                   "recalée sur les comptes observés 2023-2025 ; croissance, chômage et inflation du FMI (octobre 2026) jusqu'en 2031, puis "
+                                   "productivité +0,7 %/an et chômage 7 % (hypothèses du COR) ; population active et pensions selon la démographie de l'Insee "
+                                   "et la législation actuelle (M9) ; OAT à 10 ans au dernier niveau observé ; dépenses publiques et prestations hors "
+                                   "pensions à leur rythme 2011-2019 ; finances publiques calculées par le modèle.",
             "fermeture_offre": H.get("fermeture_offre", M8.RHO_DEFAUT),
             "europe": H.get("europe", True),
-            "productivite": "tendances de branche des 8 dernières années observées"},
+            "productivite": "productivité apparente issue du calage (FMI jusqu'en 2031), puis 0,7 %/an (COR)"},
         "donnees": "Insee, Eurostat, DGFiP, DREES, FMI, OpenFisca-France 177 ; registre complet avec empreintes : resultats/registre_telechargements.json",
         "modeles": sorted(modules),
         "parametres_sensibles": ["fermeture d'offre ρ (0,1-0,25)", "élasticité de l'emploi au coût du travail (calibrée, 0,2-0,6)",

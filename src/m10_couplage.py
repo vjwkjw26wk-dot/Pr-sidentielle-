@@ -147,7 +147,7 @@ def evaluer(nom: str, reforme: dict | None, prestations=PRESTATIONS, refaire=Fal
     return out
 
 
-def distribution(base: dict, ref: dict, prestations=PRESTATIONS) -> pd.DataFrame:
+def distribution(base: dict, ref: dict, prestations=PRESTATIONS, extra=None) -> pd.DataFrame:
     """Variation du niveau de vie par décile (sous-échantillons des prestations ; impôt du foyer rattaché au ménage).
     Niveau de vie approché = (revenu fiscal de référence des foyers − impôt net + prestations) / unités de consommation."""
     import validation_M4 as v4
@@ -173,6 +173,9 @@ def distribution(base: dict, ref: dict, prestations=PRESTATIONS) -> pd.DataFrame
                 acc += (p[v] * 12 * RECOURS_MASSE[v]).groupby(m_).sum().reindex(men.index).fillna(0)
         men["nv_base"] = (rfr.reindex(men.index).fillna(0) - irb.reindex(men.index).fillna(0) + pb) / men.uc
         men["delta"] = (-(irr - irb).reindex(men.index).fillna(0) + (pr - pb)) / men.uc
+        men["rfr"] = rfr.reindex(men.index).fillna(0)
+        if extra is not None:
+            men["delta"] += extra(k, men, ind, foyers) / men.uc
         lignes.append(men)
     m = pd.concat(lignes)
     m["poids"] = m.poids / K_PREST
@@ -191,3 +194,88 @@ def mesure_pour_m8(base: dict, ref: dict, prestations=PRESTATIONS) -> dict:
     """Variations (M€ de 2024, montants versés) à passer à `m8_modele.Exogenes.mesure_menages`."""
     dp = sum((ref[v] - base[v]) * RECOURS_MASSE[v] for v in prestations) / 1e6
     return {"impots": (ref["ir_net"] - base["ir_net"]) / 1e6, "prestations": dp, "annee": 2024}
+
+
+# ------------------------------------------------------------------------------------------------------------------
+# Mesures analytiques sur les microdonnées (sans nouveau calcul OpenFisca) — version 0.3
+# ------------------------------------------------------------------------------------------------------------------
+# Totaux nationaux de calage des assiettes (ordres de grandeur 2024-2025, comptes de la Sécurité sociale) :
+ASSIETTE_CSG_ACTIVITE = 1_140e9      # rendement de la CSG sur les revenus d'activité ≈ 105 Md€ au taux de 9,2 %
+ASSIETTE_CSG_PENSIONS_TP = 230e9     # pensions soumises au taux plein (8,3 %)
+SEUILS_CSG_RETRAITE_2024 = {"exo": 12_230, "median": 15_988, "plein": 24_813, "demi_part": 3_266}   # RFR, 1 part
+
+
+def _prep():
+    import validation_M4 as v4
+    return pd.read_pickle(v4.TMP / "prep.pkl")["fo"]
+
+
+def csg_foyers(points_activite: float, points_retraite: float) -> tuple[pd.Series, float]:
+    """Variation de CSG par foyer (€/an, poids non appliqués) et total national (M€) pour une variation du taux
+    sur les revenus d'activité et du taux plein sur les pensions. Assiettes : salaires et pensions imposables,
+    rapportées aux totaux nationaux (ASSIETTE_*) ; taux plein des pensions selon le revenu fiscal de référence."""
+    fo = _prep()
+    act = fo.salaires.clip(lower=0)
+    k_a = ASSIETTE_CSG_ACTIVITE / float((act * fo.poids).sum())
+    s = SEUILS_CSG_RETRAITE_2024
+    seuil = s["plein"] + 2 * (fo.nbptr - 1) * s["demi_part"] * 1.55
+    pen = fo.pensions.clip(lower=0).where(fo.rfr >= seuil, 0.0)
+    k_p = ASSIETTE_CSG_PENSIONS_TP / float((pen * fo.poids).sum())
+    d = points_activite / 100 * act * k_a + points_retraite / 100 * pen * k_p
+    return d, float((d * fo.poids).sum()) / 1e6
+
+
+def reforme_analytique(base: dict, d_foyer: pd.Series, total_M: float) -> dict:
+    """Résultat au format d'`evaluer` pour une hausse d'impôt d_foyer (€/an par foyer), prestations inchangées."""
+    r = dict(base)
+    r["_nom"] = base["_nom"]
+    r["net_foyer"] = base["net_foyer"] + d_foyer.reindex(base["net_foyer"].index).fillna(0.0)
+    r["ir_net"] = base["ir_net"] + total_M * 1e6
+    return r
+
+
+def extra_prestation(v: str, facteur: float):
+    """Fonction `extra` de `distribution` : variation proportionnelle d'une prestation calculée (€/an par ménage)."""
+    def f(k, men, ind, foyers):
+        p = pd.read_pickle(TMP / f"prest_base_{k}_{v}.pkl")
+        m_ = pd.Series(p.index.str.rsplit("_", n=1).str[0], index=p.index)
+        return ((facteur - 1) * p[v] * 12 * RECOURS_MASSE[v]).groupby(m_).sum().reindex(men.index).fillna(0)
+    return f
+
+
+def total_prestation(base: dict, v: str, facteur: float) -> float:
+    """Variation de la masse versée (M€) pour une variation proportionnelle de la prestation v."""
+    return (facteur - 1) * base[v] * RECOURS_MASSE[v] / 1e6
+
+
+TAUX_EPARGNE_DECILE = [0.0, 0.03, 0.05, 0.07, 0.09, 0.11, 0.13, 0.16, 0.20, 0.30]   # hypothèse D (ordre de grandeur Insee)
+PART_ENERGIE_DECILE = [0.10, 0.10, 0.095, 0.09, 0.085, 0.08, 0.075, 0.07, 0.065, 0.055]  # part de l'énergie dans la consommation
+
+
+def extra_profil(total_M: float, profil: str):
+    """Fonction `extra` répartissant un montant agrégé (M€, positif = gain des ménages) selon un profil :
+    "consommation" (TVA), "energie" (taxe carbone), "haut_decile" (revenus du capital : décile supérieur, ∝ RFR^1.5),
+    "top1" (fortune : 1 % supérieur, ∝ RFR), "bas_retraites" (minimum vieillesse : ménages âgés des deux premiers
+    déciles). Le montant est réparti puis remis à l'échelle de façon à totaliser total_M sur la population pondérée."""
+    def f(k, men, ind, foyers):
+        nv = men.nv_base
+        ordre = nv.sort_values().index
+        cum = men.poids.reindex(ordre).cumsum() / men.poids.sum()
+        dec = pd.Series(np.minimum((cum * 10).astype(int), 9), index=ordre).reindex(men.index)
+        rev = (nv * men.uc).clip(lower=0)
+        if profil == "consommation":
+            w = rev * (1 - dec.map(lambda d: TAUX_EPARGNE_DECILE[d]))
+        elif profil == "energie":
+            w = rev * (1 - dec.map(lambda d: TAUX_EPARGNE_DECILE[d])) * dec.map(lambda d: PART_ENERGIE_DECILE[d])
+        elif profil == "haut_decile":
+            w = (men.rfr ** 1.5).where(cum.reindex(men.index) >= 0.9, 0.0)
+        elif profil == "top1":
+            w = men.rfr.where(cum.reindex(men.index) >= 0.99, 0.0)
+        elif profil == "bas_retraites":
+            age = ind.groupby("men").age.max().reindex(men.index).fillna(0)
+            w = pd.Series(np.where((age >= 65) & (dec <= 1), 1.0, 0.0), index=men.index)
+        else:
+            raise ValueError(profil)
+        tot = float((w * men.poids).sum())
+        return w * (total_M * 1e6 / tot if tot > 0 else 0.0)
+    return f

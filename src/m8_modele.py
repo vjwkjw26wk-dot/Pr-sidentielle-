@@ -104,6 +104,32 @@ class Exogenes:
     taux_cotisations: pd.Series = None     # taux apparent de cotisations sociales (si mesure)
     autres_depenses_pib: pd.Series = None  # dépenses publiques hors consommation, prestations et intérêts, en part du PIB (mesures)
     productivite: pd.Series = None         # écart à la tendance de productivité par tête des branches (points de log par an)
+    ancrage: int = None                    # année d'ancrage : les termes de rappel (correction d'erreur) des équations sont
+    #                                        mesurés par rapport à leur valeur de cette année (l'écart à l'équilibre estimé
+    #                                        constaté alors est supposé durable) ; None = équilibre estimé
+    niveaux: dict = None                   # mesures en niveau (voir _niv)
+    calage: dict = None                    # termes de calage par année (compte de référence recalé sur l'observé) :
+    #   "c", "x", "m", "investissement", "emploi", "prix", "salaire" : ajout au taux de croissance (log) de l'équation ;
+    #   "recettes", "depenses" : ajout en points de PIB ; "dette" : ajustement stock-flux (M€)
+
+
+def _niv(ex, k, t) -> float:
+    """Mesure en niveau (`Exogenes.niveaux[k]`, série par année ; 0 si absente) :
+    "prix_conso" : écart (log) du prix de la consommation dû à une taxe (TVA, carbone) ;
+    "impots_produits" : variation relative des impôts sur les produits ; "salaire_public" : variation relative de la
+    rémunération par agent public (point d'indice)."""
+    c = getattr(ex, "niveaux", None)
+    if not c or k not in c:
+        return 0.0
+    return float(c[k].get(t, 0.0))
+
+
+def _cal(ex, k, t) -> float:
+    """Terme de calage de l'année t (0 si absent)."""
+    c = getattr(ex, "calage", None)
+    if not c or k not in c:
+        return 0.0
+    return float(c[k].get(t, 0.0))
 
 
 class Modele:
@@ -308,6 +334,20 @@ class Modele:
         theta = self.theta if ex.theta_import is None else ex.theta_import
         e_B = self._ecart_initial(theta)
         lpm_eff = {B: e_B}
+        self._ecm_ref, self._ecm_B = {}, {}
+        def ecm(cle, val):
+            """Terme de rappel ; avec ancrage a : à partir de a + 1, l'écart à l'équilibre constaté en fin d'année a
+            (relativement à celui de l'année de base, supposée à l'équilibre) est traité comme durable."""
+            a = ex.ancrage
+            if a is None:
+                return val
+            if t == B + 1:
+                self._ecm_B[cle] = val
+            if t == a + 1:
+                self._ecm_ref[cle] = val - self._ecm_B.get(cle, val)
+            if t >= a + 1:
+                return val - self._ecm_ref.get(cle, 0.0)
+            return val
         for t in annees:
             # valeurs initiales de l'itération : celles de l'année précédente
             prev = hist_vol[t - 1]
@@ -353,7 +393,7 @@ class Modele:
                     sh = self.part_imp[k] * phi
                     return float(((v * (1 - sh) * pp).sum() + (v * sh * pm).sum()) / v.sum())
                 pc_idx, px_idx, pi_idx = pfin("C"), pfin("X"), pfin("I")
-                pc = m.p_c[B] * pc_idx
+                pc = m.p_c[B] * pc_idx * float(np.exp(_niv(ex, "prix_conso", t)))
                 px = m.p_x[B] * px_idx
                 pm_agg = m.p_m[B] * float((pm * (self.Am0 @ self.x0 + sum(self.Fm[k] for k in CAT))).sum() / (self.Am0 @ self.x0 + sum(self.Fm[k] for k in CAT)).sum())
                 # ---- 2. salaires (secteur marchand, par tête)
@@ -366,8 +406,11 @@ class Modele:
                 ugap = u_prev - float(ex.chomage_structurel.get(t, ex.chomage_structurel.iloc[-1]))
                 dlw = (rw["const"] + rw["dlpc"] * np.log(pc / A["pc"][t - 1]) + rw["dlprod"] * np.log(prod_m / A["prod_m"][t - 1])
                        + rw["ecm_1"] * (np.log(A["w"][t - 1]) - np.log(A["pva_m"][t - 1]) - np.log(A["prod_m"][t - 1])) + E.PHILLIPS * ugap)
+                dlw = dlw - rw["ecm_1"] * (np.log(A["w"][t - 1]) - np.log(A["pva_m"][t - 1]) - np.log(A["prod_m"][t - 1])) \
+                    + ecm("w", rw["ecm_1"] * (np.log(A["w"][t - 1]) - np.log(A["pva_m"][t - 1]) - np.log(A["prod_m"][t - 1])))
                 if ex.choc_salaire is not None:
                     dlw += float(ex.choc_salaire.get(t, 0.0))
+                dlw += _cal(ex, "salaire", t)
                 w_new = A["w"][t - 1] * np.exp(dlw)
                 # ---- 3. prix de la valeur ajoutée et emploi par branche
                 re, rp, ri = r["emploi"], r["prix_va"], r["investissement"]
@@ -382,19 +425,20 @@ class Modele:
                     lrc1 = np.log(cn_1) - np.log(hb["pva"][t - 1])
                     g_b = self.g_prod[b] + (0.0 if ex.productivite is None else float(ex.productivite.get(t, 0.0)))
                     dn = (self.c_emp[b] + re["dlq"] * (lq - lq1) + re["dlq_1"] * (lq1 - lq2) + re["dlh_1"] * (np.log(hb["n"][t - 1]) - np.log(hb["n"][t - 2]))
-                          + re["ecm_1"] * (np.log(hb["n"][t - 1]) - lq1 + E.SIGMA_TRAVAIL * lrc1 + self.g_prod[b] * (t - 1 - B))
-                          - (g_b - self.g_prod[b]))
+                          + ecm(("n", b), re["ecm_1"] * (np.log(hb["n"][t - 1]) - lq1 + E.SIGMA_TRAVAIL * lrc1 + self.g_prod[b] * (t - 1 - B)))
+                          - (g_b - self.g_prod[b]) + _cal(ex, "emploi", t))
                     n_new[b] = hb["n"][t - 1] * np.exp(dn)
                     # prix de la VA
                     clu = cn * n_new[b] / q_br[b]
                     clu1 = cn_1 * hb["n"][t - 1] / hb["q"][t - 1]
                     tucd_b = self._tuc(b, t, q_br[b], H) - self.tuc_moy[S.TUC_BRANCHE[b]] if b in S.TUC_BRANCHE else 0.0
                     dp = (self.c_prix[b] + rp["dlclu"] * np.log(clu / clu1) + rp["dlq"] * (lq - lq1) + rp.get("tucd", 0.0) * tucd_b
-                          + rp["ecm_1"] * (np.log(hb["pva"][t - 1]) - np.log(clu1)))
+                          + ecm(("p", b), rp["ecm_1"] * (np.log(hb["pva"][t - 1]) - np.log(clu1))) + _cal(ex, "prix", t))
                     pva_new[b] = hb["pva"][t - 1] * np.exp(dp)
                     # investissement (accélérateur) + coût d'usage
-                    di = (self.c_inv[b] + ri["dlq"] * (lq - lq1) + ri["dlq_1"] * (lq1 - lq2) + ri["li_1"] * np.log(hb["i"][t - 1])
-                          + ri["lk_1"] * np.log(hb["k"][t - 1]) + ri["lq_1"] * lq1)
+                    di = (self.c_inv[b] + ri["dlq"] * (lq - lq1) + ri["dlq_1"] * (lq1 - lq2)
+                          + ri["li_1"] * np.log(hb["i"][t - 1]) + ri["lk_1"] * np.log(hb["k"][t - 1]) + ri["lq_1"] * lq1
+                          + _cal(ex, "investissement", t))
                     I_new[b] = hb["i"][t - 1] * np.exp(di)
                 # effet du coût d'usage (IS, taux) : élasticité de long terme agrégée, ajustement à la vitesse des branches
                 tau = float(ex.taux_is.get(t, ex.taux_is.iloc[-1])); tau0 = float(ex.taux_is.get(B, tau))
@@ -413,6 +457,7 @@ class Modele:
                 vol_m = sum(q_br[b] for b in BR) / sum(H[b]["q"][B] for b in BR)
                 idx_vol = s_m * vol_m + (1 - s_m) * q_nm_c / self.va_br0["NM"]
                 A["pib_nom_idx"] = A.get("pib_nom_idx", {B: 1.0})
+                idx_nom *= float(np.exp(_cal(ex, "pib_nominal", t)))
                 A["pib_nom_idx"][t] = idx_nom
                 ppib_est = m.p_pib[B] * idx_nom / idx_vol
                 # ---- 4. demande finale
@@ -420,24 +465,25 @@ class Modele:
                 rdb = self._rdb(t, w_new, n_new, niv, hist_vol, A, ex, pc, mb)
                 rdbr, rdbr1 = rdb / pc, A["rdb"][t - 1] / A["pc"][t - 1]
                 u_cur = prev["u"] if it == 0 else u_cur
-                dC = rc["const"] + rc["dlrdb"] * np.log(rdbr / rdbr1) + rc["du"] * (u_cur - prev["u"]) + rc["ecart_1"] * (np.log(A["C"][t - 1]) - np.log(rdbr1))
+                dC = rc["const"] + rc["dlrdb"] * np.log(rdbr / rdbr1) + rc["du"] * (u_cur - prev["u"]) + ecm("c", rc["ecart_1"] * (np.log(A["C"][t - 1]) - np.log(rdbr1))) + _cal(ex, "c", t)
                 C_cn = A["C"][t - 1] * np.exp(dC)
                 rx = r["exportations"]
                 pw = float(ex.prix_mondial[t]) / float(ex.prix_mondial[t - 1])
-                dX = rx["const"] + rx["dldm"] * np.log(float(ex.demande_mondiale[t]) / float(ex.demande_mondiale[t - 1])) + rx["dlprel"] * (np.log(px / A["px"][t - 1]) - np.log(pw))
+                dX = rx["const"] + rx["dldm"] * np.log(float(ex.demande_mondiale[t]) / float(ex.demande_mondiale[t - 1])) + rx["dlprel"] * (np.log(px / A["px"][t - 1]) - np.log(pw)) + _cal(ex, "x", t)
                 X_cn = A["X"][t - 1] * np.exp(dX)
                 G_idx = float(ex.conso_publique[t]) / float(ex.conso_publique[B])
                 fbcf_br = sum(I_new[b] / self.hist[b].i[B] * self.hist[b].i_cp[B] for b in BR) * conv_I
                 I_tot = fbcf_br + I_autres_B * float(ex.autres_investissements[t]) / float(ex.autres_investissements[B]) + I_cap
-                self.dem = {"C": dem0["C"] * C_cn / m.c[B] + 0.6 * Z_dem, "G": dem0["G"] * G_idx, "I": I_tot + 0.4 * Z_dem, "S": dem0["S"],
+                self.dem = {"C": dem0["C"] * C_cn / m.c[B] + 0.6 * Z_dem, "G": dem0["G"] * G_idx, "I": I_tot + 0.4 * Z_dem, "S": dem0["S"] + _cal(ex, "stocks", t) * sum(self.va0),
                             "X": dem0["X"] * X_cn / m.x[B]}
                 # ---- 5. importations (équation agrégée) et production
                 rm = r["importations"]
                 D = sum(w_ * v for w_, v in zip(E.CONTENU_IMPORT.values(), (self.dem["C"] / dem0["C"] * m.c[B], self.dem["G"] / dem0["G"] * m.g[B],
                                                                             (self.dem["I"] + self.dem["S"]) / (dem0["I"] + dem0["S"]) * m.fbc[B], X_cn)))
                 lprel, lprel1 = np.log(pm_agg / ppib_est), np.log(A["pm_agg"][t - 1] / A["ppib"][t - 1])
-                dM = (rm["const"] + rm["dld"] * np.log(D / A["D"][t - 1]) + rm["dlprel"] * (lprel - lprel1) + rm["lm_1"] * np.log(A["M"][t - 1])
-                      + rm["ld_1"] * np.log(A["D"][t - 1]) + rm["lprel_1"] * lprel1 + rm["t"] * (t - 2010))
+                dM = (rm["const"] + rm["dld"] * np.log(D / A["D"][t - 1]) + rm["dlprel"] * (lprel - lprel1)
+                      + ecm("m", rm["lm_1"] * np.log(A["M"][t - 1]) + rm["ld_1"] * np.log(A["D"][t - 1]) + rm["lprel_1"] * lprel1)
+                      + rm["t"] * (t - 2010) + _cal(ex, "m", t))
                 M_cn = A["M"][t - 1] * np.exp(dM)
                 M_cible = M_B * M_cn / m.m[B]
                 lo, hi = 0.3, 3.0
@@ -491,7 +537,12 @@ class Modele:
             etat["phi"] = phi
             fp = self._finances(t, A, niv, mb, ab, ex, w, n_br, n_nm, pc, pib_vol, q_br, pva)
             tuc_m = sum(self._tuc(b, t, q_br[b], H) * H[b]["q"][B] for b in S.TUC_BRANCHE) / sum(H[b]["q"][B] for b in S.TUC_BRANCHE)
-            res.append(dict(annee=t, supplement_demande_fermeture=Z_dem, tuc_industrie=tuc_m, pib=A["pib"][t], c=C_cn, x=X_cn, m=M_cn, fbcf=m.fbcf[B] * I_tot / dem0["I"], emploi=emploi, chomage=u_cur,
+            IND = [b for b in BR if b.startswith("C")]
+            ind_nom = sum(q_br[b] / H[b]["q"][B] * self.hist[b].va_cp[B] * pva[b] / H[b]["pva"][B] for b in IND)
+            ind_B = sum(self.hist[b].va_cp[B] for b in IND)
+            part_ind = 100 * ind_B / m.pib_cp[B] * (ind_nom / ind_B) / A["pib_nom_idx"][t]
+            res.append(dict(annee=t, part_industrie=part_ind, emploi_industrie=sum(n_br[b] for b in IND),
+                            vol_industrie=sum(q_br[b] for b in IND) / sum(H[b]["q"][B] for b in IND), supplement_demande_fermeture=Z_dem, tuc_industrie=tuc_m, pib=A["pib"][t], c=C_cn, x=X_cn, m=M_cn, fbcf=m.fbcf[B] * I_tot / dem0["I"], emploi=emploi, chomage=u_cur,
                             salaire=w, pc=pc, pva_m=pva_m, px=px, rdb=rdb, phi=phi, **fp))
         self.H, self.A = H, A
         return pd.DataFrame(res).set_index("annee")
@@ -513,7 +564,7 @@ class Modele:
         masse = (w / A["w"][B]) * (emploi_t / A["emploi"][B])
         pib_nom = A["pib_nom_idx"][t]                         # PIB nominal (indice, base B)
         prest = (A["pc"][t - 1] / A["pc"][B]) * float(ex.prestations_volume[t]) / float(ex.prestations_volume[B])
-        d1 = mb.d1 * masse
+        d1 = mb.d1 * masse + (_niv(ex, "salaire_public", t)) * self.apu.loc[B].d1pay * (w / A["w"][B]) * (niv["n_nm"] / self.n_nm0)
         ebe, d4 = self._revenus_patrimoine(t, A, ex, pc)
         autres = ebe + d4 + (mb.d7 + mb.autres) * pib_nom
         mm = ex.mesure_menages or {}
@@ -586,11 +637,11 @@ class Modele:
         mm = ex.mesure_menages or {}
         d5_men = (ab.d5rec - is0) * (mb.d1 * masse + A["ebe"][t] + A["d4"][t] + mb.d62 * prest) / (mb.d1 + mb.ebe + mb.d4 + mb.d62)
         d5_men += mm.get("impots", 0.0) * self._idx_mesure(mm, pib_nom, t)
-        d2 = ab.d2rec * cons_nom
+        d2 = ab.d2rec * cons_nom * (1 + _niv(ex, "impots_produits", t))
         d61 = ab.d61rec * masse * (1 if ex.taux_cotisations is None else float(ex.taux_cotisations.get(t, 1.0)))
         autres_r = (ab.tr - ab.d2rec - ab.d5rec - ab.d61rec) * pib_nom
         tr = d2 + d5_men + is_t + d61 + autres_r
-        d1p = ab.d1pay * (w / A["w"][B]) * (n_nm / self.n_nm0)
+        d1p = ab.d1pay * (w / A["w"][B]) * (n_nm / self.n_nm0) * (1 + _niv(ex, "salaire_public", t))
         g_vol = float(ex.conso_publique[t]) / float(ex.conso_publique[B])
         p3_autres = (ab.p3 - ab.d1pay) * g_vol * pc / A["pc"][B]
         d62 = ab.d62pay * prest + self._extra(ex, "ajust_prestations", t) + mm.get("prestations", 0.0) * self._idx_mesure(mm, pib_nom, t)
@@ -602,12 +653,14 @@ class Modele:
         ratio0 = (ab.te - ab.p3 - ab.d62pay - ab.d41pay) / self.macro.pib_cp[B]
         ratio = ratio0 if ex.autres_depenses_pib is None else float(ex.autres_depenses_pib.get(t, ratio0))
         autres_d = ratio * self.macro.pib_cp[B] * pib_nom      # subventions, investissement public, autres transferts
-        te = d1p + p3_autres + d62 + d41 + autres_d
-        solde = tr - te
-        niv["dette"] = niv["dette"] - solde
         pibn = self.macro.pib_cp[B] * pib_nom
+        tr += _cal(ex, "recettes", t) / 100 * pibn
+        te = d1p + p3_autres + d62 + d41 + autres_d + _cal(ex, "depenses", t) / 100 * pibn
+        solde = tr - te
+        niv["dette"] = niv["dette"] - solde + _cal(ex, "dette", t)
         return dict(recettes=tr, depenses=te, solde=solde, solde_pib=solde / pibn * 100, dette=niv["dette"], dette_pib=niv["dette"] / pibn * 100,
-                    is_=is_t, cotisations=d61, tva_etc=d2)
+                    is_=is_t, cotisations=d61, tva_etc=d2, prestations=d62, interets=d41, pib_nominal=pibn,
+                    taux_apparent=niv["taux_app"] * 100)
 
 
 def exogenes_observes(mod: Modele, annees) -> Exogenes:

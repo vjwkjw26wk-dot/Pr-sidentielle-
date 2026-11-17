@@ -65,8 +65,35 @@ def aod(g: int, regle: str = "actuelle") -> float:
         return min(64.0, 62.75 + 0.25 * (g - 1963))
     if regle == "actuelle":
         return 62.75 if g == 1964 else min(64.0, 62.75 + 0.25 * (g - 1964))
+    if "@" in str(regle):
+        return _aod_reforme(g, str(regle))
     cible = float(regle)
     return min(cible, 62.75 + 0.25 * (g - 1963)) if cible >= 62.75 else max(cible, 62.75 - 0.25 * (g - 1963))
+
+
+def _aod_reforme(g: int, regle: str) -> float:
+    """Réforme de l'âge légal entrant en vigueur au 1er janvier d'une année : "cible@debut[:mode]".
+    - Les générations dont l'âge légal actuel est atteint avant `debut` ne sont pas concernées.
+    - mode "progressif" (défaut) : l'âge évolue de 3 mois par génération à partir de la première génération concernée
+      g0, jusqu'à la cible ; mode "immediat" : la cible s'applique dès `debut` (sans départ rétroactif : âge ≥ debut − g).
+    Les conditions de durée d'assurance (taux plein, carrières longues) ne sont pas modélisées."""
+    cible_s, reste = regle.split("@", 1)
+    debut_s, _, mode = reste.partition(":")
+    cible, debut, mode = float(cible_s), int(debut_s), (mode or "progressif")
+    actuel = aod(g, "actuelle")
+    if g + actuel < debut:
+        return actuel
+    g0 = next(gg for gg in range(1940, 2010) if gg + aod(gg, "actuelle") >= debut)
+    a0 = aod(g0, "actuelle")
+    if mode == "immediat":
+        nouv = cible
+    elif cible >= actuel:
+        nouv = min(cible, max(actuel, a0 + 0.25 * (g - g0 + 1)))
+    else:
+        nouv = max(cible, a0 - 0.25 * (g - g0 + 1))
+    if cible < actuel:
+        nouv = min(actuel, max(nouv, debut - g))
+    return nouv
 
 
 # ------------------------------------------------------------------------------------------------------------------
@@ -119,8 +146,16 @@ def sorties_precoces(theta, t):
     return float(np.clip(e0 + e1 * (min(t, T_GEL_TENDANCE) - 2010), 0, 0.95))
 
 
+def regle_en_vigueur(regle: str, t: int) -> str:
+    """Une réforme "cible@debut" n'agit sur les comportements et les départs qu'à partir de l'année `debut`."""
+    if "@" in str(regle) and t < int(str(regle).split("@", 1)[1].split(":")[0]):
+        return "actuelle"
+    return regle
+
+
 def taux_age(x, t, A, theta, regle="actuelle"):
     """beta = theta[4] : part du profil d'activité qui se décale avec l'AOD (le reste reste attaché à l'âge 62 ans)."""
+    regle = regle_en_vigueur(regle, t)
     _, _, s, k = theta[:4]
     beta = theta[4] if len(theta) > 4 else 1.0
     e = sorties_precoces(theta, t)
@@ -253,6 +288,7 @@ class Pensions:
 
     def part_retraitee(self, x, t, sx, regle="actuelle"):
         """Part de la population retraitée (droit direct) : π − activité non encore partie, rampe avant l'AOD."""
+        regle = regle_en_vigueur(regle, t)
         _, _, s, k, beta = self.act.theta[sx]
         e = sorties_precoces(self.act.theta[sx], t)
         g = t - x - 1
@@ -267,6 +303,7 @@ class Pensions:
         """Retraités (personnes) et masse des pensions de droit direct (M€ courants) en t.
         salaires, prix : trajectoires futures (séries) ; revalo : écart de revalorisation à l'inflation (série, en %)."""
         nb, masse = 0.0, 0.0
+        regle = regle_en_vigueur(regle, t)
         for sx in ("F", "M"):
             for x in range(50, 106):
                 pop = float(self.pop[sx][t].get(x, 0.0))
