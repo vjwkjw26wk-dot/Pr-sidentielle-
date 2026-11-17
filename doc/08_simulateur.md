@@ -20,7 +20,7 @@ Code : dossier `simulateur/`. Exemples : dossier `scenarios/`.
 Elle est publiée comme page autonome et générée par `python3 -m simulateur.interface`.
 
 **Mode de calcul : par addition de variantes élémentaires.**
-- Chaque mesure a été simulée seule par la chaîne complète (M1, M4/M10, M9, M8, M11) sur une grille de deux à quatre intensités (`python3 -m simulateur.precalcul`, environ 40 minutes, 37 simulations).
+- Chaque mesure a été simulée seule par la chaîne complète (M1, M4/M10, M9, M8, M11) sur une grille de deux à quatre intensités (`python3 -m simulateur.precalcul`, environ 60 minutes, 36 simulations).
 - L'interface interpole linéairement entre les points de la grille et additionne les mesures.
 - Les interactions entre mesures sont ignorées. C'est indiqué en tête de page et dans la liste des mesures dès que deux mesures sont combinées.
 
