@@ -1,4 +1,16 @@
 {
+ "dbnomics_imf_dot_fr_exports.json": {
+  "date": "2026-11-17T07:38:03",
+  "octets": 539143,
+  "sha256": "02e38411ed05e81063f4580fcb96167670e7dd912c7b189e7aed204412268320",
+  "url": "https://api.db.nomics.world/v22/series/IMF/DOT?dimensions=%7B%22REF_AREA%22:%5B%22FR%22%5D,%22INDICATOR%22:%5B%22TXG_FOB_USD%22%5D,%22FREQ%22:%5B%22A%22%5D%7D&observations=1&limit=1000"
+ },
+ "dbnomics_imf_weo_2025_04_tm_rpch.json": {
+  "date": "2026-11-17T07:38:12",
+  "octets": 352696,
+  "sha256": "496e5cd8b243d041b53a3393dc2f0974adc5a79ee8469bd83f0083f3bcd6c446",
+  "url": "https://api.db.nomics.world/v22/series/IMF/WEO:2025-04?dimensions=%7B%22weo-subject%22:%5B%22TM_RPCH%22%5D%7D&observations=1&limit=1000"
+ },
  "dbnomics_insee_chomage_bit_fm.json": {
   "date": "2026-11-16T22:07:38",
   "octets": 107521,

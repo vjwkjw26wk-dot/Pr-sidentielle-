@@ -108,6 +108,18 @@ chômage et les salaires. Il n'y a encore ni contrainte de qualification, ni lim
     - Le revenu des ménages est sous-estimé. Les revenus de la propriété (+15 % par an, avec la hausse des taux) et les loyers imputés ne sont indexés que sur le PIB nominal.
     - Par conséquent, le PIB est trop bas.
 
+### Essais écartés (17 novembre 2026)
+
+Deux améliorations ont été testées puis écartées, car elles dégradent la rétrosimulation 2015-2019 :
+- **Demande mondiale adressée** construite avec le FMI : importations en volume des partenaires (Perspectives de l'économie mondiale), pondérées par leur part dans les exportations françaises (statistiques de commerce bilatéral), via DBnomics, couverture 99 %.
+  - Elle améliore 2022-2024 : erreur sur les exportations −6,6 % au lieu de −10,3 %.
+  - Elle dégrade 2013-2019 : −9,5 % au lieu de −0,2 % en équation seule.
+  - Explication probable : les parts de marché françaises ont surtout reculé dans les années 2000, période d'estimation, puis se sont stabilisées.
+  - La série reste disponible (`m7_series.demande_mondiale_adressee`).
+- **Revenus du patrimoine des ménages par équations estimées** (dépendant du PIB nominal, des prix et des taux longs ; option `patrimoine_endogene`).
+  - Elles dégradent 2015-2019 : revenu disponible −2,3 % au lieu de +0,1 %, et dette +5,4 points au lieu de +1,9. La hausse des dividendes de 2018, liée au prélèvement forfaitaire unique, n'est pas expliquée.
+  - Elles améliorent à peine 2023-2024 : revenu disponible −7,0 % au lieu de −7,9 %.
+
 ### Variantes (écarts au compte central, base 2022)
 
 Effets à cinq ans (2028) :
@@ -142,8 +154,7 @@ Effets à cinq ans (2028) :
 
 ## 6. Suite
 
-1. Revenus de la propriété dépendant des taux d'intérêt ; demande mondiale adressée par produit (pondérée par les
-   marchés de la France) à la place des importations de l'Union européenne.
+1. Exportations : traitement spécifique des grands contrats (aéronautique) et des prix des concurrents hors énergie.
 2. Contraintes d'offre : taux d'utilisation des capacités et capital par branche dans les décisions d'investissement et
    de prix ; qualifications ; mécanisme expliquant la substitution aux importations (coûts relatifs, aides).
 3. Activité et retraites : population active issue de M1 et des taux d'activité par âge sensibles aux règles de retraite ;

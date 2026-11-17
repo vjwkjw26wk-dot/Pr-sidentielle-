@@ -290,7 +290,11 @@ def importations(m, debut=DEBUT, fin=FIN) -> Equation:
 def exportations(m, debut=DEBUT, fin=FIN) -> Equation:
     """Aucune relation de long terme n'est identifiée sur données annuelles 1997-2019 (λ non significatif, instable entre
     sous-périodes). Forme retenue en différences : Δln X = a + β Δln DM + ε Δln(px/pw) ; la constante mesure la
-    tendance des parts de marché à demande et prix relatifs inchangés."""
+    tendance des parts de marché à demande et prix relatifs inchangés.
+    DM : importations en volume de l'Union européenne ; pw : leur prix (prix des concurrents, approché).
+    Variante testée (`m7_series.demande_mondiale_adressee`, FMI : importations des partenaires pondérées par les
+    exportations françaises) : moins bonne hors échantillon sur 2013-2019 (erreur de niveau −9,5 % contre −0,2 %),
+    meilleure sur 2022-2024 (−6,6 % contre −10,3 % dans le modèle bouclé). La demande de l'UE reste la référence."""
     lx, ldm = np.log(m.x), np.log(m.ue_m)
     lprel = np.log(m.p_x / m.p_ue_m)
     X = pd.DataFrame({"dldm": ldm.diff(), "dlprel": lprel.diff()})
@@ -323,6 +327,23 @@ def transmission_importations(p, m, debut=1998, fin=2024) -> Equation:
                     {"transmission immédiate b0": r.params["dlpm"], "transmission l'année suivante b1": r.params["dlpm_1"],
                      "part transmise l'année même θ": th,
                      "sur 1998-2019 seulement : b0": r19.params["dlpm"], "sur 1998-2019 seulement : b1": r19.params["dlpm_1"]})
+
+
+def revenus_menages(m, men, poste, debut=DEBUT, fin=FIN) -> Equation:
+    """Revenus des ménages hors salaires et prestations (M€ courants) : `d4` revenus de la propriété nets (intérêts,
+    dividendes), `ebe` excédent brut et revenu mixte (entrepreneurs individuels, loyers imputés).
+    Δln y = a + β Δln PIB nominal + γ Δln pc + λ (ln y − ln PIB nominal)_{t−1} + φ taux long_{t−1}."""
+    y = np.log(men[poste])
+    pibn = np.log(m.pib_cp.reindex(men.index))
+    pc = np.log(m.p_c.reindex(men.index))
+    r = m.taux_long.reindex(men.index)
+    X = pd.DataFrame({"dpibn": pibn.diff(), "dpc": pc.diff(), "ecm_1": (y - pibn).shift(1), "r_1": r.shift(1)})
+    ok = (men.index >= debut) & (men.index <= fin) & X.notna().all(axis=1)
+    res = _ols(y.diff()[ok], X[ok])
+    nom = {"d4": "Revenus de la propriété nets des ménages", "ebe": "Excédent brut et revenu mixte des ménages"}[poste]
+    return Equation(nom, f"Δln {poste}", res, {"élasticité de court terme au PIB nominal": res.params["dpibn"],
+                                                "effet des prix": res.params["dpc"], "vitesse λ": res.params["ecm_1"],
+                                                "long terme : semi-élasticité au taux long (par point)": -res.params["r_1"] / res.params["ecm_1"]})
 
 
 def diagnostics(e: Equation) -> dict:

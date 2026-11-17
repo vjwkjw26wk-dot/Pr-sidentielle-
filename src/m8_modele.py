@@ -90,6 +90,7 @@ class Exogenes:
     reindustrialisation: dict = None       # {"produits": {produit: facteur final sur la part importée}, "debut": année,
     #                                        "duree": années de montée en charge, "surcout": surcoût relatif de la VA produite
     #                                        en France à la place des importations}
+    patrimoine_endogene: bool = False      # revenus du patrimoine des ménages par équations estimées (sinon ∝ PIB nominal)
     theta_import: float = None             # part des variations de prix d'importation répercutée l'année même (défaut : estimée)
     phi_impose: pd.Series = None           # facteur commun des parts importées imposé (repris d'un compte central)
     choc_salaire: pd.Series = None         # hausse exogène du salaire (log), par année
@@ -109,6 +110,9 @@ class Modele:
         self.macro = S.macro()
         self.eq = E.toutes(self.panel, self.macro, E.DEBUT, fe)
         self.theta = float(self.eq["transmission"].lr["part transmise l'année même θ"])
+        self.men, self.apu = comptes_menages_apu()
+        self.eq["revenus_d4"] = E.revenus_menages(self.macro, self.men, "d4", E.DEBUT, fe)
+        self.eq["revenus_ebe"] = E.revenus_menages(self.macro, self.men, "ebe", E.DEBUT, fe)
         self.men, self.apu = comptes_menages_apu()
         self.emp = emploi_total()
         self._preparer()
@@ -239,6 +243,17 @@ class Modele:
              "px": {t: m.p_x[t] for t in range(B - 3, B + 1)}, "pm_agg": {t: m.p_m[t] for t in range(B - 3, B + 1)},
              "ppib": {t: m.p_pib[t] for t in range(B - 3, B + 1)}, "pib": {t: m.pib[t] for t in range(B - 3, B + 1)},
              "emploi": {t: em.emploi[t] for t in range(B - 3, B + 1)}}
+        A["ebe"] = {t: men.ebe[t] for t in range(B - 3, B + 1)}
+        A["d4"] = {t: men.d4[t] for t in range(B - 3, B + 1)}
+        # constantes recalées : résidu moyen des 3 dernières années observées (hors 2020-2021)
+        self.c_rev = {}
+        for poste in ("ebe", "d4"):
+            rr = self.eq["revenus_" + poste].res.params
+            y, pn = np.log(men[poste]), np.log(m.pib_cp)
+            res_ = [(y[t] - y[t - 1]) - (rr["const"] + rr["dpibn"] * (pn[t] - pn[t - 1]) + rr["dpc"] * np.log(m.p_c[t] / m.p_c[t - 1])
+                                         + rr["ecm_1"] * (y[t - 1] - pn[t - 1]) + rr["r_1"] * m.taux_long[t - 1])
+                    for t in [a for a in range(B - 6, B + 1) if a not in (2020, 2021)][-3:]]
+            self.c_rev[poste] = float(np.mean(res_))
         D_ = E.demande_ponderee(m)
         A["D"] = {t: D_[t] for t in range(B - 3, B + 1)}
         # comptes en niveau à l'année de base
@@ -428,6 +443,7 @@ class Modele:
             A["w"][t], A["pva_m"][t], A["prod_m"][t], A["pc"][t] = w, pva_m, prod_m, pc
             A["C"][t], A["rdb"][t], A["X"][t], A["M"][t], A["u"][t] = C_cn, rdb, X_cn, M_cn, u_cur
             A["px"][t], A["pm_agg"][t], A["D"][t], A["ppib"][t] = px, pm_agg, D, ppib_est
+            A["ebe"][t], A["d4"][t] = self._revenus_patrimoine(t, A, ex, pc)
             pib_vol = (sum(q_br.values()) / sum(H[b]["q"][B] for b in BR) * sum(self.va_br0[b] for b in BR) + q_nm) / sum(self.va_br0.values())
             A["pib"][t] = m.pib[B] * pib_vol
             A["emploi"][t] = emploi
@@ -458,12 +474,33 @@ class Modele:
         pib_nom = A["pib_nom_idx"][t]                         # PIB nominal (indice, base B)
         prest = (A["pc"][t - 1] / A["pc"][B]) * float(ex.prestations_volume[t]) / float(ex.prestations_volume[B])
         d1 = mb.d1 * masse
-        autres = (mb.ebe + mb.d4 + mb.d7 + mb.autres) * pib_nom
+        ebe, d4 = self._revenus_patrimoine(t, A, ex, pc)
+        autres = ebe + d4 + (mb.d7 + mb.autres) * pib_nom
         d62 = mb.d62 * prest
         d61 = mb.d61 * masse * (1 if ex.taux_cotisations is None else float(ex.taux_cotisations.get(t, 1.0)))
-        base_imp = (mb.d1 * masse + mb.ebe * pib_nom + mb.d4 * pib_nom + d62)
+        base_imp = (mb.d1 * masse + ebe + d4 + d62)
         d5 = mb.d5 * base_imp / (mb.d1 + mb.ebe + mb.d4 + mb.d62)
         return d1 + autres + d62 - d61 - d5
+
+    def _revenus_patrimoine(self, t, A, ex, pc):
+        """Excédent et revenu mixte, revenus de la propriété nets des ménages.
+        Par défaut : indexés sur le PIB nominal. Option `Exogenes.patrimoine_endogene` : équations estimées (lot 7), qui
+        dégradent la rétrosimulation 2015-2019 (revenu disponible −2,3 % au lieu de +0,1 %, la hausse des dividendes de
+        2018 liée au prélèvement forfaitaire unique n'étant pas expliquée) et n'améliorent que peu 2023-2024."""
+        if not ex.patrimoine_endogene:
+            idx = A["pib_nom_idx"][t]
+            return [self.men.ebe[self.B] * idx, self.men.d4[self.B] * idx]
+        out = []
+        pibn_t = self.macro.pib_cp[self.B] * A["pib_nom_idx"][t]
+        pibn_1 = self.macro.pib_cp[self.B] * A["pib_nom_idx"][t - 1] if (t - 1) in A["pib_nom_idx"] and t - 1 > self.B else self.macro.pib_cp[t - 1]
+        r1 = float(ex.taux_long.get(t - 1, ex.taux_long.iloc[-1]))
+        for poste in ("ebe", "d4"):
+            rr = self.eq["revenus_" + poste].res.params
+            y1 = A[poste][t - 1]
+            dy = (rr["const"] + rr["dpibn"] * np.log(pibn_t / pibn_1) + rr["dpc"] * np.log(pc / A["pc"][t - 1])
+                  + rr["ecm_1"] * (np.log(y1) - np.log(pibn_1)) + rr["r_1"] * r1)
+            out.append(y1 * np.exp(dy + self.c_rev[poste]))
+        return out
 
     def _finances(self, t, A, niv, mb, ab, ex, w, n_br, n_nm, pc, pib_vol, q_br, pva):
         """Administrations publiques, taux apparents de l'année de base. Recettes :
@@ -483,7 +520,7 @@ class Modele:
         tau, tau0 = float(ex.taux_is.get(t, ex.taux_is.iloc[-1])), float(ex.taux_is.get(B, 25.0))
         is0 = 0.15 * ab.d5rec                                   # part de l'IS dans les impôts courants sur le revenu (≈ 15 % ; ordre de grandeur, à caler sur les comptes de l'État)
         is_t = is0 * (ebe_m / ebe_m0) * (tau / tau0)
-        d5_men = (ab.d5rec - is0) * (mb.d1 * masse + mb.ebe * pib_nom + mb.d4 * pib_nom + mb.d62 * prest) / (mb.d1 + mb.ebe + mb.d4 + mb.d62)
+        d5_men = (ab.d5rec - is0) * (mb.d1 * masse + A["ebe"][t] + A["d4"][t] + mb.d62 * prest) / (mb.d1 + mb.ebe + mb.d4 + mb.d62)
         d2 = ab.d2rec * cons_nom
         d61 = ab.d61rec * masse * (1 if ex.taux_cotisations is None else float(ex.taux_cotisations.get(t, 1.0)))
         autres_r = (ab.tr - ab.d2rec - ab.d5rec - ab.d61rec) * pib_nom

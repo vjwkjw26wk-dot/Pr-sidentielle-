@@ -99,6 +99,8 @@ def macro() -> pd.DataFrame:
             d[pre + nom + "_cp"] = [float(g.get(("CP_MEUR", it, geo, str(t)), np.nan)) for t in ans]
     for nom in ("pib", "x", "m", "fbcf", "g", "fbc", "ue_x", "ue_m", "ze_x", "ze_m"):
         d["p_" + nom] = d[nom + "_cp"] / d[nom]
+    dm = demande_mondiale_adressee()
+    d["dm"] = dm.indice.reindex(list(ans)).to_numpy()
     u = bdm("001688526")
     u.index = u.index.str[:4]
     d["chomage"] = u.groupby(level=0).mean().reindex([str(t) for t in ans]).to_numpy()
@@ -123,3 +125,44 @@ def taux_is() -> pd.Series:
          2011: 34.43, 2012: 34.43, 2013: 34.43, 2014: 34.43, 2015: 34.43, 2016: 34.43, 2017: 34.43, 2018: 34.43,
          2019: 32.02, 2020: 32.02, 2021: 28.41, 2022: 25.83, 2023: 25.83, 2024: 25.83, 2025: 25.83}
     return pd.Series(t, dtype=float)
+
+
+def demande_mondiale_adressee() -> pd.DataFrame:
+    """Demande mondiale adressée à la France (biens et services, volume) :
+    croissance_t = Σ_c w_{c,t−1} · croissance des importations en volume du pays c (FMI, Perspectives de l'économie
+    mondiale, avril 2025, TM_RPCH), w = part du pays c dans les exportations de biens de la France (FMI, Direction of
+    Trade Statistics), via DBnomics. Couvre les pays présents dans les deux sources (≈ 98 % des exportations).
+    Renvoie un indice (base 2015 = 100) et la part couverte. Limite : pondération par les exportations de biens
+    seulement ; prévisions du FMI au-delà de 2024."""
+    import pycountry
+    dot = json.loads(telecharger("https://api.db.nomics.world/v22/series/IMF/DOT?dimensions=%7B%22REF_AREA%22:%5B%22FR%22%5D,"
+                                 "%22INDICATOR%22:%5B%22TXG_FOB_USD%22%5D,%22FREQ%22:%5B%22A%22%5D%7D&observations=1&limit=1000",
+                                 "dbnomics_imf_dot_fr_exports.json").read_text())
+    weo = json.loads(telecharger("https://api.db.nomics.world/v22/series/IMF/WEO:2025-04?dimensions=%7B%22weo-subject%22:%5B%22TM_RPCH%22%5D%7D"
+                                 "&observations=1&limit=1000", "dbnomics_imf_weo_2025_04_tm_rpch.json").read_text())
+    exp = {}
+    for x in dot["series"]["docs"]:
+        p = x["series_code"].split(".")[-1]
+        c = pycountry.countries.get(alpha_2=p)
+        if c is None:
+            continue
+        exp[c.alpha_3] = pd.Series({int(a): (float(v) if v != "NA" else np.nan) for a, v in zip(x["period"], x["value"])})
+    imp = {}
+    for x in weo["series"]["docs"]:
+        c = x["series_code"].split(".")[0]
+        imp[c] = pd.Series({int(a): (float(v) if v != "NA" else np.nan) for a, v in zip(x["period"], x["value"])})
+    E_ = pd.DataFrame(exp).loc[1980:2024]
+    I_ = pd.DataFrame(imp).loc[1981:2030]
+    commun = [c for c in E_.columns if c in I_.columns]
+    tot = E_.sum(axis=1)
+    w = E_[commun].div(tot, axis=0)
+    out = {}
+    for t in range(1982, 2031):
+        wt = w.loc[min(t - 1, 2024)]
+        g = I_.loc[t, commun]
+        ok = g.notna() & wt.notna()
+        out[t] = (float((wt[ok] * g[ok]).sum() / wt[ok].sum()), float(wt[ok].sum()))
+    d = pd.DataFrame(out, index=["croissance", "couverture"]).T
+    idx = np.exp(np.log1p(d.croissance / 100).cumsum())
+    d["indice"] = idx / idx[2015] * 100
+    return d
