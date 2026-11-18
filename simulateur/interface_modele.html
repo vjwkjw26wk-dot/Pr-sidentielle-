@@ -101,6 +101,7 @@ svg .leg { fill: var(--doux); font-size: 11px; font-family: var(--f-texte); }
 .bilan .robuste { border-left: 3px solid var(--hausse); padding-left: 10px; }
 .bilan .fragile { border-left: 3px solid var(--alerte); padding-left: 10px; }
 #txt-prog .fragile { border-left: 3px solid var(--alerte); padding-left: 10px; }
+#txt-prog table.tab { width: 100%; border-collapse: collapse; font-size: 12px; margin: 4px 0; } #txt-prog table.tab td, #txt-prog table.tab th { padding: 2px 4px; border-bottom: 1px solid var(--bord, #e5e5e5); text-align: right; } #txt-prog table.tab td:first-child, #txt-prog table.tab th:first-child { text-align: left; }
 #txt-prog ul { margin: 4px 0 6px 18px; padding: 0; } #txt-prog li { margin: 2px 0; } #txt-prog summary { cursor: pointer; font-weight: 600; }
 .tuile .ref-val { font-size: .76rem; color: var(--doux); }
 .legende { display: flex; gap: 14px; flex-wrap: wrap; font-size: .8rem; color: var(--doux); }
@@ -511,10 +512,24 @@ function afficherProg(id) {
   const lien = s => `<li><a href="${esc(s[1])}" target="_blank" rel="noopener">${esc(s[0])}</a></li>`;
   box.innerHTML = `<p><strong>${esc(p.candidat)}</strong> — ${esc(p.parti)}. ${esc(p.total_annonce)}</p>
    <details open><summary>Traduction en curseurs</summary><ul>${p.correspondance.map(x => `<li>${esc(x)}</li>`).join("")}</ul></details>
+   ${robustesse(p.id)}
    <details><summary>Non représenté dans le modèle (${p.non_represente.length})</summary><ul>${p.non_represente.map(x => `<li>${esc(x)}</li>`).join("")}</ul></details>
    <details><summary>Sources</summary><ul>${p.sources.map(lien).join("")}</ul></details>
    <details><summary>Règles communes de traduction</summary><ul>${PG.regles.map(x => `<li>${esc(x)}</li>`).join("")}</ul></details>
    <p class="fragile">Les curseurs restent modifiables. Ce jeu ne reproduit pas fidèlement le programme : il ne retient que les mesures chiffrées et représentables.</p>`;
+}
+function robustesse(id) {
+  const R = (D.robustesse || {})[id];
+  if (!R) return "";
+  const lib = {pib: "PIB réel (%)", emploi: "Emploi (milliers)", solde_pib: "Solde public (pt de PIB)", dette_pib: "Dette (pt de PIB)", rnb: "RNB nominal (%)", c: "Consommation (%)"};
+  const f = (k, x) => k === "emploi" ? sg(x, 0) : sg(x, 2);
+  const lignes = Object.entries(R.ind).map(([k, x]) => `<tr><td>${lib[k]}</td><td>${f(k, x.central)}</td><td>${x.stat ? f(k, x.stat[0]) + " à " + f(k, x.stat[1]) : "–"}</td><td>${x.plage ? f(k, x.plage[0]) + " à " + f(k, x.plage[1]) : "–"}</td><td>${esc(x.robustesse)}</td></tr>`).join("");
+  const F = D.robustesse_facteurs || {};
+  const dom = (R.dominants.pib || []).map(n => esc(F[n] || n)).join(" ; ");
+  return `<details open><summary>Robustesse en 2032 (contre-expertise, modèle complet)</summary>
+    <table class="tab"><tr><th>Indicateur</th><th>Central</th><th>Stat. 90 %</th><th>Plage de sensibilité</th><th>Signe</th></tr>${lignes}</table>
+    <p class="vide">Stat. 90 % : incertitude d'estimation des coefficients. Plage : toutes hypothèses alternatives testées (non probabiliste).
+    Paramètres les plus influents sur le PIB : ${dom}.</p></details>`;
 }
 selP.addEventListener("change", () => {
   const p = PG.liste.find(x => x.id === selP.value);

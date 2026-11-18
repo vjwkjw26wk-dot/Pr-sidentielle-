@@ -89,7 +89,7 @@ class Exogenes:
     prix_mondial: pd.Series                # prix des concurrents à l'exportation (indice)
     prix_import: pd.DataFrame              # indice de prix d'importation par produit (colonnes = produits A64)
     conso_publique: pd.Series              # volume, indice
-    autres_investissements: pd.Series      # volume (M€ de base) : logement, administrations, branches non marchandes
+    autres_investissements: pd.Series      # volume : FBCF des administrations, ISBLSM et branches non marchandes, hors ménages (v0.6)
     population_active: pd.Series           # milliers
     chomage_structurel: pd.Series          # %
     taux_long: pd.Series                   # %
@@ -97,6 +97,9 @@ class Exogenes:
     prestations_volume: pd.Series          # croissance en volume des prestations (hors chômage), indice
     duree_travail: pd.Series = None        # non utilisé en v0.1
     parts_importees: dict = field(default_factory=dict)   # réindustrialisation : {produit: facteur sur la part importée}
+    parametres_alternatifs: dict = None    # analyse de sensibilité : {"debut", "params": {équation: Series}, "sigma", "phillips"}
+    marges_branche: dict = None            # {branche: {année: log du supplément de prix de VA}} (contre-expertise : prix de marché
+    #                                        de l'énergie produite en France, marges) ; persistant, sans rappel vers le coût
     reindustrialisation: dict = None       # {"produits": {produit: facteur final sur la part importée}, "debut": année,
     #                                        "duree": années de montée en charge, "surcout": surcoût relatif de la VA produite
     #                                        en France à la place des importations}
@@ -303,6 +306,7 @@ class Modele:
              "C": {t: m.c[t] for t in range(B - 3, B + 1)},
              "rdb": {t: men.rdb[t] for t in range(B - 3, B + 1)},
              "rdbc": {t: men.rdb[t] for t in range(B - 3, B + 1)},
+             "mcu": {t: 1.0 for t in range(B - 3, B + 1)},
              "X": {t: m.x[t] for t in range(B - 3, B + 1)}, "M": {t: m.m[t] for t in range(B - 3, B + 1)},
              "u": {t: m.chomage[t] for t in range(B - 3, B + 1)},
              "px": {t: m.p_x[t] for t in range(B - 3, B + 1)}, "pm_agg": {t: m.p_m[t] for t in range(B - 3, B + 1)},
@@ -378,7 +382,23 @@ class Modele:
             if t >= a + 1:
                 return val - self._ecm_ref.get(cle, 0.0)
             return val
+        alt = ex.parametres_alternatifs or {}
+        sauv_glob = (E.SIGMA_TRAVAIL, E.PHILLIPS)
+        r_central = r
+        theta_c = theta
         for t in annees:
+            # paramètres alternatifs (analyse de sensibilité, v0.6) : appliqués à partir de alt["debut"] (2026 par défaut,
+            # première année projetée) ; la période observée reste reproduite avec les paramètres centraux et l'ancrage
+            # des termes de rappel absorbe les changements de niveau d'équilibre (sinon : dérive artificielle dès 2023).
+            if alt and t >= alt.get("debut", 2026):
+                r = {k: alt.get("params", {}).get(k, v) for k, v in r_central.items()}
+                E.SIGMA_TRAVAIL = alt.get("sigma", sauv_glob[0])
+                E.PHILLIPS = alt.get("phillips", sauv_glob[1])
+                theta = alt.get("theta", theta_c)
+            else:
+                r = r_central
+                E.SIGMA_TRAVAIL, E.PHILLIPS = sauv_glob
+                theta = theta_c
             # valeurs initiales de l'itération : celles de l'année précédente
             prev = hist_vol[t - 1]
             C, X, phi = prev["C"], prev["X"], etat["phi"]
@@ -393,6 +413,8 @@ class Modele:
             # est résorbée chaque année par un supplément de demande intérieure (canaux non modélisés : politique
             # monétaire, conditions de crédit, confiance, compétitivité de moyen terme) ; terme intégral (persistant).
             rho = ex.fermeture_offre or 0.0
+            if alt and t >= alt.get("debut", 2026) and "rho" in alt:
+                rho = alt["rho"]
             if rho:
                 u_s = float(ex.chomage_structurel.get(t - 1, ex.chomage_structurel.iloc[-1]))
                 g1 = hist_vol[t - 1]["u"] - u_s
@@ -453,6 +475,7 @@ class Modele:
                 # ---- 3. prix de la valeur ajoutée et emploi par branche
                 re, rp, ri = r["emploi"], r["prix_va"], r["investissement"]
                 pva_new, n_new, I_new = {}, {}, {}
+                m_cu1 = A["mcu"].get(t - 1, 1.0)     # multiplicateur du coût d'usage appliqué l'année précédente
                 for b in BR:
                     hb = H[b]
                     cn = hb["cn"][B] * w_new / A["w"][B]
@@ -470,22 +493,32 @@ class Modele:
                     clu = cn * n_new[b] / q_br[b]
                     clu1 = cn_1 * hb["n"][t - 1] / hb["q"][t - 1]
                     tucd_b = self._tuc(b, t, q_br[b], H) - self.tuc_moy[S.TUC_BRANCHE[b]] if b in S.TUC_BRANCHE else 0.0
+                    mk = (ex.marges_branche or {}).get(b, {})
+                    mk_t, mk_1 = float(mk.get(t, 0.0)), float(mk.get(t - 1, 0.0))
                     dp = (self.c_prix[b] + rp["dlclu"] * np.log(clu / clu1) + rp["dlq"] * (lq - lq1) + rp.get("tucd", 0.0) * tucd_b
-                          + ecm(("p", b), rp["ecm_1"] * (np.log(hb["pva"][t - 1]) - np.log(clu1))) + _cal(ex, "prix", t))
+                          + ecm(("p", b), rp["ecm_1"] * (np.log(hb["pva"][t - 1]) - np.log(clu1) - mk_1)) + _cal(ex, "prix", t)
+                          + mk_t - mk_1)
                     pva_new[b] = hb["pva"][t - 1] * np.exp(dp)
                     # investissement (accélérateur) + coût d'usage
                     di = (self.c_inv[b] + ri["dlq"] * (lq - lq1) + ri["dlq_1"] * (lq1 - lq2)
-                          + ri["li_1"] * np.log(hb["i"][t - 1]) + ri["lk_1"] * np.log(hb["k"][t - 1]) + ri["lq_1"] * lq1
+                          + ri["li_1"] * np.log(hb["i"][t - 1] / m_cu1) + ri["lk_1"] * np.log(hb["k"][t - 1]) + ri["lq_1"] * lq1
                           + _cal(ex, "investissement", t))
-                    I_new[b] = hb["i"][t - 1] * np.exp(di)
+                    # v0.6 : la dynamique de branche porte sur l'investissement hors effet du coût d'usage ; l'effet du coût
+                    # d'usage est appliqué en niveau (en v0.5 il était réappliqué chaque année et se cumulait : effet de long
+                    # terme d'une baisse d'IS environ 3,5 fois l'élasticité estimée)
+                    I_new[b] = hb["i"][t - 1] / m_cu1 * np.exp(di)
                 # effet du coût d'usage (IS, taux) : élasticité de long terme agrégée, ajustement à la vitesse des branches
                 tau = float(ex.taux_is.get(t, ex.taux_is.iloc[-1])); tau0 = float(ex.taux_is.get(B, tau))
                 rr_ = float(ex.taux_long.get(t, ex.taux_long.iloc[-1])); rr0 = float(ex.taux_long.get(B, rr_))
                 lcu = np.log((max(rr_, -5) / 100 + E.DELTA_USAGE) / (1 - tau / 100)) - np.log((max(rr0, -5) / 100 + E.DELTA_USAGE) / (1 - tau0 / 100))
                 eps_cu = self.eq["investissement_snf"].lr["long terme : élasticité au coût d'usage du capital"]
-                cible = np.exp(eps_cu * lcu)
-                ajust = 1 - (1 + ri["li_1"]) ** (t - B)            # convergence progressive vers l'effet de long terme
-                I_new = {b: v * cible ** ajust / (etat.get("cible_prec", 1.0) if False else 1.0) for b, v in I_new.items()}
+                if alt and t >= alt.get("debut", 2026) and "investissement_snf" in alt.get("params", {}):
+                    pa = alt["params"]["investissement_snf"]
+                    eps_cu = -float(pa["lcu_1"]) / float(pa["ecm_1"])
+                # convergence progressive vers l'effet de long terme ε·Δln(coût d'usage), à la vitesse de rappel des branches
+                # (v0.6 ; en v0.5 la vitesse était comptée depuis l'année de base, d'où un effet presque immédiat en 2028)
+                m_cu = float(np.exp(np.log(m_cu1) + (-ri["li_1"]) * (eps_cu * lcu - np.log(m_cu1))))
+                I_new = {b: v * m_cu for b, v in I_new.items()}
                 # PIB nominal (indice, base B) : VA marchande en valeur + VA non marchande (volume × salaire)
                 q_nm_c = hist_vol[t - 1]["q_nm"] if it == 0 else q_nm
                 vm = sum(q_br[b] / H[b]["q"][B] * self.hist[b].va_cp[B] * pva_new[b] / H[b]["pva"][B] for b in BR)
@@ -518,7 +551,10 @@ class Modele:
                 # FBCF « autres » (APU, ISBLSM, ménages) : l'indice exogène s'applique au total de l'année de base, de sorte que
                 # les mesures (investissement public, logements sociaux) gardent leur montant ; la part des ménages est
                 # remplacée par sa valeur endogène.
-                I_tot = (fbcf_br + I_autres_B * float(ex.autres_investissements[t]) / float(ex.autres_investissements[B]) - I_men_B
+                # v0.6 (contre-expertise) : `autres_investissements` exclut désormais l'investissement des ménages (endogène).
+                # En v0.5, l'indice observé incluait le logement des ménages, compté une seconde fois par l'équation de
+                # logement dans les rétrosimulations (double compte de la dynamique du logement).
+                I_tot = (fbcf_br + (I_autres_B - I_men_B) * float(ex.autres_investissements[t]) / float(ex.autres_investissements[B])
                          + I_men_B * Imen / A["Imen"][B] + I_cap)
                 self.dem = {"C": dem0["C"] * C_cn / m.c[B] + 0.6 * Z_dem, "G": dem0["G"] * G_idx, "I": I_tot + 0.4 * Z_dem, "S": dem0["S"] + _cal(ex, "stocks", t) * sum(self.va0),
                             "X": dem0["X"] * X_cn / m.x[B]}
@@ -574,6 +610,7 @@ class Modele:
             A["w"][t], A["pva_m"][t], A["prod_m"][t], A["pc"][t] = w, pva_m, prod_m, pc
             A["C"][t], A["rdb"][t], A["X"][t], A["M"][t], A["u"][t] = C_cn, rdb, X_cn, M_cn, u_cur
             A["rdbc"][t] = rdb_c
+            A["mcu"][t] = m_cu
             A["Imen"][t] = Imen
             A["px"][t], A["pm_agg"][t], A["D"][t], A["ppib"][t] = px, pm_agg, D, ppib_est
             A["pm_nc"][t] = pm_nc
@@ -604,6 +641,7 @@ class Modele:
                             vol_industrie=sum(q_br[b] for b in IND) / sum(H[b]["q"][B] for b in IND), supplement_demande_fermeture=Z_dem, tuc_industrie=tuc_m, pib=A["pib"][t], c=C_cn, x=X_cn, m=M_cn, fbcf=m.fbcf[B] * I_tot / dem0["I"], emploi=emploi, chomage=u_cur,
                             salaire=w, pc=pc, pva_m=pva_m, px=px, rdb=rdb, phi=phi, **fp))
         self.H, self.A = H, A
+        E.SIGMA_TRAVAIL, E.PHILLIPS = sauv_glob
         return pd.DataFrame(res).set_index("annee")
 
     def _leontief_base(self, dem):
@@ -768,6 +806,9 @@ def exogenes_observes(mod: Modele, annees) -> Exogenes:
     from statsmodels.tsa.filters.hp_filter import hpfilter
     _, u_star = hpfilter(m.chomage.loc[1980:2025].dropna(), lamb=100)
     autres_I = (m.fbcf - sum(mod.panel[mod.panel.branche == b].set_index("annee").i for b in S.BRANCHES))
+    # hors investissement des ménages (endogène, équation de logement) : volume = valeur / prix de la FBCF
+    dl = mod.eq["logement"].data
+    autres_I = (autres_I - (dl.i_cp / m.p_fbcf.reindex(dl.index)).reindex(autres_I.index)).dropna()
     men = mod.men
     prest_vol = (men.d62 / (m.p_c.reindex(men.index).shift(1))).ffill()
     apu = mod.apu

@@ -83,6 +83,14 @@ def main():
         v["niveaux"] = {i: {int(a): x for a, x in s_.items()} for i, s_ in v["niveaux"].items()}
     if "rnb" in d.get("libelles", {}):
         d["libelles"]["rnb"] = "Revenu national brut, en valeur"
+    f_rob = RACINE / "outputs" / "robustesse_programmes.json"
+    if f_rob.exists():
+        R = json.loads(f_rob.read_text())
+        d["robustesse"] = {k: {"ind": {i: v["indicateurs"][i]["2032"] for i in ("pib", "emploi", "solde_pib", "dette_pib", "rnb", "c")},
+                               "dominants": {i: [x[0] for x in v["dominants"].get(i, [])] for i in ("pib", "emploi", "dette_pib")}}
+                           for k, v in R.items()}
+        from simulateur import sensibilite as SE
+        d["robustesse_facteurs"] = {f[0]: f[6] for f in SE.FACTEURS}
     from simulateur import programmes as PG
     d["programmes"] = {"date": PG.DATE, "regles": PG.REGLES, "liste": PG.PROGRAMMES,
                        "non_traduits": [list(x) for x in PG.NON_TRADUITS]}

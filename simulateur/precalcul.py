@@ -26,7 +26,7 @@ INDICATEURS = ["pib", "croissance", "emploi", "chomage", "inflation", "pc", "rdb
                "retraites_pour_100_actifs", "part_industrie", "emploi_industrie", "population_active", "rnb", "taux_epargne",
                "solde_exterieur_pib"]
 HORIZON = 2032
-VERSION = "0.5"
+VERSION = "0.6"
 
 
 def main():

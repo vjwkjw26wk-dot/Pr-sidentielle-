@@ -117,6 +117,7 @@ def debut_socio_fiscal(mesures) -> int:
 def construire(scenario: dict, mod, central=None, journal=None):
     """Exogènes de référence et du scénario, et informations complémentaires (distribution, M9)."""
     H = scenario.get("hypotheses", {})
+    NIV_COMP = H.get("comportements", "centrale")   # réactions des hauts revenus (M13) : basse, centrale, haute
     ans = range(mod.B + 1, scenario.get("horizon", HORIZON_DEFAUT) + 1)
     rho = H.get("fermeture_offre", M8.RHO_DEFAUT)
     mesures = scenario.get("mesures", [])
@@ -194,7 +195,7 @@ def construire(scenario: dict, mod, central=None, journal=None):
             # capital productif l'année suivant l'investissement ; transmis comme gain de productivité par tête
             kg, niv_prev, prod = 0.0, 0.0, {}
             for a in sorted(idx_nom):
-                niv_a = ELAST_CAPITAL_PUBLIC / PART_CAPITAL_PUBLIC * kg / (pib0 / 1e3) if a > debut else 0.0
+                niv_a = H.get("elasticite_capital_public", ELAST_CAPITAL_PUBLIC) / PART_CAPITAL_PUBLIC * kg / (pib0 / 1e3) if a > debut else 0.0
                 prod[a] = niv_a - niv_prev
                 niv_prev = niv_a
                 kg = kg * (1 - DEPRECIATION_PUBLIQUE) + (md if a >= debut else 0.0)
@@ -288,7 +289,7 @@ def construire(scenario: dict, mod, central=None, journal=None):
             import m13_comportements as B13
             st = float(p["points"]) * RENDEMENT_POINT_PFU
             fr = B13.fourchette(B13.part_perdue_pfu, float(p["points"]))
-            net = st * (1 - fr["centrale"])
+            net = st * (1 - fr[NIV_COMP])
             analytique["impots"] += net
             extras.append(("haut_decile", -net))
             comport["pfu"] = {"statique_M€": st, **{f"net_{k}_M€": st * (1 - v) for k, v in fr.items()}}
@@ -296,7 +297,7 @@ def construire(scenario: dict, mod, central=None, journal=None):
             import m13_comportements as B13
             st = float(p["taux_moyen"]) / 100 * ASSIETTE_ISF - RENDEMENT_IFI
             fr = {k: sum(B13.part_perdue_isf(a, niveau=k) for a in range(5)) / 5 for k in ("basse", "centrale", "haute")}
-            net = st * (1 - fr["centrale"])
+            net = st * (1 - fr[NIV_COMP])
             analytique["impots"] += net
             extras.append(("top1", -net))
             comport["isf"] = {"statique_M€": st, **{f"net_{k}_M€": st * (1 - v) for k, v in fr.items()}}
@@ -304,7 +305,7 @@ def construire(scenario: dict, mod, central=None, journal=None):
             import m13_comportements as B13
             st = float(p["variation"]) * RENDEMENT_SUCCESSIONS
             fr = B13.fourchette(B13.part_perdue_successions)
-            ajouter_recette_apu(debut, st * (1 - fr["centrale"]))
+            ajouter_recette_apu(debut, st * (1 - fr[NIV_COMP]))
             comport["successions"] = {"statique_M€": st, **{f"net_{k}_M€": st * (1 - v) for k, v in fr.items()}}
         elif t == "assurance_chomage":
             v = float(p["variation"])
@@ -363,7 +364,7 @@ def construire(scenario: dict, mod, central=None, journal=None):
                     if tr >= 3:
                         anc = {3: 0.41, 4: 0.45}[tr]
                         fr = B13.fourchette(B13.part_perdue_ir, tr, float(v))
-                        perte += d_ir * fr["centrale"]
+                        perte += d_ir * fr[NIV_COMP]
                         comport[f"ir_tranche_{tr}"] = {"statique_M€": d_ir, **{f"net_{k}_M€": d_ir * (1 - x) for k, x in fr.items()},
                                                       "departs_foyers": B13.fourchette(B13.departs_hauts_revenus, tr, float(v), anc)}
         for m in csg:
@@ -404,7 +405,7 @@ def construire(scenario: dict, mod, central=None, journal=None):
     return ref, var, ans, info
 
 
-VERSION_MODELE = "0.5"
+VERSION_MODELE = "0.6"
 
 
 def empreintes() -> dict:

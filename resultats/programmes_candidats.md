@@ -1,4 +1,4 @@
-# Jeux de mesures des candidats : simulation par le modèle complet (version 0.5)
+# Jeux de mesures des candidats : simulation par le modèle complet (version 0.6)
 
 Sources au 17 novembre 2026. Écarts à la trajectoire « politique inchangée ». Traductions approximatives : voir simulateur/programmes.py et doc/11_coherence_et_programmes.md. Les candidats sont présentés par ordre alphabétique ; aucun classement ni note n'est établi.
 
@@ -8,12 +8,12 @@ Curseurs : Emplois publics (atteints en 5 ans) = -100 milliers, RSA (montant for
 
 | Indicateur | 2028 | 2030 | 2032 | 2032 additif (interface) |
 |---|---|---|---|---|
-| PIB (%) | -0.17 | -0.23 | -0.28 | -0.25 |
+| PIB (%) | -0.17 | -0.23 | -0.28 | -0.26 |
 | Chômage (pt) | +0.09 | +0.18 | +0.24 | +0.22 |
-| Emploi (milliers) | -29.31 | -59.37 | -81.84 | – |
+| Emploi (milliers) | -29.38 | -59.73 | -82.77 | – |
 | Prix à la consommation (%) | +0.03 | -0.05 | -0.16 | -0.13 |
 | Solde public (pt de PIB) | +0.12 | +0.18 | +0.26 | +0.22 |
-| Dette (pt de PIB) | +0.03 | -0.08 | -0.27 | -0.17 |
+| Dette (pt de PIB) | +0.03 | -0.08 | -0.26 | -0.17 |
 
 Non représenté : Système universel par points avec décote et surcote (paramètres non publiés) ; Pilier de capitalisation ; Réformes des arrêts maladie et de l'assurance chômage (non chiffrées).
 
@@ -23,12 +23,12 @@ Curseurs : Investissement public = 40 Md€/an, Recettes ou économies sans effe
 
 | Indicateur | 2028 | 2030 | 2032 | 2032 additif (interface) |
 |---|---|---|---|---|
-| PIB (%) | +1.06 | +0.36 | -0.30 | -0.30 |
-| Chômage (pt) | -1.41 | -1.57 | -1.76 | -1.75 |
-| Emploi (milliers) | +123.08 | +16.04 | -174.61 | – |
-| Prix à la consommation (%) | -0.23 | +0.65 | +1.53 | +1.53 |
-| Solde public (pt de PIB) | -1.14 | -1.35 | -1.61 | -1.61 |
-| Dette (pt de PIB) | +0.35 | +2.16 | +4.25 | +4.29 |
+| PIB (%) | +1.12 | +0.43 | -0.22 | -0.22 |
+| Chômage (pt) | -1.43 | -1.61 | -1.81 | -1.81 |
+| Emploi (milliers) | +129.51 | +29.54 | -156.66 | – |
+| Prix à la consommation (%) | -0.24 | +0.66 | +1.58 | +1.57 |
+| Solde public (pt de PIB) | -1.13 | -1.33 | -1.57 | -1.58 |
+| Dette (pt de PIB) | +0.30 | +2.02 | +3.99 | +4.02 |
 
 Non représenté : Baisse de CSG sur les bas salaires (taux non précisé) ; Taxe européenne sur les superprofits pétroliers et gaziers ; Fiscalité aérienne et sur la consommation ostentatoire ; Livret de souveraineté écologique et sociale ; Grand emprunt écologique européen.
 
@@ -38,12 +38,12 @@ Curseurs : Âge légal : retour immédiat (sans transition) = 62 ans, Taux norma
 
 | Indicateur | 2028 | 2030 | 2032 | 2032 additif (interface) |
 |---|---|---|---|---|
-| PIB (%) | -0.95 | -1.22 | -1.63 | -1.64 |
-| Chômage (pt) | -0.49 | -0.73 | -1.05 | -1.06 |
-| Emploi (milliers) | -223.03 | -320.76 | -441.11 | – |
-| Prix à la consommation (%) | -0.71 | -0.48 | -0.03 | +0.01 |
-| Solde public (pt de PIB) | +0.04 | -0.13 | -0.24 | -0.24 |
-| Dette (pt de PIB) | +1.49 | +1.52 | +1.54 | +1.50 |
+| PIB (%) | -0.95 | -1.22 | -1.62 | -1.63 |
+| Chômage (pt) | -0.49 | -0.73 | -1.06 | -1.06 |
+| Emploi (milliers) | -222.81 | -319.66 | -439.02 | – |
+| Prix à la consommation (%) | -0.71 | -0.48 | -0.02 | +0.01 |
+| Solde public (pt de PIB) | +0.05 | -0.13 | -0.24 | -0.23 |
+| Dette (pt de PIB) | +1.49 | +1.51 | +1.52 | +1.47 |
 
 Non représenté : Règle d'or constitutionnelle ; Pilier de capitalisation pour les retraites ; Économies liées à l'immigration au-delà des prestations (15 à 29 Md€ annoncés) ; Centralisation des recettes de TVA ; Préférence nationale (effets économiques).
 
@@ -53,12 +53,12 @@ Curseurs : Coup de pouce au SMIC = 13 %, Point d'indice des fonctionnaires = 10 
 
 | Indicateur | 2028 | 2030 | 2032 | 2032 additif (interface) |
 |---|---|---|---|---|
-| PIB (%) | +0.79 | -0.04 | -1.02 | -1.03 |
-| Chômage (pt) | -1.59 | -2.17 | -2.83 | -2.80 |
-| Emploi (milliers) | +134.79 | +38.53 | -184.14 | – |
-| Prix à la consommation (%) | +0.82 | +1.95 | +3.32 | +3.24 |
-| Solde public (pt de PIB) | -0.66 | -0.95 | -1.18 | -1.13 |
-| Dette (pt de PIB) | -1.64 | -0.68 | +0.30 | +0.12 |
+| PIB (%) | +0.80 | -0.02 | -0.98 | -1.00 |
+| Chômage (pt) | -1.59 | -2.18 | -2.85 | -2.82 |
+| Emploi (milliers) | +135.53 | +41.95 | -177.16 | – |
+| Prix à la consommation (%) | +0.82 | +1.95 | +3.35 | +3.26 |
+| Solde public (pt de PIB) | -0.66 | -0.95 | -1.17 | -1.11 |
+| Dette (pt de PIB) | -1.65 | -0.71 | +0.21 | +0.04 |
 
 Non représenté : Blocage des prix des produits de première nécessité ; Sécurité sociale intégrale ; Cotisation sociale sur les revenus du capital ; Taxe Zucman ; Écart de salaires plafonné de 1 à 20 ; Planification écologique (montants non publiés dans les sources consultées) ; Gel de la dette détenue par la BCE.
 
@@ -68,12 +68,12 @@ Curseurs : Âge légal de départ (cible) = 65 ans, Emplois publics (atteints en
 
 | Indicateur | 2028 | 2030 | 2032 | 2032 additif (interface) |
 |---|---|---|---|---|
-| PIB (%) | -0.20 | -0.13 | -0.17 | -0.16 |
+| PIB (%) | -0.20 | -0.13 | -0.17 | -0.17 |
 | Chômage (pt) | +0.28 | +0.48 | +0.52 | +0.52 |
-| Emploi (milliers) | -41.36 | -57.03 | -71.60 | – |
-| Prix à la consommation (%) | -0.01 | -0.32 | -0.68 | -0.69 |
-| Solde public (pt de PIB) | +0.13 | +0.20 | +0.42 | +0.41 |
-| Dette (pt de PIB) | +0.13 | +0.23 | +0.31 | +0.32 |
+| Emploi (milliers) | -41.17 | -57.09 | -72.40 | – |
+| Prix à la consommation (%) | -0.01 | -0.32 | -0.69 | -0.69 |
+| Solde public (pt de PIB) | +0.13 | +0.20 | +0.41 | +0.41 |
+| Dette (pt de PIB) | +0.13 | +0.23 | +0.32 | +0.32 |
 
 Non représenté : Allocation familiale unique de 350 € par mois dès le premier enfant (coût non publié) ; Réduction d'impôt d'environ 3 000 € pour les familles qui travaillent (coût non publié) ; Exonération de cotisations pour deux heures supplémentaires par semaine ; Pilier de capitalisation obligatoire ; Durée de cotisation portée à 45 ans.
 
@@ -83,12 +83,12 @@ Curseurs : Emplois publics (atteints en 5 ans) = -400 milliers, Autres dépenses
 
 | Indicateur | 2028 | 2030 | 2032 | 2032 additif (interface) |
 |---|---|---|---|---|
-| PIB (%) | -1.27 | -0.95 | -0.92 | -0.94 |
-| Chômage (pt) | +0.82 | +0.91 | +0.94 | +0.96 |
-| Emploi (milliers) | -275.23 | -306.31 | -319.45 | – |
-| Prix à la consommation (%) | -0.04 | -0.81 | -1.42 | -1.44 |
+| PIB (%) | -1.27 | -0.96 | -0.93 | -0.95 |
+| Chômage (pt) | +0.82 | +0.91 | +0.95 | +0.96 |
+| Emploi (milliers) | -275.33 | -306.95 | -320.93 | – |
+| Prix à la consommation (%) | -0.04 | -0.81 | -1.43 | -1.45 |
 | Solde public (pt de PIB) | +0.17 | +0.23 | +0.33 | +0.33 |
-| Dette (pt de PIB) | +1.41 | +1.91 | +2.39 | +2.41 |
+| Dette (pt de PIB) | +1.41 | +1.91 | +2.40 | +2.42 |
 
 Non représenté : Âge minimal de 63 ans avec taux plein à 65 ans et décote de 7 % par an (42 Md€ cumulés annoncés) : la décote n'est pas modélisée ; Capitalisation de 25 à 30 % des retraites des nouveaux entrants ; 15 Md€ d'économies de protection sociale non détaillées.
 

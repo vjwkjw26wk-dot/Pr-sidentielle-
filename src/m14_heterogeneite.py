@@ -42,7 +42,10 @@ PMC_TOP1 = 0.25
 # ménages, dividendes reçus 64 Md€. Banque de France (Bulletin 261/3, 2025) : 50 % du capital des sociétés françaises
 # du CAC 40 détenu par des non-résidents en 2024 ; environ 40 % pour l'ensemble des actions cotées.
 DISTRIBUTION_PROFITS = {"bas": 0.3, "central": 0.5, "haut": 0.7}   # part d'un supplément de profit distribuée (2-3 ans)
-PART_NON_RESIDENTS = 0.40
+# v0.6 (contre-expertise) : 0,40 retenu en v0.5 d'après le CAC 40 (50 %) surestimait la part de l'ensemble des sociétés.
+# Banque de France : 36,7 % des actions cotées (2022), environ 30 % hors CAC 40 ; sociétés non cotées et PME, beaucoup
+# moins (investissements directs étrangers, ordre de grandeur 15-20 %). Pondération par les profits : environ 0,30.
+PART_NON_RESIDENTS = 0.30
 PART_MENAGES_DIVIDENDES = 0.35   # des dividendes versés aux résidents, part reçue directement par les ménages
 
 

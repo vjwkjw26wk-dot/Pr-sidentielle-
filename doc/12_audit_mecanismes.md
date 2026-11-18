@@ -8,6 +8,10 @@ Niveaux de preuve utilisés : **E** paramètre estimé économétriquement sur d
 source empirique ; **H** hypothèse de modélisation ; **R** relation comptable ; **T** relation théorique non validée
 directement.
 
+> Mise à jour v0.6 (contre-expertise, doc/13_contre_expertise.md) : deux erreurs de la v0.5 ont été corrigées (cumul de
+> l'effet du coût d'usage du capital ; double compte du logement des ménages dans les rétrosimulations) et la part des
+> dividendes versée aux non-résidents ramenée de 0,40 à 0,30. Les chiffres de ce document sont ceux de la v0.5.
+
 ## 1. Cartographie des mécanismes (état avant audit, version 0.4.1)
 
 | Mécanisme | Où | Représentation | Calibrage, preuve | Limites constatées |
