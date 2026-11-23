@@ -1,0 +1,9 @@
+digraph G { rankdir=LR; node [shape=box, style="rounded,filled", fillcolor="#eef3f8", fontname="Helvetica", fontsize=10];
+    edge [fontname="Helvetica", fontsize=8, color="#555555"];
+    M [label="Ménages\n(revenus, consommation,\népargne, logement)"]; E [label="Entreprises\n25 branches marchandes\n(production, emploi, prix,\ninvestissement)"];
+    A [label="Administrations publiques\n(État, collectivités,\nSécurité sociale)"]; R [label="Reste du monde\n(zone euro, autres pays)"];
+    T [label="Tableau entrées-sorties\n64 produits", fillcolor="#fff4e5"]; P [label="Population\n(démographie, activité,\nretraites)", fillcolor="#f0f7ec"];
+    M -> E [label="consommation"]; E -> M [label="salaires, dividendes"]; M -> A [label="impôts, cotisations"]; A -> M [label="prestations, pensions"];
+    E -> A [label="IS, impôts de production,\ncotisations employeurs"]; A -> E [label="achats publics"]; E -> R [label="exportations"]; R -> E [label="importations,\nprix de l'énergie"];
+    E -> T [dir=both, label="consommations\nintermédiaires"]; P -> M [label="actifs, retraités"]; P -> A [label="pensions,\nsanté"];
+    R -> A [label="taux d'intérêt\n(BCE, marchés)"]; E -> R [label="dividendes aux\nnon-résidents", style=dashed]; }

@@ -1,0 +1,155 @@
+{
+ "version_modele": "0.6",
+ "debut_mesures": 2028,
+ "objectifs_et_contraintes": {
+  "A": {
+   "libelle": "Redressement budgétaire prioritaire",
+   "objectif": "{('dette', 2037): -1.0}",
+   "penalite": "0.5",
+   "contraintes": "[(('pib', 2030), '>=', -0.5), (('chomage', 2030), '<=', 0.3), (('pauvrete', 2037), '<=', 0.0), (('rdb_reel', 2030), '>=', -1.0)]"
+  },
+  "B": {
+   "libelle": "Croissance et réindustrialisation prioritaires",
+   "objectif": "{('pib', 2037): 1.0, ('industrie', 2037): 1.0}",
+   "penalite": "0.05",
+   "contraintes": "[(('dette', 2037), '<=', 0.0), (('solde', 2030), '>=', 0.0), (('pauvrete', 2037), '<=', 0.2)]"
+  },
+  "C": {
+   "libelle": "Redressement équilibré",
+   "objectif": "{('pib', 2037): 1.0, ('emploi_k', 2037): 0.005, ('pauvrete', 2037): -2.0, ('rdb_reel', 2037): 1.0}",
+   "penalite": "0.1",
+   "contraintes": "[(('dette', 2037), '<=', -5.0), (('solde', 2030), '>=', 0.5), (('pauvrete', 2037), '<=', 0.0), (('chomage', 2030), '<=', 0.2)]"
+  },
+  "D": {
+   "libelle": "Effort maximal sur la dette (plafonds relevés)",
+   "objectif": "{('dette', 2047): -1.0}",
+   "penalite": "0.5",
+   "plafonds": "(2.5, 4.0)",
+   "contraintes": "[(('pib', 2030), '>=', -1.5), (('pauvrete', 2037), '<=', 0.0)]"
+  }
+ },
+ "plafonds": {
+  "prelevements_pt_pib_2030": 1.5,
+  "economies_pt_pib_2030": 2.5
+ },
+ "leviers_exclus": [
+  "hausse de l'IS et des impôts de production",
+  "réindustrialisation (objectif, non instrument)",
+  "SMIC"
+ ],
+ "scenarios": {
+  "A": {
+   "libelle": "Scénario A — redressement budgétaire prioritaire",
+   "curseurs": {
+    "tva": 2.0,
+    "tva_reduite": 2.0,
+    "successions": 50.0,
+    "taxe_carbone": 22.7,
+    "cotisations_employeurs": 10.0,
+    "autres_depenses": 2.42,
+    "investissement_public": -10.0,
+    "prime_activite": 25.0
+   }
+  },
+  "B": {
+   "libelle": "Scénario B — croissance et réindustrialisation",
+   "curseurs": {
+    "tva": 2.0,
+    "tva_reduite": 1.04,
+    "successions": 50.0,
+    "cotisations_employeurs": 10.0,
+    "autres_depenses": 3.39,
+    "investissement_public": 30.0,
+    "assurance_chomage": -25.0,
+    "prime_activite": 10.61,
+    "temps_travail": 37.0,
+    "age_legal": 66.0
+   }
+  },
+  "C": {
+   "libelle": "Scénario C — redressement équilibré",
+   "curseurs": {
+    "tva": -0.9,
+    "csg_activite": -1.0,
+    "isf": 1.0,
+    "pfu": 15.0,
+    "successions": 50.0,
+    "cotisations_employeurs": 10.0,
+    "emploi_public": 50.0,
+    "investissement_public": -10.0,
+    "assurance_chomage": -25.0,
+    "rsa": 25.0,
+    "prime_activite": 25.0,
+    "allocations_familiales": 25.0,
+    "minimum_vieillesse": 25.0,
+    "age_legal": 66.0
+   }
+  },
+  "D": {
+   "libelle": "Scénario D — effort maximal sur la dette",
+   "curseurs": {
+    "tva": 2.0,
+    "tva_reduite": 2.0,
+    "csg_activite": 1.0,
+    "ir_t1": 13.0,
+    "isf": 1.0,
+    "pfu": 15.0,
+    "successions": 50.0,
+    "taxe_carbone": 53.78,
+    "cotisations_employeurs": 10.0,
+    "autres_depenses": -13.6,
+    "investissement_public": -10.0,
+    "indexation_pensions": -1.0,
+    "assurance_chomage": -25.0,
+    "rsa": 4.25,
+    "prime_activite": 25.0,
+    "allocations_familiales": 25.0,
+    "temps_travail": 37.0,
+    "droits_douane": 10.0
+   }
+  },
+  "R": {
+   "libelle": "Scénario R — programme recommandé",
+   "curseurs": {
+    "tva": 2.0,
+    "tva_reduite": 1.0,
+    "successions": 50.0,
+    "isf": 1.0,
+    "pfu": 15.0,
+    "autres_depenses": -10.0,
+    "indexation_pensions": -0.5,
+    "investissement_public": 10.0,
+    "prime_activite": 25.0,
+    "rsa": 25.0,
+    "minimum_vieillesse": 25.0,
+    "age_legal": 65.0
+   }
+  }
+ },
+ "essais_par_age": {
+  "A": {
+   "64": 11.64426298849401,
+   "62": 9.842625941042193,
+   "65": 10.441393707230027,
+   "66": 10.35303437986773
+  },
+  "B": {
+   "64": 0.6492719271288592,
+   "62": -1.4436774119958287,
+   "65": 1.3790451909489425,
+   "66": 1.494735604647163
+  },
+  "C": {
+   "64": 6.001061151117287,
+   "62": 0.9548052813150028,
+   "65": 7.634825775966365,
+   "66": 7.830666909291591
+  },
+  "D": {
+   "64": 87.85258912527244,
+   "62": 76.6273054855526,
+   "65": 87.85082301720095,
+   "66": 86.6287356427267
+  }
+ }
+}

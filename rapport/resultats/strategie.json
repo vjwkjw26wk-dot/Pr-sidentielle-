@@ -1,0 +1,655 @@
+{
+ "variables": [
+  {
+   "levier": "tva",
+   "sens": 1,
+   "borne": 2,
+   "source": "tva",
+   "extrapole": false
+  },
+  {
+   "levier": "tva",
+   "sens": -1,
+   "borne": 1,
+   "source": "tva",
+   "extrapole": true
+  },
+  {
+   "levier": "tva_reduite",
+   "sens": 1,
+   "borne": 2,
+   "source": "tva_reduite",
+   "extrapole": false
+  },
+  {
+   "levier": "csg_activite",
+   "sens": 1,
+   "borne": 1,
+   "source": "csg",
+   "extrapole": false
+  },
+  {
+   "levier": "csg_activite",
+   "sens": -1,
+   "borne": 1,
+   "source": "csg",
+   "extrapole": true
+  },
+  {
+   "levier": "ir_t1",
+   "sens": 1,
+   "borne": 2,
+   "source": "ir_bas",
+   "extrapole": false
+  },
+  {
+   "levier": "isf",
+   "sens": 1,
+   "borne": 1,
+   "source": "isf",
+   "extrapole": false
+  },
+  {
+   "levier": "pfu",
+   "sens": 1,
+   "borne": 15,
+   "source": "pfu",
+   "extrapole": false
+  },
+  {
+   "levier": "successions",
+   "sens": 1,
+   "borne": 50,
+   "source": "successions",
+   "extrapole": false
+  },
+  {
+   "levier": "taxe_carbone",
+   "sens": 1,
+   "borne": 100,
+   "source": "carbone",
+   "extrapole": false
+  },
+  {
+   "levier": "taux_is",
+   "sens": -1,
+   "borne": 5.800000000000001,
+   "source": "is_baisse",
+   "extrapole": false
+  },
+  {
+   "levier": "impots_production",
+   "sens": -1,
+   "borne": 15,
+   "source": "production",
+   "extrapole": true
+  },
+  {
+   "levier": "cotisations_employeurs",
+   "sens": 1,
+   "borne": 10,
+   "source": "cotisations",
+   "extrapole": false
+  },
+  {
+   "levier": "cotisations_employeurs",
+   "sens": -1,
+   "borne": 20,
+   "source": "cot_moins20",
+   "extrapole": false
+  },
+  {
+   "levier": "emploi_public",
+   "sens": 1,
+   "borne": 50,
+   "source": "emploi_public",
+   "extrapole": true
+  },
+  {
+   "levier": "emploi_public",
+   "sens": -1,
+   "borne": 200,
+   "source": "emploi_public",
+   "extrapole": false
+  },
+  {
+   "levier": "autres_depenses",
+   "sens": 1,
+   "borne": 10,
+   "source": "fonctionnement",
+   "extrapole": true
+  },
+  {
+   "levier": "autres_depenses",
+   "sens": -1,
+   "borne": 30,
+   "source": "fonctionnement",
+   "extrapole": false
+  },
+  {
+   "levier": "investissement_public",
+   "sens": 1,
+   "borne": 30,
+   "source": "invest_public30",
+   "extrapole": false
+  },
+  {
+   "levier": "investissement_public",
+   "sens": -1,
+   "borne": 10,
+   "source": "invest_public_moins",
+   "extrapole": false
+  },
+  {
+   "levier": "indexation_pensions",
+   "sens": -1,
+   "borne": 1,
+   "source": "indexation",
+   "extrapole": false
+  },
+  {
+   "levier": "assurance_chomage",
+   "sens": -1,
+   "borne": 25,
+   "source": "chomage",
+   "extrapole": false
+  },
+  {
+   "levier": "rsa",
+   "sens": 1,
+   "borne": 25,
+   "source": "rsa25",
+   "extrapole": false
+  },
+  {
+   "levier": "prime_activite",
+   "sens": 1,
+   "borne": 25,
+   "source": "ppa25",
+   "extrapole": false
+  },
+  {
+   "levier": "allocations_familiales",
+   "sens": 1,
+   "borne": 25,
+   "source": "af25",
+   "extrapole": false
+  },
+  {
+   "levier": "allocations_familiales",
+   "sens": -1,
+   "borne": 10,
+   "source": "af25",
+   "extrapole": true
+  },
+  {
+   "levier": "aides_logement",
+   "sens": -1,
+   "borne": 10,
+   "source": "apl_moins10",
+   "extrapole": false
+  },
+  {
+   "levier": "minimum_vieillesse",
+   "sens": 1,
+   "borne": 25,
+   "source": "aspa25",
+   "extrapole": false
+  },
+  {
+   "levier": "temps_travail",
+   "sens": 1,
+   "borne": 2,
+   "source": "temps37",
+   "extrapole": false
+  },
+  {
+   "levier": "droits_douane",
+   "sens": 1,
+   "borne": 10,
+   "source": "douanes10",
+   "extrapole": false
+  }
+ ],
+ "scenarios": {
+  "A": {
+   "libelle": "Redressement budgétaire prioritaire",
+   "faisable": true,
+   "age": 64,
+   "essais": {
+    "64": 11.64426298849401,
+    "62": 9.842625941042193,
+    "65": 10.441393707230027,
+    "66": 10.35303437986773
+   },
+   "curseurs": {
+    "tva": 2.0,
+    "tva_reduite": 2.0,
+    "successions": 50.0,
+    "taxe_carbone": 22.7,
+    "cotisations_employeurs": 10.0,
+    "autres_depenses": 2.42,
+    "investissement_public": -10.0,
+    "prime_activite": 25.0
+   },
+   "metamodele": {
+    "pib|2029": -0.43300555157002163,
+    "emploi_k|2029": -87.9068554789524,
+    "chomage|2029": 0.2616566612730727,
+    "solde|2029": 1.2787058343790192,
+    "dette|2029": -3.6738294587630485,
+    "ext|2029": 0.4339759230452167,
+    "rnb|2029": 0.7735179360809243,
+    "industrie|2029": -0.023462939444800473,
+    "rdb_reel|2029": -0.8873611789644855,
+    "inflation|2029": -0.2750854690250748,
+    "pib|2030": -0.429376879611163,
+    "emploi_k|2030": -101.11847484712047,
+    "chomage|2030": 0.3,
+    "solde|2030": 1.3468832800590766,
+    "dette|2030": -4.746277446915595,
+    "ext|2030": 0.4181521413570617,
+    "rnb|2030": 0.6339762814791159,
+    "industrie|2030": -0.022877732171418315,
+    "rdb_reel|2030": -1.0,
+    "inflation|2030": -0.09933173157582198,
+    "pib|2032": -0.32871246502459545,
+    "emploi_k|2032": -92.1111823892744,
+    "chomage|2032": 0.2717251048366755,
+    "solde|2032": 1.500790400214934,
+    "dette|2032": -7.129997989833811,
+    "ext|2032": 0.34095389103064144,
+    "rnb|2032": 0.44359169174721336,
+    "industrie|2032": -0.022941841203916218,
+    "rdb_reel|2032": -1.043588697876564,
+    "inflation|2032": -0.09762407591369499,
+    "pib|2037": -0.19124243933808727,
+    "emploi_k|2037": -33.5649794922669,
+    "chomage|2037": 0.09857965874499516,
+    "solde|2037": 2.1380696001750668,
+    "dette|2037": -14.878667728253031,
+    "ext|2037": 0.24953349227003763,
+    "rnb|2037": 0.20399031177624605,
+    "industrie|2037": -0.02028185895311075,
+    "rdb_reel|2037": -1.0667888243636425,
+    "inflation|2037": -0.0330286853295667,
+    "pib|2047": -0.06691336404408459,
+    "emploi_k|2047": 8.799112714656456,
+    "chomage|2047": -0.026184361397499613,
+    "solde|2047": 5.257865784435113,
+    "dette|2047": -44.68926591435847,
+    "ext|2047": 0.09783281294473034,
+    "rnb|2047": 0.11697167600743108,
+    "industrie|2047": -0.08333670657949682,
+    "rdb_reel|2047": -1.002957797786019,
+    "inflation|2047": 0.0006877238195920742,
+    "pauvrete|2029": -0.23352493561489696,
+    "mediane|2029": -0.7684195486462682,
+    "pauvrete|2030": -0.23352493561489696,
+    "mediane|2030": -0.7684195486462682,
+    "pauvrete|2032": -0.23352493561489696,
+    "mediane|2032": -0.7684195486462682,
+    "pauvrete|2037": -0.23352493561489696,
+    "mediane|2037": -0.7684195486462682,
+    "pauvrete|2047": -0.23352493561489696,
+    "mediane|2047": -0.7684195486462682
+   },
+   "objectif": {
+    "dette|2037": -1.0
+   },
+   "contraintes": [
+    [
+     "pib|2030",
+     ">=",
+     -0.5
+    ],
+    [
+     "chomage|2030",
+     "<=",
+     0.3
+    ],
+    [
+     "pauvrete|2037",
+     "<=",
+     0.0
+    ],
+    [
+     "rdb_reel|2030",
+     ">=",
+     -1.0
+    ]
+   ]
+  },
+  "B": {
+   "libelle": "Croissance et réindustrialisation prioritaires",
+   "faisable": true,
+   "age": 66,
+   "essais": {
+    "64": 0.6492719271288592,
+    "62": -1.4436774119958287,
+    "65": 1.3790451909489425,
+    "66": 1.494735604647163
+   },
+   "curseurs": {
+    "tva": 2.0,
+    "tva_reduite": 1.04,
+    "successions": 50.0,
+    "cotisations_employeurs": 10.0,
+    "autres_depenses": 3.39,
+    "investissement_public": 30.0,
+    "assurance_chomage": -25.0,
+    "prime_activite": 10.61,
+    "temps_travail": 37.0,
+    "age_legal": 66
+   },
+   "metamodele": {
+    "pib|2029": 0.5259744590081447,
+    "emploi_k|2029": -399.67166526305283,
+    "chomage|2029": 1.410464561047609,
+    "solde|2029": -0.0433313956781273,
+    "dette|2029": 0.05541556257133373,
+    "ext|2029": -0.9178765774776457,
+    "rnb|2029": -0.266171338949156,
+    "industrie|2029": -0.0715233831957102,
+    "rdb_reel|2029": -1.3158298706735507,
+    "inflation|2029": -0.9428087780713267,
+    "pib|2030": 0.9263276748483938,
+    "emploi_k|2030": -355.8606002714434,
+    "chomage|2030": 1.3663112541351938,
+    "solde|2030": 1.6653345369377348e-16,
+    "dette|2030": 0.5558756314373716,
+    "ext|2030": -1.2712068931400538,
+    "rnb|2030": -0.6668608356581139,
+    "industrie|2030": -0.0698547483347559,
+    "rdb_reel|2030": -1.4128115369124026,
+    "inflation|2030": -0.5633461505246108,
+    "pib|2032": 1.2251142501057593,
+    "emploi_k|2032": -141.21195139432027,
+    "chomage|2032": 0.7238181135064092,
+    "solde|2032": 0.2555585302637301,
+    "dette|2032": 0.8867496556512109,
+    "ext|2032": -1.554001533909494,
+    "rnb|2032": -1.200401490011839,
+    "industrie|2032": -0.016940199836942393,
+    "rdb_reel|2032": -1.710670755864918,
+    "inflation|2032": -0.21868057967079527,
+    "pib|2037": 1.786535214306097,
+    "emploi_k|2037": 301.1404288237021,
+    "chomage|2037": 0.7873955005401287,
+    "solde|2037": 0.44470616814025243,
+    "dette|2037": 8.881784197001252e-16,
+    "ext|2037": -2.231928481533897,
+    "rnb|2037": -1.7739012181790597,
+    "industrie|2037": 0.07225072980999225,
+    "rdb_reel|2037": -1.463622220241795,
+    "inflation|2037": -0.155736938924039,
+    "pib|2047": 2.7658055596507114,
+    "emploi_k|2047": 771.101268041045,
+    "chomage|2047": 0.7684929623037773,
+    "solde|2047": 0.5199674266893437,
+    "dette|2047": -0.7718884251370746,
+    "ext|2047": -4.361840694051724,
+    "rnb|2047": -4.0315988237174105,
+    "industrie|2047": 0.24099648236250565,
+    "rdb_reel|2047": -2.369845697016967,
+    "inflation|2047": -0.11164790172332995,
+    "pauvrete|2029": 0.20000000000000007,
+    "mediane|2029": -1.0318259859237005,
+    "pauvrete|2030": 0.20000000000000007,
+    "mediane|2030": -1.0318259859237005,
+    "pauvrete|2032": 0.20000000000000007,
+    "mediane|2032": -1.0318259859237005,
+    "pauvrete|2037": 0.20000000000000007,
+    "mediane|2037": -1.0318259859237005,
+    "pauvrete|2047": 0.20000000000000007,
+    "mediane|2047": -1.0318259859237005
+   },
+   "objectif": {
+    "pib|2037": 1.0,
+    "industrie|2037": 1.0
+   },
+   "contraintes": [
+    [
+     "dette|2037",
+     "<=",
+     0.0
+    ],
+    [
+     "solde|2030",
+     ">=",
+     0.0
+    ],
+    [
+     "pauvrete|2037",
+     "<=",
+     0.2
+    ]
+   ]
+  },
+  "C": {
+   "libelle": "Redressement équilibré",
+   "faisable": true,
+   "age": 66,
+   "essais": {
+    "64": 6.001061151117287,
+    "62": 0.9548052813150028,
+    "65": 7.634825775966365,
+    "66": 7.830666909291591
+   },
+   "curseurs": {
+    "tva": -0.9,
+    "csg_activite": -1.0,
+    "isf": 1.0,
+    "pfu": 15.0,
+    "successions": 50.0,
+    "cotisations_employeurs": 10.0,
+    "emploi_public": 50.0,
+    "investissement_public": -10.0,
+    "assurance_chomage": -25.0,
+    "rsa": 25.0,
+    "prime_activite": 25.0,
+    "allocations_familiales": 25.0,
+    "minimum_vieillesse": 25.0,
+    "age_legal": 66
+   },
+   "metamodele": {
+    "pib|2029": 0.30627178697552015,
+    "emploi_k|2029": 75.06088247850485,
+    "chomage|2029": -0.002587160151224621,
+    "solde|2029": 0.45864693885792795,
+    "dette|2029": -1.532218798661338,
+    "ext|2029": -0.05435374569611584,
+    "rnb|2029": 0.582532643838181,
+    "industrie|2029": -0.02195203352461662,
+    "rdb_reel|2029": 0.589382892786499,
+    "inflation|2029": -0.09943937582965784,
+    "pib|2030": 0.3552105252565931,
+    "emploi_k|2030": 103.4481259492458,
+    "chomage|2030": 0.0036263632235178367,
+    "solde|2030": 0.5,
+    "dette|2030": -1.966558888648751,
+    "ext|2030": -0.07247183305532467,
+    "rnb|2030": 0.5639464800713233,
+    "industrie|2030": -0.020591910674983487,
+    "rdb_reel|2030": 0.5732778584418499,
+    "inflation|2030": -0.044214224757931214,
+    "pib|2032": 0.4066104388032797,
+    "emploi_k|2032": 149.99690511408522,
+    "chomage|2032": -0.13523889793988964,
+    "solde|2032": 0.694990352433754,
+    "dette|2032": -2.955787891518332,
+    "ext|2032": -0.09485823277929839,
+    "rnb|2032": 0.4671229801499488,
+    "industrie|2032": -0.016297800852276684,
+    "rdb_reel|2032": 0.3205995935280912,
+    "inflation|2032": -0.04647624092888708,
+    "pib|2037": 0.997540978096218,
+    "emploi_k|2037": 322.8992580067143,
+    "chomage|2037": 0.7234902639513155,
+    "solde|2037": 0.9417570856282009,
+    "dette|2037": -5.658383043115242,
+    "ext|2037": -0.675966607868991,
+    "rnb|2037": -0.0026382216800848735,
+    "industrie|2037": -0.0038650331837620927,
+    "rdb_reel|2037": 0.4804970020917543,
+    "inflation|2037": -0.20855418488719152,
+    "pib|2047": 2.2781655247026924,
+    "emploi_k|2047": 777.206041032032,
+    "chomage|2047": 0.7503264053531876,
+    "solde|2047": 2.205151136368791,
+    "dette|2047": -13.993928558494389,
+    "ext|2047": -2.708523390133604,
+    "rnb|2047": -2.593064501301231,
+    "industrie|2047": 0.09645030422123779,
+    "rdb_reel|2047": -0.42158719084227536,
+    "inflation|2047": -0.15831712287991417,
+    "pauvrete|2029": -3.0138893427018374,
+    "mediane|2029": 4.156606908570286,
+    "pauvrete|2030": -3.0138893427018374,
+    "mediane|2030": 4.156606908570286,
+    "pauvrete|2032": -3.0138893427018374,
+    "mediane|2032": 4.156606908570286,
+    "pauvrete|2037": -3.0138893427018374,
+    "mediane|2037": 4.156606908570286,
+    "pauvrete|2047": -3.0138893427018374,
+    "mediane|2047": 4.156606908570286
+   },
+   "objectif": {
+    "pib|2037": 1.0,
+    "emploi_k|2037": 0.005,
+    "pauvrete|2037": -2.0,
+    "rdb_reel|2037": 1.0
+   },
+   "contraintes": [
+    [
+     "dette|2037",
+     "<=",
+     -5.0
+    ],
+    [
+     "solde|2030",
+     ">=",
+     0.5
+    ],
+    [
+     "pauvrete|2037",
+     "<=",
+     0.0
+    ],
+    [
+     "chomage|2030",
+     "<=",
+     0.2
+    ]
+   ]
+  },
+  "D": {
+   "libelle": "Effort maximal sur la dette (plafonds relevés)",
+   "faisable": true,
+   "age": 64,
+   "essais": {
+    "64": 87.85258912527244,
+    "62": 76.6273054855526,
+    "65": 87.85082301720095,
+    "66": 86.6287356427267
+   },
+   "curseurs": {
+    "tva": 2.0,
+    "tva_reduite": 2.0,
+    "csg_activite": 1.0,
+    "ir_t1": 13.0,
+    "isf": 1.0,
+    "pfu": 15.0,
+    "successions": 50.0,
+    "taxe_carbone": 53.78,
+    "cotisations_employeurs": 10.0,
+    "autres_depenses": -13.6,
+    "investissement_public": -10.0,
+    "indexation_pensions": -1.0,
+    "assurance_chomage": -25.0,
+    "rsa": 4.25,
+    "prime_activite": 25.0,
+    "allocations_familiales": 25.0,
+    "temps_travail": 37.0,
+    "droits_douane": 10.0
+   },
+   "metamodele": {
+    "pib|2029": -1.9961688994932434,
+    "emploi_k|2029": -891.4450340380706,
+    "chomage|2029": 2.6534054715528392,
+    "solde|2029": 2.715941221727286,
+    "dette|2029": -3.550112207402515,
+    "ext|2029": -0.4343990090067966,
+    "rnb|2029": -2.0874115066354975,
+    "industrie|2029": 0.06099921177818346,
+    "rdb_reel|2029": -5.423582583935877,
+    "inflation|2029": -1.2488399079649382,
+    "pib|2030": -1.5,
+    "emploi_k|2030": -879.0915486056413,
+    "chomage|2030": 2.608103662366436,
+    "solde|2030": 2.8926003022014086,
+    "dette|2030": -5.259544063022303,
+    "ext|2030": -1.0388103707798202,
+    "rnb|2030": -2.9569375131096027,
+    "industrie|2030": 0.08307090674904691,
+    "rdb_reel|2030": -5.968338147373627,
+    "inflation|2030": -0.7950897414645673,
+    "pib|2032": -0.8907088783193673,
+    "emploi_k|2032": -629.3375893628954,
+    "chomage|2032": 1.8565261894543141,
+    "solde|2032": 3.451860799729068,
+    "dette|2032": -9.93954286492575,
+    "ext|2032": -1.688219087213966,
+    "rnb|2032": -4.165629174099928,
+    "industrie|2032": 0.1381394672531874,
+    "rdb_reel|2032": -6.54898486151887,
+    "inflation|2032": -0.48214756594211006,
+    "pib|2037": -0.2443164166118308,
+    "emploi_k|2037": -95.2469600016085,
+    "chomage|2037": 0.2797383748028217,
+    "solde|2037": 4.9415941838648,
+    "dette|2037": -27.981994451041842,
+    "ext|2037": -2.416581007737416,
+    "rnb|2037": -5.216351878186037,
+    "industrie|2037": 0.16209069313936625,
+    "rdb_reel|2037": -6.398472774695707,
+    "inflation|2037": -0.04541777540753711,
+    "pib|2047": 0.13972211194391226,
+    "emploi_k|2047": 74.33386433914634,
+    "chomage|2047": -0.22120239063271518,
+    "solde|2047": 11.564819419231576,
+    "dette|2047": -95.93316934636948,
+    "ext|2047": -3.337933160886978,
+    "rnb|2047": -5.271482959945807,
+    "industrie|2047": -0.0778759338193669,
+    "rdb_reel|2047": -6.211407441498672,
+    "inflation|2047": 0.10853373548912615,
+    "pauvrete|2029": -2.220446049250313e-16,
+    "mediane|2029": -2.850262096442152,
+    "pauvrete|2030": -2.220446049250313e-16,
+    "mediane|2030": -2.850262096442152,
+    "pauvrete|2032": -2.220446049250313e-16,
+    "mediane|2032": -2.850262096442152,
+    "pauvrete|2037": -2.220446049250313e-16,
+    "mediane|2037": -2.850262096442152,
+    "pauvrete|2047": -2.220446049250313e-16,
+    "mediane|2047": -2.850262096442152
+   },
+   "objectif": {
+    "dette|2047": -1.0
+   },
+   "contraintes": [
+    [
+     "pib|2030",
+     ">=",
+     -1.5
+    ],
+    [
+     "pauvrete|2037",
+     "<=",
+     0.0
+    ]
+   ]
+  }
+ }
+}

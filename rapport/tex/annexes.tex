@@ -1,0 +1,132 @@
+\chapter{Registre des paramètres}
+\label{ann:registre}
+
+Le registre complet (46 paramètres) est fourni dans \code{outputs/registre\_parametres.csv}, avec sa source, sa méthode,
+sa période d'estimation et les mécanismes qui en dépendent. Catégories : E estimé sur données françaises, C calibré sur
+données françaises, L transposé de la littérature, H hypothèse conventionnelle. La plage est celle utilisée dans les
+analyses de sensibilité ($\pm$ 2 écarts-types pour les coefficients estimés).
+
+\begin{scriptsize}
+\begin{longtable}{@{}p{5.6cm}rcrlp{3.6cm}@{}}
+\toprule
+Paramètre & Valeur & Cat. & $t$ & Confiance & Plage \\
+\midrule\endfirsthead
+\toprule Paramètre & Valeur & Cat. & $t$ & Confiance & Plage \\ \midrule\endhead
+\bottomrule\endfoot
+\input{../tableaux/registre}
+\end{longtable}
+\end{scriptsize}
+
+\chapter{Glossaire}
+\label{ann:glossaire}
+
+\begin{description}[style=nextline,leftmargin=1em,font=\normalfont\bfseries\color{bleu}]
+\small
+\item[Ajustement stock-flux] Écart entre la variation de la dette publique et le déficit, dû aux opérations financières
+(prêts, cessions, trésorerie) et aux effets de valorisation. Nul en projection dans le modèle.
+\item[Calage, calibration] Fixation de la valeur d'un paramètre ou d'un terme pour que le modèle reproduise des
+grandeurs observées, sans estimation statistique du paramètre lui-même.
+\item[Chômage structurel] Taux de chômage compatible avec une inflation stable ; dans le modèle, 7,5~\% (hypothèse), cible
+de la fermeture d'offre.
+\item[Coefficient technique] Quantité d'un produit nécessaire pour produire une unité d'un autre produit (tableau
+entrées-sorties).
+\item[Contenu en importations] Part de la valeur d'une demande finale qui correspond, directement ou indirectement, à des
+importations.
+\item[Cotisations sociales] Prélèvements sur les salaires (part salariale et part employeur) qui financent la protection
+sociale ; les allègements généraux en réduisent le montant sur les bas salaires.
+\item[Coût d'usage du capital] Coût annuel de détention d'une unité de capital : taux d'intérêt plus dépréciation, corrigé de
+l'impôt sur les sociétés, $(r+\delta)/(1-\tau)$.
+\item[Coût salarial unitaire (CSU)] Coût du travail par unité produite : salaire par tête $\times$ emploi / production.
+\item[Décile] Chacun des dix groupes de même effectif obtenus en classant la population selon son niveau de vie ; D1 et D9
+désignent les seuils du premier et du neuvième décile.
+\item[Écart-type] Mesure de la précision d'un coefficient estimé ; le rapport $t$ (coefficient / écart-type) supérieur à 2
+indique en général un coefficient significativement différent de zéro.
+\item[Effet boule de neige] Hausse spontanée du ratio de dette quand le taux d'intérêt apparent dépasse la croissance du
+PIB nominal : $\Delta d \approx (i-g)\,d - s$, avec $s$ le solde primaire.
+\item[Élasticité] Variation en pourcentage d'une grandeur provoquée par une variation de 1~\% d'une autre.
+\item[Élasticité de substitution capital-travail ($\sigma$)] Variation en \% du rapport capital / travail quand leur prix
+relatif varie de 1~\%.
+\item[Équation à correction d'erreur (MCE)] Équation qui combine une réaction de court terme et un rappel progressif vers une
+relation d'équilibre de long terme (encadré 2.1).
+\item[Fermeture d'offre] Mécanisme du modèle qui ramène progressivement le chômage vers son niveau structurel par un
+supplément de demande ; résume la politique monétaire, le crédit et la compétitivité de moyen terme. Hypothèse $\rho = 0{,}15$.
+\item[Indice de Gini] Mesure de l'inégalité d'une distribution, de 0 (égalité parfaite) à 1 (une personne détient tout).
+\item[Leontief (modèle de)] Modèle entrées-sorties qui calcule la production nécessaire pour satisfaire une demande
+finale, compte tenu des achats entre branches : $x = (I-A)^{-1} f$.
+\item[Loi d'Okun] Relation entre l'écart de production et le chômage : environ 1,5 point de PIB par point de chômage.
+\item[Méta-modèle] Approximation d'un modèle complexe par une fonction simple (ici linéaire) estimée sur ses simulations,
+utilisée pour l'optimisation.
+\item[Microsimulation] Méthode qui applique la législation à un échantillon de ménages réels pour calculer impôts et
+prestations ménage par ménage.
+\item[Multiplicateur] Variation du PIB provoquée par une variation d'un euro de dépense publique ou de recette.
+\item[Niveau de vie] Revenu disponible du ménage divisé par le nombre d'unités de consommation (1 pour le premier adulte,
+0,5 pour les autres personnes de 14 ans ou plus, 0,3 pour les enfants de moins de 14 ans).
+\item[Pauvreté monétaire] Situation des personnes dont le niveau de vie est inférieur à 60~\% du niveau de vie médian.
+\item[PIB nominal, PIB en volume] Le PIB nominal (en valeur) est mesuré aux prix courants ; le PIB en volume élimine
+l'effet des prix.
+\item[Prime de risque] Supplément de taux d'intérêt exigé par les prêteurs quand la dette augmente ; hypothèse de 3 points
+de base par point de dette.
+\item[Programme linéaire] Problème d'optimisation dont l'objectif et les contraintes sont linéaires ; résolu ici par la
+méthode HiGHS.
+\item[Propension marginale à consommer] Part d'un euro de revenu supplémentaire consacrée à la consommation.
+\item[Revenu disponible brut (RDB)] Revenus des ménages après impôts et cotisations et y compris prestations ; le
+\emph{pouvoir d'achat du RDB} est le RDB divisé par le prix de la consommation.
+\item[Revenu national brut (RNB)] PIB plus revenus primaires nets reçus du reste du monde (dividendes, intérêts, salaires
+transfrontaliers).
+\item[Seuil fixe (pauvreté au)] Taux de pauvreté calculé après réforme avec le seuil de pauvreté d'avant réforme, pour isoler
+l'effet de la mesure.
+\item[Solde public, solde primaire] Différence entre recettes et dépenses publiques ; le solde primaire exclut la charge
+d'intérêts.
+\item[Taux marginal effectif] Part d'une hausse de revenu brut reprise par les impôts, les cotisations et la baisse des
+prestations sous condition de ressources.
+\item[Taux d'utilisation des capacités (TUC)] Rapport entre la production et la production maximale permise par les
+équipements.
+\item[Termes de rappel ancrés] Dans la référence, l'écart à l'équilibre constaté fin 2025 est traité comme durable pour
+éviter un rattrapage artificiel après 2025.
+\item[Variante] Simulation d'une mesure comparée à la référence ; les résultats sont des écarts.
+\end{description}
+
+\chapter{Reproductibilité}
+\label{ann:repro}
+
+\paragraph{Code et données.} Dépôt du projet (dossier \code{rapport/}) :
+\begin{itemize}
+\item \code{rapport/simulations.py} : les 60 expériences des chapitres~\ref{ch:experiences} et~\ref{ch:complementaires}
+(environ 90 minutes sur deux processeurs) ; résultats \code{rapport/resultats/experiences\_*.json} ;
+\item \code{rapport/seuils\_salaires.py} : cas types OpenFisca ; \code{rapport/resultats/seuils\_salaires.json} ;
+\item \code{rapport/strategie.py} : méta-modèle et programmes linéaires ; \code{rapport/resultats/strategie.json} ;
+\item \code{rapport/verification.py} : vérification des scénarios avec le modèle complet, mise en œuvre partielle et
+tests de robustesse ; \code{rapport/resultats/verification\_\{A,B,C,D,R\}.json} ;
+\item \code{rapport/figures.py} : toutes les figures (\code{rapport/figures/}) et tous les tableaux générés
+(\code{rapport/tableaux/}) ;
+\item \code{rapport/tex/} : sources LaTeX de ce rapport (compilation : \code{xelatex rapport.tex}, deux passes) ;
+\item \code{rapport/livrables/} : synthèse des mesures et de leurs impacts (\code{mesures\_impacts.csv},
+\code{.xlsx}), paramètres des scénarios (\code{scenarios\_parametres.json}), résultats détaillés (\code{resultats\_detailles.csv}).
+\end{itemize}
+
+\paragraph{Version.} Modèle 0.6 (dépôt git du projet). La version 0.5 reste reproductible (commit \code{6a84ecd}).
+Les données sont téléchargées par script depuis les sources ouvertes et mises en cache ; le registre des téléchargements
+(\code{outputs/registre\_telechargements.json}) conserve les adresses et les dates.
+
+\paragraph{Données utilisées.}
+\begin{small}
+\begin{tabularx}{\linewidth}{@{}p{4.2cm}L@{}}
+\toprule
+Source & Séries \\
+\midrule
+Insee & Comptes nationaux annuels (base 2020, mai 2026), comptes des administrations publiques, enquête Emploi (chômage BIT),
+projections de population 2026, recensement 2022 (fichier détail Individus), indices de prix, enquête de conjoncture
+(taux d'utilisation des capacités) \\
+Eurostat & Tableaux entrées-sorties (\code{naio\_10\_cp1700}, \code{naio\_10\_pyp1700}, \code{naio\_10\_cp15}), comptes
+de branches (\code{nama\_10\_a64}, \code{nama\_10\_a64\_e}, \code{nama\_10\_a64\_p5}, \code{nama\_10\_nfa\_st}), comptes de
+secteurs (\code{nasa\_10\_nf\_tr}), finances publiques (\code{gov\_10a\_main}, \code{gov\_10dd\_edpt1}), taux longs
+(\code{irt\_lt\_mcby\_a}), activité (\code{lfsa\_argan}), pensions (\code{spr\_exp\_pens}, \code{spr\_pns\_ben}) \\
+DGFiP & IRCOM (revenus 2024), statistiques nationales par case de déclaration 2042 \\
+Drees, Cnaf & Pensions moyennes, montants et effectifs des prestations \\
+Banque de France & Détention des actions par les non-résidents, balance des paiements \\
+FMI & Perspectives de l'économie mondiale (octobre 2026), API DataMapper \\
+COR & Rapport annuel (juin 2026) : hypothèses de productivité et de chômage \\
+OpenFisca-France & Législation socio-fiscale (version 177) \\
+\bottomrule
+\end{tabularx}
+\end{small}

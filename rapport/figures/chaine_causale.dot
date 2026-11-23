@@ -1,0 +1,6 @@
+digraph G { rankdir=TB; node [shape=box, style="rounded,filled", fillcolor="#eef3f8", fontname="Helvetica", fontsize=9]; edge [color="#555555"];
+    a [label="Hausse de la TVA (+1 point)", fillcolor="#fde9d9"]; b [label="Prix à la consommation +0,4 %"]; c [label="Revenu réel des ménages −"];
+    d [label="Consommation −"]; e [label="Production nationale −\n(contenu importé : une partie de la baisse\nporte sur les importations)"]; f [label="Emploi −  →  chômage +"];
+    g [label="Salaires indexés sur les prix (+)\n/ courbe de Phillips (−)"]; h [label="Recettes : TVA + ; IR, cotisations −"];
+    i [label="Solde public + (effet net)"]; j [label="Dette − ; intérêts −"]; k [label="Fermeture d'offre : la politique monétaire\net le crédit ramènent le chômage\nvers son niveau structurel"];
+    a -> b -> c -> d -> e -> f; b -> g -> c; f -> g; e -> h; a -> h; h -> i -> j; f -> k -> e; }

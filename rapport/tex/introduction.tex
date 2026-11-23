@@ -1,0 +1,79 @@
+\chapter*{Avant-propos et mode d'emploi}
+\addcontentsline{toc}{chapter}{Avant-propos et mode d'emploi}
+\markboth{Avant-propos}{Avant-propos}
+
+Ce rapport poursuit trois objectifs : \textbf{documenter} intégralement le modèle économique et social de la France
+construit dans le projet « Présidentielle » ; l'\textbf{utiliser} pour comprendre, par des expériences chiffrées, comment
+les politiques publiques se propagent dans l'économie et la société ; en déduire des \textbf{stratégies de redressement}
+et en mesurer les arbitrages. Il s'adresse à deux lecteurs à la fois : le lecteur sans formation économique, pour qui
+des encadrés pédagogiques et un glossaire (annexe~\ref{ann:glossaire}) expliquent les notions ; l'économiste, qui
+trouvera les équations telles qu'elles sont codées, les coefficients estimés avec leurs écarts-types, les sources et
+les tests, de quoi critiquer, vérifier et reproduire chaque résultat.
+
+\paragraph{Ce que ce rapport n'est pas.} Ce n'est ni une prévision, ni un programme politique. Toutes les simulations
+comparent deux avenirs hypothétiques (avec et sans une mesure) et dépendent d'hypothèses exposées à chaque étape. Le
+modèle est un outil de raisonnement chiffré : il rend explicites des chaînes de causalité et en donne des ordres de
+grandeur. Il ne démontre pas qu'une mesure « marche » : il montre ce qu'elle produit \emph{si} les comportements du passé
+restent valables et \emph{si} les hypothèses retenues sont justes.
+
+\paragraph{Règles suivies.}
+\begin{itemize}
+\item Toutes les données sont ouvertes ; les sources sont citées au niveau des affirmations.
+\item Chaque paramètre a un niveau de preuve (relation comptable, donnée observée, estimé, calibré, transposé de la
+littérature, hypothèse) ; chaque résultat un degré de robustesse (\fiab{robuste}, \fiab{plutôt robuste}, \fiab{fragile},
+\fiab{non établi}).
+\item Une corrélation passée n'est jamais présentée comme un effet causal établi : les coefficients estimés sont des
+régularités historiques, dont la validité pour des réformes de grande ampleur n'est pas garantie.
+\item Les résultats du modèle (parties I à III) sont séparés des recommandations (partie IV), elles-mêmes conditionnelles
+aux choix de pondération entre objectifs, qui sont des choix politiques.
+\item Toutes les mesures passent par les mêmes équations, quelle que soit leur origine politique.
+\item Tous les chiffres proviennent de simulations réellement exécutées avec le code du dépôt ; les fichiers de résultats
+sont fournis.
+\end{itemize}
+
+\paragraph{Plan.} La \textbf{partie I} décrit l'architecture du modèle (chapitre 1), chacun de ses sous-modèles avec ses
+équations, sa calibration et ses limites (chapitre 2), puis en fait l'audit (chapitre 3). La \textbf{partie II} présente
+la situation de référence comparée aux statistiques (chapitre 4), huit expériences qui isolent les mécanismes
+(chapitre 5) et des expériences complémentaires sur les interactions (chapitre 6). La \textbf{partie III} recherche des
+programmes de redressement par optimisation et les soumet à des tests de robustesse (chapitre 7). La \textbf{partie IV}
+répond aux huit questions de la mission et propose un programme hiérarchisé (chapitre 8).
+
+\section*{Résumé des principaux enseignements}
+
+\begin{enumerate}
+\item \textbf{La trajectoire « sans mesure » n'est pas soutenable.} Avec un taux d'intérêt de marché de 4,9~\% et une
+croissance faible (1,1 à 1,2~\% par an jusqu'en 2032, moins ensuite), le déficit public passerait de 5,1~\% du PIB en 2025 à
+9~\% en 2032 et la dette de 116 à 142~\% du PIB. La charge d'intérêts en est le premier moteur (de 2,5 à 5,1 points de PIB),
+devant le vieillissement. \fiab{robuste} pour le sens, \fiab{fragile} pour les niveaux après 2035.
+\item \textbf{Toute consolidation coûte de l'activité à court terme, mais pas autant selon l'instrument.} Par point de
+déficit réduit, une économie sur la production publique (fonctionnement, emplois) coûte environ 2~\% de PIB la première
+année ; une hausse de TVA, une économie sur les transferts ou une hausse d'impôt sur le patrimoine, 0,3 à 0,7~\%. Les
+effets sur l'activité s'estompent en cinq à dix ans ; les gains sur la dette s'accumulent. \fiab{plutôt robuste}.
+\item \textbf{Une hausse d'impôt rapporte d'un quart à un tiers de moins que son rendement statique} la première année,
+à cause de l'activité perdue ; aucune hausse d'impôt testée ne réduit les recettes, sauf la tranche supérieure de l'IR si
+les contribuables aisés réagissent fortement. \fiab{robuste} pour le signe.
+\item \textbf{Les mesures qui réduisent le plus la pauvreté par euro sont des prestations ciblées} (prime d'activité, RSA,
+minimum vieillesse). Elles soutiennent l'activité à court terme. Les impôts sur la consommation (TVA, taxe carbone) sont
+ceux qui pèsent le plus sur les ménages modestes. \fiab{plutôt robuste} (effets statiques).
+\item \textbf{Une hausse générale des salaires ne crée ni ne détruit beaucoup d'activité} : elle redistribue vers les
+salariés en emploi, au détriment des revenus fixes et, à moyen terme, de l'emploi. Elle n'augmente pas la pauvreté par
+effet de seuil (le revenu disponible croît toujours avec le salaire), mais les taux marginaux effectifs atteignent 55 à
+82~\% entre 1 et 2 SMIC. \fiab{plutôt robuste}.
+\item \textbf{Seul l'investissement public a, parmi les dépenses, un effet durable sur la production} dans le modèle ;
+le report de l'âge de départ est le levier de production le plus puissant à long terme, mais il augmente d'abord le
+chômage et ses effets dépendent d'une hypothèse de bouclage non estimée. \fiab{fragile}.
+\item \textbf{Les mesures interagissent} : relocalisation industrielle et droits de douane se neutralisent (la riposte et
+la hausse des coûts annulent le bénéfice), alors que l'investissement public et le report de l'âge se complètent.
+\item \textbf{Aucun programme testé ne stabilise la dette si les taux restent proches de 5~\%.} L'effort nécessaire
+(environ 6 points de PIB) dépasse ce que les leviers disponibles peuvent apporter sans récession majeure : un effort
+maximal (scénario D) coûte deux années de récession et 6~\% de pouvoir d'achat durablement. La soutenabilité dépend
+d'abord des taux d'intérêt et de la croissance.
+\item \textbf{Le programme recommandé} (chapitre~\ref{ch:synthese}) combine une consolidation par les instruments les
+moins coûteux en activité, une protection ciblée des ménages modestes, l'investissement public et un report progressif
+de l'âge de départ à 65 ans. Il réduit le déficit, la pauvreté et la dette par rapport à la référence et augmente la
+production à long terme, sans la stabiliser à lui seul : c'est un socle, pas une solution complète.
+\item \textbf{Les principales faiblesses du modèle} sont l'absence d'estimation du bouclage de moyen terme, une
+représentation de l'offre (productivité, démographie) qui donne des résultats paradoxaux pour les chocs d'offre,
+l'absence de bilans financiers et d'anticipations, des dépenses publiques indistinctes, et une microsimulation statique
+qui représente mal le haut de la distribution (chapitre~\ref{ch:audit}).
+\end{enumerate}

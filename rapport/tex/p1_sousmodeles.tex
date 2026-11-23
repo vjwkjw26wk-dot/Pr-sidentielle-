@@ -1,0 +1,587 @@
+\chapter{Documentation des sous-modèles}
+\label{ch:sousmodeles}
+
+Ce chapitre documente chaque mécanisme du modèle selon une structure fixe : \textbf{A} ce que le sous-modèle
+représente ; \textbf{B} les variables ; \textbf{C} les hypothèses ; \textbf{D} les équations, telles qu'elles sont
+codées ; \textbf{E} la calibration ; \textbf{F} les limites. Les équations reprennent les notations du code
+(fichiers \code{src/m7\_equations.py} et \code{src/m8\_modele.py}). Les coefficients sont ceux de la version 0.6 ;
+les écarts-types figurent entre parenthèses. Conventions : $\ln$ est le logarithme népérien ; $\Delta \ln X_t =
+\ln X_t - \ln X_{t-1}$ est, à peu de chose près, le taux de croissance de $X$ ; l'indice $b$ désigne une branche,
+$t$ une année, $B = 2022$ l'année de base.
+
+\begin{encadre}{Encadré 2.1 — Lire une équation « à correction d'erreur »}
+La plupart des équations de comportement ont la même forme :
+\[
+\Delta \ln Y_t = \underbrace{a\,\Delta \ln X_t}_{\text{réaction immédiate}}
+\;+\; \underbrace{\lambda\,\bigl(\ln Y_{t-1} - \ln Y^{*}_{t-1}\bigr)}_{\text{rappel vers l'équilibre}} \;+\; c ,
+\qquad \lambda < 0 .
+\]
+Le premier terme dit comment $Y$ réagit \emph{la première année} à une variation de $X$ ; le second ramène
+progressivement $Y$ vers sa valeur d'équilibre $Y^{*}$ (par exemple, la consommation vers une part stable du revenu).
+Si $\lambda = -0{,}22$, l'écart à l'équilibre se réduit de 22~\% chaque année : il en reste la moitié au bout de
+trois ans environ ($0{,}78^3 \approx 0{,}47$). Ce type d'équation, dit « à correction d'erreur » (MCE), est la forme
+standard des modèles macro-économétriques depuis les travaux d'Engle et Granger (1987).
+\end{encadre}
+
+\section{Démographie et population active (M1, M9)}
+\label{sec:m1}
+
+\paragraph{A. Objet.} La démographie fixe deux grandeurs décisives pour l'économie : le nombre de personnes en âge
+de travailler (et donc l'offre de travail) et le nombre de retraités (et donc la masse des pensions). Le rapport entre
+les deux conditionne la soutenabilité du système social.
+
+\paragraph{B. Variables.} $P_{s,a,t}$ : population au 1\textsuperscript{er} janvier par sexe $s$ et âge révolu
+$a$ (0 à 120 ans) ; $q_{s,a,t}$ : quotients de mortalité ; $f_{a,t}$ : taux de fécondité ; $SM_{s,a,t}$ : solde
+migratoire ; $\tau_{s,a}$ : taux d'activité ; $AOD_g$ : âge d'ouverture des droits à la retraite de la génération $g$.
+Source : Insee, projections de population 2026 \src{Insee, projections 2026} ; Eurostat \code{lfsa\_argan} (taux d'activité).
+
+\paragraph{C. Hypothèses.} Le module applique les hypothèses centrales de l'Insee : fécondité de 1,45 enfant par
+femme à partir de 2028, solde migratoire de +150\,000 personnes par an, gains d'espérance de vie au rythme 2005-2025
+(89,5 ans pour les femmes et 86,7 ans pour les hommes en 2070). Les taux d'activité par sexe et âge avant 55 ans
+restent à leur niveau de 2024 ; ceux de 55 à 74 ans dépendent de l'âge légal (M9).
+
+\paragraph{D. Équations.} Méthode des composantes (diagramme de Lexis) :
+\begin{align}
+P_{s,A,t+1} &= P_{s,A-1,t}\,(1-q_{s,A,t}) + SM_{s,A,t}\,\bigl(1-\tfrac{q_{s,A,t}}{2}\bigr) + AJ_{s,A,t} \\
+N_t &= \sum_{A=15}^{50} f_{A,t}\,\frac{P^F_{A-1,t}+P^F_{A,t+1}}{2},\qquad P_{s,0,t+1} = N_t\,\pi_s\,(1-q_{s,0,t})+\dots \\
+\text{Actifs}_t &= \sum_{s}\sum_{a} P_{s,a,t}\,\tau_{s,a}
+\end{align}
+avec $\pi_F = 100/205$ la part des filles à la naissance et $AJ$ l'ajustement statistique de l'Insee (nul après 2028).
+L'identité $P_{t+1}-P_t = N_t - D_t + SM_t + AJ_t$ est contrôlée à chaque pas (tolérance 0,001 personne).
+
+Pour les seniors (M9), le taux d'activité de 55 à 74 ans est exprimé relativement à celui des 50-54 ans et dépend de
+l'écart entre l'âge et l'$AOD$ de la génération. Avant l'$AOD$ : sorties précoces en rampe sur 5 ans (carrières
+longues, invalidité, chômage) ; après l'$AOD$ : une part reste active puis décroît exponentiellement. Un paramètre
+$\beta$ mesure la part du profil qui se décale avec l'âge légal (la part $1-\beta$ reste attachée à 62 ans).
+
+\begin{exemple}
+Relever l'âge légal d'un an décale environ les trois quarts ($\beta \approx 0{,}75$) des départs d'un an. Sur une
+génération de 800\,000 personnes dont 60~\% sont encore actives à 62 ans, cela maintient environ
+$0{,}75 \times 0{,}6 \times 800\,000 \approx 360\,000$ personnes-années d'activité supplémentaires par génération concernée.
+Avec $\beta = 1$ (décalage complet), l'effet serait d'un tiers plus fort ; avec $\beta = 0{,}5$, d'un tiers plus faible.
+\end{exemple}
+
+\paragraph{E. Calibration.} Démographie : aucun paramètre calé, les hypothèses publiées sont appliquées ; le module
+reproduit les 29 scénarios de l'Insee à moins de $3{,}4\cdot10^{-5}$ près sur la population totale 2024-2070
+\preuve{A}. Activité des seniors : estimation par moindres carrés non linéaires sur l'enquête Emploi 2003-2019 ;
+$\beta = 0{,}78$ (femmes) et $0{,}75$ (hommes), erreur quadratique moyenne 1,0 à 1,1 point \preuve{E}. Hors
+échantillon (2020-2025, relèvement de l'AOD de 62 ans à 62 ans et 9 mois), l'écart est de 0 à 3 points pour les
+60-64 ans. Sur 2010-2019, neuf seniors maintenus actifs sur dix étaient en emploi (rapport $\Delta$ taux
+d'emploi / $\Delta$ taux d'activité = 0,89).
+
+\paragraph{F. Limites.} Pas de durée d'assurance, de décote ni de surcote ; taux d'activité avant 55 ans figés ; la
+fécondité et les migrations ne réagissent pas à l'économie ; l'enquête Emploi a connu une rupture de série en 2021.
+
+\section{Production, branches et échanges entre produits (M5)}
+\label{sec:m5}
+
+\paragraph{A. Objet.} Produire une voiture demande de l'acier, de l'électricité, du transport, des services : chaque
+branche achète aux autres. Le tableau entrées-sorties décrit ces échanges et permet de calculer combien de production,
+d'importations et d'emplois sont mobilisés, directement et indirectement, par un euro de demande finale.
+
+\paragraph{B. Variables.} $x$ : production par produit (64 produits, nomenclature A64) ; $f^d$ : demande finale
+adressée à la production intérieure ; $A^d$, $A^m$ : coefficients techniques des consommations intermédiaires
+intérieures et importées ; $a^v$ : valeur ajoutée par unité produite ; $p$ : prix de production ; $p^m$ : prix
+d'importation ; $\varphi$ : facteur commun d'ajustement des parts importées. Source : Eurostat
+\code{naio\_10\_cp1700} (tableau symétrique, 2010-2022), \code{naio\_10\_cp15} (prix d'importation).
+
+\paragraph{C. Hypothèses.} Coefficients techniques fixes à l'année de base 2022 : pas de substitution entre
+intrants ni entre produit français et importé, sauf par le facteur commun $\varphi$ qui ajuste toutes les parts
+importées (sauf l'énergie, non concurrente) pour respecter l'équation agrégée d'importations (section~\ref{sec:commerce}).
+
+\paragraph{D. Équations.}
+\begin{align}
+x &= \bigl(I - A^d(\varphi)\bigr)^{-1} f^d(\varphi), \qquad m = A^m(\varphi)\,x + f^m(\varphi) \\
+p &= \bigl(p^m A^m + p^v a^v\bigr)\bigl(I - A^d\bigr)^{-1}
+\end{align}
+où $p^v$ est le prix de la valeur ajoutée unitaire de la branche productrice (salaires, marges, impôts sur la
+production). La valeur ajoutée de la branche $b$ en volume est $Q_b = \sum_{p\in b} a^v_p x_p$.
+
+\begin{exemple}
+Le contenu en importations de la demande finale intérieure est de 0,18~€ par euro en 2021 ; il atteint 0,73 pour les
+produits raffinés, 0,52 pour l'aéronautique et les autres matériels de transport, 0,50 pour la métallurgie et 0,48 pour
+l'automobile \src{validation M5}. Une hausse de 50~\% des prix de l'énergie importée, à marges fixes, élève les prix de
+production de 1,3~\% et les prix à la consommation de 1,7~\%.
+\end{exemple}
+
+\paragraph{E. Calibration.} Observé \preuve{A/R} : identités vérifiées à 2\,M€ près pour 2010-2022. Test des prix
+2012-2019 avec les prix de valeur ajoutée observés : erreur de 0,3 à 0,8 point par produit, corrélation de 0,89 à 0,98.
+
+\paragraph{F. Limites.} En 2022, le modèle de prix à coefficients fixes surestime fortement la hausse de certains
+prix (raffinage +74~\% prévu contre +43~\% observé), faute de substitutions et de variations de marges ; le tableau
+2022 est le dernier publié (2023-2024 vides chez Eurostat).
+
+\section{Emploi et chômage}
+\label{sec:emploi}
+
+\paragraph{A. Objet.} Les entreprises ajustent leurs effectifs à leur production, avec retard, et selon le coût réel
+du travail. Le chômage est la part de la population active sans emploi.
+
+\paragraph{B. Variables.} $N_{b,t}$ : emploi de la branche (personnes, milliers) ; $Q_{b,t}$ : valeur ajoutée en
+volume ; $CN_{b,t}$ : coût salarial par tête ; $PVA_{b,t}$ : prix de la valeur ajoutée ; $g_b$ : tendance de
+productivité de la branche ; $u_t$ : taux de chômage (France métropolitaine, BIT) ; $PA_t$ : population active.
+Sources : Eurostat \code{nama\_10\_a64}, \code{nama\_10\_a64\_e} ; Insee, série 001688526.
+
+\paragraph{C. Hypothèses.} Rendements d'échelle constants à long terme (l'emploi est proportionnel à la production,
+corrigé de la productivité) ; élasticité de substitution entre capital et travail $\sigma = 0{,}4$ ; les emplois non
+marchands sont proportionnels au volume de la production non marchande ; la productivité tendancielle par branche est
+celle des huit dernières années observées.
+
+\paragraph{D. Équations.} Pour chaque branche marchande :
+\begin{multline}
+\Delta\ln N_{b,t} = c_b + \underset{(0{,}043)}{0{,}259}\,\Delta\ln Q_{b,t} + \underset{(0{,}018)}{0{,}012}\,\Delta\ln Q_{b,t-1}
++ \underset{(0{,}057)}{0{,}317}\,\Delta\ln N_{b,t-1} \\
+\underset{(0{,}031)}{-\,0{,}206}\Bigl[\ln N_{b,t-1} - \ln Q_{b,t-1} + \sigma\,\ln\frac{CN_{b,t-1}}{PVA_{b,t-1}} + g_b\,(t-1-B)\Bigr]
+\end{multline}
+\begin{equation}
+u_t = 100\left(1 - \frac{\sum_b N_{b,t} + N^{nm}_t}{PA_t}\right)
+\end{equation}
+Le crochet est l'écart entre l'emploi et son niveau d'équilibre $\ln N^* = \ln Q - \sigma \ln(CN/PVA) - g_b\,t$.
+
+\begin{exemple}
+Si la production d'une branche augmente durablement de 1~\%, l'emploi augmente de 0,26~\% la première année, puis de
+0,26~\% $\times$ 0,317 par inertie et de 21~\% de l'écart restant par le rappel : environ +0,5~\% au bout de deux ans,
++0,9~\% au bout de six. Si le coût réel du travail augmente de 1~\%, l'emploi d'équilibre baisse de $\sigma = 0{,}4$~\%.
+Avec $\sigma = 0{,}2$ (bas de la littérature), une hausse des salaires détruit deux fois moins d'emplois ; avec
+$\sigma = 0{,}7$, presque deux fois plus.
+\end{exemple}
+
+\paragraph{E. Calibration.} Estimé sur 25 branches, 1997-2019, effets fixes et tendances de branche \preuve{E}.
+L'élasticité de long terme à la production est imposée à 1 (la version libre donne 0,44, biaisée par la colinéarité
+avec les tendances). $\sigma = 0{,}4$ est \preuve{C} : non identifié sur les données (estimation libre $-$0,21, non
+robuste), fixé au milieu des estimations françaises (0,2 à 0,7).
+
+\paragraph{F. Limites.} Une seule élasticité pour tous les niveaux de qualification : le modèle ne représente pas la
+sensibilité plus forte de l'emploi peu qualifié au coût du travail, documentée par les évaluations des allègements de
+cotisations (Kramarz et Philippon, 2001). Il sous-estime donc probablement l'effet des allègements ciblés et l'effet
+d'une hausse du SMIC sur l'emploi peu qualifié. Pas de flux d'embauches et de licenciements, pas d'appariement, pas
+d'automatisation au-delà de la substitution capital-travail ($\sigma$).
+
+\section{Formation des salaires}
+\label{sec:salaires}
+
+\paragraph{A. Objet.} Le salaire moyen s'ajuste aux prix (indexation, négociations), à la productivité, et à l'état du
+marché du travail (un chômage élevé modère les salaires : courbe de Phillips).
+
+\paragraph{B. Variables.} $W_t$ : salaire moyen par tête du secteur marchand ; $PC_t$ : prix de la consommation ;
+$PROD_t$ : productivité par tête ; $PVA^m_t$ : prix de la valeur ajoutée marchande ; $u^*_t$ : chômage structurel
+(7,5~\% en projection).
+
+\paragraph{D. Équation.}
+\begin{multline}
+\Delta\ln W_t = c + \underset{(0{,}222)}{0{,}394}\,\Delta\ln PC_t + \underset{(0{,}120)}{0{,}032}\,\Delta\ln PROD_t \\
+\underset{(0{,}057)}{-\,0{,}093}\bigl[\ln W_{t-1} - \ln PVA^m_{t-1} - \ln PROD_{t-1}\bigr] \;-\; 0{,}004\,(u_{t-1}-u^*_t)
+\end{multline}
+Le crochet est (le logarithme de) la part des salaires dans la valeur ajoutée : si elle est au-dessus de sa norme, les
+salaires ralentissent.
+
+\begin{exemple}
+Une inflation de 2~\% augmente les salaires de 0,8~\% la même année ; le reste est rattrapé à raison de 9~\% de l'écart
+par an, si bien que la part des salaires revient à sa norme en une dizaine d'années. Un point de chômage au-dessus du
+niveau structurel freine la croissance des salaires de 0,4 point par an.
+\end{exemple}
+
+\paragraph{E. Calibration.} Indexation et rappel estimés \preuve{E} (l'indexation a un $t$ de 1,8 seulement).
+Effet du chômage \preuve{C} : l'estimation libre donne un effet positif (+0,0066), biaisé par la composition de
+l'emploi (les emplois à bas salaire disparaissent d'abord en récession, ce qui augmente mécaniquement le salaire
+moyen) ; la valeur retenue ($-$0,4~\% par point) est dans la fourchette des estimations françaises.
+
+\paragraph{F. Limites.} Un seul salaire moyen : pas de distinction entre SMIC et autres salaires, ni entre secteurs
+exposés et abrités. Une hausse du SMIC est représentée par sa diffusion supposée à la masse salariale (0,11 pour 1,
+hypothèse \preuve{H}) et par son coût public direct (allègements indexés sur le SMIC : 0,66\md{} par point).
+
+\section{Prix et inflation}
+\label{sec:prix}
+
+\paragraph{A. Objet.} Les entreprises fixent leurs prix en appliquant une marge à leurs coûts ; les hausses de prix
+importés (énergie notamment) se transmettent avec retard.
+
+\paragraph{D. Équations.} Prix de la valeur ajoutée de chaque branche, en fonction du coût salarial unitaire
+$CSU_b = CN_b N_b / Q_b$ :
+\begin{multline}
+\Delta\ln PVA_{b,t} = c_b + \underset{(0{,}113)}{0{,}670}\,\Delta\ln CSU_{b,t} + \underset{(0{,}072)}{0{,}109}\,\Delta\ln Q_{b,t}
++ \underset{(0{,}001)}{0{,}0015}\,TUCD_{b,t} \\ \underset{(0{,}057)}{-\,0{,}117}\bigl[\ln PVA_{b,t-1} - \ln CSU_{b,t-1} - mk_{b,t-1}\bigr] + \Delta mk_{b,t}
+\end{multline}
+où $TUCD$ est l'écart du taux d'utilisation des capacités à sa moyenne (branches industrielles) et $mk$ un choc de
+marge éventuel (impôts de production, droits de douane). Transmission des prix d'importation, par produit :
+\begin{equation}
+\ln p^{m,\text{eff}}_t = \ln p^{m,\text{eff}}_{t-1} + \theta\,\bigl(\ln p^m_t - \ln p^{m,\text{eff}}_{t-1}\bigr),\qquad \theta = \underset{(\text{estimé})}{0{,}495}.
+\end{equation}
+Les prix de la consommation, de l'investissement et des exportations sont ensuite les moyennes, pondérées par les
+structures du tableau entrées-sorties, des prix de production $p$ (section~\ref{sec:m5}) et des prix importés
+répercutés.
+
+\begin{exemple}
+Une hausse de 10~\% des prix de l'énergie importée n'est répercutée qu'à moitié la première année ($\theta \approx 0{,}5$),
+aux trois quarts la deuxième. Une hausse de 1~\% du coût salarial unitaire relève le prix de la valeur ajoutée de
+0,67~\% la première année, puis entièrement à long terme (homogénéité imposée).
+\end{exemple}
+
+\paragraph{E. Calibration.} \preuve{E} sur 1997-2019 pour les prix de valeur ajoutée (la version libre donne une
+transmission de long terme de 0,74 au lieu de 1 imposé) ; $\theta$ estimé sur 1998-2024 : sur 1998-2019, la
+transmission était immédiate ; le délai n'apparaît qu'avec l'épisode énergétique de 2021-2024 (tarifs réglementés,
+bouclier tarifaire, contrats).
+
+\paragraph{F. Limites.} Pas de prix de marché de l'électricité ni de mécanisme de reconstitution de marges ; le
+modèle a sous-estimé les prix de 2,8~\% sur 2023-2024 (validation M8).
+
+\section{Consommation et épargne des ménages (M7, M14)}
+\label{sec:conso}
+
+\paragraph{A. Objet.} La consommation des ménages (la moitié du PIB) dépend avant tout de leur revenu réel. Les
+ménages modestes dépensent une part plus grande d'un euro supplémentaire que les ménages aisés.
+
+\paragraph{B. Variables.} $C_t$ : consommation en volume ; $RDB_t$ : revenu disponible brut (M€ courants) ;
+$RDB^{\text{eff}}_t$ : revenu « effectif » corrigé de l'hétérogénéité ; $PC_t$ : prix de la consommation ; taux
+d'épargne $s_t = (RDB_t - PC_t C_t)/RDB_t$.
+
+\paragraph{D. Équations.}
+\begin{equation}
+\Delta\ln C_t = c + \underset{(0{,}205)}{0{,}853}\,\Delta\ln\frac{RDB^{\text{eff}}_t}{PC_t} \;\underset{(0{,}211)}{-\,0{,}218}\Bigl[\ln C_{t-1} - \ln\frac{RDB^{\text{eff}}_{t-1}}{PC_{t-1}}\Bigr]
+\end{equation}
+\begin{equation}
+RDB^{\text{eff}}_t = RDB_t + \sum_{d=1}^{10} \Delta R_{d,t}\Bigl(\frac{\pi_d}{\bar\pi}-1\Bigr) + \Delta Div^{\text{mén}}_t\Bigl(\frac{\pi_{\text{top 1}}}{\bar\pi}-1\Bigr)
+\end{equation}
+où $\Delta R_d$ est la variation du revenu du décile $d$ due à la mesure (microsimulation), $\pi_d$ la propension
+marginale à consommer du décile (0,90 ; 0,85 ; 0,80 ; 0,75 ; 0,72 ; 0,68 ; 0,64 ; 0,60 ; 0,53 ; 0,40), $\bar\pi$ sa moyenne
+pondérée par le revenu, et $\pi_{\text{top 1}} = 0{,}25$ la propension du dernier centile, appliquée aux dividendes.
+
+\begin{exemple}
+Un transfert de 1\md{} aux ménages du premier décile compte pour $1 \times 0{,}90/\bar\pi \approx 1{,}38$\md{} dans
+l'équation de consommation ($\bar\pi \approx 0{,}65$) ; une baisse d'impôt de 1\md{} pour le dixième décile ne compte
+que pour $0{,}40/0{,}65 \approx 0{,}62$\md. À montant égal, la première mesure soutient donc environ deux fois plus la
+consommation la première année. Seul le \emph{profil relatif} des propensions intervient : la propension moyenne reste
+celle de l'équation estimée.
+\end{exemple}
+
+\paragraph{E. Calibration.} Équation agrégée \preuve{E} (1997-2019) ; l'élasticité de court terme varie de 0,54 à 1,15
+selon la période d'estimation et la force de rappel n'est pas significative ($t = -1{,}0$). Profil des propensions
+\preuve{C} : cohérent avec les taux d'épargne par quintile de l'Insee (de $-$29~\% pour le premier quintile à 27~\% pour le
+cinquième en 2022) \src{Insee Focus n\textsuperscript{o} 338, 2024} et avec Garbinti et Lamarche (2014) ; variantes
+« plat » et « accentué » en sensibilité.
+
+\paragraph{F. Limites.} Pas d'effet de richesse, de taux d'intérêt, d'épargne de précaution ni d'anticipation
+(pas d'« équivalence ricardienne ») ; pas de distinction entre revenu permanent et temporaire (une prime ponctuelle a
+probablement un effet d'un tiers plus faible la première année que celui simulé) ; le taux d'épargne de référence
+(17,9~\% en 2025, ramené à 15,5~\% à long terme) est une hypothèse de projection.
+
+\section{Investissement et accumulation du capital}
+\label{sec:invest}
+
+\paragraph{A. Objet.} Les entreprises investissent pour répondre à la demande (effet d'accélérateur) et d'autant plus que
+le coût du capital (taux d'intérêt, impôt sur les sociétés) est bas. Les ménages investissent dans le logement selon
+leur revenu. Le capital installé détermine les capacités de production.
+
+\paragraph{D. Équations.} Investissement de la branche $b$ (hors effet du coût du capital), puis effet du coût d'usage
+$CU$ appliqué en niveau :
+\begin{multline}
+\Delta\ln \tilde I_{b,t} = c_b + \underset{(0{,}204)}{0{,}670}\,\Delta\ln Q_{b,t} + \underset{(0{,}097)}{0{,}256}\,\Delta\ln Q_{b,t-1}
+\underset{(0{,}109)}{-\,0{,}285}\ln \tilde I_{b,t-1} + \underset{(0{,}096)}{0{,}192}\ln K_{b,t-1} + \underset{(0{,}048)}{0{,}113}\ln Q_{b,t-1}
+\end{multline}
+\begin{equation}
+CU_t = \frac{r_t + \delta}{1-\tau^{IS}_t},\qquad \ln m_t = \ln m_{t-1} + 0{,}285\,\bigl(\varepsilon\,[\ln CU_t - \ln CU_B] - \ln m_{t-1}\bigr),\qquad I_{b,t} = \tilde I_{b,t}\, m_t
+\end{equation}
+avec $\delta = 0{,}07$, $\varepsilon = -0{,}184$ (élasticité de long terme estimée sur l'investissement des sociétés
+non financières, écart-type de $\lambda$ 0,14). Capital : $K_{b,t} = (1-\delta_b)K_{b,t-1} + I_{b,t} + I^{\text{cap}}_{b,t}$.
+Logement des ménages :
+\begin{equation}
+\Delta\ln I^{\text{mén}}_t = c + \underset{(0{,}35)}{1{,}48}\,\Delta\ln\frac{RDB_t}{PC_t} \underset{(0{,}20)}{-\,0{,}282}\Bigl[\ln I^{\text{mén}}_{t-1}-\ln\frac{RDB_{t-1}}{PC_{t-1}}\Bigr]
+\end{equation}
+L'investissement public est exogène : chaque milliard supplémentaire s'ajoute à la demande et, par une élasticité de
+la production au capital public de 0,08 (capital public net égal à 55~\% du PIB, dépréciation de 4~\% par an,
+productif l'année suivant la dépense), à la productivité.
+
+\begin{exemple}[Exemple : baisse de l'impôt sur les sociétés de 25 \% à 20 \%]
+$1-\tau$ passe de 0,75 à 0,80 : le coût d'usage baisse de $\ln(0{,}80/0{,}75) = 6{,}5~\%$. L'investissement de long
+terme augmente de $0{,}184 \times 6{,}5 \approx 1{,}2~\%$, dont 28~\% la première année (0,34~\%). Avec
+$\varepsilon = -0{,}4$ (haut de la littérature internationale), l'effet doublerait ; avec $\varepsilon = -0{,}1$, il
+serait presque divisé par deux. La recette d'IS perdue (environ 12\md{} de gain statique pour les entreprises) n'est
+pas récupérée par l'activité supplémentaire (chapitre~\ref{ch:experiences}).
+\end{exemple}
+
+\paragraph{E. Calibration.} Accélérateur \preuve{E} ; élasticité au coût d'usage \preuve{E, fragile} (23 observations,
+prévision hors échantillon médiocre) ; élasticité au capital public \preuve{L} (méta-analyse de Bom et Ligthart, 2014 ;
+plage 0,04-0,12).
+
+\paragraph{F. Limites.} L'effet du taux de marge sur l'investissement, estimé positif mais non significatif ($t=1{,}4$),
+n'est pas utilisé ; pas de contrainte de financement ni d'effet de trésorerie ; aucune dépense publique autre que
+l'investissement (éducation, recherche, santé) n'a d'effet sur la productivité ; l'investissement de capacité de la
+réindustrialisation est décidé de façon exogène.
+
+\section{Productivité, capacités et croissance potentielle}
+\label{sec:fermeture}
+
+\paragraph{A. Objet.} À long terme, la production est limitée par la quantité de travail et de capital disponibles et par
+leur efficacité. Un modèle tiré par la demande doit donc être « fermé » par un mécanisme qui ramène l'économie vers son
+potentiel : politique monétaire, crédit, compétitivité.
+
+\paragraph{C. Hypothèses.} (1) La productivité tendancielle de chaque branche est un paramètre de scénario (moyenne
+des 8 dernières années observées ; 0,7~\% par tête pour l'ensemble de l'économie après 2031, hypothèse centrale du COR).
+(2) Le taux d'utilisation des capacités de l'industrie influence (faiblement) les prix. (3) \textbf{Fermeture d'offre}
+\preuve{H} : un supplément de demande intérieure $Z$ (60~\% consommation, 40~\% investissement) ramène progressivement
+le chômage vers son niveau structurel $u^*$.
+
+\paragraph{D. Équations.}
+\begin{equation}
+Z_t = Z_{t-1} + \Bigl[\rho\,(u_{t-1}-u^*) + 0{,}3\,\bigl((u_{t-1}-u^*)-(u_{t-2}-u^*)\bigr)\Bigr]\times\frac{1{,}5}{100},\qquad \rho = 0{,}15
+\end{equation}
+$Z$ est exprimé en part de la production totale ; 1,5 est le coefficient d'Okun (points de PIB par point de chômage).
+C'est un correcteur « proportionnel-intégral » : tant que le chômage est au-dessus de $u^*$, la demande supplémentaire
+s'accumule. Taux d'utilisation des capacités : $TUC_{b,t} = TUC_{b,B}\,(Q_{b,t}/Q_{b,B})/(K_{b,t-1}e^{g^k_b(t-B)}/K_{b,B-1})$.
+
+\begin{exemple}
+Une mesure qui augmente le chômage de 0,3 point déclenche chaque année un supplément de demande de
+$0{,}15\times0{,}3\times1{,}5 = 0{,}07$ point de PIB, qui s'accumule : au bout de cinq ans, environ 0,25 point de PIB, ce
+qui ramène le chômage vers sa valeur de départ. Avec $\rho = 0$ (vision « keynésienne » : rien ne ramène l'économie
+au plein emploi), les effets de demande sont permanents ; avec $\rho = 0{,}4$, ils disparaissent en trois à quatre ans.
+\end{exemple}
+
+\paragraph{E. Calibration.} $\rho$ n'est pas estimé : il est choisi pour que les multiplicateurs de dépense publique
+décroissent comme dans Mésange et FR-BDF (1,2 la première année, 0,85 la deuxième, 0,6 à cinq ans). \textbf{C'est le
+premier facteur d'incertitude du modèle} sur le PIB et l'emploi à moyen terme (criblage de Morris, contre-expertise
+v0.6).
+
+\paragraph{F. Limites.} Mécanisme réduit et symétrique ; pas de politique monétaire nationale (zone euro) autre que
+celle du module M11 ; pas d'hystérèse (un chômage durablement élevé ne dégrade pas le potentiel) ; la productivité ne
+dépend ni de l'éducation, ni de la recherche, ni de l'automatisation, ni du temps de travail au-delà d'une hypothèse de
+compensation (section~\ref{sec:catalogue}).
+
+\section{Commerce extérieur, énergie et dépendances}
+\label{sec:commerce}
+
+\paragraph{A. Objet.} Les importations augmentent avec la demande (surtout l'investissement et les exportations, riches
+en contenu importé) ; les exportations dépendent de la demande mondiale et de la compétitivité-prix.
+
+\paragraph{D. Équations.} Importations totales en volume :
+\begin{multline}
+\Delta\ln M_t = c + \underset{(0{,}092)}{1{,}465}\,\Delta\ln D_t \underset{(0{,}101)}{-\,0{,}114}\,\Delta\ln\frac{PM^{nc}_t}{PPIB_t} \\
+\underset{(0{,}149)}{-\,0{,}661}\Bigl[\ln M_{t-1} - 1{,}370\ln D_{t-1} + 0{,}163\ln\frac{PM^{nc}_{t-1}}{PPIB_{t-1}}\Bigr] + 0{,}0039\,t
+\end{multline}
+avec $D_t = 0{,}13\,C_t + 0{,}06\,G_t + 0{,}23\,(I_t+S_t) + 0{,}33\,X_t$ (demande pondérée par le contenu en importations,
+en indices) et $PM^{nc}$ le prix des importations hors énergie (non concurrente). Exportations :
+\begin{equation}
+\Delta\ln X_t = c + \underset{(0{,}094)}{0{,}711}\,\Delta\ln DM_t \underset{(0{,}171)}{-\,0{,}595}\,\Bigl(\Delta\ln PX_t - \Delta\ln PW_t\Bigr)
+\end{equation}
+où $DM$ est la demande mondiale adressée (importations de l'Union européenne) et $PW$ le prix des concurrents. Le total
+importé est réparti entre produits par le facteur $\varphi$ (section~\ref{sec:m5}) ; l'énergie (produits B, C19, D)
+est non concurrente : sa part importée ne varie pas.
+
+\begin{exemple}
+Une hausse de 1~\% de la demande pondérée augmente les importations de 1,47~\% la première année. Une perte de
+compétitivité-prix de 1~\% réduit les exportations de 0,6~\%, mais les importations de seulement 0,11~\% : le modèle
+représente mieux la perte de marchés à l'exportation que la conquête du marché intérieur par les importations.
+\end{exemple}
+
+\paragraph{E. Calibration.} \preuve{E}, 1997-2019. L'élasticité-prix des importations ($-$0,11 à court terme, $-$0,16 à
+long terme) est non significative et plus faible que la littérature ($-$0,3 à $-$0,6). Celle des exportations est
+conforme aux estimations françaises ($-$0,4 à $-$0,8).
+
+\paragraph{F. Limites.} Pas de taux de change hors zone euro ; pas de traitement spécifique des grands contrats
+(aéronautique), ce qui explique l'erreur de 2023 ; dépendances matérielles représentées seulement en valeur (pas de
+métaux critiques, pas de goulets physiques) ; pas de substitution entre énergies ni d'effet de la taxe carbone sur les
+émissions.
+
+\section{Revenus des ménages, profits et revenus versés au reste du monde}
+\label{sec:revenus}
+
+\paragraph{D. Équations.} Le revenu disponible brut est la somme de composantes indexées :
+\begin{equation}
+RDB_t = \underbrace{D1_B\,\frac{W_t}{W_B}\frac{N_t}{N_B}}_{\text{salaires}} + \underbrace{EBE^{mén}_t + D4_t}_{\text{patrimoine, indépendants}}
++ \underbrace{D62_t}_{\text{prestations}} + \text{autres}_t - \underbrace{D61_t}_{\text{cotisations}} - \underbrace{D5_t}_{\text{impôts}}
+\end{equation}
+Les prestations sont indexées sur les prix de l'année précédente et sur un volume exogène (pensions par M9 ; autres
+prestations +1,4~\% par an, rythme 2011-2019). Les cotisations sont proportionnelles aux salaires, les impôts à la base
+imposable (salaires, patrimoine, prestations). Les revenus du patrimoine et l'excédent des ménages suivent des équations
+estimées sur le PIB nominal, les prix et le taux long :
+\begin{equation}
+\Delta\ln D4_t = c + 0{,}874\,\Delta\ln PIBN_t + 3{,}05\,\Delta\ln PC_t - 0{,}366\,[\ln D4_{t-1}-\ln PIBN_{t-1}] + 0{,}021\,r_{t-1}
+\end{equation}
+Profits (M14) : un supplément de profit après impôt $\Pi$ (baisse d'IS ou d'impôts de production) est distribué à
+50~\% (plage 30-70~\%) ; 30~\% des dividendes vont aux non-résidents (plage 20-50~\%), 35~\% du reste directement aux
+ménages résidents ; le solde est conservé par les entreprises. Le revenu national brut est $RNB = PIBN + R^{prim}$,
+où $R^{prim}$ (revenus primaires nets reçus du reste du monde) vaut 3,1~\% du PIB à l'année de base, diminué des
+dividendes supplémentaires versés à l'étranger.
+
+\paragraph{F. Limites.} En 2023-2024, le RDB est sous-estimé de 7,9~\% en rétrosimulation : les revenus de la propriété
+(+15~\% par an avec la hausse des taux) ne suivent pas le PIB nominal ; le niveau de solde extérieur du modèle
+n'est pas fiable (chapitre~\ref{ch:reference}).
+
+\section{Fiscalité des ménages (M4, M10, M13)}
+\label{sec:fiscmen}
+
+\paragraph{A. Objet.} Calculer, ménage par ménage, l'impôt sur le revenu, la CSG et les prestations, puis en déduire
+la recette publique, la variation de revenu par décile et l'effet sur la pauvreté.
+
+\paragraph{B. Données.} Échantillon de 2~\% des ménages ordinaires du fichier détail du recensement 2022 (163\,826
+ménages, 344\,527 personnes, 201\,821 foyers fiscaux) ; revenus attribués par rang à partir de la distribution du revenu
+fiscal de référence publiée par la DGFiP (IRCOM 2025, revenus 2024, 25 tranches) ; statistiques nationales par case de
+déclaration (heures supplémentaires, revenus de l'étranger, épargne retraite) ; législation par OpenFisca-France.
+
+\paragraph{C. Hypothèses.} Rang de revenu tiré de grilles publiées (salaires par catégorie socioprofessionnelle et sexe,
+pensions) ; revenus du capital concentrés vers le haut ; non-recours aux prestations constant (taux apparents mesurés :
+RSA 0,68 ; prime d'activité 0,66).
+
+\paragraph{D. Calcul.} Pour une réforme $R$ : $\Delta T = \sum_h w_h\,[T_h(R) - T_h(\text{actuel})]$, ramené aux 41,6
+millions de foyers de la DGFiP ; variation par décile de niveau de vie
+$nv_h = (RFR_h - IR_h + \text{Prest}_h)/UC_h$ (échelle de l'OCDE modifiée). Les mesures dont l'assiette n'est pas
+simulée ménage par ménage (TVA, taxe carbone, CSG sur les pensions, indexation, ASPA) sont réparties analytiquement
+selon la structure de consommation par quintile ou la distribution des pensions. Pour les impôts sur les hauts revenus
+et les patrimoines (M13), le rendement statique est corrigé d'une perte comportementale :
+\begin{equation}
+\text{perte} = e\,a\,\frac{\tau}{1-\tau}\times \text{rendement statique},\qquad e = 0{,}2~(0{,}1\text{--}0{,}4),\ a = 2
+\end{equation}
+pour les tranches supérieures de l'IR ; 0,5 pour l'élasticité des dividendes au PFU ; 25~\% puis 35~\% d'érosion pour
+l'impôt sur la fortune ; 10~\% pour les droits de succession.
+
+\paragraph{E. Calibration et validation.} Impôt net simulé 92,4\md{} contre 91,7\md{} publiés par la DGFiP
+\preuve{A}. Barème non revalorisé : +2,7\md{} contre environ 4\md{} chiffrés officiellement (écart d'environ 30~\%).
+RSA +10~\% : droits +2,8\md, versements +1,9\md.
+
+\paragraph{F. Limites.} 3 millions de foyers hors champ ; revenus du capital et réductions d'impôt calés et non testés ;
+éligibles à la prime d'activité sous-estimés d'environ 25~\% ; \textbf{la microsimulation est statique et ne voit pas
+les salaires} : une hausse de salaire ne modifie pas les revenus de l'échantillon, d'où le recours à des cas types
+pour étudier les effets de seuil (chapitre~\ref{ch:experiences}). Le dernier décile est mal représenté (rendement
+quasi nul d'une hausse de la tranche supérieure de l'IR, voir chapitre~\ref{ch:audit}).
+
+\section{Fiscalité des entreprises et cotisations sociales}
+\label{sec:fiscent}
+
+\paragraph{D. Équations.} Recettes d'impôt sur les sociétés :
+$IS_t = IS_0\,\dfrac{EBE^m_t}{EBE^m_B}\,\dfrac{\tau_t}{\tau_B}$, avec $IS_0 = 15~\%$ des impôts courants sur le revenu
+(ordre de grandeur) et $EBE^m$ l'excédent des branches marchandes. Cotisations : $D61_t = D61_B\,\dfrac{W_tN_t}{W_BN_B}\,\kappa_t$
+où $\kappa_t$ traduit les mesures (une baisse de 10\md{} de cotisations employeurs diminue le coût du travail des
+branches marchandes et la recette). Les cotisations employeurs entrent dans le coût salarial $CN_b$ des équations
+d'emploi et de prix. Impôts de production : recette et choc de marge $mk$ (50~\% répercutés sur les prix de valeur
+ajoutée, hypothèse \preuve{H}).
+
+\paragraph{F. Limites.} Pas d'effet de l'IS sur la localisation des profits et des activités ; pas de distinction
+entre PME et grandes entreprises ; la part de l'IS (15~\%) est un ordre de grandeur à caler sur les comptes de l'État.
+
+\section{Prestations sociales, santé et autres dépenses publiques}
+\label{sec:depenses}
+
+\paragraph{A. Objet.} Dépenses publiques : rémunérations des agents, achats (consommation publique), prestations
+sociales, investissement, subventions et intérêts.
+
+\paragraph{D. Équations.}
+\begin{align}
+D1^{pub}_t &= D1^{pub}_B\,\frac{W_t}{W_B}\,\frac{N^{nm}_t}{N^{nm}_B}\,(1+\text{mesure}) \\
+P3^{autres}_t &= (P3_B - D1^{pub}_B)\;\frac{G_t}{G_B}\;\frac{PC_t}{PC_B} \\
+D62_t &= D62_B\;\frac{PC_{t-1}}{PC_B}\;\frac{V_t}{V_B} + \text{mesures} \\
+\text{Autres}_t &= \alpha\,PIBN_t,\qquad \alpha = (TE_B - P3_B - D62_B - D41_B)/PIBN_B
+\end{align}
+La consommation publique en volume $G$ croît de 1,3~\% par an dans la référence (rythme 2011-2019) ; les « autres
+dépenses » (subventions, investissement public, autres transferts) restent une part fixe du PIB nominal.
+
+\paragraph{C. Hypothèse importante.} \textbf{La santé, l'éducation, la défense, la recherche et le fonctionnement
+administratif ne sont pas distingués} : une économie d'un milliard d'euros sur l'une ou l'autre a exactement le même
+effet macroéconomique (même contenu en importations, même effet direct sur la valeur ajoutée non marchande). Le modèle
+ne mesure ni l'état de santé, ni le niveau d'éducation, ni la sécurité, ni leurs effets de long terme sur la
+productivité. Il n'y a pas de module d'assurance maladie : les dépenses de santé sont incluses dans la consommation
+publique et les prestations.
+
+\section{Retraites (M9)}
+
+\paragraph{D. Équations.} Pension à la liquidation de la génération $g$ :
+$\text{pension}_g = \nu \times \overline{W}^{25}_g$ (moyenne des 25 dernières années de salaire moyen, revalorisées sur
+les prix), puis revalorisation annuelle sur les prix (hors tabac) de l'année précédente, éventuellement diminuée d'une
+sous-indexation. Le nombre de retraités par âge découle du profil d'activité (avant l'AOD, la moitié des sorties
+précoces sont des départs anticipés ; après l'AOD, 40~\% des actifs cumulent emploi et retraite), calé sur Eurostat en
+2015 (facteur 1,06 pour les retraités vivant à l'étranger). Lien avec M8 : population active, emploi des seniors
+supplémentaires (89~\%) et masse des pensions.
+
+\paragraph{E. Validation.} Masse des pensions reproduite à $\pm$2,3~\% sur 2008-2022 ; 2024 surestimée de 4,4~\%.
+Suspension de la réforme de 2023 : 1,0\md{} en 2027 (estimations publiques : environ 1,4\md).
+
+\paragraph{F. Limites.} Pas de régimes, de durée d'assurance, de décote ni de réversion (42\md) ; pas de solde du système
+de retraite au sens du COR.
+
+\section{Finances publiques, dette et taux d'intérêt (M8, M11)}
+\label{sec:finpub}
+
+\paragraph{D. Équations.} Recettes :
+\begin{equation}
+TR_t = \underbrace{D2_B\,\frac{C^{n}_t}{C^{n}_B}}_{\text{TVA, impôts sur produits}} + \underbrace{D5^{mén}_t + IS_t}_{\text{impôts sur le revenu}} + \underbrace{D61_t}_{\text{cotisations}} + \underbrace{(TR_B - D2_B - D5_B - D61_B)\,\frac{PIBN_t}{PIBN_B}}_{\text{autres}} + \text{mesures}
+\end{equation}
+Dépenses $TE_t = D1^{pub}_t + P3^{autres}_t + D62_t + D41_t + \text{Autres}_t$. Solde $S_t = TR_t - TE_t$. Dette :
+\begin{equation}
+Dette_t = Dette_{t-1} - S_t,\qquad D41_t = i^{app}_t\,Dette_{t},\qquad i^{app}_t = i^{app}_{t-1} + \tfrac18\bigl(\max(r_t,0) - i^{app}_{t-1}\bigr)
+\end{equation}
+Le taux apparent rejoint le taux de marché $r$ (OAT à 10 ans) au rythme d'un huitième par an (renouvellement de la
+dette). Module européen (M11) : taux de la BCE $i_t = a + 0{,}73\,i_{t-1} + 0{,}39\,\pi^{ZE}_t + 0{,}30\,\text{écart}^{ZE}_t$
+\preuve{E} ; transmission au taux long français $\Delta r_t = \alpha + 0{,}38\,\Delta i_t$ \preuve{E} ; prime de risque
+$+3$ points de base par point de dette supplémentaire \preuve{H}.
+
+\begin{exemple}[Exemple : l'« effet boule de neige »]
+Avec une dette de 116~\% du PIB, un taux apparent qui monte de 2,2~\% (2025) vers 4,9~\% et une croissance nominale de
+l'ordre de 3~\%, la dette augmente d'elle-même de $(i-g)\times d \approx (4{,}9-3)\times1{,}16 \approx 2{,}2$ points de
+PIB par an, avant même le déficit primaire. C'est pourquoi la référence voit la dette dériver jusqu'à 308~\% du PIB en
+2047 : ce chiffre n'est pas une prévision, mais la conséquence arithmétique de l'hypothèse d'un taux de 4,89~\% maintenu
+sans aucune mesure de correction pendant vingt ans.
+\end{exemple}
+
+\paragraph{F. Limites.} Pas d'ajustement stock-flux en projection ; pas de structure par maturité de la dette ; pas de
+sous-secteurs (État, sécurité sociale, collectivités) ; les ratios de dette dépendent fortement du niveau des prix
+(dénominateur), lui-même dépendant de paramètres mal identifiés (courbe de Phillips, indexation).
+
+\section{Inégalités, pauvreté et niveau de vie (M10)}
+\label{sec:inegalites}
+
+\paragraph{D. Indicateurs.} Sur l'échantillon pondéré par le nombre de personnes : médiane du niveau de vie, taux de
+pauvreté (part des personnes sous 60~\% de la médiane), indice de Gini, rapports D9/D1 et S80/S20. Pour isoler l'effet
+d'une mesure, le taux de pauvreté après réforme est calculé \textbf{au seuil de pauvreté d'avant réforme} (seuil fixe),
+ce qui évite qu'une baisse générale des revenus « réduise » mécaniquement la pauvreté relative.
+
+\paragraph{F. Limites.} Le niveau de vie est approché (revenu fiscal $-$ IR $+$ prestations simulées, par unité de
+consommation) : il omet les revenus non imposables et les prestations non simulées. \textbf{Les niveaux ne sont pas
+comparables aux statistiques de l'Insee} (médiane 22\,179~€ contre 26\,740~€ ; pauvreté 17,3~\% contre 15,4~\%), mais
+les \emph{variations} dues à une mesure sont exploitables (chapitre~\ref{ch:reference}). Les effets sont statiques :
+première année, sans changement de comportement ni effet macroéconomique en retour sur les revenus.
+
+\section{Incertitude (M12) et sensibilité}
+
+Les coefficients estimés sont tirés dans leur loi normale (matrice de variance-covariance robuste), les paramètres
+calibrés uniformément dans leur plage (élasticité de substitution 0,2-0,6 ; effet du chômage sur les salaires
+$-$0,8 à $-$0,2~\% ; fermeture d'offre 0,1-0,25). Le simulateur restitue l'intervalle entre le 5\textsuperscript{e} et le
+95\textsuperscript{e} centile. La contre-expertise v0.6 ajoute un criblage de Morris sur 46 paramètres et des
+sensibilités univariées (chapitre~\ref{ch:audit}). Non couvert : erreurs de données, de spécification, d'hypothèses
+exogènes.
+
+\section{Le catalogue de mesures : comment chaque levier entre dans le modèle}
+\label{sec:catalogue}
+
+Le tableau~\ref{tab:catalogue} indique, pour chaque curseur utilisé dans ce rapport, le canal par lequel il agit. C'est
+là que se logent la plupart des hypothèses propres aux politiques publiques.
+
+\begin{small}
+\begin{longtable}{@{}p{3.2cm}p{7.2cm}p{3.6cm}@{}}
+\caption{Traduction des leviers en entrées du modèle (fichier \code{simulateur/executer.py}).}\label{tab:catalogue}\\
+\toprule
+Levier & Canal de transmission & Paramètres clés \\
+\midrule\endfirsthead
+\toprule Levier & Canal de transmission & Paramètres clés \\ \midrule\endhead
+\bottomrule\endfoot
+IR (taux, seuils) & Microsimulation OpenFisca ; variation d'impôt par décile → RDB et consommation (M14) ; M13 pour les tranches supérieures & \preuve{A} barème ; $e = 0{,}2$ \\
+CSG activité / retraite & Assiettes reconstituées sur l'échantillon, calées sur les totaux nationaux & \preuve{A/C} \\
+TVA (normal, réduits) & Recette, prix à la consommation (80~\% répercutés), répartition par quintile de consommation & 8,2\md{} par point (normal) ; 5\md{} (réduits) \\
+Taxe carbone & Recette et prix ; pas d'effet sur les émissions & 200\,M€ par €/t \\
+PFU, ISF, successions & Recette corrigée des réactions (M13), revenu du dernier décile & 600\,M€/pt ; assiette ISF 930\md{} \\
+IS & Coût d'usage du capital → investissement ; recette ; profits distribués (M14) & $\varepsilon = -0{,}18$ \\
+Impôts de production & Recette ; 50~\% répercutés sur les prix ; profits (M14) & \preuve{H} \\
+Cotisations employeurs & Coût du travail des branches marchandes (emploi, prix) et recette & \preuve{E/H} \\
+SMIC & Diffusion à la masse salariale (0,11) ; coût public 0,66\md/pt & \preuve{H} \\
+Salaires (hausse générale) & Choc sur l'équation de salaires & \preuve{E} \\
+Point d'indice & Rémunérations publiques → RDB & \preuve{A} \\
+Emploi public & Effectif non marchand (rampe de 5 ans), 56\,k€ par agent & \preuve{A} \\
+Santé, éducation, défense, fonctionnement & Consommation publique (indistincte) & \preuve{H} \\
+Investissement public & Demande + capital public productif ($e = 0{,}08$) & \preuve{L} \\
+RSA, prime d'activité, AF, aides au logement & Microsimulation ; recours constant ; M14 & \preuve{A} \\
+ASPA, indexation des pensions & Analytique ; M9 & \preuve{A} \\
+Assurance chômage & Dépense ($-$40\md{} de base) ; chômage structurel $-$0,1 pt pour $-$10~\% & \preuve{H} (0 à 0,3) \\
+Âge légal & M9 : actifs, emploi des seniors, pensions & \preuve{E} \\
+Durée du travail & 70~\% de la variation d'heures absorbée par la productivité horaire ; salaires mensuels maintenus ; embauches compensatrices dans la fonction publique & \preuve{H} \\
+Réindustrialisation & Parts importées de huit produits industriels (chimie, pharmacie, métallurgie, produits métalliques, électronique, équipements électriques, machines, automobile) réduites en 5 ans, après 2 ans de construction ; investissement de capacité ; surcoût de 10~\% & \preuve{H} (objectif, pas moyen) \\
+Droits de douane & Prix des importations hors UE (45~\%), recette, riposte & \preuve{H} \\
+Prix de l'énergie & Prix d'importation des produits B, C19, D & environnement \\
+\end{longtable}
+\end{small}
