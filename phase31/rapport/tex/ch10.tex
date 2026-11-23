@@ -1,0 +1,34 @@
+% ============================================================================================================
+\chapter{Limites restantes}\label{ch:limites}
+% ============================================================================================================
+
+Les limites sont classées par importance (effet possible sur les conclusions) et par nature d'incertitude
+(statistique, paramétrique, structurelle, chocs futurs, mise en œuvre).
+
+\begin{table}[htbp]\centering\scriptsize
+\caption{Limites restantes, classées.}\label{tab:limites}
+\begin{tabularx}{\linewidth}{@{}rL l l L@{}}\toprule
+\# & Limite & Importance & Incertitude & Piste\\ \midrule
+1 & Erreur de productivité en temps réel : le modèle surestime la productivité et sous-estime l'emploi de 2010-2019 & Élevée & Structurelle, paramétrique & Potentiel par branche ; productivité tendancielle estimée avec ruptures\\
+2 & Long terme des stratégies d'offre (θ, part du capital dans l'anticipation, traîne de l'écart de production) & Élevée & Paramétrique, structurelle & Estimation sur un panel de pays européens ; potentiel publié en millésimes (données d'époque)\\
+3 & Prime de risque souveraine (0,03 point de taux par point de dette) : hypothèse de littérature, non variée dans les configurations ; pèse autant que tous les comportements sur la dette de 2047 & Élevée pour la dette & Structurelle & Estimation sur les écarts de taux de la zone euro ; scénarios explicites\\
+4 & Charge d'intérêts : renouvellement d'un huitième de la dette par an trop lent quand les taux varient & Élevée pour la dette & Structurelle & Échéancier de la dette par maturité (Agence France Trésor)\\
+5 & Distribution : effets d'emploi en espérance, patrimoine approché par les revenus non salariaux, héritages par hypothèse, agents publics non identifiés ; résiduel micro-macro de 1,2 à 1,5 point pour S1 et S3 & Moyenne à élevée & Données & Enquête Patrimoine (accès restreint) ; transitions emploi-chômage (panel) ; variable de secteur public dans l'ERFS\\
+6 & Incidence des prélèvements sur les entreprises : paramètres étrangers ou hypothèses ; pas de distinction par taille & Moyenne & Paramétrique & Données d'entreprises (FARE, Ésane) appariées\\
+7 & Choc inflationniste de 2022 mal reproduit (boucliers tarifaires, marges) & Moyenne & Structurelle & Bloc énergie et prix réglementés\\
+8 & Exportations sectorielles (aéronautique, énergie, tourisme) & Moyenne & Structurelle & Demande mondiale par produit\\
+9 & Efficacité et qualité des services publics non mesurées & Moyenne & Structurelle & Indicateurs de production des services publics\\
+10 & Pas de prime de risque souveraine endogène ni de politique monétaire nationale & Moyenne & Structurelle, chocs futurs & Module de taux\\
+11 & Crise sanitaire hors du domaine de validité & Faible pour les scénarios & — & —\\
+12 & Mise en œuvre : délais administratifs et contournements non modélisés (sauf mise en œuvre partielle testée) & Variable & Mise en œuvre & Scénarios de mise en œuvre progressive\\ \bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{encadre}{Cinq sources d'incertitude, distinguées}
+\textbf{Statistique} : erreurs d'estimation des équations (écarts-types publiés dans les documents M7-M8) et de la durée
+des écarts de production (intervalle bootstrap). \textbf{Paramétrique} : valeurs des comportements calibrés
+(configurations faible et forte, sensibilité un à un). \textbf{Structurelle} : forme des équations (fermeture, part du
+capital, incidence) — testée par des variantes, jamais éliminée. \textbf{Chocs futurs} : environnements (croissance
+mondiale, taux, énergie, productivité, démographie), testés en phase 3 et non réévalués ici. \textbf{Mise en œuvre} :
+réforme à moitié appliquée (phase 3) ; délais et comportements d'évitement non modélisés.
+\end{encadre}

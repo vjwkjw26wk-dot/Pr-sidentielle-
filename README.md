@@ -1,7 +1,22 @@
 # Modèle économique et social de la France (projet « Présidentielle »)
 
 Modèle quantitatif destiné à servir de socle à un simulateur public de politiques publiques. Il n'utilise que des
-données ouvertes. Version 0.4 du simulateur (novembre 2026).
+données ouvertes. Version 0.8 du modèle (novembre 2026).
+
+## Version 0.8 (phase 3.1, 23 novembre 2026)
+
+Consolidation empirique et distribution dynamique des effets.
+
+- Audit de la v0.7 (dont un défaut de code dans la fermeture) : `doc/18_audit_v07_phase31.md`.
+- Modèle v0.8 (fermeture estimée : ρ et θ contraints par la durée des écarts de production AMECO/FMI ; incidence des
+  prélèvements sur les entreprises ; corrections de la distribution) : `doc/19_modele_v08.md`.
+- Registre des paramètres v0.8 (définition, valeur, intervalle, source, méthode, confiance, date) : `doc/20_registre_parametres_v08.md`.
+- Nouveau module M16 (distribution dynamique des effets entre ménages) : `src/m16_distribution_dynamique.py`.
+- Scripts (backtest 2010-2025, estimation de θ, sensibilité, décomposition v0.7/v0.8, diagnostic zone euro,
+  réoptimisation), résultats et livrables : `phase31/` (rapport PDF `phase31/livrables/rapport_phase31_v08.pdf`,
+  `distribution_effets_v08.xlsx`, `comparaison_v07_v08.xlsx`).
+- Tests automatisés : `tests/test_phase31.py` (résultats dans `phase31/resultats/tests_phase31.xml` et en annexe du rapport).
+- Les versions 0.6 (`rapport/`) et 0.7 (`phase3/`) restent disponibles ; leurs résultats ne sont pas modifiés.
 
 ## Version 0.7 (phase 3, 23 novembre 2026)
 

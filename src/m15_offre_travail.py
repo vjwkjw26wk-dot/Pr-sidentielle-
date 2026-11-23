@@ -1,4 +1,4 @@
-"""M15 — Offre de travail des ménages (phase 3, version 0.7).
+"""M15 — Offre de travail des ménages (phase 3, version 0.7 ; 18 cas types en version 0.8).
 
 Réaction de la participation au marché du travail (marge extensive) et des heures (marge intensive) aux mesures
 socio-fiscales, différenciée par configuration familiale et niveau de salaire.
@@ -30,9 +30,13 @@ CACHE = RACINE / "outputs" / "m15_offre_travail.json"
 SMIC = 17_900.0            # salaire imposable annuel au SMIC (2024), comme rapport/seuils_salaires.py
 ETA_EXT = {"basse": 0.1, "centrale": 0.2, "haute": 0.4}
 ETA_INT = {"basse": 0.05, "centrale": 0.1, "haute": 0.2}
-# configurations : (couple, enfants, conjoint en emploi au SMIC)
-TYPES = {"seul": (False, 0, False), "parent_isole": (False, 1, False), "couple_sans_enfant_conjoint_emploi": (True, 0, True),
-         "couple_enfants_conjoint_emploi": (True, 2, True), "couple_enfants_conjoint_sans_emploi": (True, 2, False)}
+# configurations (v0.8 : 9 configurations familiales × 2 statuts d'occupation = 18 cas types ; v0.7 : 5) :
+# (couple, enfants, conjoint en emploi au SMIC, locataire)
+_FAM = {"seul": (False, 0, False), "parent_isole_1": (False, 1, False), "parent_isole_2plus": (False, 2, False),
+        "couple_0_conj_emploi": (True, 0, True), "couple_0_conj_sans_emploi": (True, 0, False),
+        "couple_12_conj_emploi": (True, 2, True), "couple_12_conj_sans_emploi": (True, 2, False),
+        "couple_3plus_conj_emploi": (True, 3, True), "couple_3plus_conj_sans_emploi": (True, 3, False)}
+TYPES = {f"{k}|{o}": (*v, o == "locataire") for k, v in _FAM.items() for o in ("locataire", "proprietaire")}
 NIVEAUX = (0.5, 1.0)
 # leviers : variation unitaire et traduction
 LEVIERS = {"rsa": "RSA, montant de base +10 %", "prime_activite": "Prime d'activité, montant de base +10 %",
@@ -40,7 +44,7 @@ LEVIERS = {"rsa": "RSA, montant de base +10 %", "prime_activite": "Prime d'activ
            "ir_t1": "Taux de la première tranche de l'IR +1 point", "csg_activite": "CSG sur les revenus d'activité +1 point"}
 
 
-def _situation(salaire, couple, n_enf, conj_emploi, csg_pts=0.0):
+def _situation(salaire, couple, n_enf, conj_emploi, csg_pts=0.0, locataire=True):
     net = salaire * 0.98 * (1 - 0.0125 * csg_pts)
     ind = {"a0": {"date_naissance": {"ETERNITY": "1989-01-01"}}}
     if salaire > 0:
@@ -62,14 +66,15 @@ def _situation(salaire, couple, n_enf, conj_emploi, csg_pts=0.0):
     return {"individus": ind, "foyers_fiscaux": {"f": {"declarants": par, "personnes_a_charge": enf}},
             "familles": {"fa": {"parents": par, "enfants": enf}},
             "menages": {"m": {"personne_de_reference": [par[0]], **({"conjoint": [par[1]]} if couple else {}), "enfants": enf,
-                              "statut_occupation_logement": {"2024-10": "locataire_vide"}, "loyer": {"2024-10": 550 + 100 * n_enf},
+                              "statut_occupation_logement": {"2024-10": "locataire_vide" if locataire else "proprietaire"},
+                              "loyer": {"2024-10": (550 + 100 * n_enf) if locataire else 0.0},
                               "zone_apl": {"2024-10": "zone_2"}}}}, net + (SMIC * 0.98 * (1 - 0.0125 * csg_pts) if couple and conj_emploi else 0.0)
 
 
 def _revenu(T, salaire, typ, csg_pts=0.0, facteur_al=1.0):
     from openfisca_core.simulation_builder import SimulationBuilder
-    couple, n, ce = TYPES[typ]
-    sit, net = _situation(salaire, couple, n, ce, csg_pts)
+    couple, n, ce, loc = TYPES[typ]
+    sit, net = _situation(salaire, couple, n, ce, csg_pts, loc)
     sim = SimulationBuilder().build_from_entities(T, sit)
     ir = float(sim.calculate("ip_net", "2024")[0])
     pr = {v: float(sim.calculate(v, "2024-10")[0]) * 12 for v in ("rsa", "ppa", "af", "aide_logement")}
@@ -132,6 +137,7 @@ def populations():
         ind = ind.assign(adulte=ind.age >= 18, enfant=ind.age < 18, occupe=ind.TACT.astype(str) == "11")
         g = ind.groupby("men")
         men = pd.DataFrame({"n_adultes": g.adulte.sum(), "n_enfants": g.enfant.sum(), "n_occupes": g.occupe.sum()})
+        men["locataire"] = ind.groupby("men").STOCD.first().astype(str).isin(["21", "22", "23"])
         ind = ind.join(men, on="men")
         ind["poids"] = ind.poids / C.K_PREST
         lignes.append(ind)
@@ -141,9 +147,12 @@ def populations():
     d["tranche"] = np.select([s <= 0.75, s <= 1.25, s <= 2.0], ["0.5", "1.0", "1.5"], "haut")
     couple = d.n_adultes >= 2
     conj_emp = d.n_occupes >= 2
-    d["type"] = np.select([~couple & (d.n_enfants == 0), ~couple, couple & (d.n_enfants == 0), couple & conj_emp],
-                          ["seul", "parent_isole", "couple_sans_enfant_conjoint_emploi", "couple_enfants_conjoint_emploi"],
-                          "couple_enfants_conjoint_sans_emploi")
+    ne = d.n_enfants
+    fam = np.select([~couple & (ne == 0), ~couple & (ne == 1), ~couple,
+                     couple & (ne == 0) & conj_emp, couple & (ne == 0), couple & (ne <= 2) & conj_emp, couple & (ne <= 2), couple & conj_emp],
+                    ["seul", "parent_isole_1", "parent_isole_2plus", "couple_0_conj_emploi", "couple_0_conj_sans_emploi",
+                     "couple_12_conj_emploi", "couple_12_conj_sans_emploi", "couple_3plus_conj_emploi"], "couple_3plus_conj_sans_emploi")
+    d["type"] = pd.Series(fam, index=d.index) + "|" + np.where(d.locataire, "locataire", "proprietaire")
     t = d.groupby(["type", "tranche"]).poids.sum() / 1e3
     return {f"{a}|{b}": float(v) for (a, b), v in t.items()}
 

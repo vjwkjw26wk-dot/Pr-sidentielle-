@@ -1,0 +1,99 @@
+% ============================================================================================================
+\chapter{Les stratégies S1 à S5 réévaluées}\label{ch:strategies}
+% ============================================================================================================
+
+Les cinq stratégies sont recalculées avec exactement les mêmes mesures qu'en v0.7 (tableau~\ref{tab:strat_def}), dans
+trois configurations explicites :
+\begin{itemize}
+\item \textbf{centrale} : tous les paramètres à leur valeur centrale ;
+\item \textbf{réactions faibles, transmission lente} : élasticités d'offre de travail basses, épargne de précaution
+faible, pas de rigidité salariale asymétrique, transfert de bénéfices faible, pas de canal de trésorerie ni de
+délocalisation, aucune incidence salariale de l'IS et des impôts de production, cotisations entièrement transmises
+aux salaires, R\&D peu additionnelle, θ = 0,5, ρ = 0,1 ;
+\item \textbf{réactions fortes, transmission rapide} : les valeurs hautes correspondantes, θ = 1,0, ρ = 0,3.
+\end{itemize}
+Ces deux configurations ne sont pas « favorable » et « défavorable » par construction : selon la stratégie, des
+réactions plus fortes peuvent améliorer l'activité et dégrader la dette, ou l'inverse. Pour chaque stratégie, la
+configuration la plus favorable et la plus défavorable sur chaque indicateur sont lues a posteriori (crochets du
+tableau~\ref{tab:strat_configs}).
+
+\begin{table}[htbp]\centering\scriptsize
+\caption{Mesures des stratégies (écart à la situation actuelle ; identiques à la v0.7).}\label{tab:strat_def}
+\tabfit{../../../phase3/rapport/tables/strategies_principal.tex}
+\end{table}
+
+\section{Effets par horizon}
+
+{\small\setlength{\tabcolsep}{4pt}\input{../tables/strategies_horizons.tex}}
+
+L'année 2027 précède la mise en œuvre (premier budget de la législature en 2028) : les écarts y sont nuls. Les
+résultats sont relativement robustes jusqu'en 2030-2035 (les configurations encadrent la valeur centrale de quelques
+dixièmes de point de PIB et de quelques points de dette) ; au-delà de 2040, l'incertitude devient dominante pour les
+stratégies d'offre.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth]{strategies_v08.pdf}
+\caption{Stratégies S1 à S5 en v0.8 : configuration centrale (trait) et intervalle entre les configurations « réactions
+faibles » et « réactions fortes » (bande).}\label{fig:strat_v08}
+\end{figure}
+
+\begin{table}[htbp]\centering\scriptsize
+\caption{Valeur centrale et intervalle [min ; max] sur les trois configurations.}\label{tab:strat_configs}
+\tabfit{../tables/strategies_configs.tex}
+\end{table}
+
+Les configurations ne font pas varier la prime de risque sur les taux français, dont l'effet sur la dette de long terme
+est du même ordre que celui des comportements (chapitre~\ref{ch:sensibilite}) : avec une prime nulle ou haute (0 ou
+0,05 point de taux par point de dette au lieu de 0,03), la dette de 2047 va de $+37$ à $+69$ points pour S3 et de $-44$ à
+$-72$ points pour S4. Les horizons 2027-2035 sont peu touchés par cette hypothèse.
+
+\section{Ce qui change par rapport à la v0.7}
+
+\begin{table}[htbp]\centering\scriptsize
+\caption{Effets des programmes en v0.7 et v0.8 (configuration centrale).}\label{tab:v07v08}
+\tabfit{../tables/strategies_v07_v08.tex}
+\end{table}
+
+\input{../tables/decomposition_texte.tex}
+
+\paragraph{La fermeture estimée explique l'essentiel des écarts.} Pour S2, S3 et S5, la colonne (b) domine : $+17$,
+$+31$ et $+7$ points de dette en 2047. En v0.7, la demande anticipait 1,5 fois la hausse du potentiel (θ = 1,5) : la
+production dépassait durablement son potentiel après une réforme d'offre, ce qui gonflait les recettes. Avec θ estimé
+(0,75, plage 0,5-1,0), la production rejoint le potentiel accru sans le dépasser ; les recettes suivent, mais moins.
+Le même mécanisme explique la révision des mesures d'offre prises isolément : le relèvement de l'âge légal à 65 ans
+réduisait la dette de 8,5 points en 2047 en v0.7, de 1,9 point en v0.8 ; la durée du travail à 37 heures, de 18 points
+en v0.7, de 1,4 point en v0.8. Leurs effets sur le PIB changent peu (1,2 et 1,7 \% en 2047).
+
+\paragraph{La correction du défaut de code et le recalage} (colonne a) dégradent la dette de S1 de 6 points et celle de
+S2, S3 et S5 de 3 à 6 points. Ces stratégies contiennent toutes une hausse de la prime d'activité, dont l'effet sur la
+dette est révisé de $+2{,}9$ points par cette seule colonne (offre de travail en 18 cas types, recalage de la
+référence) ; on ne peut pas séparer davantage ces deux causes sans simulations supplémentaires.
+
+\paragraph{L'incidence des prélèvements sur les entreprises} (colonne c) dégrade la dette de S5 de 5,6 points et d'une
+baisse de 20\md{} de cotisations de 4,1 points : en v0.7, la baisse de cotisations était entièrement transmise aux
+salaires à long terme, ce qui soutenait le revenu des ménages et les recettes ; avec une transmission de moitié, une
+partie va aux profits, moins taxés.
+
+\begin{resultat}[Conclusions de la v0.7 invalidées]
+\begin{itemize}
+\item « S5 réduit la dette de 10 points en 2047 de façon robuste » : en v0.8, S5 l'\emph{augmente} de 5 points (3 à 6
+selon la configuration ; $-2$ à $+4$ sans le module européen, selon l'incidence).
+\item « S2 est neutre pour la dette » ($-0{,}8$ point) : en v0.8, $+26$ points (19 à 26).
+\item « Les réformes d'offre (âge légal, durée du travail) réduisent fortement la dette » : leurs gains budgétaires
+reposaient sur la fermeture de la v0.7 ; ils sont faibles en v0.8.
+\item Les compositions optimisées en v0.7 pour S1, S2 et S3 ne respectent plus leur contrainte de dette quand elles sont
+évaluées avec la v0.8 (chapitre~\ref{ch:optimisation}).
+\end{itemize}
+Restent valables : l'ordre des stratégies sur le PIB (S3 > S2 > S5 > S1 > S4) et sur la dette (S4 seule la réduit
+nettement) ; la forte réduction de la pauvreté par S1 ; le caractère récessif de S4.
+\end{resultat}
+
+\section{Effets sectoriels}
+
+Le modèle distingue 25 branches pour la production, l'emploi et l'investissement, mais ses équations de comportement
+sont estimées au niveau agrégé ou par grands secteurs : les résultats par branche découlent surtout de la structure de
+la demande (tableau entrées-sorties) et ne sont pas validés. Seule la part de l'industrie dans la valeur ajoutée est
+publiée (tableau~\ref{tab:strat_horizons}) : elle varie de 0,35 point au plus. Elle baisse légèrement avec S1 et S3
+(la demande supplémentaire des ménages se porte surtout sur les services) et augmente avec S4 et S5 (baisse relative de
+la demande intérieure, effet de compétitivité de la baisse des cotisations dans S5). Une analyse sectorielle fiable demanderait des équations
+d'exportation et de prix par produit (limite 7 du chapitre~\ref{ch:limites}).

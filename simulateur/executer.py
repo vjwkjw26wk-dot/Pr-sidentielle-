@@ -39,6 +39,8 @@ RENDEMENT_POINT_PFU = 600.0       # M€ par point (assiette d'environ 60 Md€)
 ASSIETTE_ISF, RENDEMENT_IFI = 930_000.0, 2_200.0     # M€ : patrimoine taxable au-delà du seuil (ISF 2017 revalorisé) ; IFI remplacé
 RENDEMENT_SUCCESSIONS = 18_000.0  # M€ (droits de mutation à titre gratuit)
 DEPENSE_ASSURANCE_CHOMAGE = 40_000.0
+MASSE_POINT_INDICE = 220_000.0 * 0.85   # M€ nets pour une hausse de 100 % du point d'indice : masse indiciaire brute des trois
+#                                         fonctions publiques ≈ 220 Md€ (1 % ≈ 2,2 Md€, DGAFP), nette de cotisations ≈ 85 % [H]
 EFFET_CHOMAGE_STRUCTUREL = 0.1    # v0.6 (conservé pour comparaison)
 # v0.7 : chômage structurel pour 10 % de variation des allocations = élasticité de la durée indemnisée (0,3, Le Barbanchon,
 # Rathelot et Roulet 2019) × 10 % × part des chômeurs indemnisés (0,6) × chômage (7 %) × 0,5 (effets d'éviction entre
@@ -61,12 +63,25 @@ STOCK_RD_2025, DEPREC_RD, DELAI_RD = 235_000.0, 0.15, 2
 # de taux de retour à l'emploi) [H, exploratoire]
 EFFET_FORMATION = {"basse": 0.0, "centrale": 0.02, "haute": 0.05}   # points de chômage structurel par Md€ et par an
 NIVEAUX_COMPORT = {"basse": {"PSI_CHOMAGE": 0.1, "PSI_TAUX": 0.0, "ASYM_SALAIRES": 1.0, "SEMI_ELAST_IS": 0.2, "THETA_TRESORERIE": 0.0,
-                             "ELAST_DELOC_ENERGIE": 0.0},
+                             "ELAST_DELOC_ENERGIE": 0.0, "THETA_ANTICIPATION": 0.5},
                    "centrale": {},
                    "haute": {"PSI_CHOMAGE": 0.6, "PSI_TAUX": 0.5, "ASYM_SALAIRES": 0.25, "SEMI_ELAST_IS": 1.5, "THETA_TRESORERIE": 0.3,
-                             "ELAST_DELOC_ENERGIE": 0.4},
+                             "ELAST_DELOC_ENERGIE": 0.4, "THETA_ANTICIPATION": 1.0},
                    # sensibilité de la fermeture (anticipation des révisions du potentiel), document 17
-                   "anticipation_faible": {"THETA_ANTICIPATION": 1.0}, "anticipation_forte": {"THETA_ANTICIPATION": 2.0}}
+                   "anticipation_faible": {"THETA_ANTICIPATION": 0.5}, "anticipation_forte": {"THETA_ANTICIPATION": 1.0}}
+# v0.8 : incidence de long terme sur les salaires (part du prélèvement supportée par les salariés, via la cible de long
+# terme du coût salarial ; le reste par les actionnaires et, pour les impôts de production, les consommateurs).
+# IS : Fuest, Peichl, Siegloch (AER 2018), environ 50 % de l'impôt local sur les entreprises en Allemagne (négociations
+# collectives fortes, entreprises peu mobiles) ; valeur centrale réduite pour l'IS français (groupes mobiles, transfert
+# de bénéfices déjà représenté) [L]. Impôts de production : pas d'estimation causale française publiée sur les salaires
+# (évaluations IPP 2025 et France Stratégie 2024 de la baisse de la CVAE centrées sur l'activité) [H].
+# Cotisations employeurs : part transmise aux salaires à long terme ; Bozio, Breda, Grenet (2019) : transmission forte
+# quand les cotisations ouvrent des droits, faible sinon ; CICE (Carbonnier, Malgouyres, Py, Urvoy 2019) : hausses de
+# salaires limitées aux salariés plus qualifiés [L]. En v0.7, la correction d'erreur des salaires transmettait la
+# totalité aux salaires à long terme (valeur 1).
+INCIDENCE_SALAIRES = {"is": {"basse": 0.0, "centrale": 0.3, "haute": 0.5},
+                      "impots_production": {"basse": 0.0, "centrale": 0.2, "haute": 0.4},
+                      "cotisations": {"basse": 1.0, "centrale": 0.5, "haute": 0.2}}
 DEPENSE_ASPA = 4_100.0
 REPERCUSSION_IMPOTS_PRODUCTION = 0.5   # part répercutée sur les prix de la valeur ajoutée marchande (hypothèse D)
 RENDEMENT_POINT_TVA_REDUITE, PART_TAUX_REDUITS = 5_000.0, 0.35
@@ -148,6 +163,9 @@ def construire(scenario: dict, mod, central=None, journal=None):
     NIV_COMP = H.get("comportements", "centrale")   # réactions des hauts revenus (M13) : basse, centrale, haute
     NIV7 = H.get("comportements_v07", "centrale")    # v0.7 : intensité des comportements de la phase 3 (basse, centrale, haute)
     NIV7_LEV = NIV7 if NIV7 in ("basse", "centrale", "haute") else "centrale"   # niveau des paramètres propres aux mesures
+    # v0.8 : niveaux par famille de paramètres (analyse de sensibilité un à un) : offre_travail, incidence, ac, rd, formation
+    NIVM = {g: H.get("niveaux_mesures", {}).get(g, NIV7_LEV) for g in ("offre_travail", "incidence", "ac", "rd", "formation")}
+    SURCH = H.get("surcharges") or {}
     ans = range(mod.B + 1, scenario.get("horizon", HORIZON_DEFAUT) + 1)
     rho = H.get("fermeture_offre", M8.RHO_DEFAUT)
     mesures = scenario.get("mesures", [])
@@ -163,9 +181,15 @@ def construire(scenario: dict, mod, central=None, journal=None):
     ref.fermeture_offre = rho
     if NIV7 != "centrale":
         ref.comportements = dict(NIVEAUX_COMPORT[NIV7])
+    if SURCH:
+        ref.comportements = {**(ref.comportements or {}), **{k: v for k, v in SURCH.items() if k not in ("KAPPA_PRIX", "MU_IMPORT")}}
+        if "KAPPA_PRIX" in SURCH:
+            ref.kappa_prix = SURCH["KAPPA_PRIX"]
+        if "MU_IMPORT" in SURCH:
+            ref.mu_import = SURCH["MU_IMPORT"]
     if H.get("fermeture_mode"):
         ref.fermeture_mode = H["fermeture_mode"]
-    if central is None and (NIV7 != "centrale" or H.get("fermeture_mode")):
+    if central is None and (NIV7 != "centrale" or H.get("fermeture_mode") or SURCH or rho != M8.RHO_DEFAUT):
         # v0.7 : la référence est recalculée avec les mêmes comportements que le scénario (sinon l'écart mêlerait
         # l'effet de la mesure et celui du changement de paramètres) ; potentiel de référence mis à jour
         an_r = range(mod.B + 1, max(2035, max(ans)) + 1)
@@ -191,6 +215,8 @@ def construire(scenario: dict, mod, central=None, journal=None):
         var.emploi_additionnel = l9["emploi_additionnel"]
         info["statique"]["pensions_M€"] = {int(t): float(v) for t, v in l9["ajust_prestations"].items()}
         info["regle_age"] = regle
+        info["seniors"] = {"actifs": (var.population_active - ref.population_active), "emploi": l9["emploi_additionnel"],
+                           "pensions_M": l9["ajust_prestations"]}
         info["retraites_variante"] = {t: P9 * pens.masse(t, regle)[0] / pens.masse(t, "actuelle")[0]
                                       for t, (_, P9) in R["pensions"].items()}
     mm = {"impots": 0.0, "prestations": 0.0, "annee": 2024, "debut": debut_socio_fiscal(mesures)}
@@ -261,12 +287,12 @@ def construire(scenario: dict, mod, central=None, journal=None):
             base_r = var.autres_depenses_pib
             var.autres_depenses_pib = pd.Series({a: float(base_r.get(a, ratio0)) + (md * 1e3 / pib0 if a >= debut else 0.0)
                                                  for a in var.population_active.index})
-            rd = md * ADDITIONNALITE_RD[NIV7_LEV]
+            rd = md * ADDITIONNALITE_RD[NIVM["rd"]]
             f = 1 + rd * 1e3 / float(m_.p_fbcf[A0]) / float(var.autres_investissements[A0])
             var.autres_investissements = pd.Series({a: v * (f if a >= debut else 1.0) for a, v in var.autres_investissements.items()})
             stock, niv_prev, prod = 0.0, 0.0, {}
             for a in sorted(idx_nom):
-                niv_a = ELAST_STOCK_RD[NIV7_LEV] * stock / (STOCK_RD_2025 / 1e3) if a >= debut + DELAI_RD else 0.0
+                niv_a = ELAST_STOCK_RD[NIVM["rd"]] * stock / (STOCK_RD_2025 / 1e3) if a >= debut + DELAI_RD else 0.0
                 prod[a] = niv_a - niv_prev
                 niv_prev = niv_a
                 stock = stock * (1 - DEPREC_RD) + (rd if a >= debut else 0.0)
@@ -278,7 +304,7 @@ def construire(scenario: dict, mod, central=None, journal=None):
             # progressive (5 ans) — exploratoire
             md = float(p["md"])
             var.conso_publique = _serie_g(mod, var, md * 1e3 / pib0 * 100, debut)
-            eff = EFFET_FORMATION[NIV7_LEV] * md
+            eff = EFFET_FORMATION[NIVM["formation"]] * md
             var.chomage_structurel = pd.Series({a: u - (eff * min(1.0, (a - debut + 1) / 5) if a >= debut else 0.0)
                                                 for a, u in var.chomage_structurel.items()})
             comport["formation_chomage_structurel_pt"] = -eff
@@ -290,6 +316,10 @@ def construire(scenario: dict, mod, central=None, journal=None):
             tau0 = float(ref.taux_is.get(debut, ref.taux_is.iloc[-1]))
             is0 = 0.15 * float(apu.d5rec[mod.B]) * mod.macro.pib_cp[mm["annee"]] / mod.macro.pib_cp[mod.B]
             mm["profits"] = mm.get("profits", 0.0) + is0 * (tau0 - float(p["taux"])) / tau0
+            d_is = is0 * (float(p["taux"]) - tau0) / tau0                   # supplément d'IS (M€), signe : hausse > 0
+            lam = INCIDENCE_SALAIRES["is"][NIVM["incidence"]]
+            ajouter_niveau("ancre_salaire", debut, float(np.log1p(-lam * d_is / float(mod.men.d1[A0]))))
+            comport["incidence_is_salaires"] = lam
         elif t == "transferts_menages":
             mm["prestations"] += float(p["points_pib"]) / 100 * mod.macro.pib_cp[mm["annee"]]
         elif t == "energie_import":
@@ -306,6 +336,11 @@ def construire(scenario: dict, mod, central=None, journal=None):
             md = float(p["md"])
             d1, d61 = float(mod.men.d1[A0]), float(mod.men.d61[A0])
             choc_w[debut] = choc_w.get(debut, 0.0) + float(np.log1p(md * 1e3 / d1))
+            # v0.8 : seule une part λ de la baisse (ou hausse) revient aux salariés à long terme ; le coût du travail reste
+            # durablement modifié de (1 − λ)
+            lam = INCIDENCE_SALAIRES["cotisations"][NIVM["incidence"]]
+            ajouter_niveau("ancre_salaire", debut, float(np.log1p((1 - lam) * md * 1e3 / d1)))
+            comport["incidence_cotisations_salaires"] = lam
             base_tc = var.taux_cotisations if var.taux_cotisations is not None else pd.Series(dtype=float)
             var.taux_cotisations = pd.Series({a: float(base_tc.get(a, 1.0)) * ((1 + md * 1e3 / d61) if a >= debut else 1.0)
                                               for a in var.population_active.index})
@@ -356,7 +391,10 @@ def construire(scenario: dict, mod, central=None, journal=None):
         elif t == "impots_production":
             md = float(p["md"])
             ajouter_recette_apu(debut, md * 1e3)
-            mm["profits"] = mm.get("profits", 0.0) - md * 1e3 * (1 - REPERCUSSION_IMPOTS_PRODUCTION)
+            lam = INCIDENCE_SALAIRES["impots_production"][NIVM["incidence"]]
+            mm["profits"] = mm.get("profits", 0.0) - md * 1e3 * (1 - REPERCUSSION_IMPOTS_PRODUCTION - lam)
+            ajouter_niveau("ancre_salaire", debut, float(np.log1p(-lam * md * 1e3 / float(mod.men.d1[A0]))))
+            comport["incidence_impots_production_salaires"] = lam
             va_m = float(m_.pib_cp[A0]) * 0.8
             cal = var.calage
             cal["prix"][debut] = cal["prix"].get(debut, 0.0) + float(np.log1p(REPERCUSSION_IMPOTS_PRODUCTION * md * 1e3 / va_m))
@@ -393,7 +431,7 @@ def construire(scenario: dict, mod, central=None, journal=None):
         elif t == "assurance_chomage":
             v = float(p["variation"])
             ajouter_transfert(debut, v * DEPENSE_ASSURANCE_CHOMAGE)
-            var.chomage_structurel = pd.Series({a: u + (EFFET_AC[NIV7_LEV] * v * 10 if a >= debut else 0.0)
+            var.chomage_structurel = pd.Series({a: u + (EFFET_AC[NIVM["ac"]] * v * 10 if a >= debut else 0.0)
                                                 for a, u in var.chomage_structurel.items()})
         elif t == "minimum_vieillesse":
             mt = float(p["hausse"]) * DEPENSE_ASPA
@@ -430,7 +468,7 @@ def construire(scenario: dict, mod, central=None, journal=None):
             lev15["csg_activite"] = float(p.get("activite_points", 0.0))
     if lev15 and H.get("offre_travail", True):
         import m15_offre_travail as M15
-        e15 = M15.effets(lev15, NIV7_LEV)
+        e15 = M15.effets(lev15, NIVM["offre_travail"])
         d0 = debut_socio_fiscal(mesures)
         dpa, dh = e15["population_active_milliers"], e15["heures_pct_emploi"] / 100
         var.population_active = pd.Series({a: v + (dpa * min(1.0, (a - d0 + 1) / 2) if a >= d0 else 0.0) for a, v in var.population_active.items()})
@@ -497,11 +535,38 @@ def construire(scenario: dict, mod, central=None, journal=None):
         info["distribution"] = D.reset_index().to_dict(orient="records")
         info["inegalites"] = D.attrs.get("inegalites")
         info["groupes"] = D.attrs.get("groupes")
+        info["menages"] = D.attrs.get("menages")
         import m14_heterogeneite as H14
         mm["conso"] = H14.ajustement_conso(info["distribution"], H.get("pmc", "central"))
         info["statique"]["ajustement_conso_M€"] = mm["conso"]
         info["statique"].update({"impot_revenu_M€": x["impots"] - perte + analytique["impots"], "prestations_versees_M€": mm["prestations"],
                                  "droits_M€": {v: (r[v] - base[v]) / 1e6 for v in C.PRESTATIONS}})
+    if info.get("menages") is None and H.get("distribution_dynamique", True):
+        import m10_couplage as C
+        base = C.evaluer("base", None)
+        info["menages"] = C.distribution(base, base).attrs.get("menages")
+    # v0.8 : informations pour la distribution dynamique (M16)
+    cot = pd.Series(0.0, index=var.population_active.index)
+    d0 = min([int(me_.get("parametres", {}).get("debut", DEBUT_DEFAUT)) for me_ in mesures] or [DEBUT_DEFAUT])
+    for me_ in mesures:
+        if me_["type"] == "cotisations_employeurs":
+            d1_ = float(mod.men.d1[A0])
+            deb_ = int(me_["parametres"].get("debut", DEBUT_DEFAUT))
+            cot = cot + pd.Series({a: (float(np.log1p(float(me_["parametres"]["md"]) * 1e3 / d1_)) if a >= deb_ else 0.0) for a in cot.index})
+    tr16 = []
+    for me_ in mesures:
+        p_, deb_ = me_.get("parametres", {}), int(me_.get("parametres", {}).get("debut", DEBUT_DEFAUT))
+        if me_["type"] == "assurance_chomage":
+            tr16.append((float(p_["variation"]) * DEPENSE_ASSURANCE_CHOMAGE, "chomeurs", deb_))
+        elif me_["type"] == "transferts_menages":
+            tr16.append((float(p_["points_pib"]) / 100 * float(central["pib_nominal"][2025]), "prestations", deb_))
+        elif me_["type"] == "point_indice":
+            tr16.append((float(p_["hausse"]) * MASSE_POINT_INDICE, "salaires", deb_))
+    info["m16"] = {"transferts": tr16, "cot_employeurs": cot, "successions_M": float((comport.get("successions") or {}).get(f"net_{NIV_COMP}_M€", 0.0)),
+                   "debut": d0, "prix_fiscal": (var.niveaux or {}).get("prix_conso")}
+    energ = [p_ for p_ in ("CPA_B", "CPA_C19", "CPA_D") if p_ in var.prix_import.columns]
+    if energ:
+        info["m16"]["energie"] = np.log(var.prix_import[energ].mean(axis=1) / ref.prix_import[energ].mean(axis=1))
     info["comportements"] = comport
     mm["variante_pmc"] = H.get("pmc", "central")
     mm["variante_distribution"] = H.get("distribution_profits", "central")
@@ -510,7 +575,7 @@ def construire(scenario: dict, mod, central=None, journal=None):
     return ref, var, ans, info
 
 
-VERSION_MODELE = "0.7"
+VERSION_MODELE = "0.8"
 
 
 def empreintes() -> dict:
@@ -564,6 +629,15 @@ def executer(scenario: dict) -> dict:
         traj[k] = {"reference": {int(t): float(c[k][t]) for t in ans}, "scenario": {int(t): float(v[k][t]) for t in ans},
                    "ecart": {int(t): float(v[k][t] - c[k][t] if k in EN_POINTS else (v[k][t] / c[k][t] - 1) * 100) for t in ans},
                    "unite_ecart": "points" if k in EN_POINTS else "%"}
+    dyn = None
+    if info.get("menages") is not None and H.get("distribution_dynamique", True):
+        import m16_distribution_dynamique as M16
+        import m10_couplage as C
+        i16 = info["m16"]
+        dyn = M16.calculer(info["menages"], c, v, prix_fiscal=i16.get("prix_fiscal"), cot_employeurs=i16["cot_employeurs"],
+                           energie=i16.get("energie"), successions_M=i16["successions_M"], debut=i16["debut"],
+                           energie_decile=C._profil("energie"), horizons=[t for t in M16.HORIZONS if t in ans or t == min(ans)],
+                           seniors=info.get("seniors"), transferts=i16.get("transferts"))
     incert = None
     n = int(H.get("incertitude", 0))
     if n:
@@ -592,7 +666,7 @@ def executer(scenario: dict) -> dict:
         for pr_ in profils_res:
             pr_["variation_revenu_disponible"] += aj[pr_["profil"]]
     return {"scenario": scenario, "trajectoires": traj, "distribution": info["distribution"], "statique": info["statique"],
-            "inegalites": info.get("inegalites"), "groupes": info.get("groupes"),
+            "inegalites": info.get("inegalites"), "groupes": info.get("groupes"), "distribution_dynamique": dyn,
             "comportements": info.get("comportements"), "version": empreintes(), "reference": info.get("reference"),
             "profils": profils_res,
             "europe": europe, "incertitude": incert, "transparence": transparence(scenario), "duree_s": round(time.time() - t0),

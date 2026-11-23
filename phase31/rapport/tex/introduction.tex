@@ -1,0 +1,64 @@
+\chapter*{Résumé}
+\addcontentsline{toc}{chapter}{Résumé}
+
+\paragraph{Objet.} La phase 3.1 consolide la version 0.7 du modèle sur six points : le paramètre qui transmet la
+demande au PIB potentiel (dont dépendait la dette de long terme de S3, de $-9$ à $+43$ points), la validation sur le
+passé (backtest 2010-2025), l'incidence des prélèvements sur les entreprises, la distribution des effets entre ménages
+après propagation macroéconomique, la cohérence entre modules et la réévaluation des stratégies S1 à S5 (définitions
+inchangées). Toutes les simulations citées ont été exécutées ; les résultats ne sont ni des prévisions ni des
+recommandations.
+
+\paragraph{Audit.} L'audit a trouvé un défaut de code dans la v0.7 : une variable locale de la fermeture écrasait
+l'amortissement du point fixe du modèle. Le choix d'un terme d'amortissement de 0,3 en v0.7 en dépendait ; il est
+invalidé. Deux termes non estimés de la fermeture produisaient des oscillations de période deux ans ; ils sont
+supprimés. Six limites de la v0.7 sont analysées (mécanisme, hypothèses implicites, nature, corrections possibles).
+
+\paragraph{Transmission vers le potentiel.} La fermeture est réécrite avec deux paramètres : ρ, le rappel de la
+production vers le potentiel, et θ, la part de la hausse du potentiel anticipée par la demande. Ils sont contraints par
+la durée observée des écarts de production (2,3 à 2,8 ans, intervalle 1,6-5,3, AMECO et FMI 1982-2019) et par la
+réaction de la consommation aux chocs permanents de revenu. Aucune estimation ponctuelle robuste n'existe : on publie
+une plage (θ de 0,5 à 1,0, ρ de 0,1 à 0,3) et une valeur centrale fixée avant de regarder les stratégies (θ = 0,75 ;
+ρ = 0,2). Aucune asymétrie ni dépendance à l'état n'est détectable.
+
+\paragraph{Backtest.} Les équations sont réestimées à chaque date d'origine avec les seules données alors disponibles.
+Sur 2010-2019, l'erreur sur le PIB est de 1 point (moyenne quadratique), et le modèle ne bat la prévision naïve que sur
+les origines 2012 et 2016. L'emploi est sous-estimé de 1,9 \% et la dette surestimée de 20 points en 2019 : la
+productivité estimée en temps réel était trop optimiste, et la charge d'intérêts suit trop lentement la baisse des
+taux. Sur 2021-2025, l'inflation est sous-estimée d'environ 6 points en niveau. Les effets simulés d'une baisse de
+cotisations (132 000 à 159 000 emplois pour 20\md), d'une hausse de TVA et d'une baisse d'IS sont dans les fourchettes
+des évaluations ; ceux de la prime d'activité et du RSA sur l'offre de travail sont dans le haut.
+
+\paragraph{Distribution dynamique.} Le nouveau module M16 suit le revenu réel de 41 000 ménages par huit canaux
+(prélèvements et prestations, salaires, emploi, patrimoine, successions, indexation, prix, plus un contrôle de cohérence
+avec le compte macroéconomique), à cinq horizons, par décile, âge, statut, catégorie sociale, configuration familiale et
+statut d'occupation du logement. Trois défauts de représentation des gagnants et des perdants y ont été trouvés et
+corrigés pendant la phase (âge légal, allocations chômage, cohérence nominale).
+
+\paragraph{Stratégies S1 à S5.} Les horizons 2027-2035 sont relativement robustes ; au-delà de 2040, l'incertitude domine.
+\begin{itemize}
+\item \textbf{S1 (protection)} : chômage $-1{,}2$ point et pauvreté $-4{,}3$ points en 2035, aucun perdant ; dette
+neutre en 2035 mais $+10$ points en 2047 (de $-13$ à $+25$ selon les réactions).
+\item \textbf{S2 (emploi)} : PIB $+1{,}3$ \% en 2035, $+1{,}8$ \% en 2047 ; dette $+26$ points en 2047 (19 à 26) ; les
+chômeurs perdent (allocations).
+\item \textbf{S3 (productivité)} : le plus fort effet sur le PIB ($+4{,}3$ \% en 2047, 3,5 à 5,3), mais la dette augmente
+de 53 points (44 à 72), le chômage de 0,9 point en 2047.
+\item \textbf{S4 (redressement)} : seule stratégie qui réduit nettement la dette ($-15$ points en 2035, $-59$ en 2047,
+de $-44$ à $-72$ selon la prime de risque), au prix de 0,5 \% de PIB et d'une perte de revenu réel pour tous les
+déciles (1,6 à 4,8 \%) ; la pauvreté augmente de 1,4 point.
+\item \textbf{S5 (global)} : effets modérés ; dette $+5$ points en 2047 (3 à 7), PIB $+0{,}9$ \% ; les déciles 3 à 6
+gagnent, le premier et le dernier perdent.
+\end{itemize}
+Aucune stratégie ne domine les autres sur tous les critères : le rapport ne désigne pas de gagnante.
+
+\paragraph{Ce qui change par rapport à la v0.7.} La fermeture estimée retire aux réformes d'offre l'essentiel de leurs
+gains budgétaires : le relèvement de l'âge légal à 65 ans ne réduit plus la dette de 2047 que de 2 points (8,5 en v0.7),
+et S3 l'augmente de 53 points (18 en v0.7). Quatre conclusions de la v0.7 sont invalidées, dont celle d'une baisse
+robuste de la dette par S5. Les compositions optimisées en v0.7 pour S1, S2 et S3 ne respectent plus leur contrainte de
+dette.
+
+\paragraph{Incertitude.} Cinq sources sont distinguées : \emph{statistique} (erreurs d'estimation, durée des écarts de
+production), \emph{paramétrique} (comportements calibrés : configurations faible et forte, sensibilité un à un sur
+douze paramètres), \emph{structurelle} (forme de la fermeture, incidence, prime de risque souveraine — cette dernière pèse
+autant que tous les comportements réunis sur la dette de 2047), \emph{chocs futurs} (environnements de la phase 3) et
+\emph{mise en œuvre}. Les limites restantes sont classées au chapitre~\ref{ch:limites} ; une revue critique conclut le
+rapport.

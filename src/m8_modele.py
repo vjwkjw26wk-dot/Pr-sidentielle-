@@ -33,10 +33,11 @@ import m7_equations as E
 import m7_series as S
 from telechargement import jsonstat_dict, telecharger
 
-RHO_DEFAUT = 0.15   # fermeture d'offre des projections (sensibilité : 0 et 1)
-THETA_ANTICIPATION = 1.5 # v0.7 : demande alignée sur les révisions du PIB potentiel (revenu permanent) ; 1,5 ferme l'écart des chocs d'offre en rampe (tests 1,0 / 1,5 / 2,0, phase3/test_fermeture.py) [H]
-AMORTI_PRODUCTION = 0.3  # v0.7 : terme proportionnel de la fermeture sur l'écart de production (vérifié par simulation)
-AMORTI_FERMETURE = 0.3   # terme proportionnel du correcteur, limite les dépassements (calibré par simulation)
+RHO_DEFAUT = 0.2    # v0.8 (0,15 avant) : estimé avec θ (phase31/estimation_theta.py), plage 0,1-0,3 ; fermeture d'offre des projections (sensibilité : 0 et 1)
+PART_K_ANTICIPATION = 1.0  # v0.8 : part du capital dans l'écart de potentiel anticipé (voir phase31/estimation_theta.py)
+THETA_ANTICIPATION = 0.75 # v0.8 : estimé par la durée des écarts de production (phase31/estimation_theta.py), plage 0,5-1,0 ; v0.7 : 1,5 v0.7 : demande alignée sur les révisions du PIB potentiel (revenu permanent) ; 1,5 ferme l'écart des chocs d'offre en rampe (tests 1,0 / 1,5 / 2,0, phase3/test_fermeture.py) [H]
+AMORTI_PRODUCTION = 0.0  # v0.8 (0,3 en v0.7, choix fondé sur un défaut de code) ; v0.7 : terme proportionnel de la fermeture sur l'écart de production (vérifié par simulation)
+AMORTI_FERMETURE = 0.0   # v0.8 : identique au terme proportionnel de la fermeture sur l'écart de production (0,3 avant) ; terme proportionnel du correcteur, limite les dépassements (calibré par simulation)
 OKUN = 1.5      # points de PIB par point de chômage (ordre de grandeur des estimations françaises de la loi d'Okun)
 # ---- Version 0.7 (phase 3) : bloc d'offre et fermeture par l'écart de production -------------------------------------
 # Production potentielle : ln Y*_t = ln A_t + α ln K_{t−1} + (1 − α) ln N*_t + Σ_{s≤t} π_s, avec N* = population active ×
@@ -46,7 +47,7 @@ OKUN = 1.5      # points de PIB par point de chômage (ordre de grandeur des est
 ALPHA_K = 0.35          # part du capital dans la fonction de production (comptes nationaux : part de l'EBE ≈ 1/3) [C]
 KAPPA_PRIX = 0.10       # hausse annuelle du prix de la VA des branches non industrielles par point d'écart de production
 #                         de l'année précédente (pente de courbe de Phillips ; 0,05-0,2 dans la littérature) [L]
-MU_IMPORT = 0.3         # élasticité des importations à la variation de l'écart de production (goulots, capacités) [L/H]
+MU_IMPORT = 0.0         # élasticité des importations à la variation de l'écart de production (goulots, capacités) [L/H]
 # ---- Version 0.7 : comportements (phase 3). Valeurs centrales ; plages et sources dans phase3/PARAMETRES (doc 15) ----
 PSI_CHOMAGE = 0.3       # épargne de précaution : baisse de la consommation (%) par point de hausse du chômage [H/L]
 PSI_TAUX = 0.2          # baisse de la consommation (%) par point de hausse du taux d'intérêt réel (l'année même) [L]
@@ -480,17 +481,22 @@ class Modele:
                     return -OKUN * (hist_vol[a]["u"] - float(cs.get(a, cs.iloc[-1]))) / 100
                 g1 = _gf(t - 1)
                 g2 = _gf(t - 2) if (t - 2) in hist_vol else g1
-                amorti = _par(ex, "AMORTI_PRODUCTION")
-                niv["Z"] = niv.get("Z", 0.0) - (rho * g1 + amorti * (g1 - g2))
+                # v0.8 : nom distinct de l'argument `amorti` de simuler (amortissement du point fixe) ; en v0.7, ce
+                # paramètre écrasait l'amortissement du point fixe (0,5 → 0,3) : défaut corrigé
+                a_ferm = _par(ex, "AMORTI_PRODUCTION")
+                if alt and t >= alt.get("debut", 2026) and "amorti" in alt:   # v0.8 : variantes à partir d'une date
+                    a_ferm = alt["amorti"]
+                niv["Z"] = niv.get("Z", 0.0) - (rho * g1 + a_ferm * (g1 - g2))
                 # anticipation : ménages et entreprises révisent leur revenu permanent quand le potentiel s'écarte de la
                 # référence (part THETA_ANTICIPATION de l'écart de potentiel de l'année précédente, en demande)
-                z_ff = _par(ex, "THETA_ANTICIPATION") * dpot_hist.get(t - 1, 0.0)
+                th_ = alt["theta"] if (alt and t >= alt.get("debut", 2026) and "theta" in alt) else _par(ex, "THETA_ANTICIPATION")
+                z_ff = th_ * dpot_hist.get(t - 1, 0.0)
             elif rho:
                 u_s = float(ex.chomage_structurel.get(t - 1, ex.chomage_structurel.iloc[-1]))
                 g1 = hist_vol[t - 1]["u"] - u_s
                 g2 = hist_vol[t - 2]["u"] - float(ex.chomage_structurel.get(t - 2, u_s)) if (t - 2) in hist_vol else g1
                 # correcteur proportionnel-intégral (forme incrémentale) : ρ sur l'écart, AMORTI sur sa variation
-                niv["Z"] = niv.get("Z", 0.0) + (rho * g1 + AMORTI_FERMETURE * (g1 - g2)) * OKUN / 100
+                niv["Z"] = niv.get("Z", 0.0) + (rho * g1 + _par(ex, "AMORTI_FERMETURE") * (g1 - g2)) * OKUN / 100
             if alt.get("impulsion_Z"):   # diagnostic (réponse indicielle de la fermeture), sans effet par défaut
                 niv["Z"] = niv.get("Z", 0.0) + float(alt["impulsion_Z"].get(t, 0.0))
             Z_dem = (niv.get("Z", 0.0) + z_ff) * (sum(self.va0) + sum(self.tx0))
@@ -547,7 +553,10 @@ class Modele:
                        + rw["ecm_1"] * (np.log(A["w"][t - 1]) - np.log(A["pva_m"][t - 1]) - np.log(A["prod_m"][t - 1]))
                        + E.PHILLIPS * ugap * (_par(ex, "ASYM_SALAIRES") if ugap > 0 else 1.0))
                 dlw = dlw - rw["ecm_1"] * (np.log(A["w"][t - 1]) - np.log(A["pva_m"][t - 1]) - np.log(A["prod_m"][t - 1])) \
-                    + ecm("w", rw["ecm_1"] * (np.log(A["w"][t - 1]) - np.log(A["pva_m"][t - 1]) - np.log(A["prod_m"][t - 1])))
+                    + ecm("w", rw["ecm_1"] * (np.log(A["w"][t - 1]) - np.log(A["pva_m"][t - 1]) - np.log(A["prod_m"][t - 1])
+                                              - _niv(ex, "ancre_salaire", t)))
+                # v0.8 : "ancre_salaire" (log) déplace la cible de long terme du coût salarial par tête : incidence de long
+                # terme des prélèvements sur les entreprises (part supportée par les salariés), document 19
                 if ex.choc_salaire is not None:
                     dlw += float(ex.choc_salaire.get(t, 0.0))
                 dlw += _cal(ex, "salaire", t)
@@ -725,6 +734,11 @@ class Modele:
             gap_hist[t] = gap_t
             if ex.lpot_ref is not None and t in ex.lpot_ref.index:
                 dpot_hist[t] = (ly - gap_t) - float(ex.lpot_ref[t])
+                # v0.8 : part de l'écart de potentiel due au capital (endogène à la demande) prise en compte dans
+                # l'anticipation (PART_K_ANTICIPATION = 1 : comme en v0.7 ; 0 : seuls les chocs exogènes d'offre)
+                if ex.lk_ref is not None and t in ex.lk_ref.index:
+                    dk_t = np.log(k_agg) - float(ex.lk_ref[t])
+                    dpot_hist[t] -= (1 - _par(ex, "PART_K_ANTICIPATION")) * ALPHA_K * dk_t
             offre = dict(ecart_production=100 * gap_t, pib_potentiel=float(np.exp(ly - gap_t)), lpgf_implicite=ly - gap_t - base_f,
                          emploi_structurel=n_star, capital_marchand=k_agg)
             hist_vol[t] = {"C": self.dem["C"], "X": self.dem["X"], "I": self.dem["I"], "G": self.dem["G"], "M": Mtot,
@@ -747,7 +761,7 @@ class Modele:
                        taux_epargne=100 * (rdb - c_nom) / rdb, investissement_menages=i_men_nom,
                        capacite_menages=rdb - c_nom - i_men_nom, solde_exterieur=px * X_cn - pm_agg * M_cn + rev_prim)
             res.append(dict(annee=t, **ext, **offre, part_industrie=part_ind, emploi_industrie=sum(n_br[b] for b in IND),
-                            vol_industrie=sum(q_br[b] for b in IND) / sum(H[b]["q"][B] for b in IND), supplement_demande_fermeture=Z_dem, tuc_industrie=tuc_m, pib=A["pib"][t], c=C_cn, x=X_cn, m=M_cn, fbcf=m.fbcf[B] * I_tot / dem0["I"], emploi=emploi, chomage=u_cur,
+                            vol_industrie=sum(q_br[b] for b in IND) / sum(H[b]["q"][B] for b in IND), supplement_demande_fermeture=Z_dem, tuc_industrie=tuc_m, revenus_patrimoine_menages=A["d4"][t], ebe_menages=A["ebe"][t], pib=A["pib"][t], c=C_cn, x=X_cn, m=M_cn, fbcf=m.fbcf[B] * I_tot / dem0["I"], emploi=emploi, chomage=u_cur,
                             salaire=w, pc=pc, pva_m=pva_m, px=px, rdb=rdb, phi=phi, **fp))
         self.H, self.A = H, A
         E.SIGMA_TRAVAIL, E.PHILLIPS = sauv_glob

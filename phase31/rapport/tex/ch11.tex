@@ -1,0 +1,60 @@
+% ============================================================================================================
+\chapter{Revue critique}\label{ch:revue}
+% ============================================================================================================
+
+Cette revue relit le travail de la phase 3.1 avec les règles fixées au départ : ne pas modifier les paramètres pour
+améliorer les résultats, ne pas conserver une hypothèse parce qu'elle est dans le code, ne pas confondre calibration et
+validation, ne pas masquer les limites des données, ne pas chercher des résultats séduisants, ne pas conserver les
+conclusions de la v0.7 si elles sont invalidées.
+
+\section{Ce qui a été fait conformément au mandat}
+
+\begin{itemize}
+\item \textbf{Paramètre de transmission.} ρ et θ ont été choisis par un critère externe (durée des écarts de production
+observée, ancrage sur la consommation), avant de regarder les stratégies. Le choix dégrade nettement les résultats
+budgétaires des stratégies d'offre (S2, S3, S5) : il ne les rend pas plus séduisants. Une plage est publiée, faute
+d'estimation ponctuelle robuste.
+\item \textbf{Calibration et validation.} Le backtest réestime les équations sur les seules données disponibles à
+chaque date d'origine et utilise un potentiel construit en temps réel ; les résultats défavorables (dette surestimée de
+20 points en 2019, chômage mal suivi, modèle battu par la prévision naïve sur 2010-2019) sont publiés.
+\item \textbf{Conclusions de la v0.7 révisées.} Quatre conclusions de la v0.7 sont explicitement invalidées
+(chapitre~\ref{ch:strategies}).
+\item \textbf{Défauts trouvés et corrigés en cours de route} : le conflit de noms de la v0.7 (amortissement), deux
+comparaisons inéquitables (une variante de ρ comparée à la référence centrale ; des variantes de backtest avec des
+politiques différentes), et, dans la distribution dynamique, trois défauts de représentation des gagnants et perdants :
+le relèvement de l'âge légal apparaissait comme un gain pour le premier décile ; la baisse des allocations chômage,
+les transferts aux ménages et le point d'indice n'avaient pas de perdants ou de gagnants directs ; le contrôle de
+cohérence comparait un revenu nominal macroéconomique (hors TVA) à une somme microéconomique (avec TVA). Toutes les
+simulations concernées ont été relancées ; les résultats antérieurs sont conservés pour traçabilité.
+\end{itemize}
+
+\section{Ce qui reste fragile}
+
+\begin{enumerate}
+\item \textbf{Le backtest ne valide pas le modèle pour le long terme.} Sur 2010-2019, la dette est surestimée de 20
+points en neuf ans, principalement parce que la productivité en temps réel était surestimée (erreur que commettaient
+aussi les prévisionnistes de l'époque) et que la charge d'intérêts réagit trop lentement à la baisse des taux. Le
+modèle n'est pas meilleur que la prévision naïve pour le PIB sur l'ensemble de la période. Les résultats à 2040-2047
+reposent donc sur la cohérence théorique, pas sur une performance prédictive démontrée.
+\item \textbf{La prime de risque} (0,03 point par point de dette) pèse autant que tous les comportements réunis sur la
+dette de long terme ; elle n'était pas variée dans les configurations. Elle repose sur la littérature, pas sur une
+estimation propre au projet.
+\item \textbf{θ n'est pas identifié par les données françaises seules} : la sélection repose sur une durée d'écart de
+production (dont l'intervalle est large) et sur un ancrage microéconomique étranger. Une estimation sur un panel de
+pays serait nécessaire.
+\item \textbf{La distribution dynamique est une approximation} : effets d'emploi en espérance, patrimoine non observé,
+héritiers non identifiés, agents publics non identifiés (le point d'indice est réparti au prorata des salaires), une
+seule évolution des salaires pour tous. Le résiduel de cohérence avec le compte macroéconomique reste d'environ un
+point pour S3 (non attribué).
+\item \textbf{Les effets d'offre de travail} des prestations (prime d'activité, RSA) sont dans le haut des évaluations
+françaises ; ils pèsent sur les résultats de S1, S2 et S5.
+\item \textbf{L'optimisation} repose sur un métamodèle additif non vérifié par le modèle complet pour la v0.8.
+\item \textbf{Les comportements d'entreprises} (incidence de l'IS et des impôts de production, trésorerie,
+délocalisation) restent paramétrés sur des études étrangères ou des hypothèses ; ils sont étiquetés comme tels.
+\end{enumerate}
+
+\section{Ce qu'un relecteur devrait vérifier en priorité}
+
+La fermeture (équation et estimation de θ, ρ), le contrôle de cohérence micro-macro de M16 et ses clés de répartition,
+la prime de risque, et la reproduction du choc d'inflation de 2022. Le code, les données téléchargées et tous les
+résultats bruts sont dans le dépôt ; chaque table du rapport est produite par un script.

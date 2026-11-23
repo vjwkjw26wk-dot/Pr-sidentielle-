@@ -27,6 +27,7 @@ from scipy.optimize import milp, LinearConstraint, Bounds
 R = pathlib.Path(__file__).resolve().parents[1]
 import os
 RES = pathlib.Path(os.environ.get("RES_OPTIM", R / "phase3" / "resultats"))
+DISTRIB_DYN = os.environ.get("DISTRIB_DYN", "0") == "1"
 HORIZONS = (2032, 2037, 2042, 2047)
 
 # levier : (expérience hausse, valeur, expérience baisse, valeur, borne basse, borne haute, difficulté, famille)
@@ -90,9 +91,11 @@ CRITERES = {  # nom : (description, sens : +1 si « plus » est souhaitable)
     "productivite": ("Productivité apparente du travail (%)", +1),
     "industrie": ("Part de l'industrie dans la valeur ajoutée (points)", +1),
 }
+if DISTRIB_DYN:   # v0.8 : services publics (moyens, Md€) parmi les critères ; distribution après propagation
+    CRITERES["services"] = ("Moyens des services publics (Md€ par an)", +1)
 
 
-EXTRAS = ["solde", "investissement", "interets", "salaire_reel", "exportations", "emploi", "pauvrete", "mediane"]
+EXTRAS = ["solde", "investissement", "interets", "salaire_reel", "exportations", "emploi", "pauvrete", "mediane"] + ([] if DISTRIB_DYN else ["services"])
 
 
 def charger():
@@ -139,6 +142,25 @@ def reponse(e):
     for t in HORIZONS:
         out[t].update(modestes=modestes, gini=gini, pauvrete=pauvrete, mediane=mediane)
     out["deciles"] = deciles
+    # v0.8 (phase 3.1, option DISTRIB_DYN=1) : critères distributifs après propagation macroéconomique (M16), par
+    # horizon (2032 → 2030, 2037 → 2035, 2042 → 2040, 2047 → 2047), et pertes par décile après propagation (2035)
+    dd = e.get("distribution_dynamique")
+    if DISTRIB_DYN and dd:
+        corr = {2032: "2030", 2037: "2035", 2042: "2040", 2047: "2047"}
+        for t in HORIZONS:
+            d = dd[corr[t]]
+            g_ = d["global"]
+            out[t].update(modestes=float(np.mean([d["decile"][str(i)]["pct"] for i in (1, 2, 3)])),
+                          gini=100 * (g_["gini_apres"] - g_["gini_avant"]), pauvrete=g_["pauvrete_apres"] - g_["pauvrete_avant"],
+                          mediane=g_["variation_niveau_de_vie_median_pct"], rdb_reel_menages=g_["pct_moyen"])
+        out["deciles"] = [dd["2035"]["decile"][str(i)]["pct"] for i in range(1, 11)]
+    # services publics (indicateur de moyens, faute de mesure de la qualité) : Md€ de santé, éducation, fonctionnement,
+    # emplois publics (50 k€ par emploi) et point d'indice (1 % ≈ 2,2 Md€)
+    cur = e.get("curseurs") or {}
+    serv = sum(float(cur.get(k, 0.0)) for k in ("sante", "education", "autres_depenses")) + 0.05 * float(cur.get("emploi_public", 0.0)) \
+        + 2.2 * float(cur.get("point_indice", 0.0))
+    for t in HORIZONS:
+        out[t]["services"] = serv
     return out
 
 

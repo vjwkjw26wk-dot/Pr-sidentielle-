@@ -1,0 +1,19 @@
+{\small\begin{longtable}{@{}p{5.2cm}p{8.2cm}cr@{}}\toprule
+Test & Propriété vérifiée & Résultat & s \\ \midrule\endhead
+\code{test\_\allowbreak{}dette\_\allowbreak{}et\_\allowbreak{}solde} & Identité : dette(t) = dette(t−1) − solde(t) (hors ajustements stock-flux de calage, nuls après 2026). & ok & 11 \\
+\code{test\_\allowbreak{}ratios} & Les ratios au PIB sont cohérents avec les niveaux ; solde = recettes − dépenses. & ok & 0 \\
+\code{test\_\allowbreak{}reference\_\allowbreak{}identique\_\allowbreak{}sous\_\allowbreak{}les\_\allowbreak{}deux\_\allowbreak{}fermetures} & reference identique sous les deux fermetures & ok & 4 \\
+\code{test\_\allowbreak{}reproductibilite} & Deux simulations identiques donnent des résultats identiques (aucun aléa caché). & ok & 4 \\
+\code{test\_\allowbreak{}amortissement\_\allowbreak{}du\_\allowbreak{}point\_\allowbreak{}fixe\_\allowbreak{}independant\_\allowbreak{}de\_\allowbreak{}la\_\allowbreak{}fermeture} & Le défaut de la v0.7 (le terme proportionnel de la fermeture écrasait l'amortissement du point fixe) ne doit pas revenir : changer le terme proportionnel à partir de 2028 ne modifie pas les années antérieures. & ok & 5 \\
+\code{test\_\allowbreak{}choc\_\allowbreak{}ponctuel\_\allowbreak{}sans\_\allowbreak{}oscillation} & Après un choc d'offre ponctuel (productivité −1 \% en 2028), l'écart de production décroît sans changer de signe de plus de 10 \% de l'écart initial (pas d'oscillation de période deux ans). & ok & 5 \\
+\code{test\_\allowbreak{}chocs\_\allowbreak{}d\_\allowbreak{}offre} & Un choc de productivité ou de démographie défavorable réduit le PIB et le PIB potentiel ; l'écart de production reste faible (pas de comportement paradoxal). & ok & 9 \\
+\code{test\_\allowbreak{}taux} & Une hausse des taux réduit l'investissement et augmente la dette. & ok & 5 \\
+\code{test\_\allowbreak{}incidence\_\allowbreak{}is\_\allowbreak{}sur\_\allowbreak{}les\_\allowbreak{}salaires} & Une hausse d'IS réduit le coût salarial de long terme quand l'incidence salariale est positive, pas sinon. & ok & 86 \\
+\code{test\_\allowbreak{}distribution\_\allowbreak{}dynamique\_\allowbreak{}coherente} & Le contrôle de cohérence de M16 : la somme des canaux micro reproduit la variation macroéconomique du revenu disponible à 1,5 point près ; le canal direct est nul avant la mise en œuvre (2027). & ok & 42 \\
+\code{test\_\allowbreak{}distribution\_\allowbreak{}dynamique\_\allowbreak{}sens} & Une hausse du RSA profite d'abord au premier décile ; une hausse de TVA réduit le revenu réel moyen. & ok & 40 \\
+\code{test\_\allowbreak{}monotonie\_\allowbreak{}offre\_\allowbreak{}de\_\allowbreak{}travail} & Les effets de la prime d'activité sur la population active sont ordonnés selon les élasticités basse, centrale, haute. & ok & 0 \\
+\code{test\_\allowbreak{}monotonie\_\allowbreak{}anticipation} & Plus l'anticipation est forte, plus la production rejoint vite le potentiel après un choc d'offre. & ok & 13 \\
+\code{test\_\allowbreak{}distribution\_\allowbreak{}reforme\_\allowbreak{}age\_\allowbreak{}et\_\allowbreak{}assurance\_\allowbreak{}chomage} & Correction phase 3.1 : le relèvement de l'âge légal ne fait pas du premier décile un gagnant (les emplois maintenus vont aux ménages proches de l'âge légal, la pension non versée est une perte) ; la baisse des allocations chômage fait perdre d'abord les premiers déciles ; la cohérence micro-macro est assurée. & ok & 105 \\
+\bottomrule\end{longtable}}
+
+\noindent Bilan : 14 tests réussis, 0 en échec.

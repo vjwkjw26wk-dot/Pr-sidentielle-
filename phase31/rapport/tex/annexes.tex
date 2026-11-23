@@ -1,0 +1,38 @@
+\chapter{Fichiers, scripts et reproductibilité}\label{ann:fichiers}
+
+\begin{tabularx}{\linewidth}{@{}lL@{}}\toprule
+Fichier & Contenu\\ \midrule
+\code{src/m8\_modele.py} & Modèle macroéconomique v0.8 (fermeture sans termes en différence, θ et ρ estimés, ancrage salarial de l'incidence)\\
+\code{src/m8\_reference.py} & Référence calée (recalibrée ; identique sous les deux fermetures à $10^{-13}$ près)\\
+\code{src/m15\_offre\_travail.py} & Offre de travail, 18 cas (9 configurations familiales × locataire ou propriétaire)\\
+\code{src/m16\_distribution\_dynamique.py} & Distribution dynamique : huit canaux par ménage, cinq horizons, contrôle de cohérence\\
+\code{src/m10\_couplage.py} & Microsimulation ; variables par ménage transmises à M16\\
+\code{simulateur/executer.py} & Incidence des prélèvements sur les entreprises, surcharges de paramètres, appel de M16\\
+\code{phase31/irf\_fermeture.py} & Réponses impulsionnelles de la fermeture (grille ρ, θ, part du capital, amortissement)\\
+\code{phase31/estimation\_theta.py} & Durée empirique des écarts de production (AMECO, FMI), sélection de ρ et θ\\
+\code{phase31/backtest.py}, \code{analyse\_backtest.py} & Backtest 2010-2025 en temps réel (neuf variantes, cinq origines)\\
+\code{phase31/experiences\_v08.py} & 68 expériences relancées avec la v0.8\\
+\code{phase31/strategies\_v08.py} & S1-S5 et programmes v0.6, trois configurations\\
+\code{phase31/sensibilite.py} & Sensibilité un à un (douze paramètres)\\
+\code{phase31/decomposition\_v07\_v08.py} & Décomposition des écarts v0.7/v0.8 (fermeture, incidence)\\
+\code{phase31/livrables31.py} & Classeurs Excel de distribution et de comparaison\\
+\code{phase31/rapport/generer31.py}, \code{figures\_a.py} & Tables et figures du rapport\\
+\code{tests/test\_phase31.py} & Tests automatisés (identités, cohérence, stabilité, reproductibilité, monotonie)\\
+\code{doc/18} à \code{doc/20} & Audit v0.7, modèle v0.8, registre des paramètres v0.8\\
+\code{data/raw/dbnomics\_*.json} & Séries AMECO et FMI téléchargées (écart de production, potentiel)\\
+\code{phase31/resultats/} & Tous les résultats (JSON)\\ \bottomrule
+\end{tabularx}
+
+\paragraph{Ordre d'exécution.} \code{phase3/caler\_reference.py} puis \code{phase3/maj\_cache\_reference.py} (environ
+45 min) ; \code{estimation\_theta.py} ; \code{backtest.py} et \code{analyse\_backtest.py} ; \code{experiences\_v08.py
+lots …} (environ 70 min) ; \code{strategies\_v08.py central faible fort} ; \code{sensibilite.py} ;
+\code{decomposition\_v07\_v08.py} ; \code{phase3/optimisation.py} avec \code{RES\_OPTIM} et \code{DISTRIB\_DYN} ;
+\code{livrables31.py} ; \code{rapport/generer31.py} ; \code{pytest tests/test\_phase31.py} ; compilation XeLaTeX.
+
+\paragraph{Traçabilité.} Les résultats v0.6 (\code{rapport/resultats/}) et v0.7 (\code{phase3/resultats/}) ne sont
+pas modifiés. Les réponses impulsionnelles calculées avant la correction du conflit de noms (\code{irf\_v1}) et avec
+μ = 0,3 (\code{irf\_mu03}) sont conservées pour mémoire.
+
+\chapter{Tests automatisés}\label{ann:tests}
+
+\input{../tables/tests.tex}

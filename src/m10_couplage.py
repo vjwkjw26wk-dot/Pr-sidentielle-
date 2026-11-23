@@ -182,6 +182,15 @@ def distribution(base: dict, ref: dict, prestations=PRESTATIONS, extra=None) -> 
         men["gs_pr"] = pr.GS.astype(str).reindex(men.index)
         men["region"] = pr.REGION.astype(str).reindex(men.index)
         men["adultes"] = (ind.age >= 18).groupby(ind.men).sum().reindex(men.index).fillna(1)
+        # v0.8 (distribution dynamique, M16) : revenus et statuts des membres
+        men["salaires"] = ind.salaires.groupby(ind.men).sum().reindex(men.index).fillna(0)
+        men["pensions"] = ind.pensions.groupby(ind.men).sum().reindex(men.index).fillna(0)
+        men["n_chomeurs"] = (ind.TACT.astype(str) == "12").groupby(ind.men).sum().reindex(men.index).fillna(0)
+        men["n_inactifs_actifs"] = ((ind.TACT.astype(str).isin(["22", "24", "25"])) & (ind.age >= 18) & (ind.age < 65)).groupby(ind.men).sum().reindex(men.index).fillna(0)
+        men["n_emploi"] = (ind.TACT.astype(str) == "11").groupby(ind.men).sum().reindex(men.index).fillna(0)
+        men["statut_occ"] = pr.STOCD.astype(str).reindex(men.index)
+        men["stat_pr"] = pr.STAT.astype(str).reindex(men.index)
+        men["prest_base"] = pb
         men["enfants"] = (ind.age < 18).groupby(ind.men).sum().reindex(men.index).fillna(0)
         if extra is not None:
             men["delta"] += extra(k, men, ind, foyers) / men.uc
@@ -201,6 +210,7 @@ def distribution(base: dict, ref: dict, prestations=PRESTATIONS, extra=None) -> 
                          "masse_M€": g.apply(lambda x: float((x.delta * x.uc * x.poids).sum()) / 1e6),
                          "revenu_M€": g.apply(lambda x: float((x.nv_base * x.uc * x.poids).sum()) / 1e6)})
     out.attrs["groupes"] = groupes(m)
+    out.attrs["menages"] = m
     out.attrs["inegalites"] = {"avant": inegalites(m.nv_base, m.poids * m.npers),
                                "apres": inegalites(m.nv_base + m.delta, m.poids * m.npers, seuil_fixe=None),
                                "apres_seuil_fixe": inegalites(m.nv_base + m.delta, m.poids * m.npers,
