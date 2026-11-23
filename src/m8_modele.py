@@ -33,6 +33,7 @@ import m7_equations as E
 import m7_series as S
 from telechargement import jsonstat_dict, telecharger
 
+_SIGMA_V08 = E.SIGMA_TRAVAIL
 RHO_DEFAUT = 0.2    # v0.8 (0,15 avant) : estimé avec θ (phase31/estimation_theta.py), plage 0,1-0,3 ; fermeture d'offre des projections (sensibilité : 0 et 1)
 PART_K_ANTICIPATION = 1.0  # v0.8 : part du capital dans l'écart de potentiel anticipé (voir phase31/estimation_theta.py)
 THETA_ANTICIPATION = 0.75 # v0.8 : estimé par la durée des écarts de production (phase31/estimation_theta.py), plage 0,5-1,0 ; v0.7 : 1,5 v0.7 : demande alignée sur les révisions du PIB potentiel (revenu permanent) ; 1,5 ferme l'écart des chocs d'offre en rampe (tests 1,0 / 1,5 / 2,0, phase3/test_fermeture.py) [H]
@@ -44,6 +45,37 @@ OKUN = 1.5      # points de PIB par point de chômage (ordre de grandeur des est
 # (1 − u*), K le capital des branches marchandes, π les chocs de productivité par tête (mesures, chocs d'environnement)
 # et A la productivité globale des facteurs de la référence, déduite de la trajectoire de référence en posant que son écart
 # de production est −OKUN × (u − u*) (loi d'Okun ; aucune donnée d'écart de production n'est importée).
+# ---- Version 0.9 (phase 3.4, branche phase34) : interrupteurs de spécification. Valeurs par défaut = v0.8 à l'identique.
+# `configurer_v09()` active la nouvelle spécification ; chaque option peut être activée seule (effets isolés).
+SPEC = {
+    "demande_travail": "v08",     # "v08" : tendance = productivité apparente par tête (8 ans) ; "ces_heures" : tendance dérivée
+                                  #   de la condition du premier ordre CES, en heures, nette de l'effet du coût réel horaire
+    "cible_k": True,              # terme de capital dans la cible de long terme de l'emploi (v0.7) ; False en CES (la CPO
+                                  #   du travail à production donnée ne fait pas intervenir le capital)
+    "potentiel": "cobb_douglas",  # "ces_marchand" : CES normalisée sur la VA marchande + VA non marchande sans écart
+    "sigma": None,                # élasticité de substitution capital-travail (None : E.SIGMA_TRAVAIL = 0,4, v0.8)
+    "non_marchand": "v08",        # "branches" : emploi non marchand par sous-branche (O, P, Q, L), productivité par tête
+                                  #   tendancielle propre à chaque sous-branche (8 ans avant l'origine)
+    "salaire_public": "v08",      # "instrument" : salaire public par tête = prix à la consommation × dérive réelle
+                                  #   tendancielle (8 ans) × décisions (`niveaux["salaire_public"]`), distinct du marchand
+}
+
+
+def configurer_v09(**modifs):
+    """Active la spécification v0.9 (ou une partie : passer les options à conserver en v0.8)."""
+    SPEC.update({"demande_travail": "ces_heures", "cible_k": False, "potentiel": "ces_marchand", "sigma": 0.45,
+                 "non_marchand": "branches", "salaire_public": "instrument"})
+    SPEC.update(modifs)
+    if SPEC["sigma"] is not None:
+        E.SIGMA_TRAVAIL = SPEC["sigma"]
+
+
+def configurer_v08():
+    SPEC.update({"demande_travail": "v08", "cible_k": True, "potentiel": "cobb_douglas", "sigma": None,
+                 "non_marchand": "v08", "salaire_public": "v08"})
+    E.SIGMA_TRAVAIL = _SIGMA_V08
+
+
 ALPHA_K = 0.35          # part du capital dans la fonction de production (comptes nationaux : part de l'EBE ≈ 1/3) [C]
 KAPPA_PRIX = 0.10       # hausse annuelle du prix de la VA des branches non industrielles par point d'écart de production
 #                         de l'année précédente (pente de courbe de Phillips ; 0,05-0,2 dans la littérature) [L]
@@ -276,7 +308,16 @@ class Modele:
             ln, lq, lpva, li, lk = np.log(h.n), np.log(h.q), np.log(h.va_cp / h.q), np.log(h.i), np.log(h.k)
             lcn = np.log(h.wb / h.ns)
             lclu = lcn + ln - lq
-            g = float(np.mean([(lq[t] - lq[t - 1]) - (ln[t] - ln[t - 1]) for t in ans_g]))
+            if SPEC["demande_travail"] == "ces_heures":
+                # CPO de la CES (progrès technique E augmentant le travail, heures H, durée par tête d = H/N) :
+                #   ln H = ln q − σ ln(c_h/p_va) − (1−σ) ln E   ⇒   ln N = ln q − σ ln(c_n/p_va) − (1−σ)(ln E + ln d)
+                # Tendance de long terme de la cible en personnes : g = (1−σ)(g_E + g_d), avec (1−σ) g_E estimé sur la
+                # fenêtre par Δln(q/H) − σ Δln(c_h/p_va), et g_d = 0 hors décision (durée par tête constante).
+                lh, lch = np.log(h.h), np.log(h.wb / h.hs)
+                g = float(np.mean([(lq[t] - lq[t - 1]) - (lh[t] - lh[t - 1]) - E.SIGMA_TRAVAIL * ((lch[t] - lpva[t]) - (lch[t - 1] - lpva[t - 1]))
+                                   for t in ans_g]))
+            else:
+                g = float(np.mean([(lq[t] - lq[t - 1]) - (ln[t] - ln[t - 1]) for t in ans_g]))
             self.g_prod[b] = g
             res_e, res_p, res_i = [], [], []
             for t in ans:
@@ -288,6 +329,86 @@ class Modele:
                 res_i.append((li[t] - li[t - 1]) - (ri["dlq"] * (lq[t] - lq[t - 1]) + ri["dlq_1"] * (lq[t - 1] - lq[t - 2])
                                                    + ri["li_1"] * li[t - 1] + ri["lk_1"] * lk[t - 1] + ri["lq_1"] * lq[t - 1]))
             self.c_emp[b], self.c_prix[b], self.c_inv[b] = map(lambda v: float(np.mean(v)), (res_e, res_p, res_i))
+
+    # ---- v0.9 : non marchand par sous-branche et salaire public ---------------------------------------------------
+    NM_GROUPES = {"L": ["CPA_L68B"], "O": ["CPA_O"], "P": ["CPA_P"], "Q86": ["CPA_Q86"], "Q87_Q88": ["CPA_Q87_88"]}
+
+    def _preparer_nm(self):
+        """Emploi de base et productivité par tête tendancielle (8 ans avant l'origine, comptes nationaux A64) des
+        sous-branches non marchandes. Les loyers imputés (L68A) n'ont pas d'emploi. L'emploi des sous-branches est recalé
+        sur l'emploi non marchand total du modèle (écart de champ : emploi total − branches marchandes)."""
+        if hasattr(self, "_nm"):
+            return self._nm
+        B = self.B
+        L = lambda f: pd.Series(jsonstat_dict(json.loads((S.RACINE / "data" / "raw" / f).read_text())))  # noqa: E731
+        va, e = L("eurostat_nama_10_a64_FR.json"), L("eurostat_nama_10_a64_e_FR.json")
+        ser = lambda s_, u, b, i: pd.Series({int(t_): v for (uu, bb, ii, t_), v in s_.items() if uu == u and bb == b and ii == i}).sort_index()  # noqa: E731
+        ans_g = [t_ for t_ in range(B - 10, B + 1) if t_ not in (2020, 2021, 2022)][-8:]
+        gr = {}
+        for g_, prods in self.NM_GROUPES.items():
+            code = {"L": "L", "O": "O", "P": "P", "Q86": "Q86", "Q87_Q88": "Q87_Q88"}[g_]
+            n_ = ser(e, "THS_PER", code, "EMP_DC")
+            q_ = ser(va, "CLV15_MEUR", "L68B" if g_ == "L" else code, "B1G") if g_ != "L" else ser(va, "CLV15_MEUR", "L", "B1G") - ser(va, "CLV15_MEUR", "L68A", "B1G")
+            prod = np.log(q_ / n_)
+            gr[g_] = {"n0": float(n_[B]), "g": float(np.mean([prod[t_] - prod[t_ - 1] for t_ in ans_g])),
+                      "idx": np.array([p_ in prods for p_ in self.P]),
+                      "va0": float(self.va0[np.array([p_ in prods for p_ in self.P])].sum())}
+        tot = sum(v["n0"] for v in gr.values())
+        for v in gr.values():
+            v["n0"] *= float(self.n_nm0) / tot
+        self._nm = gr
+        return gr
+
+    def _preparer_salaire_public(self):
+        """Dérive réelle tendancielle du salaire public par tête (rémunérations des APU / emploi non marchand, déflatées
+        par les prix à la consommation de l'année précédente), moyenne des 8 années précédant l'origine."""
+        if hasattr(self, "_wpub"):
+            return self._wpub
+        B, a, m, em = self.B, self.apu, self.macro, self.emp
+        nm = em.emploi - sum(self.hist[b].n for b in self.BR)
+        wp = a.d1pay / nm
+        ans_g = [t_ for t_ in range(B - 10, B + 1) if t_ not in (2020, 2021, 2022)][-8:]
+        drift = float(np.mean([np.log(wp[t_] / wp[t_ - 1]) - np.log(m.p_c[t_ - 1] / m.p_c[t_ - 2]) for t_ in ans_g]))
+        self._wpub = {"derive": drift, "part": float(a.d1pay[B] / self.men.d1[B])}
+        return self._wpub
+
+    def _idx_w_public(self, A, t, w):
+        """Indice (base B) du salaire par tête des emplois non marchands : instrument v0.9, ou salaire marchand (v0.8)."""
+        return A["wpub"][t] if SPEC["salaire_public"] == "instrument" else w / A["w"][self.B]
+
+    def _idx_masse(self, A, t, w, n_br, n_nm, extra=0.0):
+        """Indice (base B) de la masse salariale totale. v0.8 : salaire marchand × emploi total. v0.9 : marchand et non
+        marchand pondérés par la part des rémunérations publiques dans les rémunérations reçues par les ménages."""
+        B = self.B
+        if SPEC["salaire_public"] != "instrument":
+            return (w / A["w"][B]) * ((sum(n_br.values()) + n_nm + extra) / A["emploi"][B])
+        sp = self._preparer_salaire_public()["part"]
+        nm_B = A["emploi"][B] - float(self.n_nm0)
+        return (1 - sp) * (w / A["w"][B]) * (sum(n_br.values()) + extra) / nm_B + sp * A["wpub"][t] * n_nm / float(self.n_nm0)
+
+    def g_efficience(self):
+        """Croissance tendancielle de l'efficience du travail E (agrégée, pondérée par l'emploi de base) : g_E = g/(1−σ)."""
+        w = {b: float(self.hist[b].n[self.B]) for b in self.BR}
+        return sum(self.g_prod[b] * w[b] for b in self.BR) / sum(w.values()) / (1 - E.SIGMA_TRAVAIL)
+
+    def ln_potentiel_ces(self, t, k_agg, n_star, q_nm, n_nm):
+        """v0.9 : log du PIB potentiel (hors constante de calage `lpgf`, qui devient un niveau de calage).
+        VA marchande potentielle : CES normalisée au point de base (Klump, McAdam, Willman 2007),
+            Q*/Q0 = [π0 (K/K0)^ρ + (1−π0) (E H*/(E0 H0*))^ρ]^(1/ρ),  ρ = (σ−1)/σ,
+        π0 = part du capital (ALPHA_K), E l'efficience du travail (tendance g_E issue de la demande de travail, cohérente
+        par construction), H* les heures marchandes structurelles = (N* − N_nm) × durée par tête (constante, sauf
+        décision : `cum_duree`). VA non marchande : volume simulé, sans écart (pas de fonction de production, comme FR-BDF)."""
+        B, sig = self.B, E.SIGMA_TRAVAIL
+        rho = (sig - 1) / sig
+        if not hasattr(self, "_ces0"):
+            self._ces0 = {"k0": sum(float(self.hist[b].k[B - 1]) for b in self.BR), "gE": self.g_efficience(),
+                          "s_m": sum(self.va_br0[b] for b in self.BR) / sum(self.va_br0.values())}
+        c = self._ces0
+        hstar = max(n_star - n_nm, 1.0) / self._hstar_B
+        eff = np.exp(c["gE"] * (t - B))
+        idx_m = (ALPHA_K * (k_agg / c["k0"]) ** rho + (1 - ALPHA_K) * (eff * hstar) ** rho) ** (1 / rho)
+        idx = c["s_m"] * idx_m + (1 - c["s_m"]) * q_nm / self.va_br0["NM"]
+        return float(np.log(self.macro.pib[B] * idx))
 
     def _ecart_initial(self, theta, recul=4):
         T, B = self.tables, self.B
@@ -429,6 +550,7 @@ class Modele:
         u_star = lambda a: float(ex.chomage_structurel.get(a, ex.chomage_structurel.iloc[-1] if a > ex.chomage_structurel.index[-1] else ex.chomage_structurel.iloc[0]))  # noqa: E731
         gap_hist = {a: -OKUN * (float(m.chomage[a]) - u_star(a)) / 100 for a in (B - 1, B)}
         self.gap_hist = gap_hist
+        self._hstar_B = float(ex.population_active[B]) * (1 - u_star(B) / 100) - float(self.n_nm0)
         dpot_hist = {}    # écart du log du PIB potentiel à celui de la référence (chocs d'offre cumulés)
         kappa_p = KAPPA_PRIX if ex.kappa_prix is None else ex.kappa_prix   # (nom distinct du ratio capital/production `kappa`)
         mu_imp = MU_IMPORT if ex.mu_import is None else ex.mu_import
@@ -440,6 +562,12 @@ class Modele:
         r_central = r
         theta_c = theta
         for t in annees:
+            if SPEC["salaire_public"] == "instrument":
+                # v0.9 : salaire public par tête = indexation sur les prix de l'année précédente × dérive réelle
+                # tendancielle (GVT, mesures catégorielles) ; décisions (point d'indice) : niveaux["salaire_public"]
+                wp_ = A.setdefault("wpub", {B: 1.0})
+                pc_2 = A["pc"].get(t - 2, float(m.p_c[t - 2]))
+                wp_[t] = wp_[t - 1] * A["pc"][t - 1] / pc_2 * np.exp(self._preparer_salaire_public()["derive"])
             # paramètres alternatifs (analyse de sensibilité, v0.6) : appliqués à partir de alt["debut"] (2026 par défaut,
             # première année projetée) ; la période observée reste reproduite avec les paramètres centraux et l'ancrage
             # des termes de rappel absorbe les changements de niveau d'équilibre (sinon : dérive artificielle dès 2023).
@@ -530,7 +658,13 @@ class Modele:
                 if t > 2025 and 2025 in erel_hist and _par(ex, "ELAST_DELOC_ENERGIE"):
                     fact_eff[idx_ei] = fact_eff[idx_ei] * (e_rel / erel_hist[2025]) ** _par(ex, "ELAST_DELOC_ENERGIE")
                 w_idx = w / A["w"][B]
-                pva_prod = np.array([pva[b] / H[b]["pva"][B] if b in pva else w_idx for b in self.br_prod]) * surcout_prod
+                if SPEC["salaire_public"] == "instrument":
+                    # v0.9 : O, P, Q valorisés au coût salarial public ; L (loyers) indexés sur les prix de l'année précédente
+                    loy = A["pc"][t - 1] / A["pc"][B]
+                    pva_prod = np.array([pva[b] / H[b]["pva"][B] if b in pva else (loy if p_.startswith("CPA_L") else A["wpub"][t])
+                                         for b, p_ in zip(self.br_prod, self.P)]) * surcout_prod
+                else:
+                    pva_prod = np.array([pva[b] / H[b]["pva"][B] if b in pva else w_idx for b in self.br_prod]) * surcout_prod
                 pp = self._prix(pva_prod, pm)
                 def pfin(k):
                     v = self.struct[k] * self.tot[k]
@@ -568,7 +702,7 @@ class Modele:
                 # v0.7 : approfondissement du capital (cohérence avec le PIB potentiel Cobb-Douglas). Quand le capital croît
                 # plus vite que la production par rapport à la référence, la cible d'emploi de long terme baisse de
                 # α/(1−α) × (dk − dq) ; nul dans la référence.
-                if ex.lk_ref is not None and t in ex.lk_ref.index and (t - 1) in ex.ly_ref.index and (t - 1) in A["pib"]:
+                if SPEC["cible_k"] and ex.lk_ref is not None and t in ex.lk_ref.index and (t - 1) in ex.ly_ref.index and (t - 1) in A["pib"]:
                     # lk_ref[t] = capital de fin d'année t − 1 (colonne capital_marchand de l'année t)
                     dkq = (np.log(sum(H[b_]["k"][t - 1] for b_ in BR)) - float(ex.lk_ref[t])) - (np.log(A["pib"][t - 1]) - float(ex.ly_ref[t - 1]))
                     cible_k = _par(ex, "ALPHA_K") / (1 - _par(ex, "ALPHA_K")) * dkq
@@ -622,7 +756,12 @@ class Modele:
                 vm = sum(q_br[b] / H[b]["q"][B] * self.hist[b].va_cp[B] * pva_new[b] / H[b]["pva"][B] for b in BR)
                 vm0 = sum(self.hist[b].va_cp[B] for b in BR)
                 s_m = sum(self.va_br0[b] for b in BR) / sum(self.va_br0.values())
-                idx_nom = s_m * vm / vm0 + (1 - s_m) * (q_nm_c / self.va_br0["NM"]) * (w_new / A["w"][B])
+                if SPEC["salaire_public"] == "instrument":
+                    s_l = float(self.va0[np.array([p_.startswith("CPA_L") for p_ in self.P])].sum()) / self.va_br0["NM"]
+                    defl_nm = s_l * A["pc"][t - 1] / A["pc"][B] + (1 - s_l) * A["wpub"][t]
+                else:
+                    defl_nm = w_new / A["w"][B]
+                idx_nom = s_m * vm / vm0 + (1 - s_m) * (q_nm_c / self.va_br0["NM"]) * defl_nm
                 vol_m = sum(q_br[b] for b in BR) / sum(H[b]["q"][B] for b in BR)
                 idx_vol = s_m * vol_m + (1 - s_m) * q_nm_c / self.va_br0["NM"]
                 A["pib_nom_idx"] = A.get("pib_nom_idx", {B: 1.0})
@@ -688,7 +827,10 @@ class Modele:
                 va_prod = self.av * x
                 q_new = {b: H[b]["q"][B] * va_prod[self.br_prod == b].sum() / self.va_br0[b] for b in BR}
                 q_nm = va_prod[self.br_prod == "NM"].sum()
-                n_nm = self.n_nm0 * q_nm / self.va_br0["NM"]
+                if SPEC["non_marchand"] == "branches":
+                    n_nm = sum(v["n0"] * va_prod[v["idx"]].sum() / v["va0"] * np.exp(-v["g"] * (t - B)) for v in self._preparer_nm().values())
+                else:
+                    n_nm = self.n_nm0 * q_nm / self.va_br0["NM"]
                 niv["n_nm"] = n_nm
                 emploi = sum(n_new.values()) + n_nm + self._extra(ex, "emploi_additionnel", t)
                 u_new = 100 * (1 - emploi / float(ex.population_active[t]))
@@ -726,13 +868,20 @@ class Modele:
             n_star = float(ex.population_active[t]) * (1 - u_star(t) / 100)
             cum_prod += 0.0 if ex.productivite is None else float(ex.productivite.get(t, 0.0))
             ly = float(np.log(A["pib"][t]))
-            base_f = ALPHA_K * np.log(k_agg) + (1 - ALPHA_K) * np.log(n_star) + cum_prod
+            if SPEC["potentiel"] == "ces_marchand":
+                base_f = self.ln_potentiel_ces(t, k_agg, n_star, q_nm, n_nm) + cum_prod
+            else:
+                base_f = ALPHA_K * np.log(k_agg) + (1 - ALPHA_K) * np.log(n_star) + cum_prod
             if ex.lpgf is not None and t in ex.lpgf.index:
                 gap_t = ly - (float(ex.lpgf[t]) + base_f)
             else:
                 gap_t = -OKUN * (u_cur - u_star(t)) / 100
             gap_hist[t] = gap_t
-            if ex.lpot_ref is not None and t in ex.lpot_ref.index:
+            ces_ref = getattr(ex, "ces_ref", None)
+            if SPEC["potentiel"] == "ces_marchand" and ces_ref is not None and t in ces_ref["lk"].index:
+                # v0.9 (backtest) : potentiel attendu = même CES avec capital et emploi structurel de référence
+                dpot_hist[t] = base_f - self.ln_potentiel_ces(t, float(np.exp(ces_ref["lk"][t])), float(ces_ref["nstar"][t]), q_nm, n_nm)
+            elif ex.lpot_ref is not None and t in ex.lpot_ref.index:
                 dpot_hist[t] = (ly - gap_t) - float(ex.lpot_ref[t])
                 # v0.8 : part de l'écart de potentiel due au capital (endogène à la demande) prise en compte dans
                 # l'anticipation (PART_K_ANTICIPATION = 1 : comme en v0.7 ; 0 : seuls les chocs exogènes d'offre)
@@ -740,7 +889,8 @@ class Modele:
                     dk_t = np.log(k_agg) - float(ex.lk_ref[t])
                     dpot_hist[t] -= (1 - _par(ex, "PART_K_ANTICIPATION")) * ALPHA_K * dk_t
             offre = dict(ecart_production=100 * gap_t, pib_potentiel=float(np.exp(ly - gap_t)), lpgf_implicite=ly - gap_t - base_f,
-                         emploi_structurel=n_star, capital_marchand=k_agg)
+                         emploi_structurel=n_star, capital_marchand=k_agg, emploi_non_marchand=n_nm,
+                         salaire_public_idx=float(A["wpub"][t]) if "wpub" in A else float(w / A["w"][B]))
             hist_vol[t] = {"C": self.dem["C"], "X": self.dem["X"], "I": self.dem["I"], "G": self.dem["G"], "M": Mtot,
                            "q": dict(q_br), "q_nm": q_nm, "n_nm": n_nm, "u": u_cur}
             etat["phi"] = phi
@@ -781,10 +931,10 @@ class Modele:
         cotisations ∝ rémunérations ; impôts ∝ (rémunérations + revenu mixte + patrimoine + prestations)."""
         B = self.B
         emploi_t = sum(n_br.values()) + niv["n_nm"] + self._extra(ex, "emploi_additionnel", t)
-        masse = (w / A["w"][B]) * (emploi_t / A["emploi"][B])
+        masse = self._idx_masse(A, t, w, n_br, niv["n_nm"], self._extra(ex, "emploi_additionnel", t))
         pib_nom = A["pib_nom_idx"][t]                         # PIB nominal (indice, base B)
         prest = (A["pc"][t - 1] / A["pc"][B]) * float(ex.prestations_volume[t]) / float(ex.prestations_volume[B])
-        d1 = mb.d1 * masse + (_niv(ex, "salaire_public", t)) * self.apu.loc[B].d1pay * (w / A["w"][B]) * (niv["n_nm"] / self.n_nm0)
+        d1 = mb.d1 * masse + (_niv(ex, "salaire_public", t)) * self.apu.loc[B].d1pay * self._idx_w_public(A, t, w) * (niv["n_nm"] / self.n_nm0)
         ebe, d4 = self._revenus_patrimoine(t, A, ex, pc)
         autres = ebe + d4 + (mb.d7 + mb.autres) * pib_nom
         mm = ex.mesure_menages or {}
@@ -883,7 +1033,7 @@ class Modele:
         × emploi non marchand ; autres consommations ∝ volume × prix ; prestations ; intérêts = taux apparent × dette."""
         B = self.B
         emploi_t = sum(n_br.values()) + n_nm + self._extra(ex, "emploi_additionnel", t)
-        masse = (w / A["w"][B]) * (emploi_t / A["emploi"][B])
+        masse = self._idx_masse(A, t, w, n_br, n_nm, self._extra(ex, "emploi_additionnel", t))
         pib_nom = A["pib_nom_idx"][t]
         cons_nom = A["C"][t] / A["C"][B] * pc / A["pc"][B]
         prest = (A["pc"][t - 1] / A["pc"][B]) * float(ex.prestations_volume[t]) / float(ex.prestations_volume[B])
@@ -901,7 +1051,7 @@ class Modele:
         d61 = ab.d61rec * masse * (1 if ex.taux_cotisations is None else float(ex.taux_cotisations.get(t, 1.0)))
         autres_r = (ab.tr - ab.d2rec - ab.d5rec - ab.d61rec) * pib_nom
         tr = d2 + d5_men + is_t + d61 + autres_r
-        d1p = ab.d1pay * (w / A["w"][B]) * (n_nm / self.n_nm0) * (1 + _niv(ex, "salaire_public", t))
+        d1p = ab.d1pay * self._idx_w_public(A, t, w) * (n_nm / self.n_nm0) * (1 + _niv(ex, "salaire_public", t))
         g_vol = float(ex.conso_publique[t]) / float(ex.conso_publique[B])
         p3_autres = (ab.p3 - ab.d1pay) * g_vol * pc / A["pc"][B]
         d62 = ab.d62pay * prest + self._extra(ex, "ajust_prestations", t) + mm.get("prestations", 0.0) * self._idx_mesure(mm, pib_nom, t) \

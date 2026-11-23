@@ -1,0 +1,8 @@
+# fichiers volumineux re-téléchargeables (phase34/recuperer_donnees.py)
+data/raw/*.zip
+data/raw/*.xlsx
+data/raw/*.pdf
+data/raw/*.parquet
+data/raw/dgfip_ir_declarations_2042_nat.csv
+outputs/
+__pycache__/

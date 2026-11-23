@@ -85,11 +85,13 @@ def _poids_branche(d):
     return w / w.mean()
 
 
-def emploi(p, debut=DEBUT, fin=FIN, sigma=SIGMA_TRAVAIL, mesure="n") -> Equation:
+def emploi(p, debut=DEBUT, fin=FIN, sigma=None, mesure="n") -> Equation:
     """Long terme contraint à rendements constants : ln N = ln q − σ ln(coût/pva) + tendance de productivité de branche.
     Mesure retenue : l'emploi en personnes (`n`) ; la durée du travail par personne est traitée à part (exogène, car
     largement réglementaire : réduction du temps de travail de 1998-2002). Variante `mesure="h"` : heures.
     Estimé en moindres carrés pondérés par la taille de la branche (heures moyennes)."""
+    # v0.9 : σ lu à l'appel (auparavant figé à la définition de la fonction : un σ modifié n'était pas ré-estimé)
+    sigma = SIGMA_TRAVAIL if sigma is None else sigma
     d = _prep_panel(p, debut, fin)
     if mesure == "n":
         d = d.assign(lh=d.ln, dlh=d.dln, lh_1=d.ln_1, dlh_1=d.dln_1, lrc_1=d.lrcn_1)
