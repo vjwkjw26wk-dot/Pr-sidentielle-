@@ -58,13 +58,29 @@ SPEC = {
                                   #   tendancielle propre à chaque sous-branche (8 ans avant l'origine)
     "salaire_public": "v08",      # "instrument" : salaire public par tête = prix à la consommation × dérive réelle
                                   #   tendancielle (8 ans) × décisions (`niveaux["salaire_public"]`), distinct du marchand
+    "dette": "v08",               # "cohortes" : charge d'intérêts par cohortes d'émission (M17) au lieu du renouvellement 1/8
+    "cout_travail": "v08",        # "net_subventions" : coût du travail = rémunérations (D1) − subventions sur les rémunérations
+                                  #   (CICE, D391, 2013-2018), à l'estimation comme en simulation ; D1 et revenus inchangés
 }
+
+
+def taux_subvention_salaires():
+    """Subventions sur les rémunérations (CICE) en part des rémunérations versées par les employeurs hors APU.
+    Mesure : D39 reçues par l'ensemble des producteurs (S1) en écart à 2012, de 2013 à 2018 (Eurostat nasa_10_nf_tr) ;
+    cohérente avec les créances publiées (11,3 Md€ en 2013, 17-18 en 2014-2016, ≈ 21-22 en 2017). Ventilation par branche
+    inconnue : taux uniforme [D] (le CICE ciblait les salaires < 2,5 SMIC, donc surtout les branches à bas salaires)."""
+    from telechargement import jsonstat_dict
+    s_ = pd.Series(jsonstat_dict(json.loads((S.RACINE / "data" / "raw" / "eurostat_nasa_D39_D1_S11_S13_FR.json").read_text())))
+    g = lambda it, sec, dr: pd.Series({int(k[-1]): v for k, v in s_.items() if dr in k and it in k and sec in k}).sort_index()  # noqa: E731
+    d39 = g("D39", "S1", "RECV")
+    d1m = g("D1", "S1", "PAID") - g("D1", "S13", "PAID")
+    return pd.Series({t: (float(d39[t] - d39[2012]) / float(d1m[t]) if 2013 <= t <= 2018 else 0.0) for t in range(1995, 2031)})
 
 
 def configurer_v09(**modifs):
     """Active la spécification v0.9 (ou une partie : passer les options à conserver en v0.8)."""
     SPEC.update({"demande_travail": "ces_heures", "cible_k": False, "potentiel": "ces_marchand", "sigma": 0.45,
-                 "non_marchand": "branches", "salaire_public": "instrument"})
+                 "non_marchand": "branches", "salaire_public": "instrument", "dette": "cohortes", "cout_travail": "net_subventions"})
     SPEC.update(modifs)
     if SPEC["sigma"] is not None:
         E.SIGMA_TRAVAIL = SPEC["sigma"]
@@ -72,10 +88,12 @@ def configurer_v09(**modifs):
 
 def configurer_v08():
     SPEC.update({"demande_travail": "v08", "cible_k": True, "potentiel": "cobb_douglas", "sigma": None,
-                 "non_marchand": "v08", "salaire_public": "v08"})
+                 "non_marchand": "v08", "salaire_public": "v08", "dette": "v08", "cout_travail": "v08"})
     E.SIGMA_TRAVAIL = _SIGMA_V08
 
 
+DUREE_VIE_DETTE = 7.0  # v0.9 : durée de vie moyenne de la dette (années) servant aux poids d'émission (AFT : ≈ 7 ans en 2010,
+#                         ≈ 8,5 ans depuis 2021 [à vérifier sur les bulletins]) [C]
 ALPHA_K = 0.35          # part du capital dans la fonction de production (comptes nationaux : part de l'EBE ≈ 1/3) [C]
 KAPPA_PRIX = 0.10       # hausse annuelle du prix de la VA des branches non industrielles par point d'écart de production
 #                         de l'année précédente (pente de courbe de Phillips ; 0,05-0,2 dans la littérature) [L]
@@ -185,6 +203,12 @@ class Exogenes:
     #                                        mesurés par rapport à leur valeur de cette année (l'écart à l'équilibre estimé
     #                                        constaté alors est supposé durable) ; None = équilibre estimé
     niveaux: dict = None                   # mesures en niveau (voir _niv)
+    taux_court: pd.Series = None           # v0.9 : taux à 3 mois (%), courbe des émissions (dette par cohortes) ; None :
+    #                                        taux long − écart court-long moyen des 5 années précédant l'origine
+    ces_ref: dict = None                   # v0.9 : capital et emploi structurel de référence (anticipation, potentiel CES)
+    subvention_salaires: pd.Series = None  # v0.9 : taux de subvention sur les rémunérations (CICE, D391), part de D1 marchand
+    subvention_en_depense: bool = False    # v0.9 : ajouter la subvention aux dépenses publiques (mesure nouvelle ; en backtest
+    #                                        elle est déjà dans les autres dépenses observées)
     calage: dict = None                    # termes de calage par année (compte de référence recalé sur l'observé) :
     #   "c", "x", "m", "investissement", "emploi", "prix", "salaire" : ajout au taux de croissance (log) de l'équation ;
     #   "recettes", "depenses" : ajout en points de PIB ; "dette" : ajustement stock-flux (M€)
@@ -232,7 +256,16 @@ class Modele:
         self.P = list(self.T.actifs)
         self.panel = S.panel_branches()
         self.macro = S.macro()
-        self.eq = E.toutes(self.panel, self.macro, E.DEBUT, fe)
+        self.panel_cout = self.panel
+        if SPEC["cout_travail"] == "net_subventions":
+            # v0.9 : coût du travail supporté par l'employeur = D1 − subventions sur les rémunérations (CICE)
+            sv = taux_subvention_salaires()
+            self.panel_cout = self.panel.copy()
+            f_ = 1 - self.panel_cout.annee.map(sv).fillna(0.0)
+            for c_ in ("wb", "cs"):
+                if c_ in self.panel_cout:
+                    self.panel_cout[c_] = self.panel_cout[c_] * f_
+        self.eq = E.toutes(self.panel_cout, self.macro, E.DEBUT, fe)
         self.theta = float(self.eq["transmission"].lr["part transmise l'année même θ"])
         self.men, self.apu = comptes_menages_apu()
         self.eq["revenus_d4"] = E.revenus_menages(self.macro, self.men, "d4", E.DEBUT, fe)
@@ -270,6 +303,8 @@ class Modele:
         # historiques des branches
         pn = self.panel.set_index(["branche", "annee"])
         self.hist = {b: pn.loc[b] for b in self.BR}
+        pc_ = self.panel_cout.set_index(["branche", "annee"])
+        self.hist_cout = {b: pc_.loc[b] for b in self.BR}      # v0.9 : coût net des subventions (= hist en v0.8)
         # parts de valeur ajoutée des produits dans chaque branche (pour l'emploi : q de branche = VA des produits)
         B = self.B
         self.q_obs_B = {b: self.hist[b].q[B] for b in self.BR}
@@ -306,14 +341,14 @@ class Modele:
         for b in self.BR:
             h = self.hist[b]
             ln, lq, lpva, li, lk = np.log(h.n), np.log(h.q), np.log(h.va_cp / h.q), np.log(h.i), np.log(h.k)
-            lcn = np.log(h.wb / h.ns)
+            lcn = np.log(self.hist_cout[b].wb / h.ns)
             lclu = lcn + ln - lq
             if SPEC["demande_travail"] == "ces_heures":
                 # CPO de la CES (progrès technique E augmentant le travail, heures H, durée par tête d = H/N) :
                 #   ln H = ln q − σ ln(c_h/p_va) − (1−σ) ln E   ⇒   ln N = ln q − σ ln(c_n/p_va) − (1−σ)(ln E + ln d)
                 # Tendance de long terme de la cible en personnes : g = (1−σ)(g_E + g_d), avec (1−σ) g_E estimé sur la
                 # fenêtre par Δln(q/H) − σ Δln(c_h/p_va), et g_d = 0 hors décision (durée par tête constante).
-                lh, lch = np.log(h.h), np.log(h.wb / h.hs)
+                lh, lch = np.log(h.h), np.log(self.hist_cout[b].wb / h.hs)
                 g = float(np.mean([(lq[t] - lq[t - 1]) - (lh[t] - lh[t - 1]) - E.SIGMA_TRAVAIL * ((lch[t] - lpva[t]) - (lch[t - 1] - lpva[t - 1]))
                                    for t in ans_g]))
             else:
@@ -386,6 +421,42 @@ class Modele:
         nm_B = A["emploi"][B] - float(self.n_nm0)
         return (1 - sp) * (w / A["w"][B]) * (sum(n_br.values()) + extra) / nm_B + sp * A["wpub"][t] * n_nm / float(self.n_nm0)
 
+    def _charge_cohortes(self, t, niv, ex, pc, A, deficit=None):
+        """v0.9 : charge d'intérêts de l'année t par le portefeuille de cohortes (M17). Le portefeuille de l'année t − 1 est
+        copié à chaque itération du point fixe ; le besoin de financement est le déficit de l'itération précédente."""
+        import copy
+        import m17_dette as D
+        B = self.B
+        if not hasattr(self, "_pf0"):
+            lt, st = D.taux_observes()
+            infl = 100 * (self.macro.p_c / self.macro.p_c.shift(1) - 1)
+            self._pf0 = D.initialiser_historique(self.apu.dette, B, lt, st, duree_cible=DUREE_VIE_DETTE, inflation=infl,
+                                                 charge_observee=self.apu.d41pay)
+            ecart = [float(lt[a] - st[a]) for a in range(B - 4, B + 1) if a in lt.index and a in st.index]
+            self._pf0.ecart_court_long = float(np.mean(ecart)) if ecart else 1.5
+        base = self._pf_etat.get(t - 1, self._pf0)
+        P = copy.deepcopy(base)
+        lg = max(float(ex.taux_long.get(t, ex.taux_long.iloc[-1])), -1.0)
+        if ex.taux_court is not None and t in ex.taux_court.index:
+            ct = float(ex.taux_court[t])
+        else:
+            ct = lg - self._pf0.ecart_court_long
+        P.infl = pd.concat([P.infl, pd.Series({t: 100 * (pc / A["pc"][t - 1] - 1)})]) if len(P.infl) else pd.Series({t: 100 * (pc / A["pc"][t - 1] - 1)})
+        P.infl = P.infl[~P.infl.index.duplicated(keep="last")]
+        if deficit is None:
+            deficit = -niv.get(("solde", t), niv.get(("solde", t - 1), 0.0))
+        res = P.avancer(t, deficit, ct, lg)
+        self._pf_etat[t] = P
+        return res["charge"]
+
+    def _coin_cout(self, ex, t):
+        """v0.9 : rapport (1 − s_t)/(1 − s_B) entre coût du travail employeur et rémunérations, s = taux de subvention sur
+        les rémunérations (CICE). 1 si aucune subvention n'est renseignée (v0.8)."""
+        sv = getattr(ex, "subvention_salaires", None)
+        if sv is None:
+            return 1.0
+        return (1 - float(sv.get(t, 0.0))) / (1 - float(sv.get(self.B, 0.0)))
+
     def g_efficience(self):
         """Croissance tendancielle de l'efficience du travail E (agrégée, pondérée par l'emploi de base) : g_E = g/(1−σ)."""
         w = {b: float(self.hist[b].n[self.B]) for b in self.BR}
@@ -451,6 +522,7 @@ class Modele:
     # ---------------------------------------------------------------------------------------------------------------
     def simuler(self, annees, ex: Exogenes, iterations=60, amorti=0.5, observe_jusqu_a=None):
         B, P, BR = self.B, self.P, self.BR
+        self._pf_etat = {}                           # v0.9 : portefeuille de dette par année (cohortes)
         r = {k: e.res.params for k, e in self.eq.items()}
         m, men, apu, em = self.macro, self.men, self.apu, self.emp
         H = {}
@@ -459,7 +531,7 @@ class Modele:
         for b in BR:
             h = self.hist[b]
             H[b] = {v: {t: float(h[v][t]) for t in range(B - 3, B + 1)} for v in ("q", "n", "pva", "i", "k")}
-            H[b]["cn"] = {t: float(h.wb[t] / h.ns[t]) for t in range(B - 3, B + 1)}
+            H[b]["cn"] = {t: float(self.hist_cout[b].wb[t] / h.ns[t]) for t in range(B - 3, B + 1)}
         g = self.panel.groupby("annee")[["wb", "ns", "n", "va_cp", "q"]].sum(min_count=1)
         A = {"w": {t: g.wb[t] / g.ns[t] for t in range(B - 3, B + 1)},
              "pva_m": {t: g.va_cp[t] / g.q[t] for t in range(B - 3, B + 1)},
@@ -710,7 +782,7 @@ class Modele:
                     cible_k = 0.0
                 for b in BR:
                     hb = H[b]
-                    cn = hb["cn"][B] * w_new / A["w"][B]
+                    cn = hb["cn"][B] * w_new / A["w"][B] * self._coin_cout(ex, t)
                     cn_1 = hb["cn"][t - 1]
                     eff = lambda rr: rr.get("const", 0) + rr.get(f"fe_{b}", 0) + rr.get(f"tr_{b}", 0) * (t - 2010)  # noqa: E731
                     lq, lq1, lq2 = np.log(q_br[b]), np.log(hb["q"][t - 1]), np.log(hb["q"][t - 2])
@@ -846,7 +918,7 @@ class Modele:
             for b in BR:
                 hb = H[b]
                 hb["q"][t], hb["n"][t], hb["pva"][t], hb["i"][t] = q_br[b], n_br[b], pva[b], I_new[b]
-                hb["cn"][t] = hb["cn"][B] * w / A["w"][B]
+                hb["cn"][t] = hb["cn"][B] * w / A["w"][B] * self._coin_cout(ex, t)
                 delta = 1 - (self.hist[b].k[B] - self.hist[b].i[B]) / self.hist[b].k[B - 1]
                 # capital : investissement de la branche + investissement de capacité (réindustrialisation), converti
                 # des prix de base du tableau en volume des comptes de branche au prorata de la FBCF de base
@@ -1038,8 +1110,8 @@ class Modele:
         cons_nom = A["C"][t] / A["C"][B] * pc / A["pc"][B]
         prest = (A["pc"][t - 1] / A["pc"][B]) * float(ex.prestations_volume[t]) / float(ex.prestations_volume[B])
         # EBE des branches marchandes (approché : VA nominale − rémunérations imputées)
-        ebe_m = sum(q_br[b] * pva[b] for b in self.BR) - sum(self.H[b]["cn"][B] * w / A["w"][B] * n_br[b] for b in self.BR)
-        ebe_m0 = sum(self.hist[b].va_cp[B] for b in self.BR) - sum(self.hist[b].wb[B] / self.hist[b].ns[B] * self.hist[b].n[B] for b in self.BR)
+        ebe_m = sum(q_br[b] * pva[b] for b in self.BR) - sum(self.H[b]["cn"][B] * w / A["w"][B] * self._coin_cout(ex, t) * n_br[b] for b in self.BR)
+        ebe_m0 = sum(self.hist[b].va_cp[B] for b in self.BR) - sum(self.hist_cout[b].wb[B] / self.hist[b].ns[B] * self.hist[b].n[B] for b in self.BR)
         tau, tau0 = float(ex.taux_is.get(t, ex.taux_is.iloc[-1])), float(ex.taux_is.get(B, 25.0))
         is0 = 0.15 * ab.d5rec                                   # part de l'IS dans les impôts courants sur le revenu (≈ 15 % ; ordre de grandeur, à caler sur les comptes de l'État)
         # v0.7 : transfert de bénéfices des groupes (semi-élasticité de la base au taux)
@@ -1056,18 +1128,32 @@ class Modele:
         p3_autres = (ab.p3 - ab.d1pay) * g_vol * pc / A["pc"][B]
         d62 = ab.d62pay * prest + self._extra(ex, "ajust_prestations", t) + mm.get("prestations", 0.0) * self._idx_mesure(mm, pib_nom, t) \
             + self._are(ex, t, niv, A, emploi_t)
-        # taux apparent de la dette : rejoint progressivement le taux de marché (renouvellement d'environ 1/8 de la dette par an)
-        if "taux_app" not in niv:
-            niv["taux_app"] = ab.d41pay / self.apu.dette[B - 1]
-        niv["taux_app"] += (max(float(ex.taux_long.get(t, ex.taux_long.iloc[-1])), 0.0) / 100 - niv["taux_app"]) / 8
-        d41 = niv["taux_app"] * niv["dette"]
+        if SPEC["dette"] == "cohortes":
+            d41 = self._charge_cohortes(t, niv, ex, pc, A)
+            niv["taux_app"] = d41 / niv["dette"]
+        else:
+            # taux apparent de la dette : rejoint progressivement le taux de marché (renouvellement d'environ 1/8 par an)
+            if "taux_app" not in niv:
+                niv["taux_app"] = ab.d41pay / self.apu.dette[B - 1]
+            niv["taux_app"] += (max(float(ex.taux_long.get(t, ex.taux_long.iloc[-1])), 0.0) / 100 - niv["taux_app"]) / 8
+            d41 = niv["taux_app"] * niv["dette"]
         ratio0 = (ab.te - ab.p3 - ab.d62pay - ab.d41pay) / self.macro.pib_cp[B]
         ratio = ratio0 if ex.autres_depenses_pib is None else float(ex.autres_depenses_pib.get(t, ratio0))
         autres_d = ratio * self.macro.pib_cp[B] * pib_nom      # subventions, investissement public, autres transferts
         pibn = self.macro.pib_cp[B] * pib_nom
         tr += _cal(ex, "recettes", t) / 100 * pibn
         te = d1p + p3_autres + d62 + d41 + autres_d + _cal(ex, "depenses", t) / 100 * pibn
+        sv = getattr(ex, "subvention_salaires", None)
+        if sv is not None and getattr(ex, "subvention_en_depense", False):
+            s_B = float(sv.get(B, 0.0))
+            te += float(sv.get(t, 0.0)) * sum(self.H[b]["cn"][B] / (1 - s_B) * w / A["w"][B] * n_br[b] for b in self.BR)
+        if SPEC["dette"] == "cohortes":
+            for _ in range(4):                                # besoin de financement de l'année, charge d'intérêts comprise
+                d41_n = self._charge_cohortes(t, niv, ex, pc, A, deficit=te - tr)
+                te, d41 = te + d41_n - d41, d41_n
+            niv["taux_app"] = d41 / niv["dette"]
         solde = tr - te
+        niv[("solde", t)] = solde                               # v0.9 : besoin de financement de l'année (cohortes)
         niv["dette"] = niv["dette"] - solde + _cal(ex, "dette", t)
         return dict(recettes=tr, depenses=te, solde=solde, solde_pib=solde / pibn * 100, dette=niv["dette"], dette_pib=niv["dette"] / pibn * 100,
                     is_=is_t, dividendes_non_residents=self._profits(ex, t, pib_nom)["non_residents"], cotisations=d61, tva_etc=d2, prestations=d62, interets=d41, pib_nominal=pibn,

@@ -376,5 +376,9 @@
   "octets": 283437,
   "sha256": "04a7026d959c108c73c0b5d1143cbf771f611e8c380723a97d9b74e16d1d6aae",
   "url": "https://www.insee.fr/fr/statistiques/fichier/8590183/varmod_indreg_2022.csv"
+ },
+ "eurostat_nasa_D39_D1_S11_S13_FR.json": {
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nasa_10_nf_tr?format=JSON&geo=FR&unit=CP_MEUR&na_item=D39&na_item=D1&na_item=D3&sector=S11&sector=S13&sector=S1&sinceTimePeriod=2005",
+  "note": "phase 3.4 : subventions sur la production (CICE en D39 2013-2018)"
  }
 }
