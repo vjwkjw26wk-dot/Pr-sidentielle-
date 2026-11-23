@@ -289,11 +289,14 @@ def compte_reference(mod, annees, journal=print):
     sur disque (outputs/compte_reference_<base>_<horizon>.pkl), invalidé si le code de ce module ou de M8 change."""
     import hashlib
     import pickle
-    cle = (mod.B, max(annees))
+    import json as _json
+    import m7_equations as _E
+    spec_txt = _json.dumps(getattr(M8, "SPEC", {}), sort_keys=True) + f"|sigma={_E.SIGMA_TRAVAIL}"   # v0.9 : la spécification fait partie de la clé
+    cle = (mod.B, max(annees), spec_txt)
     if cle in _CACHE:
         return _CACHE[cle]
-    emp = hashlib.sha1((pathlib.Path(__file__).read_bytes() + (RACINE / "src" / "m8_modele.py").read_bytes())).hexdigest()[:12]
-    f = RACINE / "outputs" / f"compte_reference_{mod.B}_{max(annees)}.pkl"
+    emp = hashlib.sha1((pathlib.Path(__file__).read_bytes() + (RACINE / "src" / "m8_modele.py").read_bytes() + spec_txt.encode())).hexdigest()[:12]
+    f = RACINE / "outputs" / f"compte_reference_{mod.B}_{max(annees)}_{hashlib.sha1(spec_txt.encode()).hexdigest()[:8]}.pkl"
     if f.exists():
         d = pickle.loads(f.read_bytes())
         if d.get("empreinte") == emp:

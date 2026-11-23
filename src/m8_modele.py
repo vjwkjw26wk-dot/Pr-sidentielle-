@@ -207,6 +207,8 @@ class Exogenes:
     #                                        taux long − écart court-long moyen des 5 années précédant l'origine
     ces_ref: dict = None                   # v0.9 : capital et emploi structurel de référence (anticipation, potentiel CES)
     subvention_salaires: pd.Series = None  # v0.9 : taux de subvention sur les rémunérations (CICE, D391), part de D1 marchand
+    gel: dict = None                       # v0.9 (phase 4.1) : boucles gelées sur une trajectoire de référence (voir
+    #                                        Modele.trajectoires_gel) : "C", "prix_salaires", "emploi", "Z"
     subvention_en_depense: bool = False    # v0.9 : ajouter la subvention aux dépenses publiques (mesure nouvelle ; en backtest
     #                                        elle est déjà dans les autres dépenses observées)
     calage: dict = None                    # termes de calage par année (compte de référence recalé sur l'observé) :
@@ -449,6 +451,14 @@ class Modele:
         self._pf_etat[t] = P
         return res["charge"]
 
+    def trajectoires_gel(self, annees):
+        """v0.9 (phase 4.1) : trajectoires de la dernière simulation, pour geler des boucles dans une variante.
+        À appeler juste après `simuler` sur la référence."""
+        H, A = self.H, self.A_courant
+        return {"C": {t: A["C"][t] for t in annees}, "Z": {t: self._Z_hist[t] for t in annees},
+                "prix_salaires": {"w": {t: A["w"][t] for t in annees}, "pva": {b: {t: H[b]["pva"][t] for t in annees} for b in self.BR}},
+                "emploi": {b: {t: H[b]["n"][t] for t in annees} for b in self.BR}}
+
     def _coin_cout(self, ex, t):
         """v0.9 : rapport (1 − s_t)/(1 − s_B) entre coût du travail employeur et rémunérations, s = taux de subvention sur
         les rémunérations (CICE). 1 si aucune subvention n'est renseignée (v0.8)."""
@@ -523,6 +533,7 @@ class Modele:
     def simuler(self, annees, ex: Exogenes, iterations=60, amorti=0.5, observe_jusqu_a=None):
         B, P, BR = self.B, self.P, self.BR
         self._pf_etat = {}                           # v0.9 : portefeuille de dette par année (cohortes)
+        self._Z_hist = {}
         r = {k: e.res.params for k, e in self.eq.items()}
         m, men, apu, em = self.macro, self.men, self.apu, self.emp
         H = {}
@@ -638,7 +649,7 @@ class Modele:
                 # v0.9 : salaire public par tête = indexation sur les prix de l'année précédente × dérive réelle
                 # tendancielle (GVT, mesures catégorielles) ; décisions (point d'indice) : niveaux["salaire_public"]
                 wp_ = A.setdefault("wpub", {B: 1.0})
-                pc_2 = A["pc"].get(t - 2, float(m.p_c[t - 2]))
+                pc_2 = A["pc"][t - 2] if (t - 2) in A["pc"] else float(m.p_c[t - 2])
                 wp_[t] = wp_[t - 1] * A["pc"][t - 1] / pc_2 * np.exp(self._preparer_salaire_public()["derive"])
             # paramètres alternatifs (analyse de sensibilité, v0.6) : appliqués à partir de alt["debut"] (2026 par défaut,
             # première année projetée) ; la période observée reste reproduite avec les paramètres centraux et l'ancrage
@@ -700,6 +711,10 @@ class Modele:
             if alt.get("impulsion_Z"):   # diagnostic (réponse indicielle de la fermeture), sans effet par défaut
                 niv["Z"] = niv.get("Z", 0.0) + float(alt["impulsion_Z"].get(t, 0.0))
             Z_dem = (niv.get("Z", 0.0) + z_ff) * (sum(self.va0) + sum(self.tx0))
+            gel = getattr(ex, "gel", None) or {}
+            if "Z" in gel:                                    # v0.9 (phase 4.1) : boucle de fermeture gelée
+                Z_dem = gel["Z"][t]
+            self._Z_hist[t] = Z_dem
             if R:
                 # délai de construction (audit 2026) : les capacités sont financées et construites pendant `delai` ans
                 # (2 ans par défaut) avant de produire ; la substitution aux importations suit les capacités en service.
@@ -767,6 +782,8 @@ class Modele:
                     dlw += float(ex.choc_salaire.get(t, 0.0))
                 dlw += _cal(ex, "salaire", t)
                 w_new = A["w"][t - 1] * np.exp(dlw)
+                if "prix_salaires" in gel:
+                    w_new = gel["prix_salaires"]["w"][t]
                 # ---- 3. prix de la valeur ajoutée et emploi par branche
                 re, rp, ri = r["emploi"], r["prix_va"], r["investissement"]
                 pva_new, n_new, I_new = {}, {}, {}
@@ -793,6 +810,8 @@ class Modele:
                           + ecm(("n", b), re["ecm_1"] * (np.log(hb["n"][t - 1]) - lq1 + E.SIGMA_TRAVAIL * lrc1 + self.g_prod[b] * (t - 1 - B) + cum_prod + cible_k))  # v0.7 : choc de productivité cumulé dans la cible de long terme (auparavant effacé par la correction d'erreur)
                           - (g_b - self.g_prod[b]) + _cal(ex, "emploi", t) * _part_calage_emploi(ex, b, t))
                     n_new[b] = hb["n"][t - 1] * np.exp(dn)
+                    if "emploi" in gel:
+                        n_new[b] = gel["emploi"][b][t]
                     # prix de la VA
                     clu = cn * n_new[b] / q_br[b]
                     clu1 = cn_1 * hb["n"][t - 1] / hb["q"][t - 1]
@@ -803,6 +822,8 @@ class Modele:
                           + ecm(("p", b), rp["ecm_1"] * (np.log(hb["pva"][t - 1]) - np.log(clu1) - mk_1)) + _cal(ex, "prix", t)
                           + mk_t - mk_1 + (0.0 if b in S.TUC_BRANCHE else kappa_p * gap_hist[t - 1]))
                     pva_new[b] = hb["pva"][t - 1] * np.exp(dp)
+                    if "prix_salaires" in gel:
+                        pva_new[b] = gel["prix_salaires"]["pva"][b][t]
                     # investissement (accélérateur) + coût d'usage
                     di = (self.c_inv[b] + ri["dlq"] * (lq - lq1) + ri["dlq_1"] * (lq1 - lq2)
                           + ri["li_1"] * np.log(hb["i"][t - 1] / m_cu1) + ri["lk_1"] * np.log(hb["k"][t - 1]) + ri["lq_1"] * lq1
@@ -852,6 +873,8 @@ class Modele:
                 dC = (rc["const"] + rc["dlrdb"] * np.log(rdbr / rdbr1) + rc.get("du", 0.0) * (u_cur - prev["u"]) + ecm("c", rc["ecart_1"] * (np.log(A["C"][t - 1]) - np.log(rdbr1))) + _cal(ex, "c", t)
                       - _par(ex, "PSI_CHOMAGE") / 100 * (u_cur - prev["u"]) - _par(ex, "PSI_TAUX") / 100 * (rr_t - rr_1))
                 C_cn = A["C"][t - 1] * np.exp(dC)
+                if "C" in gel:
+                    C_cn = gel["C"][t]
                 rx = r["exportations"]
                 pw = float(ex.prix_mondial[t]) / float(ex.prix_mondial[t - 1])
                 dX = rx["const"] + rx["dldm"] * np.log(float(ex.demande_mondiale[t]) / float(ex.demande_mondiale[t - 1])) + rx["dlprel"] * (np.log(px / A["px"][t - 1]) - np.log(pw)) + _cal(ex, "x", t)
