@@ -86,6 +86,8 @@ def initialiser_historique(dette, annee, lt, st, debut=1996, duree_cible=7.0, pa
             ratios.append(float(charge_observee[t]) / r["charge"])
     if ratios:
         P.lam = float(np.mean(ratios))       # coefficient de passage comptable, information ≤ origine
+    for c in P.cohortes:                     # cohortes existant à l'origine : seules concernées par λ
+        c.append(True)
     P.annee = annee
     return P
 
@@ -138,8 +140,11 @@ class PortefeuilleDette:
         return float(self.infl.get(a, self.pm)) if len(self.infl) else self.pm
 
     def _charge_cohortes(self, cohs, annee, facteur=1.0):
-        """Coupons (nominaux ou réels) + provision d'indexation des titres indexés (inflation de l'année)."""
-        return facteur * sum(c[1] * (c[2] + (self._infl(annee) if c[3] else 0.0)) / 100 for c in cohs)
+        """Coupons (nominaux ou réels) + provision d'indexation des titres indexés (inflation de l'année). Le coefficient
+        de passage comptable λ ne s'applique qu'aux cohortes existant à l'origine (5e champ vrai) : le coût marginal des
+        émissions nouvelles est le taux de marché."""
+        return facteur * sum(c[1] * (c[2] + (self._infl(annee) if c[3] else 0.0)) / 100 * (self.lam if len(c) > 4 and c[4] else 1.0)
+                             for c in cohs)
 
     def charge_theorique(self, annee=None):
         annee = self.annee if annee is None else annee
@@ -168,7 +173,7 @@ class PortefeuilleDette:
         charge_btf = 0.5 * (self.btf + btf_nouv) * court / 100
         self.btf, self.taux_btf = btf_nouv, court
         enc = self.encours()
-        charge = self.lam * (charge_vivantes + charge_echus + charge_nouv + charge_btf) + self.ecart * enc
+        charge = charge_vivantes + charge_echus + charge_nouv + charge_btf + self.ecart * enc
         return {"charge": charge, "encours": enc, "emission_mlt": emission, "rembourse": rembourse,
                 "taux_apparent": 100 * charge / max(enc - deficit, 1.0)}
 

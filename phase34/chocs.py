@@ -40,10 +40,11 @@ def ecarts(mod, c, v, ans):
     return out
 
 
-def identites(mod, r, ans):
-    """Contrôles comptables après choc : dette_t = dette_{t−1} − solde_t (+ calage stock-flux), PIB nominal = volume × prix."""
-    err = max(abs(float(r.dette[t] - r.dette[t - 1] + r.solde[t])) for t in ans if t - 1 in r.index)
-    return err
+def identites(mod, c, r, ans):
+    """Contrôle comptable après choc, en écart à la référence (les ajustements stock-flux calés sont communs) :
+    Δ(dette_v − dette_c) = −(solde_v − solde_c). Écart maximal en M€."""
+    d = r.dette - c.dette
+    return max(abs(float(d[t] - d[t - 1] + (r.solde[t] - c.solde[t]))) for t in ans if t - 1 in r.index)
 
 
 def lancer(spec_nom, spec):
@@ -72,7 +73,7 @@ def lancer(spec_nom, spec):
             vv.gel = {k: g[k] for k in gel} or None
             v = mod.simuler(ans, vv)
             res[nom][cas] = ecarts(mod, c, v, ans)
-            res[nom][cas]["identite_dette_max_M€"] = identites(mod, v, ans)
+            res[nom][cas]["identite_dette_max_M€"] = identites(mod, c, v, ans)
         print(f"[{spec_nom}] {nom} : {time.time() - t0:.0f} s", flush=True)
     M8.configurer_v08()
     return res
