@@ -1,0 +1,368 @@
+{
+ "dgfip_ir_credits_deciles.xlsx": {
+  "date": "2026-11-23T18:51:21",
+  "octets": 118865,
+  "sha256": "c7578465e0a5101bcca0f21a0f37f21291c092f2c9dcfcc40c8e9bff5a44797c",
+  "url": "https://www.impots.gouv.fr/node/25535"
+ },
+ "dgfip_ir_deciles_rfr_part.xlsx": {
+  "date": "2026-11-23T18:51:23",
+  "octets": 108644,
+  "sha256": "59eebbdbfb0af568f6ab0ddd28cc30c76deaee95d62f5bf795c1cca130e1f307",
+  "url": "https://www.impots.gouv.fr/node/25518"
+ },
+ "dgfip_ir_declarations_2042_nat.csv": {
+  "date": "2026-11-23T18:51:24",
+  "octets": 1281848,
+  "sha256": "40df4b5c6649ea1647730a5e173aa7bcfc96af66990ef39de49d7c0a00411f8d",
+  "url": "https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/ir-declarations-2042-nat/exports/csv?delimiter=%3B"
+ },
+ "dgfip_ir_reductions_deciles.xlsx": {
+  "date": "2026-11-23T18:51:26",
+  "octets": 56734,
+  "sha256": "b9425ecfe7188e670198ce45350b5441d35462826d0b2e5ff9aeac604512a63f",
+  "url": "https://www.impots.gouv.fr/node/25536"
+ },
+ "dgfip_ir_taux_marginal.xlsx": {
+  "date": "2026-11-23T18:51:27",
+  "octets": 36224,
+  "sha256": "2fb279cf8d89e6737a0d1afe9b2dffd7719477944e09e69b442f50f653261f17",
+  "url": "https://www.impots.gouv.fr/node/25519"
+ },
+ "dgfip_ircom_2025_rev2024.zip": {
+  "date": "2026-11-23T18:51:35",
+  "octets": 18181698,
+  "sha256": "3df14c80f69afb76a8c6d1f13cd2fb9e861ba9e162bc1e516c6fb2ed77338b00",
+  "url": "https://static.data.gouv.fr/resources/limpot-sur-le-revenu-par-collectivite-territoriale-ircom/20260526-131537/ircom-2025-revenus-2024.zip"
+ },
+ "eurostat_demo_pjan_FR.json": {
+  "date": "2026-11-23T18:51:37",
+  "octets": 65557,
+  "sha256": "afa6cf00c120d36cd2f6a8f2a181f92f44e5733dca6752bf638c4626c10ec114",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_pjan?format=JSON&geo=FR&sex=F&sex=M&sinceTimePeriod=2003&unit=NR&age=Y15&age=Y16&age=Y17&age=Y18&age=Y19&age=Y20&age=Y21&age=Y22&age=Y23&age=Y24&age=Y25&age=Y26&age=Y27&age=Y28&age=Y29&age=Y30&age=Y31&age=Y32&age=Y33&age=Y34&age=Y35&age=Y36&age=Y37&age=Y38&age=Y39&age=Y40&age=Y41&age=Y42&age=Y43&age=Y44&age=Y45&age=Y46&age=Y47&age=Y48&age=Y49&age=Y50&age=Y51&age=Y52&age=Y53&age=Y54&age=Y55&age=Y56&age=Y57&age=Y58&age=Y59&age=Y60&age=Y61&age=Y62&age=Y63&age=Y64&age=Y65&age=Y66&age=Y67&age=Y68&age=Y69&age=Y70&age=Y71&age=Y72&age=Y73&age=Y74&age=Y75&age=Y76&age=Y77&age=Y78&age=Y79&age=Y80&age=Y81&age=Y82&age=Y83&age=Y84&age=Y85&age=Y86&age=Y87&age=Y88&age=Y89&age=Y90&age=Y91&age=Y92&age=Y93&age=Y94&age=Y95&age=Y96&age=Y97&age=Y98&age=Y99"
+ },
+ "eurostat_gov_10a_main_FR.json": {
+  "date": "2026-11-23T18:51:37",
+  "octets": 10514,
+  "sha256": "158fe6e78d1d93a8bd234d171e1bbc7493474178a0cba0ca03092778f2dcac7b",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/gov_10a_main?format=JSON&geo=FR&unit=MIO_EUR&sector=S13&na_item=TR&na_item=TE&na_item=D2REC&na_item=D5REC&na_item=D61REC&na_item=D62PAY&na_item=P3&na_item=D41PAY&na_item=B9&na_item=D1PAY&na_item=P51G&na_item=D3PAY&na_item=D632PAY&na_item=P2&sinceTimePeriod=1995"
+ },
+ "eurostat_gov_10dd_edpt1_FR.json": {
+  "date": "2026-11-23T18:51:38",
+  "octets": 3322,
+  "sha256": "f1e887afe10ef64578c7121f07422cc71effe162541377b3d9656e333f4abbaf",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/gov_10dd_edpt1?format=JSON&geo=FR&sector=S13&na_item=B9&na_item=GD&unit=MIO_EUR&unit=PC_GDP&sinceTimePeriod=2019"
+ },
+ "eurostat_gov_10dd_edpt1_long_FR.json": {
+  "date": "2026-11-23T18:51:38",
+  "octets": 3885,
+  "sha256": "d552556a60ec7e202897e72085ef29edbb295c4f02f600083c1c81566be26083",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/gov_10dd_edpt1?format=JSON&geo=FR&sector=S13&na_item=GD&unit=MIO_EUR&sinceTimePeriod=1995"
+ },
+ "eurostat_irt_lt_mcby_a_EA.json": {
+  "date": "2026-11-23T18:51:39",
+  "octets": 4592,
+  "sha256": "c2f95bb6e6250951ee4a19a6da0f757572d1d4d0b192d0c0e207cfa6eb7139f2",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/irt_lt_mcby_a?format=JSON&geo=EA&geo=FR&geo=DE&sinceTimePeriod=1994"
+ },
+ "eurostat_irt_lt_mcby_a_FR.json": {
+  "date": "2026-11-23T18:51:39",
+  "octets": 4748,
+  "sha256": "cb9792822f3645313bdc6b593144c678f5c24d2541fa300b9cbc7b080472f606",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/irt_lt_mcby_a?format=JSON&geo=FR&geo=DE&sinceTimePeriod=1980"
+ },
+ "eurostat_irt_st_a_EA.json": {
+  "date": "2026-11-23T18:51:39",
+  "octets": 3664,
+  "sha256": "0f6586f41845c6fd1331b0a6eab04acae1fbdf7f39dac51ea8caf0381d34c10a",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/irt_st_a?format=JSON&geo=EA&int_rt=IRT_M3&sinceTimePeriod=1994"
+ },
+ "eurostat_lfsa_argan_FR_2024.json": {
+  "date": "2026-11-23T18:51:40",
+  "octets": 4360,
+  "sha256": "978073dcee6556e3d6db180a5cc1e83a95200f558c166dad80672b63e577745f",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lfsa_argan?format=JSON&geo=FR&time=2024&sex=F&sex=M&age=Y15-19&age=Y20-24&age=Y25-29&age=Y30-34&age=Y35-39&age=Y40-44&age=Y45-49&age=Y50-54&age=Y55-59&age=Y60-64&age=Y65-69&age=Y70-74&citizen=TOTAL"
+ },
+ "eurostat_lfsa_argan_FR_long.json": {
+  "date": "2026-11-23T18:51:40",
+  "octets": 12625,
+  "sha256": "841e02e35d1230125e6443fcffc75eef577226996e91575084d2c258fda68c03",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lfsa_argan?format=JSON&geo=FR&sex=F&sex=M&citizen=TOTAL&sinceTimePeriod=2003&age=Y15-19&age=Y20-24&age=Y25-29&age=Y30-34&age=Y35-39&age=Y40-44&age=Y45-49&age=Y50-54&age=Y55-59&age=Y60-64&age=Y65-69&age=Y70-74"
+ },
+ "eurostat_lfsa_ergan_FR_long.json": {
+  "date": "2026-11-23T18:51:41",
+  "octets": 12589,
+  "sha256": "6f4c373864fa1a9cd0346d511c8f89f189aabf714f9ccbd281ddd414268ae15d",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lfsa_ergan?format=JSON&geo=FR&sex=F&sex=M&citizen=TOTAL&sinceTimePeriod=2003&age=Y15-19&age=Y20-24&age=Y25-29&age=Y30-34&age=Y35-39&age=Y40-44&age=Y45-49&age=Y50-54&age=Y55-59&age=Y60-64&age=Y65-69&age=Y70-74"
+ },
+ "eurostat_lfsi_emp_a_FR.json": {
+  "date": "2026-11-23T18:51:41",
+  "octets": 4245,
+  "sha256": "e73dc13eea0487c3ac01e8726d6f961ae68eab0765dd1d18e16a460b5a872ff1",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lfsi_emp_a?format=JSON&geo=FR&age=Y15-64&sex=T&indic_em=ACT&unit=THS_PER&sinceTimePeriod=1995"
+ },
+ "eurostat_naio_10_cp15_FR.json": {
+  "date": "2026-11-23T18:51:45",
+  "octets": 906201,
+  "sha256": "14217dde4ebcc2e56948389eb447e880307d58cbb282652cb4afbc44b756f81d",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/naio_10_cp15?format=JSON&geo=FR&unit=MIO_EUR&sinceTimePeriod=2010"
+ },
+ "eurostat_naio_10_cp1700_FR_DOM.json": {
+  "date": "2026-11-23T18:51:49",
+  "octets": 1330170,
+  "sha256": "78ee504f3dde008bc1da7c44861f06e98ab4d7fd8c1be112afebbac588926d74",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/naio_10_cp1700?format=JSON&geo=FR&unit=MIO_EUR&stk_flow=DOM&sinceTimePeriod=2010"
+ },
+ "eurostat_naio_10_cp1700_FR_IMP.json": {
+  "date": "2026-11-23T18:51:54",
+  "octets": 1076074,
+  "sha256": "6b7e3151623a421fac688a17fd7575ab26025d1c7d73c87ffa11641af13a7f2f",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/naio_10_cp1700?format=JSON&geo=FR&unit=MIO_EUR&stk_flow=IMP&sinceTimePeriod=2010"
+ },
+ "eurostat_naio_10_cp1700_FR_TOTAL.json": {
+  "date": "2026-11-23T18:51:57",
+  "octets": 1388522,
+  "sha256": "052f0f0c3853a56758ff94c7e48bd4427006015b2c370924dfd53795446a4fbb",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/naio_10_cp1700?format=JSON&geo=FR&unit=MIO_EUR&stk_flow=TOTAL&sinceTimePeriod=2010"
+ },
+ "eurostat_naio_10_pyp15_FR.json": {
+  "date": "2026-11-23T18:52:00",
+  "octets": 850667,
+  "sha256": "eaa4c28c244c1582094780bbd63e8c0eace7548a4510ff13b400fde2d6c4ac2e",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/naio_10_pyp15?format=JSON&geo=FR&unit=MIO_EUR&sinceTimePeriod=2010"
+ },
+ "eurostat_naio_10_pyp1700_FR_DOM.json": {
+  "date": "2026-11-23T18:52:01",
+  "octets": 1036370,
+  "sha256": "46db1167fb1e04791100281215d84bfa33a4b7e381bc1d4ec76e5b9554b9c7b2",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/naio_10_pyp1700?format=JSON&geo=FR&unit=MIO_EUR&stk_flow=DOM&sinceTimePeriod=2011"
+ },
+ "eurostat_naio_10_pyp1700_FR_IMP.json": {
+  "date": "2026-11-23T18:52:03",
+  "octets": 910952,
+  "sha256": "12d9931be4af98fd820ec80fca88423899ee902114f8867f6c3b2e5f80bdcdeb",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/naio_10_pyp1700?format=JSON&geo=FR&unit=MIO_EUR&stk_flow=IMP&sinceTimePeriod=2011"
+ },
+ "eurostat_naio_10_pyp1700_FR_TOTAL.json": {
+  "date": "2026-11-23T18:52:05",
+  "octets": 1268616,
+  "sha256": "8218da2d00d741ef14baf4115fbcfb2c7b01521f00013b90ff0cd0d14c1d2820",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/naio_10_pyp1700?format=JSON&geo=FR&unit=MIO_EUR&stk_flow=TOTAL&sinceTimePeriod=2011"
+ },
+ "eurostat_nama_10_a64_FR.json": {
+  "date": "2026-11-23T18:52:07",
+  "octets": 379780,
+  "sha256": "9737e91f9e0f26c6b2e8b4222763860d118f8586c59e9a0de26f9caea73549bd",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nama_10_a64?format=JSON&geo=FR&sinceTimePeriod=1995&na_item=B1G&na_item=P1&na_item=D1&na_item=D11&unit=CP_MEUR&unit=CLV15_MEUR&unit=PYP_MEUR"
+ },
+ "eurostat_nama_10_a64_e_FR.json": {
+  "date": "2026-11-23T18:52:10",
+  "octets": 143757,
+  "sha256": "99755d67734200ceca25bca83b20df86f47d870057e241f028c69fe8466c02f2",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nama_10_a64_e?format=JSON&geo=FR&sinceTimePeriod=1995&na_item=EMP_DC&na_item=SAL_DC&unit=THS_PER&unit=THS_HW"
+ },
+ "eurostat_nama_10_a64_p5_FR.json": {
+  "date": "2026-11-23T18:52:11",
+  "octets": 57907,
+  "sha256": "15725705e7817310b05f23d43d87f83b72ab876bff4f55ea1f0f712d491efa96",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nama_10_a64_p5?format=JSON&geo=FR&sinceTimePeriod=1995&asset10=N11G&unit=CP_MEUR&unit=CLV15_MEUR"
+ },
+ "eurostat_nama_10_fcs_FR.json": {
+  "date": "2026-11-23T18:52:12",
+  "octets": 5430,
+  "sha256": "e8d8f59ff77c69d50e950f70c21a3b57d9366f9f076f9b020106aba37f7b6af0",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nama_10_fcs?format=JSON&geo=FR&unit=CLV15_MEUR&unit=CP_MEUR&na_item=P31_S14&sinceTimePeriod=1980"
+ },
+ "eurostat_nama_10_gdp_FR_EU.json": {
+  "date": "2026-11-23T18:52:13",
+  "octets": 29271,
+  "sha256": "7e6a9c9fd7a0e4a761c17d2fd756be073f1a2063dd10b53c251dc2a54032af5c",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nama_10_gdp?format=JSON&geo=FR&geo=EU27_2020&geo=EA20&unit=CLV15_MEUR&unit=CP_MEUR&na_item=B1GQ&na_item=P3_S14&na_item=P3_S13&na_item=P51G&na_item=P6&na_item=P7&na_item=P3&na_item=P5G&sinceTimePeriod=1980"
+ },
+ "eurostat_nama_10_nfa_st_FR.json": {
+  "date": "2026-11-23T18:52:14",
+  "octets": 31618,
+  "sha256": "8fa63dda4fabdacba302e86259b596fa567f1c52be6ab69b1e1e9d858a1004ba",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nama_10_nfa_st?format=JSON&geo=FR&sinceTimePeriod=1995&asset10=N11N&unit=CP_MEUR&unit=CLV15_MEUR"
+ },
+ "eurostat_nama_10_pe_FR.json": {
+  "date": "2026-11-23T18:52:15",
+  "octets": 5032,
+  "sha256": "1773e50a17bacf25003bb4ccae5b40b4b0b449127aa8ba93f75c8063c24e64be",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nama_10_pe?format=JSON&geo=FR&unit=THS_PER&na_item=EMP_DC&na_item=SAL_DC&na_item=POP_NC&sinceTimePeriod=1995"
+ },
+ "eurostat_nasa_10_f_bs_FR.json": {
+  "date": "2026-11-23T18:52:16",
+  "octets": 16117,
+  "sha256": "cb0a88734ecb6c03b778bbd12ea9b8f7b42b2216b3088ea62fb1e3d984287abb",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nasa_10_f_bs?format=JSON&geo=FR&unit=MIO_EUR&co_nco=NCO&na_item=BF90&na_item=F&sinceTimePeriod=2018"
+ },
+ "eurostat_nasa_10_f_tr_FR.json": {
+  "date": "2026-11-23T18:52:17",
+  "octets": 8424,
+  "sha256": "b1bfe372ba2777e75a2ea959f55c72e3b2b0eb3c8d3fa1810c0bda87e3367424",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nasa_10_f_tr?format=JSON&geo=FR&unit=MIO_EUR&co_nco=NCO&na_item=B9F&na_item=F&sinceTimePeriod=2019"
+ },
+ "eurostat_nasa_10_nf_tr_FR.json": {
+  "date": "2026-11-23T18:52:18",
+  "octets": 129934,
+  "sha256": "8e421a9273259728ff1f6bb963f7ed0ab8523a436b5902f48bc6b796b6aa74c0",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nasa_10_nf_tr?format=JSON&geo=FR&unit=CP_MEUR&sinceTimePeriod=2019"
+ },
+ "eurostat_nasa_10_nf_tr_S11_FR.json": {
+  "date": "2026-11-23T18:52:19",
+  "octets": 6708,
+  "sha256": "834daa5e58b1bf3789e9829d83d489b9e12c2a63d2d633f501f5f2be9c95fc92",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nasa_10_nf_tr?format=JSON&geo=FR&unit=CP_MEUR&sector=S11&direct=PAID&direct=RECV&na_item=B2A3G&na_item=D51&na_item=B1G&na_item=P51G&sinceTimePeriod=1995"
+ },
+ "eurostat_nasa_10_nf_tr_S14_FR.json": {
+  "date": "2026-11-23T18:52:20",
+  "octets": 7199,
+  "sha256": "4e95348b540504e5c98b7388e63a9c80c10e0eb748f078cc423234f95720d4c9",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nasa_10_nf_tr?format=JSON&geo=FR&unit=CP_MEUR&sector=S14_S15&direct=PAID&direct=RECV&na_item=B6G&na_item=P3&na_item=B8G&na_item=D1&sinceTimePeriod=1995"
+ },
+ "eurostat_nasa_10_nf_tr_S14comp_FR.json": {
+  "date": "2026-11-23T18:52:21",
+  "octets": 11312,
+  "sha256": "be544b87fdb1187f154800dff3064cc839b683db561e30facd60cbaaa3211084",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nasa_10_nf_tr?format=JSON&geo=FR&unit=CP_MEUR&sector=S14_S15&direct=PAID&direct=RECV&na_item=D1&na_item=B2A3G&na_item=D4&na_item=D62&na_item=D61&na_item=D5&na_item=D7&na_item=B6G&na_item=D63&sinceTimePeriod=1995"
+ },
+ "eurostat_nasa_B5G_S1_FR.json": {
+  "date": "2026-11-23T19:06:10",
+  "octets": 4991,
+  "sha256": "4f38835f2ccfe0e0134023e50007a0e417fd19b8f0fb8f8be5d4a259b3881a0a",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nasa_10_nf_tr?format=JSON&geo=FR&unit=CP_MEUR&sinceTimePeriod=1995&sector=S1&direct=RECV&direct=PAID&na_item=B5G"
+ },
+ "eurostat_nasa_P51G_S14S15_FR.json": {
+  "date": "2026-11-23T19:06:09",
+  "octets": 4536,
+  "sha256": "e74f94c4db88958c57a1e62b250de08a6b1ef296ac2047500318bbf98f4ec320",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nasa_10_nf_tr?format=JSON&geo=FR&unit=CP_MEUR&sector=S14_S15&direct=PAID&na_item=P51G&sinceTimePeriod=1995"
+ },
+ "eurostat_nrg_bal_c_FR.json": {
+  "date": "2026-11-23T18:52:21",
+  "octets": 38510,
+  "sha256": "1dbf2534ca679c5cec2408aa0ad0fbff849f8835654148649c0d34fdd5364a47",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nrg_bal_c?format=JSON&geo=FR&unit=KTOE&siec=TOTAL&siec=O4000XBIO&siec=G3000&siec=E7000&siec=C0000X0350-0370&siec=N900H&siec=RA000&nrg_bal=GIC&nrg_bal=IMP&nrg_bal=EXP&nrg_bal=PPRD&nrg_bal=FC_IND_E&nrg_bal=FC_TRA_E&nrg_bal=FC_OTH_HH_E&nrg_bal=FC_OTH_CP_E&nrg_bal=FC_E&sinceTimePeriod=1990"
+ },
+ "eurostat_prc_hicp_aind_EA.json": {
+  "date": "2026-11-23T18:52:22",
+  "octets": 5406,
+  "sha256": "64750e28d568d7cac5eb4e43e683e2e80608225d2b53239e75a7cda9a803fe47",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_aind?format=JSON&geo=EA&geo=FR&coicop=CP00&unit=RCH_A_AVG&sinceTimePeriod=1996"
+ },
+ "eurostat_spr_exp_pens_FR.json": {
+  "date": "2026-11-23T18:52:23",
+  "octets": 12050,
+  "sha256": "bb166ca45b8bd12bad4a893b85078c31383a9c2bb3ca3173330ca4a59dba15c4",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/spr_exp_pens?format=JSON&geo=FR&unit=MIO_EUR&sinceTimePeriod=2000"
+ },
+ "eurostat_spr_pns_ben_FR.json": {
+  "date": "2026-11-23T18:52:23",
+  "octets": 22784,
+  "sha256": "2ad3c28524a9b9c98c31bcc508758da55917f4861d78b61978b7530c31db27ce",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/spr_pns_ben?format=JSON&geo=FR&sinceTimePeriod=2000"
+ },
+ "eurostat_une_rt_a_FR.json": {
+  "date": "2026-11-23T18:52:24",
+  "octets": 4058,
+  "sha256": "6b41e185e1f7ea087ce17b7e74fbccf577c64745e45c859b968df91311c00f9b",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/une_rt_a?format=JSON&geo=FR&age=Y15-74&sex=T&unit=PC_ACT&sinceTimePeriod=1980"
+ },
+ "insee_bdm_001586739.xml": {
+  "date": "2026-11-23T20:31:25",
+  "octets": 19789,
+  "sha256": "1ea4db8703f3a3f408ef488ec09550cd18673cadbcc80c64154e1b5aa58fc52d",
+  "url": "https://www.bdm.insee.fr/series/sdmx/data/SERIES_BDM/001586739"
+ },
+ "insee_bdm_001586741.xml": {
+  "date": "2026-11-23T20:31:25",
+  "octets": 14673,
+  "sha256": "9b29d1cec071d18ab24b0f24cf0bd0a9dbdf9ee1a22c01c257839646dfdf4282",
+  "url": "https://www.bdm.insee.fr/series/sdmx/data/SERIES_BDM/001586741"
+ },
+ "insee_bdm_001586743.xml": {
+  "date": "2026-11-23T20:31:26",
+  "octets": 14707,
+  "sha256": "6a0b77108740e2b5f988530ae6bd1b1d895f9365e96905f682da0cf08e95842a",
+  "url": "https://www.bdm.insee.fr/series/sdmx/data/SERIES_BDM/001586743"
+ },
+ "insee_bdm_001586745.xml": {
+  "date": "2026-11-23T20:31:26",
+  "octets": 14622,
+  "sha256": "10e2f0b65f8e4bb03de13c4aea22cb5a7c0e57dfa1bbb3608ea0d079b1a059eb",
+  "url": "https://www.bdm.insee.fr/series/sdmx/data/SERIES_BDM/001586745"
+ },
+ "insee_bdm_001586747.xml": {
+  "date": "2026-11-23T20:31:27",
+  "octets": 14631,
+  "sha256": "d97d2ac15f16ab23026fe03bfc01cec81a07a28e3dfbb90fa6f497eb323c8b2b",
+  "url": "https://www.bdm.insee.fr/series/sdmx/data/SERIES_BDM/001586747"
+ },
+ "insee_bdm_001688526.xml": {
+  "date": "2026-11-23T20:31:24",
+  "octets": 19692,
+  "sha256": "39e5618e7a855142b0d726710834cfad6a7fed327b2954ad6aeb4fde59622d53",
+  "url": "https://www.bdm.insee.fr/series/sdmx/data/SERIES_BDM/001688526"
+ },
+ "insee_bdm_001763852.xml": {
+  "date": "2026-11-23T18:52:28",
+  "octets": 49451,
+  "sha256": "89a92c60a6394875259b61ddb4dbbeaa3773047f1c6b53df8c94df15ed34adb0",
+  "url": "https://www.bdm.insee.fr/series/sdmx/data/SERIES_BDM/001763852"
+ },
+ "insee_ip2108.xlsx": {
+  "date": "2026-11-23T18:52:29",
+  "octets": 71728,
+  "sha256": "33fd2a0496c1cd6c60c82969eb9158f1cfefc08da7b0acaa06e4a96cdc1b5b3a",
+  "url": "https://www.insee.fr/fr/statistiques/fichier/9004289/ip2108.xlsx"
+ },
+ "insee_proj2026_00_central.xlsx": {
+  "date": "2026-11-23T18:52:32",
+  "octets": 2450989,
+  "sha256": "93ab1daf7c7b41cfde39010b684f357cb13d8ca0f8a7a4c0b2d28882b4c37326",
+  "url": "https://www.insee.fr/fr/statistiques/fichier/8990852/00_central.xlsx"
+ },
+ "insee_proj2026_combines.zip": {
+  "date": "2026-11-23T18:53:32",
+  "octets": 34710814,
+  "sha256": "a81fce8b5fc2dd484e8fcbbb2a541cc32e858cc3f39582a0ced14e7c05c583fd",
+  "url": "https://www.insee.fr/fr/statistiques/fichier/8990860/ensemble_dd2.zip"
+ },
+ "insee_proj2026_extremes.zip": {
+  "date": "2026-11-23T18:53:44",
+  "octets": 8665625,
+  "sha256": "bb4c2cca8455fdd1010fbfd1db82b4e4ad95ef63ef6094c792fcf5e2a6d000c6",
+  "url": "https://www.insee.fr/fr/statistiques/fichier/8990858/ensemble_dd1_3.zip"
+ },
+ "insee_proj2026_hyp_mortalite.xlsx": {
+  "date": "2026-11-23T18:53:47",
+  "octets": 1286484,
+  "sha256": "a0edc54772a3da1500aa0b4e75aca8130b3191010a1f509bbfe7cf9f09931525",
+  "url": "https://www.insee.fr/fr/statistiques/fichier/8990899/hyp_mortalite.xlsx"
+ },
+ "insee_proj2026_note_technique.pdf": {
+  "date": "2026-11-23T18:53:51",
+  "octets": 2589471,
+  "sha256": "3092e2f29c2183dea178b1f3ad25b06d0ea5e36a82df0f76758760ccd67c173c",
+  "url": "https://www.insee.fr/fr/metadonnees/source/fichier/Note_technique_hypotheses_projections_2026.pdf"
+ },
+ "insee_proj2026_travail.zip": {
+  "date": "2026-11-23T18:54:02",
+  "octets": 3954546,
+  "sha256": "3a56419068d910d948875a8874781ddd7cba24771af35da0a5cf894c8f744711",
+  "url": "https://www.insee.fr/fr/statistiques/fichier/8990868/ensemble_dd3.zip"
+ },
+ "insee_proj2026_variantes1.zip": {
+  "date": "2026-11-23T18:54:23",
+  "octets": 13044000,
+  "sha256": "ac7248bdd543c4df0391b581f4f237075de186dfe547212ae4e0624dd4bdabb8",
+  "url": "https://www.insee.fr/fr/statistiques/fichier/8990856/ensemble_dd1_2.zip"
+ },
+ "insee_rp2022_varmod_indreg.csv": {
+  "date": "2026-11-23T19:08:44",
+  "octets": 283437,
+  "sha256": "04a7026d959c108c73c0b5d1143cbf771f611e8c380723a97d9b74e16d1d6aae",
+  "url": "https://www.insee.fr/fr/statistiques/fichier/8590183/varmod_indreg_2022.csv"
+ }
+}
