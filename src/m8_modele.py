@@ -34,8 +34,33 @@ import m7_series as S
 from telechargement import jsonstat_dict, telecharger
 
 RHO_DEFAUT = 0.15   # fermeture d'offre des projections (sensibilité : 0 et 1)
+THETA_ANTICIPATION = 1.5 # v0.7 : demande alignée sur les révisions du PIB potentiel (revenu permanent) ; 1,5 ferme l'écart des chocs d'offre en rampe (tests 1,0 / 1,5 / 2,0, phase3/test_fermeture.py) [H]
+AMORTI_PRODUCTION = 0.3  # v0.7 : terme proportionnel de la fermeture sur l'écart de production (vérifié par simulation)
 AMORTI_FERMETURE = 0.3   # terme proportionnel du correcteur, limite les dépassements (calibré par simulation)
 OKUN = 1.5      # points de PIB par point de chômage (ordre de grandeur des estimations françaises de la loi d'Okun)
+# ---- Version 0.7 (phase 3) : bloc d'offre et fermeture par l'écart de production -------------------------------------
+# Production potentielle : ln Y*_t = ln A_t + α ln K_{t−1} + (1 − α) ln N*_t + Σ_{s≤t} π_s, avec N* = population active ×
+# (1 − u*), K le capital des branches marchandes, π les chocs de productivité par tête (mesures, chocs d'environnement)
+# et A la productivité globale des facteurs de la référence, déduite de la trajectoire de référence en posant que son écart
+# de production est −OKUN × (u − u*) (loi d'Okun ; aucune donnée d'écart de production n'est importée).
+ALPHA_K = 0.35          # part du capital dans la fonction de production (comptes nationaux : part de l'EBE ≈ 1/3) [C]
+KAPPA_PRIX = 0.10       # hausse annuelle du prix de la VA des branches non industrielles par point d'écart de production
+#                         de l'année précédente (pente de courbe de Phillips ; 0,05-0,2 dans la littérature) [L]
+MU_IMPORT = 0.3         # élasticité des importations à la variation de l'écart de production (goulots, capacités) [L/H]
+# ---- Version 0.7 : comportements (phase 3). Valeurs centrales ; plages et sources dans phase3/PARAMETRES (doc 15) ----
+PSI_CHOMAGE = 0.3       # épargne de précaution : baisse de la consommation (%) par point de hausse du chômage [H/L]
+PSI_TAUX = 0.2          # baisse de la consommation (%) par point de hausse du taux d'intérêt réel (l'année même) [L]
+ASYM_SALAIRES = 0.5     # rigidité salariale à la baisse : effet du chômage sur les salaires réduit de moitié quand le
+#                         chômage est au-dessus du structurel (rigidité nominale à la baisse documentée en France) [L]
+SEMI_ELAST_IS, PART_IS_MULTINAT = 0.8, 0.5   # transfert de bénéfices : semi-élasticité de la base de l'IS au taux (0,2-1,5,
+#                         Heckemeyer-Overesch 2017 ; Beer-de Mooij-Liu 2020), appliquée à la part de l'IS payée par les groupes [L]
+THETA_TRESORERIE = 0.10 # part des profits conservés (mesures) réinvestie par les entreprises contraintes en trésorerie
+#                         (évaluations du CICE et des réformes de la fiscalité des dividendes : effets non détectés) [L/H]
+ELAST_DELOC_ENERGIE = 0.15  # élasticité des parts importées des produits énergo-intensifs au prix relatif de l'énergie
+#                         importée (écart à 2025) ; OCDE : −0,7 % d'emploi manufacturier pour +10 % de prix [L/H]
+ENERGO_INTENSIFS = ("CPA_C17", "CPA_C20", "CPA_C23", "CPA_C24")
+DEPENSE_ARE_BASE = 0.015  # allocations chômage (≈ 40 Md€) en part du PIB nominal de l'année de base, proportionnelles au nombre de
+#                         chômeurs (stabilisateur automatique ; absent de la v0.6 malgré la documentation) [A]
 PRODUITS_NM = ["CPA_L68A", "CPA_L68B", "CPA_O", "CPA_P", "CPA_Q86", "CPA_Q87_88"]
 # Importations non concurrentes (audit de novembre 2026) : houille, pétrole et gaz bruts, produits raffinés, électricité
 # et gaz distribué. Leur part importée par produit ne s'ajuste pas au facteur commun φ, et leur prix est exclu du prix
@@ -114,6 +139,15 @@ class Exogenes:
     taux_cotisations: pd.Series = None     # taux apparent de cotisations sociales (si mesure)
     autres_depenses_pib: pd.Series = None  # dépenses publiques hors consommation, prestations et intérêts, en part du PIB (mesures)
     productivite: pd.Series = None         # écart à la tendance de productivité par tête des branches (points de log par an)
+    lpgf: pd.Series = None                 # v0.7 : log de la productivité globale des facteurs de la référence (bloc d'offre) ;
+    #                                        None = fermeture sur l'écart de chômage (v0.6, utilisée pour caler la référence)
+    fermeture_mode: str = "production"     # "production" (v0.7) ou "chomage" (v0.6)
+    lpot_ref: pd.Series = None             # v0.7 : log du PIB potentiel de la référence (anticipation des chocs d'offre)
+    lk_ref: pd.Series = None               # v0.7 : log du capital marchand de la référence (emploi de long terme)
+    ly_ref: pd.Series = None               # v0.7 : log du PIB de la référence
+    kappa_prix: float = None               # pente de Phillips sur les prix (défaut KAPPA_PRIX)
+    mu_import: float = None                # effet des goulots sur les importations (défaut MU_IMPORT)
+    comportements: dict = None             # v0.7 : surcharges des paramètres de comportement {"PSI_CHOMAGE": x, ...}
     ancrage: int = None                    # année d'ancrage : les termes de rappel (correction d'erreur) des équations sont
     #                                        mesurés par rapport à leur valeur de cette année (l'écart à l'équilibre estimé
     #                                        constaté alors est supposé durable) ; None = équilibre estimé
@@ -121,6 +155,12 @@ class Exogenes:
     calage: dict = None                    # termes de calage par année (compte de référence recalé sur l'observé) :
     #   "c", "x", "m", "investissement", "emploi", "prix", "salaire" : ajout au taux de croissance (log) de l'équation ;
     #   "recettes", "depenses" : ajout en points de PIB ; "dette" : ajustement stock-flux (M€)
+
+
+def _par(ex, nom):
+    """Paramètre de comportement v0.7 (surchargé par ex.comportements pour les analyses de sensibilité)."""
+    c = getattr(ex, "comportements", None) or {}
+    return c.get(nom, globals()[nom])
 
 
 def _niv(ex, k, t) -> float:
@@ -384,6 +424,18 @@ class Modele:
             return val
         alt = ex.parametres_alternatifs or {}
         sauv_glob = (E.SIGMA_TRAVAIL, E.PHILLIPS)
+        # v0.7 : écart de production (log), initialisé par la loi d'Okun sur le chômage observé
+        u_star = lambda a: float(ex.chomage_structurel.get(a, ex.chomage_structurel.iloc[-1] if a > ex.chomage_structurel.index[-1] else ex.chomage_structurel.iloc[0]))  # noqa: E731
+        gap_hist = {a: -OKUN * (float(m.chomage[a]) - u_star(a)) / 100 for a in (B - 1, B)}
+        self.gap_hist = gap_hist
+        dpot_hist = {}    # écart du log du PIB potentiel à celui de la référence (chocs d'offre cumulés)
+        kappa_p = KAPPA_PRIX if ex.kappa_prix is None else ex.kappa_prix   # (nom distinct du ratio capital/production `kappa`)
+        mu_imp = MU_IMPORT if ex.mu_import is None else ex.mu_import
+        cum_prod = 0.0
+        idx_en = np.array([P.index(p_) for p_ in NON_CONCURRENTS if p_ in P])
+        idx_ei = np.array([P.index(p_) for p_ in ENERGO_INTENSIFS if p_ in P])
+        erel_hist = getattr(self, "_erel_obs", {})
+        erel_hist = dict(erel_hist)
         r_central = r
         theta_c = theta
         for t in annees:
@@ -415,13 +467,33 @@ class Modele:
             rho = ex.fermeture_offre or 0.0
             if alt and t >= alt.get("debut", 2026) and "rho" in alt:
                 rho = alt["rho"]
-            if rho:
+            z_ff = 0.0
+            if rho and ex.lpgf is not None and ex.fermeture_mode == "production":
+                # v0.7 : fermeture sur l'écart de production (Y − Y*) ; un choc d'offre (productivité, population active,
+                # capital, chômage structurel) déplace Y* et la demande s'ajuste vers le nouveau potentiel. Dans la
+                # référence, l'écart vaut −OKUN (u − u*) par construction : les deux fermetures y sont identiques.
+                # années de base (≤ B) : même convention que l'ancienne fermeture, pour que la référence calée reste identique
+                def _gf(a):
+                    if a > B:
+                        return gap_hist[a]
+                    cs = ex.chomage_structurel
+                    return -OKUN * (hist_vol[a]["u"] - float(cs.get(a, cs.iloc[-1]))) / 100
+                g1 = _gf(t - 1)
+                g2 = _gf(t - 2) if (t - 2) in hist_vol else g1
+                amorti = _par(ex, "AMORTI_PRODUCTION")
+                niv["Z"] = niv.get("Z", 0.0) - (rho * g1 + amorti * (g1 - g2))
+                # anticipation : ménages et entreprises révisent leur revenu permanent quand le potentiel s'écarte de la
+                # référence (part THETA_ANTICIPATION de l'écart de potentiel de l'année précédente, en demande)
+                z_ff = _par(ex, "THETA_ANTICIPATION") * dpot_hist.get(t - 1, 0.0)
+            elif rho:
                 u_s = float(ex.chomage_structurel.get(t - 1, ex.chomage_structurel.iloc[-1]))
                 g1 = hist_vol[t - 1]["u"] - u_s
                 g2 = hist_vol[t - 2]["u"] - float(ex.chomage_structurel.get(t - 2, u_s)) if (t - 2) in hist_vol else g1
                 # correcteur proportionnel-intégral (forme incrémentale) : ρ sur l'écart, AMORTI sur sa variation
                 niv["Z"] = niv.get("Z", 0.0) + (rho * g1 + AMORTI_FERMETURE * (g1 - g2)) * OKUN / 100
-            Z_dem = niv.get("Z", 0.0) * (sum(self.va0) + sum(self.tx0))
+            if alt.get("impulsion_Z"):   # diagnostic (réponse indicielle de la fermeture), sans effet par défaut
+                niv["Z"] = niv.get("Z", 0.0) + float(alt["impulsion_Z"].get(t, 0.0))
+            Z_dem = (niv.get("Z", 0.0) + z_ff) * (sum(self.va0) + sum(self.tx0))
             if R:
                 # délai de construction (audit 2026) : les capacités sont financées et construites pendant `delai` ans
                 # (2 ans par défaut) avant de produire ; la substitution aux importations suit les capacités en service.
@@ -444,6 +516,13 @@ class Modele:
                 pm_brut = np.array([float(ex.prix_import.loc[t, p]) if p in ex.prix_import.columns else 1.0 for p in P])
                 lpm_eff[t] = lpm_eff[t - 1] + theta * (np.log(pm_brut) - lpm_eff[t - 1])
                 pm = np.exp(lpm_eff[t] - e_B)
+                # v0.7 : délocalisation des productions énergo-intensives quand l'énergie importée renchérit (prix relatif,
+                # écart à 2025 ; nul dans la référence où tous les prix d'importation suivent l'inflation de la zone euro)
+                e_rel = float(pm[idx_en].mean() / (pm * self.poids_pm_nc).sum() * self.poids_pm_nc.sum())
+                erel_hist[t] = e_rel
+                fact_eff = fact_imp.copy()
+                if t > 2025 and 2025 in erel_hist and _par(ex, "ELAST_DELOC_ENERGIE"):
+                    fact_eff[idx_ei] = fact_eff[idx_ei] * (e_rel / erel_hist[2025]) ** _par(ex, "ELAST_DELOC_ENERGIE")
                 w_idx = w / A["w"][B]
                 pva_prod = np.array([pva[b] / H[b]["pva"][B] if b in pva else w_idx for b in self.br_prod]) * surcout_prod
                 pp = self._prix(pva_prod, pm)
@@ -465,7 +544,8 @@ class Modele:
                 rw = r["salaires"]
                 ugap = u_prev - float(ex.chomage_structurel.get(t, ex.chomage_structurel.iloc[-1]))
                 dlw = (rw["const"] + rw["dlpc"] * np.log(pc / A["pc"][t - 1]) + rw["dlprod"] * np.log(prod_m / A["prod_m"][t - 1])
-                       + rw["ecm_1"] * (np.log(A["w"][t - 1]) - np.log(A["pva_m"][t - 1]) - np.log(A["prod_m"][t - 1])) + E.PHILLIPS * ugap)
+                       + rw["ecm_1"] * (np.log(A["w"][t - 1]) - np.log(A["pva_m"][t - 1]) - np.log(A["prod_m"][t - 1]))
+                       + E.PHILLIPS * ugap * (_par(ex, "ASYM_SALAIRES") if ugap > 0 else 1.0))
                 dlw = dlw - rw["ecm_1"] * (np.log(A["w"][t - 1]) - np.log(A["pva_m"][t - 1]) - np.log(A["prod_m"][t - 1])) \
                     + ecm("w", rw["ecm_1"] * (np.log(A["w"][t - 1]) - np.log(A["pva_m"][t - 1]) - np.log(A["prod_m"][t - 1])))
                 if ex.choc_salaire is not None:
@@ -476,6 +556,15 @@ class Modele:
                 re, rp, ri = r["emploi"], r["prix_va"], r["investissement"]
                 pva_new, n_new, I_new = {}, {}, {}
                 m_cu1 = A["mcu"].get(t - 1, 1.0)     # multiplicateur du coût d'usage appliqué l'année précédente
+                # v0.7 : approfondissement du capital (cohérence avec le PIB potentiel Cobb-Douglas). Quand le capital croît
+                # plus vite que la production par rapport à la référence, la cible d'emploi de long terme baisse de
+                # α/(1−α) × (dk − dq) ; nul dans la référence.
+                if ex.lk_ref is not None and t in ex.lk_ref.index and (t - 1) in ex.ly_ref.index and (t - 1) in A["pib"]:
+                    # lk_ref[t] = capital de fin d'année t − 1 (colonne capital_marchand de l'année t)
+                    dkq = (np.log(sum(H[b_]["k"][t - 1] for b_ in BR)) - float(ex.lk_ref[t])) - (np.log(A["pib"][t - 1]) - float(ex.ly_ref[t - 1]))
+                    cible_k = _par(ex, "ALPHA_K") / (1 - _par(ex, "ALPHA_K")) * dkq
+                else:
+                    cible_k = 0.0
                 for b in BR:
                     hb = H[b]
                     cn = hb["cn"][B] * w_new / A["w"][B]
@@ -486,7 +575,7 @@ class Modele:
                     lrc1 = np.log(cn_1) - np.log(hb["pva"][t - 1])
                     g_b = self.g_prod[b] + (0.0 if ex.productivite is None else float(ex.productivite.get(t, 0.0)))
                     dn = (self.c_emp[b] + re["dlq"] * (lq - lq1) + re["dlq_1"] * (lq1 - lq2) + re["dlh_1"] * (np.log(hb["n"][t - 1]) - np.log(hb["n"][t - 2]))
-                          + ecm(("n", b), re["ecm_1"] * (np.log(hb["n"][t - 1]) - lq1 + E.SIGMA_TRAVAIL * lrc1 + self.g_prod[b] * (t - 1 - B)))
+                          + ecm(("n", b), re["ecm_1"] * (np.log(hb["n"][t - 1]) - lq1 + E.SIGMA_TRAVAIL * lrc1 + self.g_prod[b] * (t - 1 - B) + cum_prod + cible_k))  # v0.7 : choc de productivité cumulé dans la cible de long terme (auparavant effacé par la correction d'erreur)
                           - (g_b - self.g_prod[b]) + _cal(ex, "emploi", t) * _part_calage_emploi(ex, b, t))
                     n_new[b] = hb["n"][t - 1] * np.exp(dn)
                     # prix de la VA
@@ -497,7 +586,7 @@ class Modele:
                     mk_t, mk_1 = float(mk.get(t, 0.0)), float(mk.get(t - 1, 0.0))
                     dp = (self.c_prix[b] + rp["dlclu"] * np.log(clu / clu1) + rp["dlq"] * (lq - lq1) + rp.get("tucd", 0.0) * tucd_b
                           + ecm(("p", b), rp["ecm_1"] * (np.log(hb["pva"][t - 1]) - np.log(clu1) - mk_1)) + _cal(ex, "prix", t)
-                          + mk_t - mk_1)
+                          + mk_t - mk_1 + (0.0 if b in S.TUC_BRANCHE else kappa_p * gap_hist[t - 1]))
                     pva_new[b] = hb["pva"][t - 1] * np.exp(dp)
                     # investissement (accélérateur) + coût d'usage
                     di = (self.c_inv[b] + ri["dlq"] * (lq - lq1) + ri["dlq_1"] * (lq1 - lq2)
@@ -537,7 +626,11 @@ class Modele:
                 rdb_c = rdb + self._conso_effectif(ex, t)          # hétérogénéité des propensions (M14)
                 rdbr, rdbr1 = rdb_c / pc, A["rdbc"][t - 1] / A["pc"][t - 1]
                 u_cur = prev["u"] if it == 0 else u_cur
-                dC = rc["const"] + rc["dlrdb"] * np.log(rdbr / rdbr1) + rc.get("du", 0.0) * (u_cur - prev["u"]) + ecm("c", rc["ecart_1"] * (np.log(A["C"][t - 1]) - np.log(rdbr1))) + _cal(ex, "c", t)
+                # v0.7 : épargne de précaution (variation du chômage) et taux d'intérêt réel (variation)
+                rr_t = float(ex.taux_long.get(t, ex.taux_long.iloc[-1])) - 100 * np.log(A["pc"][t - 1] / A["pc"][t - 2]) if (t - 2) in A["pc"] else 0.0
+                rr_1 = float(ex.taux_long.get(t - 1, ex.taux_long.iloc[0])) - 100 * np.log(A["pc"][t - 2] / A["pc"][t - 3]) if (t - 3) in A["pc"] else rr_t
+                dC = (rc["const"] + rc["dlrdb"] * np.log(rdbr / rdbr1) + rc.get("du", 0.0) * (u_cur - prev["u"]) + ecm("c", rc["ecart_1"] * (np.log(A["C"][t - 1]) - np.log(rdbr1))) + _cal(ex, "c", t)
+                      - _par(ex, "PSI_CHOMAGE") / 100 * (u_cur - prev["u"]) - _par(ex, "PSI_TAUX") / 100 * (rr_t - rr_1))
                 C_cn = A["C"][t - 1] * np.exp(dC)
                 rx = r["exportations"]
                 pw = float(ex.prix_mondial[t]) / float(ex.prix_mondial[t - 1])
@@ -555,7 +648,8 @@ class Modele:
                 # En v0.5, l'indice observé incluait le logement des ménages, compté une seconde fois par l'équation de
                 # logement dans les rétrosimulations (double compte de la dynamique du logement).
                 I_tot = (fbcf_br + (I_autres_B - I_men_B) * float(ex.autres_investissements[t]) / float(ex.autres_investissements[B])
-                         + I_men_B * Imen / A["Imen"][B] + I_cap)
+                         + I_men_B * Imen / A["Imen"][B] + I_cap
+                         + _par(ex, "THETA_TRESORERIE") * self._profits(ex, t)["conserve"] / pi_idx)
                 self.dem = {"C": dem0["C"] * C_cn / m.c[B] + 0.6 * Z_dem, "G": dem0["G"] * G_idx, "I": I_tot + 0.4 * Z_dem, "S": dem0["S"] + _cal(ex, "stocks", t) * sum(self.va0),
                             "X": dem0["X"] * X_cn / m.x[B]}
                 # ---- 5. importations (équation agrégée) et production
@@ -565,13 +659,13 @@ class Modele:
                 lprel, lprel1 = np.log(pm_nc / ppib_est), np.log(A["pm_nc"][t - 1] / A["ppib"][t - 1])
                 dM = (rm["const"] + rm["dld"] * np.log(D / A["D"][t - 1]) + rm["dlprel"] * (lprel - lprel1)
                       + ecm("m", rm["lm_1"] * np.log(A["M"][t - 1]) + rm["ld_1"] * np.log(A["D"][t - 1]) + rm["lprel_1"] * lprel1)
-                      + rm["t"] * (t - 2010) + _cal(ex, "m", t))
+                      + rm["t"] * (t - 2010) + _cal(ex, "m", t) + mu_imp * (gap_hist[t - 1] - gap_hist.get(t - 2, gap_hist[t - 1])))
                 M_cn = A["M"][t - 1] * np.exp(dM)
                 M_cible = M_B * M_cn / m.m[B]
                 lo, hi = 0.3, 3.0
                 for _ in range(40):
                     phi_ = 0.5 * (lo + hi)
-                    x, Mtot, Ad, Am = self._leontief(phi_, fact_imp)
+                    x, Mtot, Ad, Am = self._leontief(phi_, fact_eff)
                     if Mtot > M_cible:
                         hi = phi_
                     else:
@@ -580,7 +674,7 @@ class Modele:
                     # variante de réindustrialisation : comportement d'importation des autres produits inchangé (facteur
                     # commun repris du compte central), parts importées des produits ciblés réduites
                     phi_ = float(ex.phi_impose[t])
-                    x, Mtot, Ad, Am = self._leontief(phi_, fact_imp)
+                    x, Mtot, Ad, Am = self._leontief(phi_, fact_eff)
                     M_cn = m.m[B] * Mtot / M_B
                 va_prod = self.av * x
                 q_new = {b: H[b]["q"][B] * va_prod[self.br_prod == b].sum() / self.va_br0[b] for b in BR}
@@ -618,6 +712,21 @@ class Modele:
             pib_vol = (sum(q_br.values()) / sum(H[b]["q"][B] for b in BR) * sum(self.va_br0[b] for b in BR) + q_nm) / sum(self.va_br0.values())
             A["pib"][t] = m.pib[B] * pib_vol
             A["emploi"][t] = emploi
+            # ---- v0.7 : production potentielle et écart de production de l'année t
+            k_agg = sum(H[b]["k"][t - 1] for b in BR)
+            n_star = float(ex.population_active[t]) * (1 - u_star(t) / 100)
+            cum_prod += 0.0 if ex.productivite is None else float(ex.productivite.get(t, 0.0))
+            ly = float(np.log(A["pib"][t]))
+            base_f = ALPHA_K * np.log(k_agg) + (1 - ALPHA_K) * np.log(n_star) + cum_prod
+            if ex.lpgf is not None and t in ex.lpgf.index:
+                gap_t = ly - (float(ex.lpgf[t]) + base_f)
+            else:
+                gap_t = -OKUN * (u_cur - u_star(t)) / 100
+            gap_hist[t] = gap_t
+            if ex.lpot_ref is not None and t in ex.lpot_ref.index:
+                dpot_hist[t] = (ly - gap_t) - float(ex.lpot_ref[t])
+            offre = dict(ecart_production=100 * gap_t, pib_potentiel=float(np.exp(ly - gap_t)), lpgf_implicite=ly - gap_t - base_f,
+                         emploi_structurel=n_star, capital_marchand=k_agg)
             hist_vol[t] = {"C": self.dem["C"], "X": self.dem["X"], "I": self.dem["I"], "G": self.dem["G"], "M": Mtot,
                            "q": dict(q_br), "q_nm": q_nm, "n_nm": n_nm, "u": u_cur}
             etat["phi"] = phi
@@ -637,7 +746,7 @@ class Modele:
             ext = dict(rnb=fp["pib_nominal"] + rev_prim, revenus_primaires_nets=rev_prim, epargne_menages=rdb - c_nom,
                        taux_epargne=100 * (rdb - c_nom) / rdb, investissement_menages=i_men_nom,
                        capacite_menages=rdb - c_nom - i_men_nom, solde_exterieur=px * X_cn - pm_agg * M_cn + rev_prim)
-            res.append(dict(annee=t, **ext, part_industrie=part_ind, emploi_industrie=sum(n_br[b] for b in IND),
+            res.append(dict(annee=t, **ext, **offre, part_industrie=part_ind, emploi_industrie=sum(n_br[b] for b in IND),
                             vol_industrie=sum(q_br[b] for b in IND) / sum(H[b]["q"][B] for b in IND), supplement_demande_fermeture=Z_dem, tuc_industrie=tuc_m, pib=A["pib"][t], c=C_cn, x=X_cn, m=M_cn, fbcf=m.fbcf[B] * I_tot / dem0["I"], emploi=emploi, chomage=u_cur,
                             salaire=w, pc=pc, pva_m=pva_m, px=px, rdb=rdb, phi=phi, **fp))
         self.H, self.A = H, A
@@ -665,13 +774,24 @@ class Modele:
         ebe, d4 = self._revenus_patrimoine(t, A, ex, pc)
         autres = ebe + d4 + (mb.d7 + mb.autres) * pib_nom
         mm = ex.mesure_menages or {}
-        d62 = mb.d62 * prest + self._extra(ex, "ajust_prestations", t) + mm.get("prestations", 0.0) * self._idx_mesure(mm, pib_nom, t)
+        d62 = mb.d62 * prest + self._extra(ex, "ajust_prestations", t) + mm.get("prestations", 0.0) * self._idx_mesure(mm, pib_nom, t) \
+            + self._are(ex, t, niv, A, emploi_t)
         autres += self._profits(ex, t, pib_nom)["menages"]
         d61 = mb.d61 * masse * (1 if ex.taux_cotisations is None else float(ex.taux_cotisations.get(t, 1.0)))
         base_imp = (mb.d1 * masse + ebe + d4 + d62)
         d5 = mb.d5 * base_imp / (mb.d1 + mb.ebe + mb.d4 + mb.d62) + mm.get("impots", 0.0) * self._idx_mesure(mm, pib_nom, t) \
             + _niv(ex, "impots_menages_pib", t) / 100 * self.macro.pib_cp[self.B] * pib_nom
         return d1 + autres + d62 - d61 - d5
+
+    def _are(self, ex, t, niv, A, emploi_t):
+        """v0.7 : variation des allocations chômage due à la variation du nombre de chômeurs par rapport à l'année de base
+        (M€ courants, indexées sur le salaire moyen). Stabilisateur automatique."""
+        B = self.B
+        if not hasattr(self, "_chom0"):
+            self._chom0 = float(self.macro.chomage[B]) / 100 * float(A["emploi"][B]) / (1 - float(self.macro.chomage[B]) / 100)
+        pa = float(ex.population_active[t]) if t in ex.population_active.index else emploi_t / (1 - 0.075)
+        chom = max(pa - emploi_t, 0.0)
+        return DEPENSE_ARE_BASE * float(self.macro.pib_cp[B]) * (chom / self._chom0 - 1) * (A["w"].get(t, A["w"][t - 1]) / A["w"][B])
 
     def _profits(self, ex, t, pib_nom=None):
         """Supplément de profits après impôt dû aux mesures (M€ courants) et sa répartition (M14) : dividendes reçus par
@@ -758,7 +878,8 @@ class Modele:
         ebe_m0 = sum(self.hist[b].va_cp[B] for b in self.BR) - sum(self.hist[b].wb[B] / self.hist[b].ns[B] * self.hist[b].n[B] for b in self.BR)
         tau, tau0 = float(ex.taux_is.get(t, ex.taux_is.iloc[-1])), float(ex.taux_is.get(B, 25.0))
         is0 = 0.15 * ab.d5rec                                   # part de l'IS dans les impôts courants sur le revenu (≈ 15 % ; ordre de grandeur, à caler sur les comptes de l'État)
-        is_t = is0 * (ebe_m / ebe_m0) * (tau / tau0)
+        # v0.7 : transfert de bénéfices des groupes (semi-élasticité de la base au taux)
+        is_t = is0 * (ebe_m / ebe_m0) * (tau / tau0) * (1 - _par(ex, "PART_IS_MULTINAT") * (1 - np.exp(-_par(ex, "SEMI_ELAST_IS") * (tau - tau0) / 100)))
         mm = ex.mesure_menages or {}
         d5_men = (ab.d5rec - is0) * (mb.d1 * masse + A["ebe"][t] + A["d4"][t] + mb.d62 * prest) / (mb.d1 + mb.ebe + mb.d4 + mb.d62)
         d5_men += mm.get("impots", 0.0) * self._idx_mesure(mm, pib_nom, t) + _niv(ex, "impots_menages_pib", t) / 100 * self.macro.pib_cp[self.B] * pib_nom
@@ -769,7 +890,8 @@ class Modele:
         d1p = ab.d1pay * (w / A["w"][B]) * (n_nm / self.n_nm0) * (1 + _niv(ex, "salaire_public", t))
         g_vol = float(ex.conso_publique[t]) / float(ex.conso_publique[B])
         p3_autres = (ab.p3 - ab.d1pay) * g_vol * pc / A["pc"][B]
-        d62 = ab.d62pay * prest + self._extra(ex, "ajust_prestations", t) + mm.get("prestations", 0.0) * self._idx_mesure(mm, pib_nom, t)
+        d62 = ab.d62pay * prest + self._extra(ex, "ajust_prestations", t) + mm.get("prestations", 0.0) * self._idx_mesure(mm, pib_nom, t) \
+            + self._are(ex, t, niv, A, emploi_t)
         # taux apparent de la dette : rejoint progressivement le taux de marché (renouvellement d'environ 1/8 de la dette par an)
         if "taux_app" not in niv:
             niv["taux_app"] = ab.d41pay / self.apu.dette[B - 1]

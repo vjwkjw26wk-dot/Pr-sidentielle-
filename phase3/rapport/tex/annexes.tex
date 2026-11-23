@@ -1,0 +1,50 @@
+\chapter{Fichiers, scripts et reproductibilité}\label{ann:fichiers}
+
+\begin{tabularx}{\linewidth}{@{}lL@{}}\toprule
+Fichier & Contenu\\ \midrule
+\code{src/m8\_modele.py} & Modèle macroéconomique v0.7 (bloc d'offre, fermeture, comportements)\\
+\code{src/m8\_reference.py} & Référence calée, PGF implicite, potentiel de référence\\
+\code{src/m15\_offre\_travail.py} & Offre de travail (OpenFisca, cinq configurations familiales)\\
+\code{src/m10\_couplage.py} & Microsimulation, déciles et groupes de ménages\\
+\code{simulateur/executer.py}, \code{catalogue.py} & Traduction des mesures ; leviers R\&D et formation ; niveaux de comportement\\
+\code{phase3/diagnostic\_fermeture.py} & Chocs d'offre (v0.6 et v0.7)\\
+\code{phase3/test\_fermeture.py}, \code{reponse\_Z.py} & Stabilité de la fermeture, réponse indicielle\\
+\code{phase3/caler\_reference.py}, \code{maj\_cache\_reference.py} & Recalage de la référence\\
+\code{phase3/experiences\_v07.py} & 68 expériences et variantes de comportement\\
+\code{phase3/comparaison.py} & Comparaison v0.6/v0.7 (Excel)\\
+\code{phase3/optimisation.py} & Métamodèle, Pareto, stratégies, préférences\\
+\code{phase3/verifier\_strategies.py}, \code{verifier\_anticipation.py} & Vérification par le modèle complet, environnements\\
+\code{phase3/acceptabilite.py} & Gagnants, perdants, acceptabilité\\
+\code{phase3/livrables.py}, \code{phase3/rapport/generer.py} & Excel et tables/figures du rapport\\
+\code{tests/test\_phase3.py} & Douze tests de cohérence comportementale\\
+\code{doc/15} à \code{doc/17} & Audit, registre des paramètres, équations v0.7\\
+\code{phase3/resultats/} & Tous les résultats (JSON)\\
+\code{phase3/livrables/} & \code{comparaison\_v06\_v07.xlsx}, \code{strategies\_v07.xlsx}\\ \bottomrule
+\end{tabularx}
+
+\paragraph{Ordre d'exécution.} \code{caler\_reference.py} (27 min) ; \code{experiences\_v07.py lots …} et
+\code{comportements} (environ 70 min sur deux cœurs) ; \code{diagnostic\_fermeture.py v07} ; \code{optimisation.py} ;
+\code{verifier\_strategies.py} (environ 75 min) ; \code{verifier\_anticipation.py} ; \code{acceptabilite.py} ;
+\code{comparaison.py} ; \code{livrables.py} ; \code{rapport/generer.py} ; compilation XeLaTeX.
+
+\paragraph{Traçabilité.} La v0.6 reste disponible (étiquette Git \code{v0.6}, résultats dans \code{rapport/resultats/}).
+Une première série d'expériences v0.7, produite avant la correction de l'équation d'emploi (approfondissement du
+capital), n'est pas utilisée ; elle est conservée hors du dépôt.
+
+\chapter{Stratégies avec les leviers exploratoires et avec les seuls instruments budgétaires}
+
+\begin{table}[htbp]\centering\scriptsize
+\caption{Périmètre avec leviers exploratoires (niveau C) : composition et prévision du métamodèle (non vérifiées par le
+modèle complet).}
+\tabfit{../tables/strategies_avec_exploratoires.tex}
+\end{table}
+
+\begin{table}[htbp]\centering\scriptsize
+\caption{Périmètre restreint aux instruments fiscaux et budgétaires (niveau A) : composition et prévision du métamodèle
+(non vérifiées par le modèle complet).}
+\tabfit{../tables/strategies_instruments_budgetaires.tex}
+\end{table}
+
+Avec les leviers exploratoires, toutes les stratégies retiennent la relocalisation et la durée du travail, et leurs
+performances apparentes sont bien supérieures. C'est précisément pourquoi ces leviers ont été isolés : leurs effets
+sont supposés, non mesurés.

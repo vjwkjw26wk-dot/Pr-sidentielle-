@@ -118,6 +118,16 @@ MESURES.update({
         "libelle": "Emplois publics supplémentaires",
         "parametres": {"milliers": "nombre d'agents (milliers)", "debut": "année", "montee": "années pour atteindre l'effectif visé (défaut du curseur : 5)"},
         "modules": ["M8", "M11"], "preuve": "B", "limites": "Coût moyen de 56 000 € par agent ; variation atteinte linéairement en cinq ans (recrutements ou non-remplacements de départs) ; effets sur la qualité des services non mesurés."},
+    "recherche": {
+        "libelle": "Aide publique à la recherche et développement des entreprises (v0.7)",
+        "parametres": {"md": "Md€ par an", "debut": "année"},
+        "modules": ["M8"], "preuve": "L (additionnalité CNEPI 2021 ; élasticité au stock de R&D, littérature) — exploratoire",
+        "limites": "Effet de productivité très incertain (plage d'un facteur 5) ; diffusion entre entreprises non représentée."},
+    "formation": {
+        "libelle": "Formation professionnelle des demandeurs d'emploi (v0.7)",
+        "parametres": {"md": "Md€ par an", "debut": "année"},
+        "modules": ["M8"], "preuve": "H — exploratoire",
+        "limites": "Effet sur le chômage structurel non estimé ; qualité des formations non représentée."},
     "investissement_public": {
         "libelle": "Investissement public",
         "parametres": {"md": "Md€ par an", "debut": "année"},
@@ -198,6 +208,8 @@ CURSEURS = [
     ("defense", 0, "Dépenses de défense", "Md€/an", -10, 40, 1, 0, [10], lambda v: _m("depense_fonction", fonction="défense", md=v)),
     ("autres_depenses", 0, "Autres dépenses de fonctionnement", "Md€/an", -60, 30, 1, 0, [-20, 20], lambda v: _m("depense_fonction", fonction="autres", md=v)),
     ("investissement_public", 0, "Investissement public", "Md€/an", -20, 50, 1, 0, [20], lambda v: _m("investissement_public", md=v)),
+    ("recherche", 0, "Aide publique à la R&D des entreprises (v0.7, exploratoire)", "Md€/an", -5, 10, 0.5, 0, [3], lambda v: _m("recherche", md=v)),
+    ("formation", 0, "Formation professionnelle (v0.7, exploratoire)", "Md€/an", -2, 5, 0.5, 0, [2], lambda v: _m("formation", md=v)),
     # Impôts des ménages
     ("ir_t1", 1, "Impôt sur le revenu : taux de la 1re tranche", "%", 0, 20, 0.5, 11, [9, 13], lambda v: _m("bareme_ir", taux={1: v / 100})),
     ("ir_t2", 1, "Impôt sur le revenu : taux de la 2e tranche", "%", 15, 40, 0.5, 30, [25, 35], lambda v: _m("bareme_ir", taux={2: v / 100})),

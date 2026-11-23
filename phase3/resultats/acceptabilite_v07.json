@@ -1,0 +1,4598 @@
+{
+ "S1_protection": {
+  "curseurs": {
+   "ir_t1": 9.0,
+   "csg_activite": -1.5,
+   "taux_is": 30.43,
+   "successions": 50.0,
+   "point_indice": 5.0,
+   "allocations_familiales": 25.0,
+   "rsa": 25.0,
+   "prime_activite": 50.0
+  },
+  "niveau": "intermédiaire",
+  "perte_max_decile_pct": 0.0,
+  "perte_max_groupe_pct": 0.0,
+  "droits_reduits": [],
+  "leviers_difficulte_3": [
+   "successions"
+  ],
+  "deciles": {
+   "1": {
+    "euros_par_uc": 425.71084798419986,
+    "pct": 7.814442919322882,
+    "gagnants": 0.6352204199141842,
+    "perdants": 0.0,
+    "masse_M€": 1831.8904865100656
+   },
+   "2": {
+    "euros_par_uc": 910.0861144130615,
+    "pct": 8.369771207241698,
+    "gagnants": 0.7160767422162554,
+    "perdants": 0.0,
+    "masse_M€": 4887.117800494749
+   },
+   "3": {
+    "euros_par_uc": 1337.1371108279102,
+    "pct": 9.172008163810956,
+    "gagnants": 0.716975737176002,
+    "perdants": 0.0010975031646766643,
+    "masse_M€": 7253.185609752054
+   },
+   "4": {
+    "euros_par_uc": 1526.2606551353942,
+    "pct": 8.743580550243632,
+    "gagnants": 0.7924886920608948,
+    "perdants": 0.001503391542667036,
+    "masse_M€": 7657.594889046081
+   },
+   "5": {
+    "euros_par_uc": 1740.1818697518054,
+    "pct": 8.67027803691756,
+    "gagnants": 0.8903968437544264,
+    "perdants": 0.0029656533661129407,
+    "masse_M€": 8024.539669414482
+   },
+   "6": {
+    "euros_par_uc": 1705.0764431326259,
+    "pct": 7.49106428511296,
+    "gagnants": 0.9835824836104575,
+    "perdants": 0.0005729807317916065,
+    "masse_M€": 8018.905971682279
+   },
+   "7": {
+    "euros_par_uc": 1485.0873508549207,
+    "pct": 5.721366632531817,
+    "gagnants": 0.9996936933520159,
+    "perdants": 0.0,
+    "masse_M€": 7416.442604587828
+   },
+   "8": {
+    "euros_par_uc": 1313.4287108424635,
+    "pct": 4.367050442553673,
+    "gagnants": 1.0,
+    "perdants": 0.0,
+    "masse_M€": 6717.481746726334
+   },
+   "9": {
+    "euros_par_uc": 1178.0597839955822,
+    "pct": 3.237903754093123,
+    "gagnants": 1.0,
+    "perdants": 0.0,
+    "masse_M€": 6138.749647737745
+   },
+   "10": {
+    "euros_par_uc": 1546.7879878622498,
+    "pct": 2.1611295110670223,
+    "gagnants": 1.0,
+    "perdants": 0.0,
+    "masse_M€": 7740.927076355382
+   }
+  },
+  "groupes": {
+   "age": {
+    "30-44 ans": {
+     "variation_euros_par_uc": 1979.191530625946,
+     "variation_pct": 6.998044834154732,
+     "part_gagnants": 0.9998660343844107,
+     "part_perdants": 0.0,
+     "poids": 0.23260931007450364
+    },
+    "45-59 ans": {
+     "variation_euros_par_uc": 1796.5737543092862,
+     "variation_pct": 6.01975698015004,
+     "part_gagnants": 0.9977201712401293,
+     "part_perdants": 0.0,
+     "poids": 0.2873318035386311
+    },
+    "60-74 ans": {
+     "variation_euros_par_uc": 589.1110021077213,
+     "variation_pct": 2.5063512703710473,
+     "part_gagnants": 0.7156822793910039,
+     "part_perdants": 0.0014855950135973077,
+     "poids": 0.22575606331906278
+    },
+    "75 ans et plus": {
+     "variation_euros_par_uc": 218.3933438499001,
+     "variation_pct": 1.0934455785757211,
+     "part_gagnants": 0.5793959221373688,
+     "part_perdants": 0.0019152123116409976,
+     "poids": 0.14544848721658835
+    },
+    "moins de 30 ans": {
+     "variation_euros_par_uc": 1611.657984131794,
+     "variation_pct": 8.149668567085417,
+     "part_gagnants": 0.9953597815724512,
+     "part_perdants": 0.0,
+     "poids": 0.10885433585121423
+    }
+   },
+   "csp": {
+    "Actifs, catégorie inconnue": {
+     "variation_euros_par_uc": 914.226163191002,
+     "variation_pct": 5.924401060140195,
+     "part_gagnants": 1.0,
+     "part_perdants": 0.0,
+     "poids": 0.06592690612899746
+    },
+    "Agriculteurs": {
+     "variation_euros_par_uc": 1813.6254535549617,
+     "variation_pct": 5.542872475795382,
+     "part_gagnants": 1.0,
+     "part_perdants": 0.0,
+     "poids": 0.008898082746217
+    },
+    "Artisans, commerçants, chefs d'entreprise": {
+     "variation_euros_par_uc": 1844.137407775632,
+     "variation_pct": 4.986758638126925,
+     "part_gagnants": 1.0,
+     "part_perdants": 0.0,
+     "poids": 0.04561372774653102
+    },
+    "Autres inactifs (étudiants, au foyer…)": {
+     "variation_euros_par_uc": 698.8282491394681,
+     "variation_pct": 9.7754490045251,
+     "part_gagnants": 0.9909968718941052,
+     "part_perdants": 0.0,
+     "poids": 0.05610359968161023
+    },
+    "Cadres": {
+     "variation_euros_par_uc": 1668.666002732084,
+     "variation_pct": 3.490921421976275,
+     "part_gagnants": 1.0,
+     "part_perdants": 0.0,
+     "poids": 0.12261760744583831
+    },
+    "Employés": {
+     "variation_euros_par_uc": 2169.699726400214,
+     "variation_pct": 9.572881011628585,
+     "part_gagnants": 1.0,
+     "part_perdants": 0.0,
+     "poids": 0.13489575628252745
+    },
+    "Ouvriers": {
+     "variation_euros_par_uc": 2229.3267374542324,
+     "variation_pct": 9.651501064673262,
+     "part_gagnants": 1.0,
+     "part_perdants": 0.0,
+     "poids": 0.11925358308880761
+    },
+    "Professions intermédiaires": {
+     "variation_euros_par_uc": 1943.7901355232398,
+     "variation_pct": 6.42110887899573,
+     "part_gagnants": 1.0,
+     "part_perdants": 0.0,
+     "poids": 0.146961075821675
+    },
+    "Retraités": {
+     "variation_euros_par_uc": 227.6885507822374,
+     "variation_pct": 1.1374680762333251,
+     "part_gagnants": 0.5794580199614374,
+     "part_perdants": 0.0020483352005143743,
+     "poids": 0.29972966105779597
+    }
+   },
+   "region": {
+    "Auvergne-Rhône-Alpes": {
+     "variation_euros_par_uc": 1321.4619548915957,
+     "variation_pct": 5.19097974841727,
+     "part_gagnants": 0.8674980809173815,
+     "part_perdants": 0.0006181799627053485,
+     "poids": 0.12021819707035966
+    },
+    "Bourgogne-Franche-Comté": {
+     "variation_euros_par_uc": 1234.1589537335212,
+     "variation_pct": 5.07595631752595,
+     "part_gagnants": 0.853828734696198,
+     "part_perdants": 0.0010164033531208697,
+     "poids": 0.04237377511694443
+    },
+    "Bretagne": {
+     "variation_euros_par_uc": 1207.9703443279288,
+     "variation_pct": 4.975029073518932,
+     "part_gagnants": 0.8490091260433799,
+     "part_perdants": 0.0005878542537503551,
+     "poids": 0.052147548425813615
+    },
+    "Centre-Val de Loire": {
+     "variation_euros_par_uc": 1255.2942806932322,
+     "variation_pct": 5.25868557314307,
+     "part_gagnants": 0.8481966111055019,
+     "part_perdants": 0.0012670480452761767,
+     "poids": 0.03804592686442555
+    },
+    "Corse": {
+     "variation_euros_par_uc": 1374.1537243566877,
+     "variation_pct": 5.517704497943438,
+     "part_gagnants": 0.8784208586250001,
+     "part_perdants": 0.0,
+     "poids": 0.005523036199817964
+    },
+    "Grand Est": {
+     "variation_euros_par_uc": 1315.3520700493052,
+     "variation_pct": 5.270979366536296,
+     "part_gagnants": 0.8764043644359307,
+     "part_perdants": 0.0005835866397163619,
+     "poids": 0.08465526779738262
+    },
+    "Guadeloupe": {
+     "variation_euros_par_uc": 1221.5660905548966,
+     "variation_pct": 6.134594153762999,
+     "part_gagnants": 0.8786873927266536,
+     "part_perdants": 0.0,
+     "poids": 0.005967545967712175
+    },
+    "Guyane": {
+     "variation_euros_par_uc": 1627.3260519219768,
+     "variation_pct": 7.614743891639547,
+     "part_gagnants": 0.969701047720429,
+     "part_perdants": 0.0,
+     "poids": 0.002787175833906318
+    },
+    "Hauts-de-France": {
+     "variation_euros_par_uc": 1323.3188683161975,
+     "variation_pct": 5.528937279404163,
+     "part_gagnants": 0.8788879694635658,
+     "part_perdants": 0.0008727989332565558,
+     "poids": 0.08514216934268784
+    },
+    "La Réunion": {
+     "variation_euros_par_uc": 1360.1514780553046,
+     "variation_pct": 6.503925866699686,
+     "part_gagnants": 0.9300137095962244,
+     "part_perdants": 0.0,
+     "poids": 0.01105845282498385
+    },
+    "Martinique": {
+     "variation_euros_par_uc": 1386.4985567585593,
+     "variation_pct": 6.0961076584235965,
+     "part_gagnants": 0.9087660216978726,
+     "part_perdants": 0.0,
+     "poids": 0.005369498338861231
+    },
+    "Normandie": {
+     "variation_euros_par_uc": 1258.1292119003945,
+     "variation_pct": 5.2682300470493155,
+     "part_gagnants": 0.8543324667090041,
+     "part_perdants": 0.0009137210015272658,
+     "poids": 0.04918195444952673
+    },
+    "Nouvelle-Aquitaine": {
+     "variation_euros_par_uc": 1251.960981657153,
+     "variation_pct": 5.012675452848402,
+     "part_gagnants": 0.8584238871993107,
+     "part_perdants": 0.0007064614658988658,
+     "poids": 0.0945024906613025
+    },
+    "Occitanie": {
+     "variation_euros_par_uc": 1242.4465978918888,
+     "variation_pct": 4.903101851729397,
+     "part_gagnants": 0.872238937202349,
+     "part_perdants": 0.0006682193482650248,
+     "poids": 0.09420003438365553
+    },
+    "Pays de la Loire": {
+     "variation_euros_par_uc": 1301.759519809971,
+     "variation_pct": 5.1190215525192615,
+     "part_gagnants": 0.8658884322612088,
+     "part_perdants": 0.000568910497400565,
+     "poids": 0.05687951281831212
+    },
+    "Provence-Alpes-Côte d'Azur": {
+     "variation_euros_par_uc": 1266.3061560278047,
+     "variation_pct": 5.046352664789591,
+     "part_gagnants": 0.8603410565641493,
+     "part_perdants": 5.3912614971019795e-05,
+     "poids": 0.07881354641507292
+    },
+    "Île-de-France": {
+     "variation_euros_par_uc": 1489.4768520381344,
+     "variation_pct": 5.0690536319201644,
+     "part_gagnants": 0.9073002928107132,
+     "part_perdants": 0.0004778325636616963,
+     "poids": 0.17313386748923504
+    }
+   },
+   "famille": {
+    "Couple sans enfant mineur": {
+     "variation_euros_par_uc": 1143.4407630668559,
+     "variation_pct": 3.838655545299738,
+     "part_gagnants": 0.8772263018259182,
+     "part_perdants": 0.0009032682798062178,
+     "poids": 0.3567350675004195
+    },
+    "Couple, 1-2 enfants": {
+     "variation_euros_par_uc": 1816.0319288527114,
+     "variation_pct": 5.9300268995850995,
+     "part_gagnants": 0.9997432547402703,
+     "part_perdants": 0.0,
+     "poids": 0.17247183995098578
+    },
+    "Couple, 3 enfants ou plus": {
+     "variation_euros_par_uc": 2047.0616430353018,
+     "variation_pct": 8.842367160001524,
+     "part_gagnants": 1.0,
+     "part_perdants": 0.0,
+     "poids": 0.03598425977166224
+    },
+    "Famille monoparentale": {
+     "variation_euros_par_uc": 1866.635084408967,
+     "variation_pct": 10.580774977537938,
+     "part_gagnants": 0.9847667452792686,
+     "part_perdants": 0.0,
+     "poids": 0.050193551691727456
+    },
+    "Personne seule": {
+     "variation_euros_par_uc": 1113.613180952271,
+     "variation_pct": 5.427606944504566,
+     "part_gagnants": 0.7869366063396106,
+     "part_perdants": 0.0007584705001636205,
+     "poids": 0.38461528108520515
+    }
+   }
+  },
+  "principaux_perdants": [],
+  "principaux_gagnants": [
+   {
+    "dimension": "famille",
+    "groupe": "Famille monoparentale",
+    "pct": 10.580774977537938,
+    "euros_par_uc": 1866.635084408967,
+    "part_perdants": 0.0
+   },
+   {
+    "dimension": "csp",
+    "groupe": "Autres inactifs (étudiants, au foyer…)",
+    "pct": 9.7754490045251,
+    "euros_par_uc": 698.8282491394681,
+    "part_perdants": 0.0
+   },
+   {
+    "dimension": "csp",
+    "groupe": "Ouvriers",
+    "pct": 9.651501064673262,
+    "euros_par_uc": 2229.3267374542324,
+    "part_perdants": 0.0
+   },
+   {
+    "dimension": "csp",
+    "groupe": "Employés",
+    "pct": 9.572881011628585,
+    "euros_par_uc": 2169.699726400214,
+    "part_perdants": 0.0
+   },
+   {
+    "dimension": "famille",
+    "groupe": "Couple, 3 enfants ou plus",
+    "pct": 8.842367160001524,
+    "euros_par_uc": 2047.0616430353018,
+    "part_perdants": 0.0
+   },
+   {
+    "dimension": "age",
+    "groupe": "moins de 30 ans",
+    "pct": 8.149668567085417,
+    "euros_par_uc": 1611.657984131794,
+    "part_perdants": 0.0
+   },
+   {
+    "dimension": "age",
+    "groupe": "30-44 ans",
+    "pct": 6.998044834154732,
+    "euros_par_uc": 1979.191530625946,
+    "part_perdants": 0.0
+   },
+   {
+    "dimension": "region",
+    "groupe": "La Réunion",
+    "pct": 6.503925866699686,
+    "euros_par_uc": 1360.1514780553046,
+    "part_perdants": 0.0
+   }
+  ],
+  "cout_compensation_D1_D3_M€": -0.0,
+  "inegalites": {
+   "avant": {
+    "mediane": 22179.384655111095,
+    "taux_pauvrete": 17.298049811516,
+    "seuil": 13307.630793066657,
+    "gini": 0.34930401781456777,
+    "d9_d1": 4.104219810767132,
+    "s80_s20": 5.865507080386136
+   },
+   "apres": {
+    "mediane": 24025.70734115281,
+    "taux_pauvrete": 16.41091517523454,
+    "seuil": 14415.424404691687,
+    "gini": 0.3335761878128827,
+    "d9_d1": 3.9022753633675826,
+    "s80_s20": 5.474063651826507
+   },
+   "apres_seuil_fixe": {
+    "mediane": 24025.70734115281,
+    "taux_pauvrete": 13.843307837898308,
+    "seuil": 13307.630793066657,
+    "gini": 0.3335761878128827,
+    "d9_d1": 3.9022753633675826,
+    "s80_s20": 5.474063651826507
+   }
+  }
+ },
+ "S2_emploi": {
+  "curseurs": {
+   "tva_reduite": 1.87,
+   "cotisations_employeurs": -20.0,
+   "successions": 50.0,
+   "investissement_public": 30.0,
+   "assurance_chomage": -25.0,
+   "aides_logement": -10.0,
+   "prime_activite": 34.27,
+   "minimum_vieillesse": 13.41
+  },
+  "niveau": "faible",
+  "perte_max_decile_pct": 1.0034541072834806,
+  "perte_max_groupe_pct": 3.2749581120774223,
+  "droits_reduits": [
+   "assurance_chomage",
+   "aides_logement"
+  ],
+  "leviers_difficulte_3": [
+   "successions",
+   "assurance_chomage"
+  ],
+  "deciles": {
+   "1": {
+    "euros_par_uc": -54.665611270712795,
+    "pct": -1.0034541072834806,
+    "gagnants": 0.34140871945552204,
+    "perdants": 0.6530716246907741,
+    "masse_M€": -238.88404623124293
+   },
+   "2": {
+    "euros_par_uc": 148.65133615054992,
+    "pct": 1.367098842106038,
+    "gagnants": 0.5342204763471947,
+    "perdants": 0.46550889995103506,
+    "masse_M€": 1070.323539817655
+   },
+   "3": {
+    "euros_par_uc": 543.710480673141,
+    "pct": 3.729547947701412,
+    "gagnants": 0.49332290926366934,
+    "perdants": 0.506312265284243,
+    "masse_M€": 2912.4372590203707
+   },
+   "4": {
+    "euros_par_uc": 649.4107910712077,
+    "pct": 3.7203183760409737,
+    "gagnants": 0.5228495659473303,
+    "perdants": 0.4771504340526697,
+    "masse_M€": 3154.9789247272724
+   },
+   "5": {
+    "euros_par_uc": 699.2920780001648,
+    "pct": 3.484151197449275,
+    "gagnants": 0.5589450885709506,
+    "perdants": 0.4408933933525257,
+    "masse_M€": 3105.8175612266955
+   },
+   "6": {
+    "euros_par_uc": 548.8406263495542,
+    "pct": 2.411270433548753,
+    "gagnants": 0.5370555550589781,
+    "perdants": 0.46247225139528403,
+    "masse_M€": 2492.92516078337
+   },
+   "7": {
+    "euros_par_uc": 244.9966419089242,
+    "pct": 0.9438607172117782,
+    "gagnants": 0.411020690784965,
+    "perdants": 0.5887316567952383,
+    "masse_M€": 1312.5391068495317
+   },
+   "8": {
+    "euros_par_uc": 43.06532490542648,
+    "pct": 0.14318892577453174,
+    "gagnants": 0.22202688901793596,
+    "perdants": 0.7777725807359341,
+    "masse_M€": 344.29154852664044
+   },
+   "9": {
+    "euros_par_uc": -37.10267353469319,
+    "pct": -0.10197690096627994,
+    "gagnants": 0.11681724522809038,
+    "perdants": 0.8831827547719097,
+    "masse_M€": -86.11967368713987
+   },
+   "10": {
+    "euros_par_uc": -193.70326852744657,
+    "pct": -0.27063686380404256,
+    "gagnants": 0.058041358194869816,
+    "perdants": 0.9419586418051301,
+    "masse_M€": -923.286449277383
+   }
+  },
+  "groupes": {
+   "age": {
+    "30-44 ans": {
+     "variation_euros_par_uc": 478.3952365737308,
+     "variation_pct": 1.6915145715736928,
+     "part_gagnants": 0.5112457678895145,
+     "part_perdants": 0.48844572425833976,
+     "poids": 0.23260931007450364
+    },
+    "45-59 ans": {
+     "variation_euros_par_uc": 357.0109357829661,
+     "variation_pct": 1.1962320319522102,
+     "part_gagnants": 0.4406558348128625,
+     "part_perdants": 0.5590940778614413,
+     "poids": 0.2873318035386311
+    },
+    "60-74 ans": {
+     "variation_euros_par_uc": 22.223469434783915,
+     "variation_pct": 0.09454894009896266,
+     "part_gagnants": 0.22292988370845299,
+     "part_perdants": 0.7766967622807608,
+     "poids": 0.22575606331906278
+    },
+    "75 ans et plus": {
+     "variation_euros_par_uc": -25.316220752836884,
+     "variation_pct": -0.12675253357291852,
+     "part_gagnants": 0.23836881965919154,
+     "part_perdants": 0.7613809145237569,
+     "poids": 0.14544848721658835
+    },
+    "moins de 30 ans": {
+     "variation_euros_par_uc": 404.69950709758274,
+     "variation_pct": 2.046443404606633,
+     "part_gagnants": 0.4504707870469758,
+     "part_perdants": 0.5453093252678444,
+     "poids": 0.10885433585121423
+    }
+   },
+   "csp": {
+    "Actifs, catégorie inconnue": {
+     "variation_euros_par_uc": -77.40221639595504,
+     "variation_pct": -0.501584609297156,
+     "part_gagnants": 0.1180232991356724,
+     "part_perdants": 0.8819767008643276,
+     "poids": 0.06592690612899746
+    },
+    "Agriculteurs": {
+     "variation_euros_par_uc": 414.43001598998694,
+     "variation_pct": 1.2665970938330373,
+     "part_gagnants": 0.4896621454200221,
+     "part_perdants": 0.5085354175078592,
+     "poids": 0.008898082746217
+    },
+    "Artisans, commerçants, chefs d'entreprise": {
+     "variation_euros_par_uc": 380.37888117807455,
+     "variation_pct": 1.0285880344262288,
+     "part_gagnants": 0.473178641262907,
+     "part_perdants": 0.5265796559607088,
+     "poids": 0.04561372774653102
+    },
+    "Autres inactifs (étudiants, au foyer…)": {
+     "variation_euros_par_uc": -234.12052401979122,
+     "variation_pct": -3.2749581120774223,
+     "part_gagnants": 0.0678100194801101,
+     "part_perdants": 0.9242734169382367,
+     "poids": 0.05610359968161023
+    },
+    "Cadres": {
+     "variation_euros_par_uc": 59.98536187052097,
+     "variation_pct": 0.1254919704817776,
+     "part_gagnants": 0.22568464963818427,
+     "part_perdants": 0.7740681584698986,
+     "poids": 0.12261760744583831
+    },
+    "Employés": {
+     "variation_euros_par_uc": 760.9802170732394,
+     "variation_pct": 3.3575028754470577,
+     "part_gagnants": 0.6927082747202724,
+     "part_perdants": 0.30667825945461186,
+     "poids": 0.13489575628252745
+    },
+    "Ouvriers": {
+     "variation_euros_par_uc": 761.3327535424166,
+     "variation_pct": 3.2960641246227884,
+     "part_gagnants": 0.7178496685952365,
+     "part_perdants": 0.2820148936602705,
+     "poids": 0.11925358308880761
+    },
+    "Professions intermédiaires": {
+     "variation_euros_par_uc": 446.588708696082,
+     "variation_pct": 1.4752594275799917,
+     "part_gagnants": 0.5023901938868597,
+     "part_perdants": 0.4973599208398423,
+     "poids": 0.146961075821675
+    },
+    "Retraités": {
+     "variation_euros_par_uc": -33.30789071457655,
+     "variation_pct": -0.16639687083227228,
+     "part_gagnants": 0.2051473864279402,
+     "part_perdants": 0.7945639839596376,
+     "poids": 0.29972966105779597
+    }
+   },
+   "region": {
+    "Auvergne-Rhône-Alpes": {
+     "variation_euros_par_uc": 268.04558656857625,
+     "variation_pct": 1.0529392892315623,
+     "part_gagnants": 0.38768365488776313,
+     "part_perdants": 0.6118487086126849,
+     "poids": 0.12021819707035966
+    },
+    "Bourgogne-Franche-Comté": {
+     "variation_euros_par_uc": 253.78147432998685,
+     "variation_pct": 1.0437745267733887,
+     "part_gagnants": 0.3718968910660882,
+     "part_perdants": 0.6273854455733103,
+     "poids": 0.04237377511694443
+    },
+    "Bretagne": {
+     "variation_euros_par_uc": 235.67255892126627,
+     "variation_pct": 0.9706180602605999,
+     "part_gagnants": 0.3591022053411456,
+     "part_perdants": 0.6406281106091809,
+     "poids": 0.052147548425813615
+    },
+    "Centre-Val de Loire": {
+     "variation_euros_par_uc": 264.0345267108013,
+     "variation_pct": 1.1060948637947816,
+     "part_gagnants": 0.38348771073240323,
+     "part_perdants": 0.616087764551093,
+     "poids": 0.03804592686442555
+    },
+    "Corse": {
+     "variation_euros_par_uc": 311.2119715098707,
+     "variation_pct": 1.249624161094318,
+     "part_gagnants": 0.4147656733815827,
+     "part_perdants": 0.5852343266184172,
+     "poids": 0.005523036199817964
+    },
+    "Grand Est": {
+     "variation_euros_par_uc": 273.76812364039466,
+     "variation_pct": 1.097064553119825,
+     "part_gagnants": 0.3882631791728639,
+     "part_perdants": 0.6110788782390918,
+     "poids": 0.08465526779738262
+    },
+    "Guadeloupe": {
+     "variation_euros_par_uc": 250.8083057689651,
+     "variation_pct": 1.259536572095402,
+     "part_gagnants": 0.3999682421615363,
+     "part_perdants": 0.6000317578384636,
+     "poids": 0.005967545967712175
+    },
+    "Guyane": {
+     "variation_euros_par_uc": 297.29690987047115,
+     "variation_pct": 1.3911408999848203,
+     "part_gagnants": 0.40156987559286805,
+     "part_perdants": 0.5943169293818834,
+     "poids": 0.002787175833906318
+    },
+    "Hauts-de-France": {
+     "variation_euros_par_uc": 277.6270834198799,
+     "variation_pct": 1.1599492518727166,
+     "part_gagnants": 0.39610132956426997,
+     "part_perdants": 0.6029294593255028,
+     "poids": 0.08514216934268784
+    },
+    "La Réunion": {
+     "variation_euros_par_uc": 255.58688675578207,
+     "variation_pct": 1.222156642682841,
+     "part_gagnants": 0.39551083464625875,
+     "part_perdants": 0.6044891653537412,
+     "poids": 0.01105845282498385
+    },
+    "Martinique": {
+     "variation_euros_par_uc": 310.4262342855259,
+     "variation_pct": 1.364871052320271,
+     "part_gagnants": 0.43257071314934087,
+     "part_perdants": 0.5650246510518738,
+     "poids": 0.005369498338861231
+    },
+    "Normandie": {
+     "variation_euros_par_uc": 257.8110150801865,
+     "variation_pct": 1.0795455055480037,
+     "part_gagnants": 0.37420830426616375,
+     "part_perdants": 0.6244698491267542,
+     "poids": 0.04918195444952673
+    },
+    "Nouvelle-Aquitaine": {
+     "variation_euros_par_uc": 255.5126282017201,
+     "variation_pct": 1.0230365786513687,
+     "part_gagnants": 0.37285000196055645,
+     "part_perdants": 0.6263406472652366,
+     "poids": 0.0945024906613025
+    },
+    "Occitanie": {
+     "variation_euros_par_uc": 218.6092197175715,
+     "variation_pct": 0.862703694324584,
+     "part_gagnants": 0.35264667826535623,
+     "part_perdants": 0.6467646899635979,
+     "poids": 0.09420003438365553
+    },
+    "Pays de la Loire": {
+     "variation_euros_par_uc": 272.92562221277086,
+     "variation_pct": 1.0732490303169453,
+     "part_gagnants": 0.38783663904160687,
+     "part_perdants": 0.6116162141754566,
+     "poids": 0.05687951281831212
+    },
+    "Provence-Alpes-Côte d'Azur": {
+     "variation_euros_par_uc": 244.1181944948335,
+     "variation_pct": 0.972834646225614,
+     "part_gagnants": 0.3659156160444552,
+     "part_perdants": 0.6331947316882297,
+     "poids": 0.07881354641507292
+    },
+    "Île-de-France": {
+     "variation_euros_par_uc": 268.00725931480093,
+     "variation_pct": 0.912094182163147,
+     "part_gagnants": 0.38722871455428026,
+     "part_perdants": 0.6119277850260719,
+     "poids": 0.17313386748923504
+    }
+   },
+   "famille": {
+    "Couple sans enfant mineur": {
+     "variation_euros_par_uc": 152.07605904699935,
+     "variation_pct": 0.5105359422401159,
+     "part_gagnants": 0.2865238869780711,
+     "part_perdants": 0.7132609338764678,
+     "poids": 0.3567350675004195
+    },
+    "Couple, 1-2 enfants": {
+     "variation_euros_par_uc": 420.0340421711168,
+     "variation_pct": 1.3715690397523848,
+     "part_gagnants": 0.5139121707676165,
+     "part_perdants": 0.4857346723150704,
+     "poids": 0.17247183995098578
+    },
+    "Couple, 3 enfants ou plus": {
+     "variation_euros_par_uc": 485.0516012517158,
+     "variation_pct": 2.095200388521159,
+     "part_gagnants": 0.5663551670117514,
+     "part_perdants": 0.4336448329882485,
+     "poids": 0.03598425977166224
+    },
+    "Famille monoparentale": {
+     "variation_euros_par_uc": 530.8562094240258,
+     "variation_pct": 3.009088463116958,
+     "part_gagnants": 0.5071530802645225,
+     "part_perdants": 0.4848526759162554,
+     "poids": 0.050193551691727456
+    },
+    "Personne seule": {
+     "variation_euros_par_uc": 229.9785543250891,
+     "variation_pct": 1.1208857975931887,
+     "part_gagnants": 0.3715001509471704,
+     "part_perdants": 0.6280195520471972,
+     "poids": 0.38461528108520515
+    }
+   }
+  },
+  "principaux_perdants": [
+   {
+    "dimension": "csp",
+    "groupe": "Autres inactifs (étudiants, au foyer…)",
+    "pct": -3.2749581120774223,
+    "euros_par_uc": -234.12052401979122,
+    "part_perdants": 0.9242734169382367
+   },
+   {
+    "dimension": "csp",
+    "groupe": "Actifs, catégorie inconnue",
+    "pct": -0.501584609297156,
+    "euros_par_uc": -77.40221639595504,
+    "part_perdants": 0.8819767008643276
+   },
+   {
+    "dimension": "csp",
+    "groupe": "Retraités",
+    "pct": -0.16639687083227228,
+    "euros_par_uc": -33.30789071457655,
+    "part_perdants": 0.7945639839596376
+   },
+   {
+    "dimension": "age",
+    "groupe": "75 ans et plus",
+    "pct": -0.12675253357291852,
+    "euros_par_uc": -25.316220752836884,
+    "part_perdants": 0.7613809145237569
+   }
+  ],
+  "principaux_gagnants": [
+   {
+    "dimension": "csp",
+    "groupe": "Employés",
+    "pct": 3.3575028754470577,
+    "euros_par_uc": 760.9802170732394,
+    "part_perdants": 0.30667825945461186
+   },
+   {
+    "dimension": "csp",
+    "groupe": "Ouvriers",
+    "pct": 3.2960641246227884,
+    "euros_par_uc": 761.3327535424166,
+    "part_perdants": 0.2820148936602705
+   },
+   {
+    "dimension": "famille",
+    "groupe": "Famille monoparentale",
+    "pct": 3.009088463116958,
+    "euros_par_uc": 530.8562094240258,
+    "part_perdants": 0.4848526759162554
+   },
+   {
+    "dimension": "famille",
+    "groupe": "Couple, 3 enfants ou plus",
+    "pct": 2.095200388521159,
+    "euros_par_uc": 485.0516012517158,
+    "part_perdants": 0.4336448329882485
+   },
+   {
+    "dimension": "age",
+    "groupe": "moins de 30 ans",
+    "pct": 2.046443404606633,
+    "euros_par_uc": 404.69950709758274,
+    "part_perdants": 0.5453093252678444
+   },
+   {
+    "dimension": "age",
+    "groupe": "30-44 ans",
+    "pct": 1.6915145715736928,
+    "euros_par_uc": 478.3952365737308,
+    "part_perdants": 0.48844572425833976
+   },
+   {
+    "dimension": "csp",
+    "groupe": "Professions intermédiaires",
+    "pct": 1.4752594275799917,
+    "euros_par_uc": 446.588708696082,
+    "part_perdants": 0.4973599208398423
+   },
+   {
+    "dimension": "famille",
+    "groupe": "Couple, 1-2 enfants",
+    "pct": 1.3715690397523848,
+    "euros_par_uc": 420.0340421711168,
+    "part_perdants": 0.4857346723150704
+   }
+  ],
+  "cout_compensation_D1_D3_M€": 238.88404623124293,
+  "inegalites": {
+   "avant": {
+    "mediane": 22179.384655111095,
+    "taux_pauvrete": 17.298049811516,
+    "seuil": 13307.630793066657,
+    "gini": 0.34930401781456777,
+    "d9_d1": 4.104219810767132,
+    "s80_s20": 5.865507080386136
+   },
+   "apres": {
+    "mediane": 22819.378748726976,
+    "taux_pauvrete": 16.741610458618,
+    "seuil": 13691.627249236186,
+    "gini": 0.342047923369702,
+    "d9_d1": 4.051199169624597,
+    "s80_s20": 5.741436060160085
+   },
+   "apres_seuil_fixe": {
+    "mediane": 22819.378748726976,
+    "taux_pauvrete": 15.63858986353385,
+    "seuil": 13307.630793066657,
+    "gini": 0.342047923369702,
+    "d9_d1": 4.051199169624597,
+    "s80_s20": 5.741436060160085
+   }
+  }
+ },
+ "S3_productivite": {
+  "curseurs": {
+   "csg_activite": -1.5,
+   "taux_is": 20.26,
+   "successions": 50.0,
+   "investissement_public": 30.0,
+   "assurance_chomage": -25.0,
+   "aides_logement": -6.46,
+   "prime_activite": 50.0,
+   "age_legal": 66
+  },
+  "niveau": "faible",
+  "perte_max_decile_pct": 1.0152329296313478,
+  "perte_max_groupe_pct": 1.3484348451956478,
+  "droits_reduits": [
+   "assurance_chomage",
+   "aides_logement",
+   "age_legal"
+  ],
+  "leviers_difficulte_3": [
+   "successions",
+   "assurance_chomage",
+   "age_legal"
+  ],
+  "deciles": {
+   "1": {
+    "euros_par_uc": -55.307291362529284,
+    "pct": -1.0152329296313478,
+    "gagnants": 0.2650762240901547,
+    "perdants": 0.4582273674932109,
+    "masse_M€": -179.21285744872822
+   },
+   "2": {
+    "euros_par_uc": 392.89779701003744,
+    "pct": 3.61335550199458,
+    "gagnants": 0.4043510831904191,
+    "perdants": 0.34861731008519475,
+    "masse_M€": 2518.0103086860368
+   },
+   "3": {
+    "euros_par_uc": 1153.1026938308328,
+    "pct": 7.909635620673437,
+    "gagnants": 0.6652201405459331,
+    "perdants": 0.0194387652925806,
+    "masse_M€": 6123.949682843207
+   },
+   "4": {
+    "euros_par_uc": 1374.621295164113,
+    "pct": 7.874875094176778,
+    "gagnants": 0.670682474572143,
+    "perdants": 0.007032304218202254,
+    "masse_M€": 6748.463968981934
+   },
+   "5": {
+    "euros_par_uc": 1537.3324048847403,
+    "pct": 7.6596013423671,
+    "gagnants": 0.6959073538665322,
+    "perdants": 0.004508613925482716,
+    "masse_M€": 7043.891665036856
+   },
+   "6": {
+    "euros_par_uc": 1437.9837501162156,
+    "pct": 6.317622154979535,
+    "gagnants": 0.709960678718173,
+    "perdants": 0.0030652024589794503,
+    "masse_M€": 6761.2561614185615
+   },
+   "7": {
+    "euros_par_uc": 1125.5651029785154,
+    "pct": 4.336290804184905,
+    "gagnants": 0.7036969692617464,
+    "perdants": 0.002256530840654472,
+    "masse_M€": 5705.566328842802
+   },
+   "8": {
+    "euros_par_uc": 882.3928907477394,
+    "pct": 2.933889165232604,
+    "gagnants": 0.7348399382627002,
+    "perdants": 0.0012712350355950962,
+    "masse_M€": 4581.73013640943
+   },
+   "9": {
+    "euros_par_uc": 726.0441975418781,
+    "pct": 1.9955364445809753,
+    "gagnants": 0.7895041787021294,
+    "perdants": 0.00022483828876888054,
+    "masse_M€": 3844.0862589123244
+   },
+   "10": {
+    "euros_par_uc": 1115.8017942187823,
+    "pct": 1.558967489345729,
+    "gagnants": 0.9221785327673824,
+    "perdants": 0.0,
+    "masse_M€": 5576.262865502411
+   }
+  },
+  "groupes": {
+   "age": {
+    "30-44 ans": {
+     "variation_euros_par_uc": 1553.4048318734178,
+     "variation_pct": 5.492544046813265,
+     "part_gagnants": 0.9316386271130725,
+     "part_perdants": 0.06792838681639167,
+     "poids": 0.23260931007450364
+    },
+    "45-59 ans": {
+     "variation_euros_par_uc": 1376.5656989455365,
+     "variation_pct": 4.612441295541685,
+     "part_gagnants": 0.9364522652019639,
+     "part_perdants": 0.05854168424225238,
+     "poids": 0.2873318035386311
+    },
+    "60-74 ans": {
+     "variation_euros_par_uc": 315.4999728179751,
+     "variation_pct": 1.3422831263466546,
+     "part_gagnants": 0.3443356373656137,
+     "part_perdants": 0.06699902611280777,
+     "poids": 0.22575606331906278
+    },
+    "75 ans et plus": {
+     "variation_euros_par_uc": 21.56868420292072,
+     "variation_pct": 0.10798947422861417,
+     "part_gagnants": 0.0855111246691829,
+     "part_perdants": 0.057412113106711904,
+     "poids": 0.14544848721658835
+    },
+    "moins de 30 ans": {
+     "variation_euros_par_uc": 1266.0757052343322,
+     "variation_pct": 6.402163163704447,
+     "part_gagnants": 0.7366886402477076,
+     "part_perdants": 0.260570052991513,
+     "poids": 0.10885433585121423
+    }
+   },
+   "csp": {
+    "Actifs, catégorie inconnue": {
+     "variation_euros_par_uc": 347.2738944707664,
+     "variation_pct": 2.2504167036529976,
+     "part_gagnants": 0.7366714093826527,
+     "part_perdants": 0.2624456086124119,
+     "poids": 0.06592690612899746
+    },
+    "Agriculteurs": {
+     "variation_euros_par_uc": 1425.6259488626451,
+     "variation_pct": 4.357053336035438,
+     "part_gagnants": 0.988998765580233,
+     "part_perdants": 0.011001234419767051,
+     "poids": 0.008898082746217
+    },
+    "Artisans, commerçants, chefs d'entreprise": {
+     "variation_euros_par_uc": 1441.9497173662821,
+     "variation_pct": 3.899197087213926,
+     "part_gagnants": 0.9719292647457294,
+     "part_perdants": 0.028070735254270722,
+     "poids": 0.04561372774653102
+    },
+    "Autres inactifs (étudiants, au foyer…)": {
+     "variation_euros_par_uc": -96.39704135436827,
+     "variation_pct": -1.3484348451956478,
+     "part_gagnants": 0.3008796490260406,
+     "part_perdants": 0.6938124202202629,
+     "poids": 0.05610359968161023
+    },
+    "Cadres": {
+     "variation_euros_par_uc": 1258.44894084892,
+     "variation_pct": 2.632729592908354,
+     "part_gagnants": 0.9932332681000013,
+     "part_perdants": 0.006766731899998566,
+     "poids": 0.12261760744583831
+    },
+    "Employés": {
+     "variation_euros_par_uc": 1855.2303677438254,
+     "variation_pct": 8.185418167995687,
+     "part_gagnants": 0.9657305148701728,
+     "part_perdants": 0.03423649009889225,
+     "poids": 0.13489575628252745
+    },
+    "Ouvriers": {
+     "variation_euros_par_uc": 1915.5474132359348,
+     "variation_pct": 8.293045423835405,
+     "part_gagnants": 0.9874577958505671,
+     "part_perdants": 0.012542204149432726,
+     "poids": 0.11925358308880761
+    },
+    "Professions intermédiaires": {
+     "variation_euros_par_uc": 1594.913856513132,
+     "variation_pct": 5.268632316900319,
+     "part_gagnants": 0.9911632982430442,
+     "part_perdants": 0.008836701756955818,
+     "poids": 0.146961075821675
+    },
+    "Retraités": {
+     "variation_euros_par_uc": 19.04103533322214,
+     "variation_pct": 0.09512366676129155,
+     "part_gagnants": 0.07367927089548819,
+     "part_perdants": 0.06210079626729527,
+     "poids": 0.29972966105779597
+    }
+   },
+   "region": {
+    "Auvergne-Rhône-Alpes": {
+     "variation_euros_par_uc": 984.654914128751,
+     "variation_pct": 3.867931043721341,
+     "part_gagnants": 0.6513374365574395,
+     "part_perdants": 0.07954209072931688,
+     "poids": 0.12021819707035966
+    },
+    "Bourgogne-Franche-Comté": {
+     "variation_euros_par_uc": 908.898240680434,
+     "variation_pct": 3.7381957589931485,
+     "part_gagnants": 0.6162230028577063,
+     "part_perdants": 0.08076510968858366,
+     "poids": 0.04237377511694443
+    },
+    "Bretagne": {
+     "variation_euros_par_uc": 876.9208818997561,
+     "variation_pct": 3.611600982683396,
+     "part_gagnants": 0.6024503390124875,
+     "part_perdants": 0.07198993589394763,
+     "poids": 0.052147548425813615
+    },
+    "Centre-Val de Loire": {
+     "variation_euros_par_uc": 934.2264172384033,
+     "variation_pct": 3.9136663473585256,
+     "part_gagnants": 0.6196139622690177,
+     "part_perdants": 0.07377786867875706,
+     "poids": 0.03804592686442555
+    },
+    "Corse": {
+     "variation_euros_par_uc": 1033.073174890719,
+     "variation_pct": 4.14814762188836,
+     "part_gagnants": 0.6771242039423109,
+     "part_perdants": 0.06019180933456151,
+     "poids": 0.005523036199817964
+    },
+    "Grand Est": {
+     "variation_euros_par_uc": 983.314962098067,
+     "variation_pct": 3.9404148851425376,
+     "part_gagnants": 0.6578938186939736,
+     "part_perdants": 0.0877328531350356,
+     "poids": 0.08465526779738262
+    },
+    "Guadeloupe": {
+     "variation_euros_par_uc": 815.9172927832801,
+     "variation_pct": 4.097462669407248,
+     "part_gagnants": 0.6365319924146886,
+     "part_perdants": 0.11496956899866781,
+     "poids": 0.005967545967712175
+    },
+    "Guyane": {
+     "variation_euros_par_uc": 1027.5059114057615,
+     "variation_pct": 4.808006578189829,
+     "part_gagnants": 0.7707665996799224,
+     "part_perdants": 0.1356125946158506,
+     "poids": 0.002787175833906318
+    },
+    "Hauts-de-France": {
+     "variation_euros_par_uc": 969.5515896852417,
+     "variation_pct": 4.050867902561658,
+     "part_gagnants": 0.654652726987136,
+     "part_perdants": 0.09578384377996282,
+     "poids": 0.08514216934268784
+    },
+    "La Réunion": {
+     "variation_euros_par_uc": 902.7373215844488,
+     "variation_pct": 4.316678481343059,
+     "part_gagnants": 0.7517267340341178,
+     "part_perdants": 0.12682700647149697,
+     "poids": 0.01105845282498385
+    },
+    "Martinique": {
+     "variation_euros_par_uc": 985.5496858639309,
+     "variation_pct": 4.333229889397063,
+     "part_gagnants": 0.7050509806581038,
+     "part_perdants": 0.07235668038517647,
+     "poids": 0.005369498338861231
+    },
+    "Normandie": {
+     "variation_euros_par_uc": 925.3990628624324,
+     "variation_pct": 3.874971745643812,
+     "part_gagnants": 0.612963486405477,
+     "part_perdants": 0.09629047033783661,
+     "poids": 0.04918195444952673
+    },
+    "Nouvelle-Aquitaine": {
+     "variation_euros_par_uc": 926.4705474857387,
+     "variation_pct": 3.7094575942947072,
+     "part_gagnants": 0.6242257413094014,
+     "part_perdants": 0.07377816884178338,
+     "poids": 0.0945024906613025
+    },
+    "Occitanie": {
+     "variation_euros_par_uc": 886.6782927470684,
+     "variation_pct": 3.49912341217156,
+     "part_gagnants": 0.6376806715784059,
+     "part_perdants": 0.09207664131613788,
+     "poids": 0.09420003438365553
+    },
+    "Pays de la Loire": {
+     "variation_euros_par_uc": 977.0593253200238,
+     "variation_pct": 3.84217489351125,
+     "part_gagnants": 0.6384538456223678,
+     "part_perdants": 0.07244637231999101,
+     "poids": 0.05687951281831212
+    },
+    "Provence-Alpes-Côte d'Azur": {
+     "variation_euros_par_uc": 916.2938517086228,
+     "variation_pct": 3.6515197357996554,
+     "part_gagnants": 0.6262972879275821,
+     "part_perdants": 0.09105698595661875,
+     "poids": 0.07881354641507292
+    },
+    "Île-de-France": {
+     "variation_euros_par_uc": 1108.9691949656992,
+     "variation_pct": 3.7740931104342774,
+     "part_gagnants": 0.743009857650848,
+     "part_perdants": 0.08356162748061949,
+     "poids": 0.17313386748923504
+    }
+   },
+   "famille": {
+    "Couple sans enfant mineur": {
+     "variation_euros_par_uc": 818.2176868998469,
+     "variation_pct": 2.746846152883548,
+     "part_gagnants": 0.6455783770281238,
+     "part_perdants": 0.02696154589241704,
+     "poids": 0.3567350675004195
+    },
+    "Couple, 1-2 enfants": {
+     "variation_euros_par_uc": 1478.1843934781987,
+     "variation_pct": 4.8268276986794865,
+     "part_gagnants": 0.9763603583578053,
+     "part_perdants": 0.022678129226034755,
+     "poids": 0.17247183995098578
+    },
+    "Couple, 3 enfants ou plus": {
+     "variation_euros_par_uc": 1407.5287276662646,
+     "variation_pct": 6.079878366447549,
+     "part_gagnants": 0.94533402596991,
+     "part_perdants": 0.05409291575017782,
+     "poids": 0.03598425977166224
+    },
+    "Famille monoparentale": {
+     "variation_euros_par_uc": 1368.6159086697269,
+     "variation_pct": 7.757818912365573,
+     "part_gagnants": 0.7686803492883711,
+     "part_perdants": 0.21928989791297634,
+     "poids": 0.050193551691727456
+    },
+    "Personne seule": {
+     "variation_euros_par_uc": 787.4669671329497,
+     "variation_pct": 3.8380123839086733,
+     "part_gagnants": 0.48061105378340435,
+     "part_perdants": 0.15074514007594314,
+     "poids": 0.38461528108520515
+    }
+   }
+  },
+  "principaux_perdants": [
+   {
+    "dimension": "csp",
+    "groupe": "Autres inactifs (étudiants, au foyer…)",
+    "pct": -1.3484348451956478,
+    "euros_par_uc": -96.39704135436827,
+    "part_perdants": 0.6938124202202629
+   }
+  ],
+  "principaux_gagnants": [
+   {
+    "dimension": "csp",
+    "groupe": "Ouvriers",
+    "pct": 8.293045423835405,
+    "euros_par_uc": 1915.5474132359348,
+    "part_perdants": 0.012542204149432726
+   },
+   {
+    "dimension": "csp",
+    "groupe": "Employés",
+    "pct": 8.185418167995687,
+    "euros_par_uc": 1855.2303677438254,
+    "part_perdants": 0.03423649009889225
+   },
+   {
+    "dimension": "famille",
+    "groupe": "Famille monoparentale",
+    "pct": 7.757818912365573,
+    "euros_par_uc": 1368.6159086697269,
+    "part_perdants": 0.21928989791297634
+   },
+   {
+    "dimension": "age",
+    "groupe": "moins de 30 ans",
+    "pct": 6.402163163704447,
+    "euros_par_uc": 1266.0757052343322,
+    "part_perdants": 0.260570052991513
+   },
+   {
+    "dimension": "famille",
+    "groupe": "Couple, 3 enfants ou plus",
+    "pct": 6.079878366447549,
+    "euros_par_uc": 1407.5287276662646,
+    "part_perdants": 0.05409291575017782
+   },
+   {
+    "dimension": "age",
+    "groupe": "30-44 ans",
+    "pct": 5.492544046813265,
+    "euros_par_uc": 1553.4048318734178,
+    "part_perdants": 0.06792838681639167
+   },
+   {
+    "dimension": "csp",
+    "groupe": "Professions intermédiaires",
+    "pct": 5.268632316900319,
+    "euros_par_uc": 1594.913856513132,
+    "part_perdants": 0.008836701756955818
+   },
+   {
+    "dimension": "famille",
+    "groupe": "Couple, 1-2 enfants",
+    "pct": 4.8268276986794865,
+    "euros_par_uc": 1478.1843934781987,
+    "part_perdants": 0.022678129226034755
+   }
+  ],
+  "cout_compensation_D1_D3_M€": 179.21285744872822,
+  "inegalites": {
+   "avant": {
+    "mediane": 22179.384655111095,
+    "taux_pauvrete": 17.298049811516,
+    "seuil": 13307.630793066657,
+    "gini": 0.34930401781456777,
+    "d9_d1": 4.104219810767132,
+    "s80_s20": 5.865507080386136
+   },
+   "apres": {
+    "mediane": 23753.501934044747,
+    "taux_pauvrete": 16.755380603348538,
+    "seuil": 14252.101160426848,
+    "gini": 0.33804214722503734,
+    "d9_d1": 4.064552042365081,
+    "s80_s20": 5.704702694694341
+   },
+   "apres_seuil_fixe": {
+    "mediane": 23753.501934044747,
+    "taux_pauvrete": 14.52932772264652,
+    "seuil": 13307.630793066657,
+    "gini": 0.33804214722503734,
+    "d9_d1": 4.064552042365081,
+    "s80_s20": 5.704702694694341
+   }
+  }
+ },
+ "S4_redressement": {
+  "curseurs": {
+   "tva_reduite": 2.0,
+   "taux_is": 30.5,
+   "impots_production": 5.0,
+   "successions": 50.0,
+   "investissement_public": -10.0,
+   "indexation_pensions": -1.0,
+   "assurance_chomage": -25.0,
+   "logements_sociaux": 100.0
+  },
+  "niveau": "faible",
+  "perte_max_decile_pct": 1.4581886249481595,
+  "perte_max_groupe_pct": 1.7904338522552448,
+  "droits_reduits": [
+   "indexation_pensions",
+   "assurance_chomage"
+  ],
+  "leviers_difficulte_3": [
+   "successions",
+   "indexation_pensions",
+   "assurance_chomage"
+  ],
+  "deciles": {
+   "1": {
+    "euros_par_uc": -79.43838383061406,
+    "pct": -1.4581886249481595,
+    "gagnants": 0.0,
+    "perdants": 0.9960788347561195,
+    "masse_M€": -281.345297373941
+   },
+   "2": {
+    "euros_par_uc": -113.71447677294533,
+    "pct": -1.0457957092934775,
+    "gagnants": 0.0,
+    "perdants": 1.0,
+    "masse_M€": -463.14427583520876
+   },
+   "3": {
+    "euros_par_uc": -143.38995716161637,
+    "pct": -0.9835744195900279,
+    "gagnants": 0.0,
+    "perdants": 1.0,
+    "masse_M€": -623.1154607088338
+   },
+   "4": {
+    "euros_par_uc": -162.7994732374562,
+    "pct": -0.9326390633208432,
+    "gagnants": 0.0,
+    "perdants": 1.0,
+    "masse_M€": -706.1697937889056
+   },
+   "5": {
+    "euros_par_uc": -173.08846523680427,
+    "pct": -0.8623955602988063,
+    "gagnants": 0.0,
+    "perdants": 1.0,
+    "masse_M€": -742.9651833032683
+   },
+   "6": {
+    "euros_par_uc": -196.14714973946917,
+    "pct": -0.8617507525589284,
+    "gagnants": 0.0,
+    "perdants": 1.0,
+    "masse_M€": -875.7998103638856
+   },
+   "7": {
+    "euros_par_uc": -223.72411735241965,
+    "pct": -0.8619073478579585,
+    "gagnants": 0.0,
+    "perdants": 1.0,
+    "masse_M€": -1025.6528988612754
+   },
+   "8": {
+    "euros_par_uc": -256.0074011789896,
+    "pct": -0.851205113293597,
+    "gagnants": 0.0,
+    "perdants": 1.0,
+    "masse_M€": -1182.258668474294
+   },
+   "9": {
+    "euros_par_uc": -270.49436288842844,
+    "pct": -0.7434552345781072,
+    "gagnants": 0.0,
+    "perdants": 1.0,
+    "masse_M€": -1264.7425399797057
+   },
+   "10": {
+    "euros_par_uc": -338.9871530227718,
+    "pct": -0.4736234998065853,
+    "gagnants": 0.0,
+    "perdants": 1.0,
+    "masse_M€": -1650.9959601496794
+   }
+  },
+  "groupes": {
+   "age": {
+    "30-44 ans": {
+     "variation_euros_par_uc": -117.71812789596969,
+     "variation_pct": -0.4162289116850758,
+     "part_gagnants": 0.0,
+     "part_perdants": 1.0,
+     "poids": 0.23260931007450364
+    },
+    "45-59 ans": {
+     "variation_euros_par_uc": -136.69048389853504,
+     "variation_pct": -0.4580070774131089,
+     "part_gagnants": 0.0,
+     "part_perdants": 1.0,
+     "poids": 0.2873318035386311
+    },
+    "60-74 ans": {
+     "variation_euros_par_uc": -303.56238447601413,
+     "variation_pct": -1.2914950921748374,
+     "part_gagnants": 0.0,
+     "part_perdants": 0.9997921367548298,
+     "poids": 0.22575606331906278
+    },
+    "75 ans et plus": {
+     "variation_euros_par_uc": -351.9070883095954,
+     "variation_pct": -1.7619183945736305,
+     "part_gagnants": 0.0,
+     "part_perdants": 0.9992908098367255,
+     "poids": 0.14544848721658835
+    },
+    "moins de 30 ans": {
+     "variation_euros_par_uc": -86.42230378255947,
+     "variation_pct": -0.4370115369181434,
+     "part_gagnants": 0.0,
+     "part_perdants": 0.9977767557641836,
+     "poids": 0.10885433585121423
+    }
+   },
+   "csp": {
+    "Actifs, catégorie inconnue": {
+     "variation_euros_par_uc": -87.3375259939278,
+     "variation_pct": -0.5659677576743629,
+     "part_gagnants": 0.0,
+     "part_perdants": 1.0,
+     "poids": 0.06592690612899746
+    },
+    "Agriculteurs": {
+     "variation_euros_par_uc": -159.61617299490482,
+     "variation_pct": -0.4878251406601359,
+     "part_gagnants": 0.0,
+     "part_perdants": 1.0,
+     "poids": 0.008898082746217
+    },
+    "Artisans, commerçants, chefs d'entreprise": {
+     "variation_euros_par_uc": -158.21990651224274,
+     "variation_pct": -0.42784473770598525,
+     "part_gagnants": 0.0,
+     "part_perdants": 1.0,
+     "poids": 0.04561372774653102
+    },
+    "Autres inactifs (étudiants, au foyer…)": {
+     "variation_euros_par_uc": -40.23709319726463,
+     "variation_pct": -0.5628502470020849,
+     "part_gagnants": 0.0,
+     "part_perdants": 0.993011378926033,
+     "poids": 0.05610359968161023
+    },
+    "Cadres": {
+     "variation_euros_par_uc": -191.02268148590133,
+     "variation_pct": -0.39962770847531337,
+     "part_gagnants": 0.0,
+     "part_perdants": 1.0,
+     "poids": 0.12261760744583831
+    },
+    "Employés": {
+     "variation_euros_par_uc": -116.57133457560238,
+     "variation_pct": -0.5143216370822126,
+     "part_gagnants": 0.0,
+     "part_perdants": 1.0,
+     "poids": 0.13489575628252745
+    },
+    "Ouvriers": {
+     "variation_euros_par_uc": -109.72554181489443,
+     "variation_pct": -0.4750385692039212,
+     "part_gagnants": 0.0,
+     "part_perdants": 1.0,
+     "poids": 0.11925358308880761
+    },
+    "Professions intermédiaires": {
+     "variation_euros_par_uc": -132.51129840252398,
+     "variation_pct": -0.4377373149445774,
+     "part_gagnants": 0.0,
+     "part_perdants": 1.0,
+     "poids": 0.146961075821675
+    },
+    "Retraités": {
+     "variation_euros_par_uc": -358.3936091124486,
+     "variation_pct": -1.7904338522552448,
+     "part_gagnants": 0.0,
+     "part_perdants": 1.0,
+     "poids": 0.29972966105779597
+    }
+   },
+   "region": {
+    "Auvergne-Rhône-Alpes": {
+     "variation_euros_par_uc": -194.51200276773602,
+     "variation_pct": -0.7640839476716011,
+     "part_gagnants": 0.0,
+     "part_perdants": 0.9998136713648472,
+     "poids": 0.12021819707035966
+    },
+    "Bourgogne-Franche-Comté": {
+     "variation_euros_par_uc": -213.66022226553665,
+     "variation_pct": -0.8787603507083744,
+     "part_gagnants": 0.0,
+     "part_perdants": 0.9995494858161028,
+     "poids": 0.04237377511694443
+    },
+    "Bretagne": {
+     "variation_euros_par_uc": -213.47591813579822,
+     "variation_pct": -0.8792011361939762,
+     "part_gagnants": 0.0,
+     "part_perdants": 1.0,
+     "poids": 0.052147548425813615
+    },
+    "Centre-Val de Loire": {
+     "variation_euros_par_uc": -200.83758594329117,
+     "variation_pct": -0.8413498985764644,
+     "part_gagnants": 0.0,
+     "part_perdants": 1.0,
+     "poids": 0.03804592686442555
+    },
+    "Corse": {
+     "variation_euros_par_uc": -196.18140052158336,
+     "variation_pct": -0.7877364641845614,
+     "part_gagnants": 0.0,
+     "part_perdants": 1.0,
+     "poids": 0.005523036199817964
+    },
+    "Grand Est": {
+     "variation_euros_par_uc": -192.93876135085986,
+     "variation_pct": -0.7731589535928067,
+     "part_gagnants": 0.0,
+     "part_perdants": 0.9994631000695007,
+     "poids": 0.08465526779738262
+    },
+    "Guadeloupe": {
+     "variation_euros_par_uc": -172.52202072767412,
+     "variation_pct": -0.866389946425749,
+     "part_gagnants": 0.0,
+     "part_perdants": 0.9984442132314325,
+     "poids": 0.005967545967712175
+    },
+    "Guyane": {
+     "variation_euros_par_uc": -119.7901693801319,
+     "variation_pct": -0.5605339258770502,
+     "part_gagnants": 0.0,
+     "part_perdants": 0.9958868049747515,
+     "poids": 0.002787175833906318
+    },
+    "Hauts-de-France": {
+     "variation_euros_par_uc": -188.89896934819026,
+     "variation_pct": -0.7892357455759326,
+     "part_gagnants": 0.0,
+     "part_perdants": 0.9993329874600615,
+     "poids": 0.08514216934268784
+    },
+    "La Réunion": {
+     "variation_euros_par_uc": -146.1720685737456,
+     "variation_pct": -0.6989606033770959,
+     "part_gagnants": 0.0,
+     "part_perdants": 1.0,
+     "poids": 0.01105845282498385
+    },
+    "Martinique": {
+     "variation_euros_par_uc": -182.48208838857346,
+     "variation_pct": -0.8023307713723279,
+     "part_gagnants": 0.0,
+     "part_perdants": 1.0,
+     "poids": 0.005369498338861231
+    },
+    "Normandie": {
+     "variation_euros_par_uc": -198.08708980399666,
+     "variation_pct": -0.8294603992714464,
+     "part_gagnants": 0.0,
+     "part_perdants": 0.9996707108265964,
+     "poids": 0.04918195444952673
+    },
+    "Nouvelle-Aquitaine": {
+     "variation_euros_par_uc": -209.10385302090268,
+     "variation_pct": -0.8372223787250092,
+     "part_gagnants": 0.0,
+     "part_perdants": 0.9995087527180829,
+     "poids": 0.0945024906613025
+    },
+    "Occitanie": {
+     "variation_euros_par_uc": -201.0952586138134,
+     "variation_pct": -0.7935878584692185,
+     "part_gagnants": 0.0,
+     "part_perdants": 0.999586599282857,
+     "poids": 0.09420003438365553
+    },
+    "Pays de la Loire": {
+     "variation_euros_par_uc": -202.44997055324166,
+     "variation_pct": -0.7961115296627278,
+     "part_gagnants": 0.0,
+     "part_perdants": 0.9994528532170636,
+     "poids": 0.05687951281831212
+    },
+    "Provence-Alpes-Côte d'Azur": {
+     "variation_euros_par_uc": -201.32172284318352,
+     "variation_pct": -0.8022865621506331,
+     "part_gagnants": 0.0,
+     "part_perdants": 0.9995692516594606,
+     "poids": 0.07881354641507292
+    },
+    "Île-de-France": {
+     "variation_euros_par_uc": -180.67937674821033,
+     "variation_pct": -0.6148960621075423,
+     "part_gagnants": 0.0,
+     "part_perdants": 0.9996478204614796,
+     "poids": 0.17313386748923504
+    }
+   },
+   "famille": {
+    "Couple sans enfant mineur": {
+     "variation_euros_par_uc": -270.3373916462012,
+     "variation_pct": -0.9075521540453266,
+     "part_gagnants": 0.0,
+     "part_perdants": 1.0,
+     "poids": 0.3567350675004195
+    },
+    "Couple, 1-2 enfants": {
+     "variation_euros_par_uc": -126.735566961456,
+     "variation_pct": -0.4138392664111339,
+     "part_gagnants": 0.0,
+     "part_perdants": 1.0,
+     "poids": 0.17247183995098578
+    },
+    "Couple, 3 enfants ou plus": {
+     "variation_euros_par_uc": -98.51785561366775,
+     "variation_pct": -0.4255519388563155,
+     "part_gagnants": 0.0,
+     "part_perdants": 1.0,
+     "poids": 0.03598425977166224
+    },
+    "Famille monoparentale": {
+     "variation_euros_par_uc": -79.27679899673258,
+     "variation_pct": -0.4493700874531271,
+     "part_gagnants": 0.0,
+     "part_perdants": 0.9964327752393505,
+     "poids": 0.050193551691727456
+    },
+    "Personne seule": {
+     "variation_euros_par_uc": -181.89417823839574,
+     "variation_pct": -0.8865287533032361,
+     "part_gagnants": 0.0,
+     "part_perdants": 0.9994461085424388,
+     "poids": 0.38461528108520515
+    }
+   }
+  },
+  "principaux_perdants": [
+   {
+    "dimension": "csp",
+    "groupe": "Retraités",
+    "pct": -1.7904338522552448,
+    "euros_par_uc": -358.3936091124486,
+    "part_perdants": 1.0
+   },
+   {
+    "dimension": "age",
+    "groupe": "75 ans et plus",
+    "pct": -1.7619183945736305,
+    "euros_par_uc": -351.9070883095954,
+    "part_perdants": 0.9992908098367255
+   },
+   {
+    "dimension": "age",
+    "groupe": "60-74 ans",
+    "pct": -1.2914950921748374,
+    "euros_par_uc": -303.56238447601413,
+    "part_perdants": 0.9997921367548298
+   },
+   {
+    "dimension": "famille",
+    "groupe": "Couple sans enfant mineur",
+    "pct": -0.9075521540453266,
+    "euros_par_uc": -270.3373916462012,
+    "part_perdants": 1.0
+   },
+   {
+    "dimension": "famille",
+    "groupe": "Personne seule",
+    "pct": -0.8865287533032361,
+    "euros_par_uc": -181.89417823839574,
+    "part_perdants": 0.9994461085424388
+   },
+   {
+    "dimension": "region",
+    "groupe": "Bretagne",
+    "pct": -0.8792011361939762,
+    "euros_par_uc": -213.47591813579822,
+    "part_perdants": 1.0
+   },
+   {
+    "dimension": "region",
+    "groupe": "Bourgogne-Franche-Comté",
+    "pct": -0.8787603507083744,
+    "euros_par_uc": -213.66022226553665,
+    "part_perdants": 0.9995494858161028
+   },
+   {
+    "dimension": "region",
+    "groupe": "Guadeloupe",
+    "pct": -0.866389946425749,
+    "euros_par_uc": -172.52202072767412,
+    "part_perdants": 0.9984442132314325
+   }
+  ],
+  "principaux_gagnants": [],
+  "cout_compensation_D1_D3_M€": 1367.6050339179835,
+  "inegalites": {
+   "avant": {
+    "mediane": 22179.384655111095,
+    "taux_pauvrete": 17.298049811516,
+    "seuil": 13307.630793066657,
+    "gini": 0.34930401781456777,
+    "d9_d1": 4.104219810767132,
+    "s80_s20": 5.865507080386136
+   },
+   "apres": {
+    "mediane": 22012.99034845849,
+    "taux_pauvrete": 17.34163757206913,
+    "seuil": 13207.794209075093,
+    "gini": 0.3500925729203911,
+    "d9_d1": 4.110941458062152,
+    "s80_s20": 5.889052606630986
+   },
+   "apres_seuil_fixe": {
+    "mediane": 22012.99034845849,
+    "taux_pauvrete": 17.629928610340055,
+    "seuil": 13307.630793066657,
+    "gini": 0.3500925729203911,
+    "d9_d1": 4.110941458062152,
+    "s80_s20": 5.889052606630986
+   }
+  }
+ },
+ "S5_global": {
+  "curseurs": {
+   "tva_reduite": 1.97,
+   "taux_is": 30.5,
+   "cotisations_employeurs": -20.0,
+   "successions": 50.0,
+   "autres_depenses": -20.0,
+   "investissement_public": 23.16,
+   "assurance_chomage": -25.0,
+   "prime_activite": 28.65
+  },
+  "niveau": "intermédiaire",
+  "perte_max_decile_pct": 0.4451581325032177,
+  "perte_max_groupe_pct": 0.4204318701774933,
+  "droits_reduits": [
+   "assurance_chomage"
+  ],
+  "leviers_difficulte_3": [
+   "successions",
+   "assurance_chomage"
+  ],
+  "deciles": {
+   "1": {
+    "euros_par_uc": -24.251075608525714,
+    "pct": -0.4451581325032177,
+    "gagnants": 0.0076369548112497805,
+    "perdants": 0.9855229608763536,
+    "masse_M€": -81.42647141620611
+   },
+   "2": {
+    "euros_par_uc": 158.21443560541053,
+    "pct": 1.455047612229733,
+    "gagnants": 0.23663405945213548,
+    "perdants": 0.7630321910645084,
+    "masse_M€": 1053.3545737781576
+   },
+   "3": {
+    "euros_par_uc": 457.5984692397047,
+    "pct": 3.138868005103282,
+    "gagnants": 0.48831136639485767,
+    "perdants": 0.5115482521703135,
+    "masse_M€": 2430.0423786857955
+   },
+   "4": {
+    "euros_par_uc": 512.9786349569976,
+    "pct": 2.9387313367536456,
+    "gagnants": 0.5128741840378946,
+    "perdants": 0.4871258159621054,
+    "masse_M€": 2485.5943113529042
+   },
+   "5": {
+    "euros_par_uc": 537.714289170048,
+    "pct": 2.679106404086801,
+    "gagnants": 0.5445819248077574,
+    "perdants": 0.45514026599947005,
+    "masse_M€": 2364.225875554827
+   },
+   "6": {
+    "euros_par_uc": 389.86567554184063,
+    "pct": 1.7128316151487373,
+    "gagnants": 0.5082606155375814,
+    "perdants": 0.4909954409846412,
+    "masse_M€": 1749.1908114158032
+   },
+   "7": {
+    "euros_par_uc": 124.62578022346031,
+    "pct": 0.4801264922991091,
+    "gagnants": 0.32449291450270046,
+    "perdants": 0.6752462568719543,
+    "masse_M€": 716.6759936425157
+   },
+   "8": {
+    "euros_par_uc": -17.328140108441396,
+    "pct": -0.057614746277826326,
+    "gagnants": 0.16389100751842778,
+    "perdants": 0.8358332294178811,
+    "masse_M€": 23.289546402734974
+   },
+   "9": {
+    "euros_par_uc": -62.688910817043705,
+    "pct": -0.17230081395875574,
+    "gagnants": 0.10295003417055941,
+    "perdants": 0.8969399074887409,
+    "masse_M€": -236.27271355063095
+   },
+   "10": {
+    "euros_par_uc": -213.47055232138345,
+    "pct": -0.2982551674732836,
+    "gagnants": 0.05358925963622827,
+    "perdants": 0.9462048048475129,
+    "masse_M€": -1037.4523303961992
+   }
+  },
+  "groupes": {
+   "age": {
+    "30-44 ans": {
+     "variation_euros_par_uc": 365.06926346880897,
+     "variation_pct": 1.2908154838953818,
+     "part_gagnants": 0.47241669566889466,
+     "part_perdants": 0.5273058132803907,
+     "poids": 0.23260931007450364
+    },
+    "45-59 ans": {
+     "variation_euros_par_uc": 262.8351161673024,
+     "variation_pct": 0.8806783030095873,
+     "part_gagnants": 0.40521468524817295,
+     "part_perdants": 0.5943169328211526,
+     "poids": 0.2873318035386311
+    },
+    "60-74 ans": {
+     "variation_euros_par_uc": -21.776885272977722,
+     "variation_pct": -0.09264896407192205,
+     "part_gagnants": 0.08461811797271938,
+     "part_perdants": 0.9149037013864845,
+     "poids": 0.22575606331906278
+    },
+    "75 ans et plus": {
+     "variation_euros_par_uc": -78.26133577539582,
+     "variation_pct": -0.39183662866507085,
+     "part_gagnants": 0.010605577435635711,
+     "part_perdants": 0.988487870094738,
+     "poids": 0.14544848721658835
+    },
+    "moins de 30 ans": {
+     "variation_euros_par_uc": 387.52860226147203,
+     "variation_pct": 1.9596153152793239,
+     "part_gagnants": 0.435047498307469,
+     "part_perdants": 0.5605441125165289,
+     "poids": 0.10885433585121423
+    }
+   },
+   "csp": {
+    "Actifs, catégorie inconnue": {
+     "variation_euros_par_uc": 0.4137841451363245,
+     "variation_pct": 0.0026814188073095964,
+     "part_gagnants": 0.09508004664923099,
+     "part_perdants": 0.904919953350769,
+     "poids": 0.06592690612899746
+    },
+    "Agriculteurs": {
+     "variation_euros_par_uc": 292.54984187964897,
+     "variation_pct": 0.8941021770368839,
+     "part_gagnants": 0.43074514244846834,
+     "part_perdants": 0.5692548575515316,
+     "poids": 0.008898082746217
+    },
+    "Artisans, commerçants, chefs d'entreprise": {
+     "variation_euros_par_uc": 268.5681496743616,
+     "variation_pct": 0.7262390181270767,
+     "part_gagnants": 0.42980241107512684,
+     "part_perdants": 0.5699563084711746,
+     "poids": 0.04561372774653102
+    },
+    "Autres inactifs (étudiants, au foyer…)": {
+     "variation_euros_par_uc": -30.055874424035554,
+     "variation_pct": -0.4204318701774933,
+     "part_gagnants": 0.009501759507897467,
+     "part_perdants": 0.9799066787786507,
+     "poids": 0.05610359968161023
+    },
+    "Cadres": {
+     "variation_euros_par_uc": 0.12401714863083245,
+     "variation_pct": 0.0002594492367789309,
+     "part_gagnants": 0.19440137655721598,
+     "part_perdants": 0.80527907872286,
+     "poids": 0.12261760744583831
+    },
+    "Employés": {
+     "variation_euros_par_uc": 599.9946827236612,
+     "variation_pct": 2.6472223946181197,
+     "part_gagnants": 0.6598682575933991,
+     "part_perdants": 0.33978496314139084,
+     "poids": 0.13489575628252745
+    },
+    "Ouvriers": {
+     "variation_euros_par_uc": 579.7368036417267,
+     "variation_pct": 2.5098745211157145,
+     "part_gagnants": 0.6739682604686303,
+     "part_perdants": 0.3255353194007811,
+     "poids": 0.11925358308880761
+    },
+    "Professions intermédiaires": {
+     "variation_euros_par_uc": 313.4449170156379,
+     "variation_pct": 1.0354327367668281,
+     "part_gagnants": 0.4535057330335243,
+     "part_perdants": 0.5458141459211764,
+     "poids": 0.146961075821675
+    },
+    "Retraités": {
+     "variation_euros_par_uc": -76.80951900088529,
+     "variation_pct": -0.383718792684941,
+     "part_gagnants": 0.014051398333947347,
+     "part_perdants": 0.9857201735973321,
+     "poids": 0.29972966105779597
+    }
+   },
+   "region": {
+    "Auvergne-Rhône-Alpes": {
+     "variation_euros_par_uc": 190.15987450250125,
+     "variation_pct": 0.7469878749441791,
+     "part_gagnants": 0.29911534999712225,
+     "part_perdants": 0.7002997240992638,
+     "poids": 0.12021819707035966
+    },
+    "Bourgogne-Franche-Comté": {
+     "variation_euros_par_uc": 179.06993311760155,
+     "variation_pct": 0.7364944001236806,
+     "part_gagnants": 0.2840076996897294,
+     "part_perdants": 0.7145625304607125,
+     "poids": 0.04237377511694443
+    },
+    "Bretagne": {
+     "variation_euros_par_uc": 163.804288382376,
+     "variation_pct": 0.6746283970429741,
+     "part_gagnants": 0.27225366479942026,
+     "part_perdants": 0.7276777015729703,
+     "poids": 0.052147548425813615
+    },
+    "Centre-Val de Loire": {
+     "variation_euros_par_uc": 183.47264916313642,
+     "variation_pct": 0.7686046117311265,
+     "part_gagnants": 0.2901017560486775,
+     "part_perdants": 0.7098982439513226,
+     "poids": 0.03804592686442555
+    },
+    "Corse": {
+     "variation_euros_par_uc": 220.23450994175397,
+     "variation_pct": 0.8843180530452496,
+     "part_gagnants": 0.3153839207176991,
+     "part_perdants": 0.6846160792823008,
+     "poids": 0.005523036199817964
+    },
+    "Grand Est": {
+     "variation_euros_par_uc": 197.3671311401986,
+     "variation_pct": 0.7909046555371708,
+     "part_gagnants": 0.30411655693355427,
+     "part_perdants": 0.694985228246649,
+     "poids": 0.08465526779738262
+    },
+    "Guadeloupe": {
+     "variation_euros_par_uc": 196.0855637306604,
+     "variation_pct": 0.9847239230036346,
+     "part_gagnants": 0.2957428331066072,
+     "part_perdants": 0.7003635128755598,
+     "poids": 0.005967545967712175
+    },
+    "Guyane": {
+     "variation_euros_par_uc": 247.05665962699197,
+     "variation_pct": 1.156051786648166,
+     "part_gagnants": 0.3351917855729827,
+     "part_perdants": 0.6556583646785576,
+     "poids": 0.002787175833906318
+    },
+    "Hauts-de-France": {
+     "variation_euros_par_uc": 202.0684074870986,
+     "variation_pct": 0.844258763246394,
+     "part_gagnants": 0.30803970312568535,
+     "part_perdants": 0.6910538269723807,
+     "poids": 0.08514216934268784
+    },
+    "La Réunion": {
+     "variation_euros_par_uc": 201.3966285937155,
+     "variation_pct": 0.9630315176730013,
+     "part_gagnants": 0.3081067486765761,
+     "part_perdants": 0.6918932513234239,
+     "poids": 0.01105845282498385
+    },
+    "Martinique": {
+     "variation_euros_par_uc": 228.2659919065035,
+     "variation_pct": 1.0036318138492026,
+     "part_gagnants": 0.336086638267034,
+     "part_perdants": 0.6639133617329661,
+     "poids": 0.005369498338861231
+    },
+    "Normandie": {
+     "variation_euros_par_uc": 183.3784967667154,
+     "variation_pct": 0.7678703407497305,
+     "part_gagnants": 0.28185724551586994,
+     "part_perdants": 0.7174816701106225,
+     "poids": 0.04918195444952673
+    },
+    "Nouvelle-Aquitaine": {
+     "variation_euros_par_uc": 179.10173655591876,
+     "variation_pct": 0.7170981296941331,
+     "part_gagnants": 0.28301703011899226,
+     "part_perdants": 0.7158614692883847,
+     "poids": 0.0945024906613025
+    },
+    "Occitanie": {
+     "variation_euros_par_uc": 157.3813200629314,
+     "variation_pct": 0.621078316876941,
+     "part_gagnants": 0.26599643994976935,
+     "part_perdants": 0.7325664609539976,
+     "poids": 0.09420003438365553
+    },
+    "Pays de la Loire": {
+     "variation_euros_par_uc": 193.76880474422524,
+     "variation_pct": 0.761973830493963,
+     "part_gagnants": 0.30336628649328284,
+     "part_perdants": 0.6957882953062535,
+     "poids": 0.05687951281831212
+    },
+    "Provence-Alpes-Côte d'Azur": {
+     "variation_euros_par_uc": 177.23830586399586,
+     "variation_pct": 0.7063118131757146,
+     "part_gagnants": 0.27809949788617994,
+     "part_perdants": 0.721283513781672,
+     "poids": 0.07881354641507292
+    },
+    "Île-de-France": {
+     "variation_euros_par_uc": 197.26185807223442,
+     "variation_pct": 0.6713302974343767,
+     "part_gagnants": 0.31553936475675765,
+     "part_perdants": 0.6832373935832472,
+     "poids": 0.17313386748923504
+    }
+   },
+   "famille": {
+    "Couple sans enfant mineur": {
+     "variation_euros_par_uc": 92.0530942219803,
+     "variation_pct": 0.30903229271750504,
+     "part_gagnants": 0.23539169118305672,
+     "part_perdants": 0.764286491663536,
+     "poids": 0.3567350675004195
+    },
+    "Couple, 1-2 enfants": {
+     "variation_euros_par_uc": 295.78630369537876,
+     "variation_pct": 0.9658534685293535,
+     "part_gagnants": 0.4707510900902439,
+     "part_perdants": 0.5285265385584887,
+     "poids": 0.17247183995098578
+    },
+    "Couple, 3 enfants ou plus": {
+     "variation_euros_par_uc": 374.95751798010747,
+     "variation_pct": 1.6196444570505817,
+     "part_gagnants": 0.5256024890623987,
+     "part_perdants": 0.4740073947474298,
+     "poids": 0.03598425977166224
+    },
+    "Famille monoparentale": {
+     "variation_euros_par_uc": 487.017267407815,
+     "variation_pct": 2.7605931977053313,
+     "part_gagnants": 0.48813327999429307,
+     "part_perdants": 0.5035921533468185,
+     "poids": 0.050193551691727456
+    },
+    "Personne seule": {
+     "variation_euros_par_uc": 167.78646753719175,
+     "variation_pct": 0.8177695917895059,
+     "part_gagnants": 0.22293361716704693,
+     "part_perdants": 0.7764162551141456,
+     "poids": 0.38461528108520515
+    }
+   }
+  },
+  "principaux_perdants": [
+   {
+    "dimension": "csp",
+    "groupe": "Autres inactifs (étudiants, au foyer…)",
+    "pct": -0.4204318701774933,
+    "euros_par_uc": -30.055874424035554,
+    "part_perdants": 0.9799066787786507
+   },
+   {
+    "dimension": "age",
+    "groupe": "75 ans et plus",
+    "pct": -0.39183662866507085,
+    "euros_par_uc": -78.26133577539582,
+    "part_perdants": 0.988487870094738
+   },
+   {
+    "dimension": "csp",
+    "groupe": "Retraités",
+    "pct": -0.383718792684941,
+    "euros_par_uc": -76.80951900088529,
+    "part_perdants": 0.9857201735973321
+   }
+  ],
+  "principaux_gagnants": [
+   {
+    "dimension": "famille",
+    "groupe": "Famille monoparentale",
+    "pct": 2.7605931977053313,
+    "euros_par_uc": 487.017267407815,
+    "part_perdants": 0.5035921533468185
+   },
+   {
+    "dimension": "csp",
+    "groupe": "Employés",
+    "pct": 2.6472223946181197,
+    "euros_par_uc": 599.9946827236612,
+    "part_perdants": 0.33978496314139084
+   },
+   {
+    "dimension": "csp",
+    "groupe": "Ouvriers",
+    "pct": 2.5098745211157145,
+    "euros_par_uc": 579.7368036417267,
+    "part_perdants": 0.3255353194007811
+   },
+   {
+    "dimension": "age",
+    "groupe": "moins de 30 ans",
+    "pct": 1.9596153152793239,
+    "euros_par_uc": 387.52860226147203,
+    "part_perdants": 0.5605441125165289
+   },
+   {
+    "dimension": "famille",
+    "groupe": "Couple, 3 enfants ou plus",
+    "pct": 1.6196444570505817,
+    "euros_par_uc": 374.95751798010747,
+    "part_perdants": 0.4740073947474298
+   },
+   {
+    "dimension": "age",
+    "groupe": "30-44 ans",
+    "pct": 1.2908154838953818,
+    "euros_par_uc": 365.06926346880897,
+    "part_perdants": 0.5273058132803907
+   },
+   {
+    "dimension": "csp",
+    "groupe": "Professions intermédiaires",
+    "pct": 1.0354327367668281,
+    "euros_par_uc": 313.4449170156379,
+    "part_perdants": 0.5458141459211764
+   },
+   {
+    "dimension": "region",
+    "groupe": "Martinique",
+    "pct": 1.0036318138492026,
+    "euros_par_uc": 228.2659919065035,
+    "part_perdants": 0.6639133617329661
+   }
+  ],
+  "cout_compensation_D1_D3_M€": 81.42647141620611,
+  "inegalites": {
+   "avant": {
+    "mediane": 22179.384655111095,
+    "taux_pauvrete": 17.298049811516,
+    "seuil": 13307.630793066657,
+    "gini": 0.34930401781456777,
+    "d9_d1": 4.104219810767132,
+    "s80_s20": 5.865507080386136
+   },
+   "apres": {
+    "mediane": 22637.37553646848,
+    "taux_pauvrete": 16.61444793992162,
+    "seuil": 13582.425321881088,
+    "gini": 0.34296994747173626,
+    "d9_d1": 4.038072019081107,
+    "s80_s20": 5.731840466120037
+   },
+   "apres_seuil_fixe": {
+    "mediane": 22637.37553646848,
+    "taux_pauvrete": 15.818751596644823,
+    "seuil": 13307.630793066657,
+    "gini": 0.34296994747173626,
+    "d9_d1": 4.038072019081107,
+    "s80_s20": 5.731840466120037
+   }
+  }
+ },
+ "v06_A": {
+  "curseurs": {
+   "tva": 2.0,
+   "tva_reduite": 2.0,
+   "successions": 50.0,
+   "taxe_carbone": 22.7,
+   "cotisations_employeurs": 10.0,
+   "autres_depenses": 2.42,
+   "investissement_public": -10.0,
+   "prime_activite": 25.0
+  },
+  "niveau": "faible",
+  "perte_max_decile_pct": 2.5894376503278456,
+  "perte_max_groupe_pct": 2.44388827089267,
+  "droits_reduits": [],
+  "leviers_difficulte_3": [
+   "successions",
+   "taxe_carbone"
+  ],
+  "deciles": {
+   "1": {
+    "euros_par_uc": -141.06593512859126,
+    "pct": -2.5894376503278456,
+    "gagnants": 0.0065226587544078745,
+    "perdants": 0.9920600375838855,
+    "masse_M€": -521.9913880906502
+   },
+   "2": {
+    "euros_par_uc": -97.47314047515677,
+    "pct": -0.8964293287284592,
+    "gagnants": 0.21527931823733173,
+    "perdants": 0.7847206817626683,
+    "masse_M€": -154.12852063270998
+   },
+   "3": {
+    "euros_par_uc": 103.85770305665339,
+    "pct": 0.7124054015077567,
+    "gagnants": 0.4587940224763514,
+    "perdants": 0.5407321977772778,
+    "masse_M€": 693.2528685178299
+   },
+   "4": {
+    "euros_par_uc": 93.06670230137107,
+    "pct": 0.533156774617502,
+    "gagnants": 0.47344705128171843,
+    "perdants": 0.5262110312976013,
+    "masse_M€": 496.8238229747453
+   },
+   "5": {
+    "euros_par_uc": 75.93610929274247,
+    "pct": 0.3783438915518293,
+    "gagnants": 0.4742079300761456,
+    "perdants": 0.525201681355851,
+    "masse_M€": 252.07481148898972
+   },
+   "6": {
+    "euros_par_uc": -113.03854561216927,
+    "pct": -0.4966223158421576,
+    "gagnants": 0.35226888736974765,
+    "perdants": 0.6474218443981925,
+    "masse_M€": -610.2305603721743
+   },
+   "7": {
+    "euros_par_uc": -369.3388255468009,
+    "pct": -1.4228946407532825,
+    "gagnants": 0.13756467760770563,
+    "perdants": 0.8621597191459132,
+    "masse_M€": -1696.7606667451257
+   },
+   "8": {
+    "euros_par_uc": -541.781010989688,
+    "pct": -1.8013806035137574,
+    "gagnants": 0.05341443190686099,
+    "perdants": 0.9464037613133562,
+    "masse_M€": -2568.324424769287
+   },
+   "9": {
+    "euros_par_uc": -602.5217493049901,
+    "pct": -1.6560343205847852,
+    "gagnants": 0.025234018813462072,
+    "perdants": 0.9746834068264133,
+    "masse_M€": -2927.994967666405
+   },
+   "10": {
+    "euros_par_uc": -1254.8063718413832,
+    "pct": -1.7531808509899378,
+    "gagnants": 0.0028504501124334363,
+    "perdants": 0.9971495498875665,
+    "masse_M€": -6325.678437198127
+   }
+  },
+  "groupes": {
+   "age": {
+    "30-44 ans": {
+     "variation_euros_par_uc": -181.83125521772618,
+     "variation_pct": -0.6429207363583684,
+     "part_gagnants": 0.3640774434026026,
+     "part_perdants": 0.6355883052929469,
+     "poids": 0.23260931007450364
+    },
+    "45-59 ans": {
+     "variation_euros_par_uc": -283.88830676248324,
+     "variation_pct": -0.9512209627449756,
+     "part_gagnants": 0.28563326992505195,
+     "part_perdants": 0.7140766981848955,
+     "poids": 0.2873318035386311
+    },
+    "60-74 ans": {
+     "variation_euros_par_uc": -427.1034144449999,
+     "variation_pct": -1.817095897961684,
+     "part_gagnants": 0.054950710886806295,
+     "part_perdants": 0.944812906960725,
+     "poids": 0.22575606331906278
+    },
+    "75 ans et plus": {
+     "variation_euros_par_uc": -422.3178767886209,
+     "variation_pct": -2.11444912645956,
+     "part_gagnants": 0.0032233172372939096,
+     "part_perdants": 0.9965793204563542,
+     "poids": 0.14544848721658835
+    },
+    "moins de 30 ans": {
+     "variation_euros_par_uc": -27.656458136156996,
+     "variation_pct": -0.13985037133704975,
+     "part_gagnants": 0.37044455754488576,
+     "part_perdants": 0.6284154241477006,
+     "poids": 0.10885433585121423
+    }
+   },
+   "csp": {
+    "Actifs, catégorie inconnue": {
+     "variation_euros_par_uc": -294.38318966207834,
+     "variation_pct": -1.9076724678651527,
+     "part_gagnants": 0.061805189714730556,
+     "part_perdants": 0.9381948102852694,
+     "poids": 0.06592690612899746
+    },
+    "Agriculteurs": {
+     "variation_euros_par_uc": -294.9267824452031,
+     "variation_pct": -0.9013666750133468,
+     "part_gagnants": 0.35365228671586707,
+     "part_perdants": 0.6463477132841329,
+     "poids": 0.008898082746217
+    },
+    "Artisans, commerçants, chefs d'entreprise": {
+     "variation_euros_par_uc": -383.1965763079967,
+     "variation_pct": -1.0362074045824339,
+     "part_gagnants": 0.32723695368111566,
+     "part_perdants": 0.6724127511023684,
+     "poids": 0.04561372774653102
+    },
+    "Autres inactifs (étudiants, au foyer…)": {
+     "variation_euros_par_uc": -174.70892238810018,
+     "variation_pct": -2.44388827089267,
+     "part_gagnants": 0.005990618202314408,
+     "part_perdants": 0.9924484913347527,
+     "poids": 0.05610359968161023
+    },
+    "Cadres": {
+     "variation_euros_par_uc": -747.9186513812783,
+     "variation_pct": -1.564678154722202,
+     "part_gagnants": 0.12107688288414138,
+     "part_perdants": 0.8786081528423206,
+     "poids": 0.12261760744583831
+    },
+    "Employés": {
+     "variation_euros_par_uc": 93.52001805269708,
+     "variation_pct": 0.4126174668921404,
+     "part_gagnants": 0.5386064526223392,
+     "part_perdants": 0.4609770281630428,
+     "poids": 0.13489575628252745
+    },
+    "Ouvriers": {
+     "variation_euros_par_uc": 64.43489648983677,
+     "variation_pct": 0.2789602177309993,
+     "part_gagnants": 0.5180402064247417,
+     "part_perdants": 0.48157040100669973,
+     "poids": 0.11925358308880761
+    },
+    "Professions intermédiaires": {
+     "variation_euros_par_uc": -253.52279057970085,
+     "variation_pct": -0.837486214107618,
+     "part_gagnants": 0.31719341359334846,
+     "part_perdants": 0.6823237526930063,
+     "poids": 0.146961075821675
+    },
+    "Retraités": {
+     "variation_euros_par_uc": -422.8599777300035,
+     "variation_pct": -2.1124897309598807,
+     "part_gagnants": 0.005267884407909718,
+     "part_perdants": 0.9945602903062134,
+     "poids": 0.29972966105779597
+    }
+   },
+   "region": {
+    "Auvergne-Rhône-Alpes": {
+     "variation_euros_par_uc": -280.5848926184345,
+     "variation_pct": -1.102196313637808,
+     "part_gagnants": 0.22119348253286336,
+     "part_perdants": 0.7784544671040237,
+     "poids": 0.12021819707035966
+    },
+    "Bourgogne-Franche-Comté": {
+     "variation_euros_par_uc": -274.3870604583971,
+     "variation_pct": -1.1285229741013596,
+     "part_gagnants": 0.21797314506476578,
+     "part_perdants": 0.7814189604244964,
+     "poids": 0.04237377511694443
+    },
+    "Bretagne": {
+     "variation_euros_par_uc": -285.1894231805376,
+     "variation_pct": -1.1745533973126234,
+     "part_gagnants": 0.19922540078314127,
+     "part_perdants": 0.8002502843925018,
+     "poids": 0.052147548425813615
+    },
+    "Centre-Val de Loire": {
+     "variation_euros_par_uc": -264.5757821516852,
+     "variation_pct": -1.1083622940078706,
+     "part_gagnants": 0.21369919671858406,
+     "part_perdants": 0.7863008032814159,
+     "poids": 0.03804592686442555
+    },
+    "Corse": {
+     "variation_euros_par_uc": -247.2229380407159,
+     "variation_pct": -0.9926859659465369,
+     "part_gagnants": 0.24086733484062506,
+     "part_perdants": 0.7591326651593749,
+     "poids": 0.005523036199817964
+    },
+    "Grand Est": {
+     "variation_euros_par_uc": -268.8509529089368,
+     "variation_pct": -1.0773600906740564,
+     "part_gagnants": 0.2262113270754375,
+     "part_perdants": 0.7734797776224279,
+     "poids": 0.08465526779738262
+    },
+    "Guadeloupe": {
+     "variation_euros_par_uc": -192.50270045154355,
+     "variation_pct": -0.9667311084553706,
+     "part_gagnants": 0.23594018570898415,
+     "part_perdants": 0.7640598142910159,
+     "poids": 0.005967545967712175
+    },
+    "Guyane": {
+     "variation_euros_par_uc": -174.08342434517314,
+     "variation_pct": -0.8145882569768257,
+     "part_gagnants": 0.24379023012525045,
+     "part_perdants": 0.7562097698747494,
+     "poids": 0.002787175833906318
+    },
+    "Hauts-de-France": {
+     "variation_euros_par_uc": -250.39414610169388,
+     "variation_pct": -1.0461677544791361,
+     "part_gagnants": 0.23123941277641805,
+     "part_perdants": 0.7684476285492361,
+     "poids": 0.08514216934268784
+    },
+    "La Réunion": {
+     "variation_euros_par_uc": -205.69829384002372,
+     "variation_pct": -0.9836010735766929,
+     "part_gagnants": 0.23321824952767248,
+     "part_perdants": 0.7658643769207093,
+     "poids": 0.01105845282498385
+    },
+    "Martinique": {
+     "variation_euros_par_uc": -206.21177626833347,
+     "variation_pct": -0.9066646210620085,
+     "part_gagnants": 0.25525348515394636,
+     "part_perdants": 0.7447465148460537,
+     "poids": 0.005369498338861231
+    },
+    "Normandie": {
+     "variation_euros_par_uc": -264.348888544083,
+     "variation_pct": -1.1069218839839514,
+     "part_gagnants": 0.21265779409213587,
+     "part_perdants": 0.7870129167344606,
+     "poids": 0.04918195444952673
+    },
+    "Nouvelle-Aquitaine": {
+     "variation_euros_par_uc": -283.4773501925851,
+     "variation_pct": -1.135003387140714,
+     "part_gagnants": 0.21438391677918164,
+     "part_perdants": 0.7851670110861444,
+     "poids": 0.0945024906613025
+    },
+    "Occitanie": {
+     "variation_euros_par_uc": -305.973511532127,
+     "variation_pct": -1.2074718491070786,
+     "part_gagnants": 0.19742555386015634,
+     "part_perdants": 0.802247510156787,
+     "poids": 0.09420003438365553
+    },
+    "Pays de la Loire": {
+     "variation_euros_par_uc": -277.9806706360163,
+     "variation_pct": -1.0931274344567512,
+     "part_gagnants": 0.23010843402650294,
+     "part_perdants": 0.7690760164611523,
+     "poids": 0.05687951281831212
+    },
+    "Provence-Alpes-Côte d'Azur": {
+     "variation_euros_par_uc": -284.7994605385437,
+     "variation_pct": -1.1349534311098786,
+     "part_gagnants": 0.2102590966755418,
+     "part_perdants": 0.7896238600597526,
+     "poids": 0.07881354641507292
+    },
+    "Île-de-France": {
+     "variation_euros_par_uc": -329.7795970039447,
+     "variation_pct": -1.1223205393481435,
+     "part_gagnants": 0.23351417309396238,
+     "part_perdants": 0.7661170672800501,
+     "poids": 0.17313386748923504
+    }
+   },
+   "famille": {
+    "Couple sans enfant mineur": {
+     "variation_euros_par_uc": -423.95232934590064,
+     "variation_pct": -1.4232542800218757,
+     "part_gagnants": 0.15323016104295165,
+     "part_perdants": 0.8464002084494316,
+     "poids": 0.3567350675004195
+    },
+    "Couple, 1-2 enfants": {
+     "variation_euros_par_uc": -275.2926460447405,
+     "variation_pct": -0.8989339726722796,
+     "part_gagnants": 0.3247892775757343,
+     "part_perdants": 0.6747944648082762,
+     "poids": 0.17247183995098578
+    },
+    "Couple, 3 enfants ou plus": {
+     "variation_euros_par_uc": -104.94024828828466,
+     "variation_pct": -0.453293728786228,
+     "part_gagnants": 0.3994133403755847,
+     "part_perdants": 0.600046008556985,
+     "poids": 0.03598425977166224
+    },
+    "Famille monoparentale": {
+     "variation_euros_par_uc": 81.35102577310104,
+     "variation_pct": 0.4611275685786293,
+     "part_gagnants": 0.4305024978301166,
+     "part_perdants": 0.5680332001014525,
+     "poids": 0.050193551691727456
+    },
+    "Personne seule": {
+     "variation_euros_par_uc": -224.4091724001029,
+     "variation_pct": -1.0937413487579075,
+     "part_gagnants": 0.19057351403559777,
+     "part_perdants": 0.8092428070712264,
+     "poids": 0.38461528108520515
+    }
+   }
+  },
+  "principaux_perdants": [
+   {
+    "dimension": "csp",
+    "groupe": "Autres inactifs (étudiants, au foyer…)",
+    "pct": -2.44388827089267,
+    "euros_par_uc": -174.70892238810018,
+    "part_perdants": 0.9924484913347527
+   },
+   {
+    "dimension": "age",
+    "groupe": "75 ans et plus",
+    "pct": -2.11444912645956,
+    "euros_par_uc": -422.3178767886209,
+    "part_perdants": 0.9965793204563542
+   },
+   {
+    "dimension": "csp",
+    "groupe": "Retraités",
+    "pct": -2.1124897309598807,
+    "euros_par_uc": -422.8599777300035,
+    "part_perdants": 0.9945602903062134
+   },
+   {
+    "dimension": "csp",
+    "groupe": "Actifs, catégorie inconnue",
+    "pct": -1.9076724678651527,
+    "euros_par_uc": -294.38318966207834,
+    "part_perdants": 0.9381948102852694
+   },
+   {
+    "dimension": "age",
+    "groupe": "60-74 ans",
+    "pct": -1.817095897961684,
+    "euros_par_uc": -427.1034144449999,
+    "part_perdants": 0.944812906960725
+   },
+   {
+    "dimension": "csp",
+    "groupe": "Cadres",
+    "pct": -1.564678154722202,
+    "euros_par_uc": -747.9186513812783,
+    "part_perdants": 0.8786081528423206
+   },
+   {
+    "dimension": "famille",
+    "groupe": "Couple sans enfant mineur",
+    "pct": -1.4232542800218757,
+    "euros_par_uc": -423.95232934590064,
+    "part_perdants": 0.8464002084494316
+   },
+   {
+    "dimension": "region",
+    "groupe": "Occitanie",
+    "pct": -1.2074718491070786,
+    "euros_par_uc": -305.973511532127,
+    "part_perdants": 0.802247510156787
+   }
+  ],
+  "principaux_gagnants": [
+   {
+    "dimension": "famille",
+    "groupe": "Famille monoparentale",
+    "pct": 0.4611275685786293,
+    "euros_par_uc": 81.35102577310104,
+    "part_perdants": 0.5680332001014525
+   },
+   {
+    "dimension": "csp",
+    "groupe": "Employés",
+    "pct": 0.4126174668921404,
+    "euros_par_uc": 93.52001805269708,
+    "part_perdants": 0.4609770281630428
+   },
+   {
+    "dimension": "csp",
+    "groupe": "Ouvriers",
+    "pct": 0.2789602177309993,
+    "euros_par_uc": 64.43489648983677,
+    "part_perdants": 0.48157040100669973
+   }
+  ],
+  "cout_compensation_D1_D3_M€": 676.1199087233601,
+  "inegalites": {
+   "avant": {
+    "mediane": 22179.384655111095,
+    "taux_pauvrete": 17.298049811516,
+    "seuil": 13307.630793066657,
+    "gini": 0.34930401781456777,
+    "d9_d1": 4.104219810767132,
+    "s80_s20": 5.865507080386136
+   },
+   "apres": {
+    "mediane": 22125.228062499875,
+    "taux_pauvrete": 16.72441880824395,
+    "seuil": 13275.136837499924,
+    "gini": 0.34495184750655117,
+    "d9_d1": 4.068339998408314,
+    "s80_s20": 5.7825252916812575
+   },
+   "apres_seuil_fixe": {
+    "mediane": 22125.228062499875,
+    "taux_pauvrete": 16.812563641438675,
+    "seuil": 13307.630793066657,
+    "gini": 0.34495184750655117,
+    "d9_d1": 4.068339998408314,
+    "s80_s20": 5.7825252916812575
+   }
+  }
+ },
+ "v06_B": {
+  "curseurs": {
+   "tva": 2.0,
+   "tva_reduite": 1.04,
+   "successions": 50.0,
+   "cotisations_employeurs": 10.0,
+   "autres_depenses": 3.39,
+   "investissement_public": 30.0,
+   "assurance_chomage": -25.0,
+   "prime_activite": 10.61,
+   "temps_travail": 37.0,
+   "age_legal": 66.0
+  },
+  "niveau": "faible",
+  "perte_max_decile_pct": 1.826750169808643,
+  "perte_max_groupe_pct": 1.7331756832454797,
+  "droits_reduits": [
+   "assurance_chomage",
+   "age_legal"
+  ],
+  "leviers_difficulte_3": [
+   "successions",
+   "assurance_chomage",
+   "temps_travail",
+   "age_legal"
+  ],
+  "deciles": {
+   "1": {
+    "euros_par_uc": -99.5166734050318,
+    "pct": -1.826750169808643,
+    "gagnants": 0.00487318466180132,
+    "perdants": 0.9933280712893285,
+    "masse_M€": -371.266618258167
+   },
+   "2": {
+    "euros_par_uc": -140.31224995293366,
+    "pct": -1.2904069308174795,
+    "gagnants": 0.17223696651418197,
+    "perdants": 0.826896304320557,
+    "masse_M€": -553.4885033400813
+   },
+   "3": {
+    "euros_par_uc": -111.26709421509156,
+    "pct": -0.76322965553806,
+    "gagnants": 0.36451765690188886,
+    "perdants": 0.6335062286306343,
+    "masse_M€": -484.7062158541948
+   },
+   "4": {
+    "euros_par_uc": -146.41058272820328,
+    "pct": -0.8387510476567925,
+    "gagnants": 0.337175100424365,
+    "perdants": 0.6592201789869817,
+    "masse_M€": -683.7901549362127
+   },
+   "5": {
+    "euros_par_uc": -177.8273209707117,
+    "pct": -0.8860064239125495,
+    "gagnants": 0.30030275462972683,
+    "perdants": 0.6959682143372093,
+    "masse_M€": -860.1696408442087
+   },
+   "6": {
+    "euros_par_uc": -275.8058653119946,
+    "pct": -1.2117224864519767,
+    "gagnants": 0.12215209126735,
+    "perdants": 0.8760170189725854,
+    "masse_M€": -1314.097918982347
+   },
+   "7": {
+    "euros_par_uc": -362.5733126486121,
+    "pct": -1.3968301942913435,
+    "gagnants": 0.01846786872389122,
+    "perdants": 0.9813513574249256,
+    "masse_M€": -1732.3344495247266
+   },
+   "8": {
+    "euros_par_uc": -432.11857504243085,
+    "pct": -1.436761355067601,
+    "gagnants": 0.002525827527689038,
+    "perdants": 0.997474172472311,
+    "masse_M€": -2097.5524125590828
+   },
+   "9": {
+    "euros_par_uc": -474.02243028504625,
+    "pct": -1.3028532400441,
+    "gagnants": 0.0,
+    "perdants": 1.0,
+    "masse_M€": -2335.9375914468806
+   },
+   "10": {
+    "euros_par_uc": -948.7307443857549,
+    "pct": -1.3255404268960693,
+    "gagnants": 0.0,
+    "perdants": 1.0,
+    "masse_M€": -4801.09952987132
+   }
+  },
+  "groupes": {
+   "age": {
+    "30-44 ans": {
+     "variation_euros_par_uc": -317.15327555738605,
+     "variation_pct": -1.1213936636782627,
+     "part_gagnants": 0.23300026691406509,
+     "part_perdants": 0.7652608707373597,
+     "poids": 0.23260931007450364
+    },
+    "45-59 ans": {
+     "variation_euros_par_uc": -354.097681142616,
+     "variation_pct": -1.186470626435661,
+     "part_gagnants": 0.15628513143878486,
+     "part_perdants": 0.8415386496383372,
+     "poids": 0.2873318035386311
+    },
+    "60-74 ans": {
+     "variation_euros_par_uc": -335.7782227322335,
+     "variation_pct": -1.428556200948323,
+     "part_gagnants": 0.026762663418056484,
+     "part_perdants": 0.9728089411874434,
+     "poids": 0.22575606331906278
+    },
+    "75 ans et plus": {
+     "variation_euros_par_uc": -304.52521529603854,
+     "variation_pct": -1.5246881812438768,
+     "part_gagnants": 0.0,
+     "part_perdants": 0.9998026376936482,
+     "poids": 0.14544848721658835
+    },
+    "moins de 30 ans": {
+     "variation_euros_par_uc": -195.2160259604337,
+     "variation_pct": -0.987148592459042,
+     "part_gagnants": 0.24876599558081275,
+     "part_perdants": 0.7489971399361884,
+     "poids": 0.10885433585121423
+    }
+   },
+   "csp": {
+    "Actifs, catégorie inconnue": {
+     "variation_euros_par_uc": -234.68125853906162,
+     "variation_pct": -1.5207898798597144,
+     "part_gagnants": 0.024978311835431526,
+     "part_perdants": 0.9750216881645684,
+     "poids": 0.06592690612899746
+    },
+    "Agriculteurs": {
+     "variation_euros_par_uc": -374.7231093426462,
+     "variation_pct": -1.1452433051976196,
+     "part_gagnants": 0.22625848457282438,
+     "part_perdants": 0.7719521173831289,
+     "poids": 0.008898082746217
+    },
+    "Artisans, commerçants, chefs d'entreprise": {
+     "variation_euros_par_uc": -438.1669876456151,
+     "variation_pct": -1.1848536889772086,
+     "part_gagnants": 0.21791541930954875,
+     "part_perdants": 0.7807020966193533,
+     "poids": 0.04561372774653102
+    },
+    "Autres inactifs (étudiants, au foyer…)": {
+     "variation_euros_par_uc": -123.90143180255694,
+     "variation_pct": -1.7331756832454797,
+     "part_gagnants": 0.0,
+     "part_perdants": 0.99809113029061,
+     "poids": 0.05610359968161023
+    },
+    "Cadres": {
+     "variation_euros_par_uc": -622.0921806122865,
+     "variation_pct": -1.3014437378047563,
+     "part_gagnants": 0.06807998935517118,
+     "part_perdants": 0.930742280933364,
+     "poids": 0.12261760744583831
+    },
+    "Employés": {
+     "variation_euros_par_uc": -194.0638390282953,
+     "variation_pct": -0.8562244890724762,
+     "part_gagnants": 0.3508767135614811,
+     "part_perdants": 0.6471890166747704,
+     "poids": 0.13489575628252745
+    },
+    "Ouvriers": {
+     "variation_euros_par_uc": -209.86684562936642,
+     "variation_pct": -0.9085837665700329,
+     "part_gagnants": 0.3070036856363202,
+     "part_perdants": 0.6886266468393796,
+     "poids": 0.11925358308880761
+    },
+    "Professions intermédiaires": {
+     "variation_euros_par_uc": -354.3619876976476,
+     "variation_pct": -1.1705980311354118,
+     "part_gagnants": 0.179190250964603,
+     "part_perdants": 0.8193156117847794,
+     "poids": 0.146961075821675
+    },
+    "Retraités": {
+     "variation_euros_par_uc": -305.4640443675141,
+     "variation_pct": -1.5260126067448854,
+     "part_gagnants": 0.0,
+     "part_perdants": 0.9997778226271353,
+     "poids": 0.29972966105779597
+    }
+   },
+   "region": {
+    "Auvergne-Rhône-Alpes": {
+     "variation_euros_par_uc": -315.0351673093823,
+     "variation_pct": -1.2375242189067812,
+     "part_gagnants": 0.1367328770542955,
+     "part_perdants": 0.8621883305481246,
+     "poids": 0.12021819707035966
+    },
+    "Bourgogne-Franche-Comté": {
+     "variation_euros_par_uc": -303.99888614064395,
+     "variation_pct": -1.2503130670148959,
+     "part_gagnants": 0.1337448927507794,
+     "part_perdants": 0.8647412298267769,
+     "poids": 0.04237377511694443
+    },
+    "Bretagne": {
+     "variation_euros_par_uc": -307.4413871085465,
+     "variation_pct": -1.2661981698888334,
+     "part_gagnants": 0.1162986893275551,
+     "part_perdants": 0.8822606961250786,
+     "poids": 0.052147548425813615
+    },
+    "Centre-Val de Loire": {
+     "variation_euros_par_uc": -298.4219918549838,
+     "variation_pct": -1.2501510183012838,
+     "part_gagnants": 0.12842337026237402,
+     "part_perdants": 0.8705127557707014,
+     "poids": 0.03804592686442555
+    },
+    "Corse": {
+     "variation_euros_par_uc": -299.72923303255874,
+     "variation_pct": -1.2035169777261445,
+     "part_gagnants": 0.15079320724787293,
+     "part_perdants": 0.8480256172234364,
+     "poids": 0.005523036199817964
+    },
+    "Grand Est": {
+     "variation_euros_par_uc": -308.861730581798,
+     "variation_pct": -1.237694337568743,
+     "part_gagnants": 0.1335185167266795,
+     "part_perdants": 0.8653706354795866,
+     "poids": 0.08465526779738262
+    },
+    "Guadeloupe": {
+     "variation_euros_par_uc": -239.60550064725916,
+     "variation_pct": -1.203277100473899,
+     "part_gagnants": 0.13687123022362882,
+     "part_perdants": 0.8595693348939851,
+     "poids": 0.005967545967712175
+    },
+    "Guyane": {
+     "variation_euros_par_uc": -251.11877674155915,
+     "variation_pct": -1.1750596440156202,
+     "part_gagnants": 0.16234932559088677,
+     "part_perdants": 0.8376506744091132,
+     "poids": 0.002787175833906318
+    },
+    "Hauts-de-France": {
+     "variation_euros_par_uc": -295.4434004215103,
+     "variation_pct": -1.2343873193789525,
+     "part_gagnants": 0.13479043134714006,
+     "part_perdants": 0.8632598960943811,
+     "poids": 0.08514216934268784
+    },
+    "La Réunion": {
+     "variation_euros_par_uc": -257.3797035659535,
+     "variation_pct": -1.2307294728521683,
+     "part_gagnants": 0.11980388468220363,
+     "part_perdants": 0.8789793713749565,
+     "poids": 0.01105845282498385
+    },
+    "Martinique": {
+     "variation_euros_par_uc": -275.0869357585389,
+     "variation_pct": -1.2094924784706642,
+     "part_gagnants": 0.119328647428661,
+     "part_perdants": 0.8806713525713391,
+     "poids": 0.005369498338861231
+    },
+    "Normandie": {
+     "variation_euros_par_uc": -298.52011764428664,
+     "variation_pct": -1.2500088532614368,
+     "part_gagnants": 0.12623647371152094,
+     "part_perdants": 0.8729258867879189,
+     "poids": 0.04918195444952673
+    },
+    "Nouvelle-Aquitaine": {
+     "variation_euros_par_uc": -312.54157379833555,
+     "variation_pct": -1.2513724452496982,
+     "part_gagnants": 0.13065236165988056,
+     "part_perdants": 0.8674944899834094,
+     "poids": 0.0945024906613025
+    },
+    "Occitanie": {
+     "variation_euros_par_uc": -320.6116315601919,
+     "variation_pct": -1.2652386726769775,
+     "part_gagnants": 0.12126013411760432,
+     "part_perdants": 0.8773151313033286,
+     "poids": 0.09420003438365553
+    },
+    "Pays de la Loire": {
+     "variation_euros_par_uc": -314.42121726963836,
+     "variation_pct": -1.2364257478275074,
+     "part_gagnants": 0.13987199868549044,
+     "part_perdants": 0.8577653426394419,
+     "poids": 0.05687951281831212
+    },
+    "Provence-Alpes-Côte d'Azur": {
+     "variation_euros_par_uc": -311.6281789391151,
+     "variation_pct": -1.2418684721125224,
+     "part_gagnants": 0.1347214294528361,
+     "part_perdants": 0.8647058122929938,
+     "poids": 0.07881354641507292
+    },
+    "Île-de-France": {
+     "variation_euros_par_uc": -360.6952453752379,
+     "variation_pct": -1.2275340439724225,
+     "part_gagnants": 0.13729271973062965,
+     "part_perdants": 0.8612175453766765,
+     "poids": 0.17313386748923504
+    }
+   },
+   "famille": {
+    "Couple sans enfant mineur": {
+     "variation_euros_par_uc": -389.06424710619046,
+     "variation_pct": -1.3061311769455632,
+     "part_gagnants": 0.058974872096821715,
+     "part_perdants": 0.9398026765238059,
+     "poids": 0.3567350675004195
+    },
+    "Couple, 1-2 enfants": {
+     "variation_euros_par_uc": -363.3009246089557,
+     "variation_pct": -1.1863140847618743,
+     "part_gagnants": 0.16959503587447136,
+     "part_perdants": 0.8274226785651184,
+     "poids": 0.17247183995098578
+    },
+    "Couple, 3 enfants ou plus": {
+     "variation_euros_par_uc": -256.69508211167545,
+     "variation_pct": -1.108804989786539,
+     "part_gagnants": 0.24721795893917067,
+     "part_perdants": 0.7508544285834442,
+     "poids": 0.03598425977166224
+    },
+    "Famille monoparentale": {
+     "variation_euros_par_uc": -150.59034586318919,
+     "variation_pct": -0.8536015296597312,
+     "part_gagnants": 0.34518702414697566,
+     "part_perdants": 0.6515974364617264,
+     "poids": 0.050193551691727456
+    },
+    "Personne seule": {
+     "variation_euros_par_uc": -256.4002551735091,
+     "variation_pct": -1.2496617581002982,
+     "part_gagnants": 0.1448562308063017,
+     "part_perdants": 0.8545783491744664,
+     "poids": 0.38461528108520515
+    }
+   }
+  },
+  "principaux_perdants": [
+   {
+    "dimension": "csp",
+    "groupe": "Autres inactifs (étudiants, au foyer…)",
+    "pct": -1.7331756832454797,
+    "euros_par_uc": -123.90143180255694,
+    "part_perdants": 0.99809113029061
+   },
+   {
+    "dimension": "csp",
+    "groupe": "Retraités",
+    "pct": -1.5260126067448854,
+    "euros_par_uc": -305.4640443675141,
+    "part_perdants": 0.9997778226271353
+   },
+   {
+    "dimension": "age",
+    "groupe": "75 ans et plus",
+    "pct": -1.5246881812438768,
+    "euros_par_uc": -304.52521529603854,
+    "part_perdants": 0.9998026376936482
+   },
+   {
+    "dimension": "csp",
+    "groupe": "Actifs, catégorie inconnue",
+    "pct": -1.5207898798597144,
+    "euros_par_uc": -234.68125853906162,
+    "part_perdants": 0.9750216881645684
+   },
+   {
+    "dimension": "age",
+    "groupe": "60-74 ans",
+    "pct": -1.428556200948323,
+    "euros_par_uc": -335.7782227322335,
+    "part_perdants": 0.9728089411874434
+   },
+   {
+    "dimension": "famille",
+    "groupe": "Couple sans enfant mineur",
+    "pct": -1.3061311769455632,
+    "euros_par_uc": -389.06424710619046,
+    "part_perdants": 0.9398026765238059
+   },
+   {
+    "dimension": "csp",
+    "groupe": "Cadres",
+    "pct": -1.3014437378047563,
+    "euros_par_uc": -622.0921806122865,
+    "part_perdants": 0.930742280933364
+   },
+   {
+    "dimension": "region",
+    "groupe": "Bretagne",
+    "pct": -1.2661981698888334,
+    "euros_par_uc": -307.4413871085465,
+    "part_perdants": 0.8822606961250786
+   }
+  ],
+  "principaux_gagnants": [],
+  "cout_compensation_D1_D3_M€": 1409.461337452443,
+  "inegalites": {
+   "avant": {
+    "mediane": 22179.384655111095,
+    "taux_pauvrete": 17.298049811516,
+    "seuil": 13307.630793066657,
+    "gini": 0.34930401781456777,
+    "d9_d1": 4.104219810767132,
+    "s80_s20": 5.865507080386136
+   },
+   "apres": {
+    "mediane": 21932.4117841251,
+    "taux_pauvrete": 17.072102274604216,
+    "seuil": 13159.447070475058,
+    "gini": 0.3484845600088943,
+    "d9_d1": 4.102531703407437,
+    "s80_s20": 5.851481702097827
+   },
+   "apres_seuil_fixe": {
+    "mediane": 21932.4117841251,
+    "taux_pauvrete": 17.534311381146683,
+    "seuil": 13307.630793066657,
+    "gini": 0.3484845600088943,
+    "d9_d1": 4.102531703407437,
+    "s80_s20": 5.851481702097827
+   }
+  }
+ },
+ "v06_C": {
+  "curseurs": {
+   "tva": -0.9,
+   "csg_activite": -1.0,
+   "isf": 1.0,
+   "pfu": 15.0,
+   "successions": 50.0,
+   "cotisations_employeurs": 10.0,
+   "emploi_public": 50.0,
+   "investissement_public": -10.0,
+   "assurance_chomage": -25.0,
+   "rsa": 25.0,
+   "prime_activite": 25.0,
+   "allocations_familiales": 25.0,
+   "minimum_vieillesse": 25.0,
+   "age_legal": 66.0
+  },
+  "niveau": "faible",
+  "perte_max_decile_pct": 1.324363880078553,
+  "perte_max_groupe_pct": 0.06296103489480802,
+  "droits_reduits": [
+   "assurance_chomage",
+   "age_legal"
+  ],
+  "leviers_difficulte_3": [
+   "isf",
+   "successions",
+   "assurance_chomage",
+   "age_legal"
+  ],
+  "deciles": {
+   "1": {
+    "euros_par_uc": 616.2425690987164,
+    "pct": 11.311885528596012,
+    "gagnants": 0.9973690719010779,
+    "perdants": 0.0,
+    "masse_M€": 2437.6232578884715
+   },
+   "2": {
+    "euros_par_uc": 837.6863039287269,
+    "pct": 7.703933283110369,
+    "gagnants": 1.0,
+    "perdants": 0.0,
+    "masse_M€": 4050.4129497248114
+   },
+   "3": {
+    "euros_par_uc": 742.2083048824762,
+    "pct": 5.091131325653929,
+    "gagnants": 1.0,
+    "perdants": 0.0,
+    "masse_M€": 4049.790960784032
+   },
+   "4": {
+    "euros_par_uc": 802.9463823778227,
+    "pct": 4.5998868857851924,
+    "gagnants": 1.0,
+    "perdants": 0.0,
+    "masse_M€": 4086.23430525834
+   },
+   "5": {
+    "euros_par_uc": 848.5312518443906,
+    "pct": 4.22772010465428,
+    "gagnants": 1.0,
+    "perdants": 0.0,
+    "masse_M€": 3974.2452215630806
+   },
+   "6": {
+    "euros_par_uc": 742.8211578186078,
+    "pct": 3.263502388982572,
+    "gagnants": 1.0,
+    "perdants": 0.0,
+    "masse_M€": 3580.911273124278
+   },
+   "7": {
+    "euros_par_uc": 548.4100973250185,
+    "pct": 2.1127748680726635,
+    "gagnants": 1.0,
+    "perdants": 0.0,
+    "masse_M€": 2901.815134690641
+   },
+   "8": {
+    "euros_par_uc": 513.5022206911747,
+    "pct": 1.7073557792743115,
+    "gagnants": 1.0,
+    "perdants": 0.0,
+    "masse_M€": 2758.427417222949
+   },
+   "9": {
+    "euros_par_uc": 567.1963037581529,
+    "pct": 1.5589421404552026,
+    "gagnants": 0.9989351742507464,
+    "perdants": 0.0010648257492537957,
+    "masse_M€": 2996.407047059521
+   },
+   "10": {
+    "euros_par_uc": -947.888653027892,
+    "pct": -1.324363880078553,
+    "gagnants": 0.8142702970724186,
+    "perdants": 0.18572970292758137,
+    "masse_M€": -5537.810210891957
+   }
+  },
+  "groupes": {
+   "age": {
+    "30-44 ans": {
+     "variation_euros_par_uc": 744.197595748656,
+     "variation_pct": 2.631341161242832,
+     "part_gagnants": 0.9856964173936197,
+     "part_perdants": 0.014303582606380323,
+     "poids": 0.23260931007450364
+    },
+    "45-59 ans": {
+     "variation_euros_par_uc": 703.2320851729999,
+     "variation_pct": 2.356310862958794,
+     "part_gagnants": 0.9820488436394872,
+     "part_perdants": 0.017951156360512942,
+     "poids": 0.2873318035386311
+    },
+    "60-74 ans": {
+     "variation_euros_par_uc": 197.93303226103697,
+     "variation_pct": 0.8420988660556903,
+     "part_gagnants": 0.9754177797432471,
+     "part_perdants": 0.024582220256753006,
+     "poids": 0.22575606331906278
+    },
+    "75 ans et plus": {
+     "variation_euros_par_uc": 185.11647827645024,
+     "variation_pct": 0.9268359150726269,
+     "part_gagnants": 0.9720549419995643,
+     "part_perdants": 0.02794505800043575,
+     "poids": 0.14544848721658835
+    },
+    "moins de 30 ans": {
+     "variation_euros_par_uc": 738.4351261591338,
+     "variation_pct": 3.7340438205521416,
+     "part_gagnants": 0.9922462287220928,
+     "part_perdants": 0.0053370290925131144,
+     "poids": 0.10885433585121423
+    }
+   },
+   "csp": {
+    "Actifs, catégorie inconnue": {
+     "variation_euros_par_uc": 687.3700136286218,
+     "variation_pct": 4.45431973116613,
+     "part_gagnants": 0.998699942445954,
+     "part_perdants": 0.0013000575540459795,
+     "poids": 0.06592690612899746
+    },
+    "Agriculteurs": {
+     "variation_euros_par_uc": 505.1454873973025,
+     "variation_pct": 1.543845237106945,
+     "part_gagnants": 0.9628067676704772,
+     "part_perdants": 0.037193232329522694,
+     "poids": 0.008898082746217
+    },
+    "Artisans, commerçants, chefs d'entreprise": {
+     "variation_euros_par_uc": -23.283420776385118,
+     "variation_pct": -0.06296103489480802,
+     "part_gagnants": 0.966706034792464,
+     "part_perdants": 0.03329396520753605,
+     "poids": 0.04561372774653102
+    },
+    "Autres inactifs (étudiants, au foyer…)": {
+     "variation_euros_par_uc": 733.2444434476705,
+     "variation_pct": 10.256874523318798,
+     "part_gagnants": 0.9951735016250524,
+     "part_perdants": 0.00013744335873436083,
+     "poids": 0.05610359968161023
+    },
+    "Cadres": {
+     "variation_euros_par_uc": 178.9588860481575,
+     "variation_pct": 0.37438972684507266,
+     "part_gagnants": 0.9432438741178576,
+     "part_perdants": 0.056756125882142384,
+     "poids": 0.12261760744583831
+    },
+    "Employés": {
+     "variation_euros_par_uc": 1009.7204115943665,
+     "variation_pct": 4.454963623580497,
+     "part_gagnants": 0.9972548018924701,
+     "part_perdants": 0.002745198107529938,
+     "poids": 0.13489575628252745
+    },
+    "Ouvriers": {
+     "variation_euros_par_uc": 1032.9675058558491,
+     "variation_pct": 4.472061818056084,
+     "part_gagnants": 0.997444688951495,
+     "part_perdants": 0.0025553110485050283,
+     "poids": 0.11925358308880761
+    },
+    "Professions intermédiaires": {
+     "variation_euros_par_uc": 690.851230824442,
+     "variation_pct": 2.2821553063998024,
+     "part_gagnants": 0.9922956629253349,
+     "part_perdants": 0.0077043370746649,
+     "poids": 0.146961075821675
+    },
+    "Retraités": {
+     "variation_euros_par_uc": 181.52742159136156,
+     "variation_pct": 0.9068600345153147,
+     "part_gagnants": 0.9734074323414076,
+     "part_perdants": 0.026592567658592393,
+     "poids": 0.29972966105779597
+    }
+   },
+   "region": {
+    "Auvergne-Rhône-Alpes": {
+     "variation_euros_par_uc": 553.5978598207628,
+     "variation_pct": 2.1746485159555453,
+     "part_gagnants": 0.9828058585299904,
+     "part_perdants": 0.01689795584629658,
+     "poids": 0.12021819707035966
+    },
+    "Bourgogne-Franche-Comté": {
+     "variation_euros_par_uc": 527.3498474649825,
+     "variation_pct": 2.1689303324247473,
+     "part_gagnants": 0.9800236854021872,
+     "part_perdants": 0.019630012392134445,
+     "poids": 0.04237377511694443
+    },
+    "Bretagne": {
+     "variation_euros_par_uc": 563.7688578154849,
+     "variation_pct": 2.3218835392329678,
+     "part_gagnants": 0.9821219326486436,
+     "part_perdants": 0.017809433723747187,
+     "poids": 0.052147548425813615
+    },
+    "Centre-Val de Loire": {
+     "variation_euros_par_uc": 593.13262875999,
+     "variation_pct": 2.484754408422917,
+     "part_gagnants": 0.9838351385215585,
+     "part_perdants": 0.016164861478441588,
+     "poids": 0.03804592686442555
+    },
+    "Corse": {
+     "variation_euros_par_uc": 600.5361876578928,
+     "variation_pct": 2.4113613819800386,
+     "part_gagnants": 0.9811127826455792,
+     "part_perdants": 0.018887217354420668,
+     "poids": 0.005523036199817964
+    },
+    "Grand Est": {
+     "variation_euros_par_uc": 545.8256736183608,
+     "variation_pct": 2.187274364695614,
+     "part_gagnants": 0.9849990074325741,
+     "part_perdants": 0.015000992567425908,
+     "poids": 0.08465526779738262
+    },
+    "Guadeloupe": {
+     "variation_euros_par_uc": 702.7299611051986,
+     "variation_pct": 3.529046151822858,
+     "part_gagnants": 0.9858238615954448,
+     "part_perdants": 0.01417613840455525,
+     "poids": 0.005967545967712175
+    },
+    "Guyane": {
+     "variation_euros_par_uc": 916.3980366349812,
+     "variation_pct": 4.288099697989268,
+     "part_gagnants": 0.9857585293459274,
+     "part_perdants": 0.010128275628824093,
+     "poids": 0.002787175833906318
+    },
+    "Hauts-de-France": {
+     "variation_euros_par_uc": 590.5303061465823,
+     "variation_pct": 2.4672851740005894,
+     "part_gagnants": 0.9842169233284924,
+     "part_perdants": 0.015441461321801932,
+     "poids": 0.08514216934268784
+    },
+    "La Réunion": {
+     "variation_euros_par_uc": 757.4546454710376,
+     "variation_pct": 3.621970744445723,
+     "part_gagnants": 0.9934436075044699,
+     "part_perdants": 0.0065563924955301615,
+     "poids": 0.01105845282498385
+    },
+    "Martinique": {
+     "variation_euros_par_uc": 743.583186080825,
+     "variation_pct": 3.2693601686393188,
+     "part_gagnants": 0.9793612458666828,
+     "part_perdants": 0.020638754133317182,
+     "poids": 0.005369498338861231
+    },
+    "Normandie": {
+     "variation_euros_par_uc": 594.0170604579563,
+     "variation_pct": 2.4873586089282136,
+     "part_gagnants": 0.9828062915936464,
+     "part_perdants": 0.016532624032845868,
+     "poids": 0.04918195444952673
+    },
+    "Nouvelle-Aquitaine": {
+     "variation_euros_par_uc": 461.28562082922156,
+     "variation_pct": 1.8469226614570216,
+     "part_gagnants": 0.9783175199811235,
+     "part_perdants": 0.02151605265179678,
+     "poids": 0.0945024906613025
+    },
+    "Occitanie": {
+     "variation_euros_par_uc": 467.3758956458166,
+     "variation_pct": 1.8444186038119692,
+     "part_gagnants": 0.9805956567340377,
+     "part_perdants": 0.019404343265962288,
+     "poids": 0.09420003438365553
+    },
+    "Pays de la Loire": {
+     "variation_euros_par_uc": 513.6377686218598,
+     "variation_pct": 2.01982222349872,
+     "part_gagnants": 0.9786818321477095,
+     "part_perdants": 0.020771021069353916,
+     "poids": 0.05687951281831212
+    },
+    "Provence-Alpes-Côte d'Azur": {
+     "variation_euros_par_uc": 520.2196403593256,
+     "variation_pct": 2.0731256465166568,
+     "part_gagnants": 0.9806315322937325,
+     "part_perdants": 0.019081546634469364,
+     "poids": 0.07881354641507292
+    },
+    "Île-de-France": {
+     "variation_euros_par_uc": 463.95363163854125,
+     "variation_pct": 1.5789475601999388,
+     "part_gagnants": 0.9769243698076076,
+     "part_perdants": 0.02269045566845466,
+     "poids": 0.17313386748923504
+    }
+   },
+   "famille": {
+    "Couple sans enfant mineur": {
+     "variation_euros_par_uc": 344.05789322996895,
+     "variation_pct": 1.155039930716677,
+     "part_gagnants": 0.975109269695479,
+     "part_perdants": 0.024890730304520874,
+     "poids": 0.3567350675004195
+    },
+    "Couple, 1-2 enfants": {
+     "variation_euros_par_uc": 579.5743769474849,
+     "variation_pct": 1.8925282044904,
+     "part_gagnants": 0.979781094460517,
+     "part_perdants": 0.020218905539482874,
+     "poids": 0.17247183995098578
+    },
+    "Couple, 3 enfants ou plus": {
+     "variation_euros_par_uc": 1033.2192200536751,
+     "variation_pct": 4.463033016894573,
+     "part_gagnants": 0.9891322913995054,
+     "part_perdants": 0.01086770860049464,
+     "poids": 0.03598425977166224
+    },
+    "Famille monoparentale": {
+     "variation_euros_par_uc": 1007.6962474776093,
+     "variation_pct": 5.711993377455424,
+     "part_gagnants": 0.9902418900607775,
+     "part_perdants": 0.0045169413697938076,
+     "poids": 0.050193551691727456
+    },
+    "Personne seule": {
+     "variation_euros_par_uc": 563.4262208729943,
+     "variation_pct": 2.7460666966165284,
+     "part_gagnants": 0.9851908664038176,
+     "part_perdants": 0.014809133596182269,
+     "poids": 0.38461528108520515
+    }
+   }
+  },
+  "principaux_perdants": [],
+  "principaux_gagnants": [
+   {
+    "dimension": "csp",
+    "groupe": "Autres inactifs (étudiants, au foyer…)",
+    "pct": 10.256874523318798,
+    "euros_par_uc": 733.2444434476705,
+    "part_perdants": 0.00013744335873436083
+   },
+   {
+    "dimension": "famille",
+    "groupe": "Famille monoparentale",
+    "pct": 5.711993377455424,
+    "euros_par_uc": 1007.6962474776093,
+    "part_perdants": 0.0045169413697938076
+   },
+   {
+    "dimension": "csp",
+    "groupe": "Ouvriers",
+    "pct": 4.472061818056084,
+    "euros_par_uc": 1032.9675058558491,
+    "part_perdants": 0.0025553110485050283
+   },
+   {
+    "dimension": "famille",
+    "groupe": "Couple, 3 enfants ou plus",
+    "pct": 4.463033016894573,
+    "euros_par_uc": 1033.2192200536751,
+    "part_perdants": 0.01086770860049464
+   },
+   {
+    "dimension": "csp",
+    "groupe": "Employés",
+    "pct": 4.454963623580497,
+    "euros_par_uc": 1009.7204115943665,
+    "part_perdants": 0.002745198107529938
+   },
+   {
+    "dimension": "csp",
+    "groupe": "Actifs, catégorie inconnue",
+    "pct": 4.45431973116613,
+    "euros_par_uc": 687.3700136286218,
+    "part_perdants": 0.0013000575540459795
+   },
+   {
+    "dimension": "age",
+    "groupe": "moins de 30 ans",
+    "pct": 3.7340438205521416,
+    "euros_par_uc": 738.4351261591338,
+    "part_perdants": 0.0053370290925131144
+   },
+   {
+    "dimension": "region",
+    "groupe": "La Réunion",
+    "pct": 3.621970744445723,
+    "euros_par_uc": 757.4546454710376,
+    "part_perdants": 0.0065563924955301615
+   }
+  ],
+  "cout_compensation_D1_D3_M€": -0.0,
+  "inegalites": {
+   "avant": {
+    "mediane": 22179.384655111095,
+    "taux_pauvrete": 17.298049811516,
+    "seuil": 13307.630793066657,
+    "gini": 0.34930401781456777,
+    "d9_d1": 4.104219810767132,
+    "s80_s20": 5.865507080386136
+   },
+   "apres": {
+    "mediane": 23032.33325851419,
+    "taux_pauvrete": 16.112907031107007,
+    "seuil": 13819.399955108514,
+    "gini": 0.33278675721418083,
+    "d9_d1": 3.8200774482293713,
+    "s80_s20": 5.368314715576968
+   },
+   "apres_seuil_fixe": {
+    "mediane": 23032.33325851419,
+    "taux_pauvrete": 14.569704857745652,
+    "seuil": 13307.630793066657,
+    "gini": 0.33278675721418083,
+    "d9_d1": 3.8200774482293713,
+    "s80_s20": 5.368314715576968
+   }
+  }
+ },
+ "v06_D": {
+  "curseurs": {
+   "tva": 2.0,
+   "tva_reduite": 2.0,
+   "csg_activite": 1.0,
+   "ir_t1": 13.0,
+   "isf": 1.0,
+   "pfu": 15.0,
+   "successions": 50.0,
+   "taxe_carbone": 53.78,
+   "cotisations_employeurs": 10.0,
+   "autres_depenses": -13.6,
+   "investissement_public": -10.0,
+   "indexation_pensions": -1.0,
+   "assurance_chomage": -25.0,
+   "rsa": 4.25,
+   "prime_activite": 25.0,
+   "allocations_familiales": 25.0,
+   "temps_travail": 37.0,
+   "droits_douane": 10.0
+  },
+  "niveau": "faible",
+  "perte_max_decile_pct": 6.418772384586917,
+  "perte_max_groupe_pct": 5.63798869772049,
+  "droits_reduits": [
+   "indexation_pensions",
+   "assurance_chomage"
+  ],
+  "leviers_difficulte_3": [
+   "isf",
+   "successions",
+   "taxe_carbone",
+   "indexation_pensions",
+   "assurance_chomage",
+   "temps_travail",
+   "droits_douane"
+  ],
+  "deciles": {
+   "1": {
+    "euros_par_uc": -193.49548019146258,
+    "pct": -3.551846029442208,
+    "gagnants": 0.05634102490217091,
+    "perdants": 0.9403997167184407,
+    "masse_M€": -673.7487558237004
+   },
+   "2": {
+    "euros_par_uc": -184.86364073266216,
+    "pct": -1.7001318369393887,
+    "gagnants": 0.2201699449481752,
+    "perdants": 0.7797905038994246,
+    "masse_M€": -381.8941492675046
+   },
+   "3": {
+    "euros_par_uc": -116.84128053730024,
+    "pct": -0.8014654370745141,
+    "gagnants": 0.44967248298468276,
+    "perdants": 0.5502229834992468,
+    "masse_M€": -136.54497298633592
+   },
+   "4": {
+    "euros_par_uc": -241.3282650189126,
+    "pct": -1.382511641863834,
+    "gagnants": 0.4335835927768724,
+    "perdants": 0.5658901881282933,
+    "masse_M€": -836.721562053093
+   },
+   "5": {
+    "euros_par_uc": -386.4131280488908,
+    "pct": -1.9252638563443665,
+    "gagnants": 0.3892851157305845,
+    "perdants": 0.6103870383749749,
+    "masse_M€": -1599.7817611467035
+   },
+   "6": {
+    "euros_par_uc": -716.3354041924024,
+    "pct": -3.147140167304669,
+    "gagnants": 0.15724420481284004,
+    "perdants": 0.8409751522575927,
+    "masse_M€": -3194.5818564328442
+   },
+   "7": {
+    "euros_par_uc": -1098.723761991327,
+    "pct": -4.232883315993654,
+    "gagnants": 0.031490130562750886,
+    "perdants": 0.9681742745660209,
+    "masse_M€": -5004.609173270315
+   },
+   "8": {
+    "euros_par_uc": -1408.65579818918,
+    "pct": -4.6836732561922085,
+    "gagnants": 0.0049199897440731265,
+    "perdants": 0.9950800102559269,
+    "masse_M€": -6645.647950448844
+   },
+   "9": {
+    "euros_par_uc": -1595.1333769111145,
+    "pct": -4.384232803416967,
+    "gagnants": 0.0,
+    "perdants": 1.0,
+    "masse_M€": -7709.461047095907
+   },
+   "10": {
+    "euros_par_uc": -4594.116164930322,
+    "pct": -6.418772384586917,
+    "gagnants": 0.0,
+    "perdants": 1.0,
+    "masse_M€": -23649.545151238297
+   }
+  },
+  "groupes": {
+   "age": {
+    "30-44 ans": {
+     "variation_euros_par_uc": -996.829636283364,
+     "variation_pct": -3.5246000090344607,
+     "part_gagnants": 0.3113303077288294,
+     "part_perdants": 0.688169737565499,
+     "poids": 0.23260931007450364
+    },
+    "45-59 ans": {
+     "variation_euros_par_uc": -1171.1016271769802,
+     "variation_pct": -3.9239954261571937,
+     "part_gagnants": 0.2137117273702979,
+     "part_perdants": 0.7854589496640805,
+     "poids": 0.2873318035386311
+    },
+    "60-74 ans": {
+     "variation_euros_par_uc": -1219.1529102952338,
+     "variation_pct": -5.186841587684837,
+     "part_gagnants": 0.03841030018057113,
+     "part_perdants": 0.9608470935762824,
+     "poids": 0.22575606331906278
+    },
+    "75 ans et plus": {
+     "variation_euros_par_uc": -1006.4064812185323,
+     "variation_pct": -5.038847328125,
+     "part_gagnants": 9.930736506050623e-05,
+     "part_perdants": 0.9999006926349395,
+     "poids": 0.14544848721658835
+    },
+    "moins de 30 ans": {
+     "variation_euros_par_uc": -584.5849532639304,
+     "variation_pct": -2.956069876682073,
+     "part_gagnants": 0.2917611675299395,
+     "part_perdants": 0.707181338806121,
+     "poids": 0.10885433585121423
+    }
+   },
+   "csp": {
+    "Actifs, catégorie inconnue": {
+     "variation_euros_par_uc": -553.729410177531,
+     "variation_pct": -3.5882971159305983,
+     "part_gagnants": 0.07929252664460658,
+     "part_perdants": 0.9192210346769677,
+     "poids": 0.06592690612899746
+    },
+    "Agriculteurs": {
+     "variation_euros_par_uc": -1445.4256216353333,
+     "variation_pct": -4.417565864146669,
+     "part_gagnants": 0.28098107298241776,
+     "part_perdants": 0.7190189270175821,
+     "poids": 0.008898082746217
+    },
+    "Artisans, commerçants, chefs d'entreprise": {
+     "variation_euros_par_uc": -2084.9667322154332,
+     "variation_pct": -5.63798869772049,
+     "part_gagnants": 0.2723176079304128,
+     "part_perdants": 0.7270747966217638,
+     "poids": 0.04561372774653102
+    },
+    "Autres inactifs (étudiants, au foyer…)": {
+     "variation_euros_par_uc": -173.65487891415657,
+     "variation_pct": -2.429143949608039,
+     "part_gagnants": 0.06343194188177195,
+     "part_perdants": 0.9336876251550876,
+     "poids": 0.05610359968161023
+    },
+    "Cadres": {
+     "variation_euros_par_uc": -2507.163944579356,
+     "variation_pct": -5.245095368521065,
+     "part_gagnants": 0.08580249596841093,
+     "part_perdants": 0.9139311898543545,
+     "poids": 0.12261760744583831
+    },
+    "Employés": {
+     "variation_euros_par_uc": -458.5804896525211,
+     "variation_pct": -2.02329216724444,
+     "part_gagnants": 0.42963738611720714,
+     "part_perdants": 0.5698345679401128,
+     "poids": 0.13489575628252745
+    },
+    "Ouvriers": {
+     "variation_euros_par_uc": -469.25975594259126,
+     "variation_pct": -2.0315824315910604,
+     "part_gagnants": 0.3993984785025354,
+     "part_perdants": 0.5999555875598124,
+     "poids": 0.11925358308880761
+    },
+    "Professions intermédiaires": {
+     "variation_euros_par_uc": -1181.4939967161938,
+     "variation_pct": -3.9029427375668453,
+     "part_gagnants": 0.22938761134383387,
+     "part_perdants": 0.7702084794814934,
+     "poids": 0.146961075821675
+    },
+    "Retraités": {
+     "variation_euros_par_uc": -1002.6440808265178,
+     "variation_pct": -5.008928335861855,
+     "part_gagnants": 0.002482178600763975,
+     "part_perdants": 0.9971516343062053,
+     "poids": 0.29972966105779597
+    }
+   },
+   "region": {
+    "Auvergne-Rhône-Alpes": {
+     "variation_euros_par_uc": -1018.910370730834,
+     "variation_pct": -4.002493662672248,
+     "part_gagnants": 0.17749377699686616,
+     "part_perdants": 0.821583273341495,
+     "poids": 0.12021819707035966
+    },
+    "Bourgogne-Franche-Comté": {
+     "variation_euros_par_uc": -994.8292225452614,
+     "variation_pct": -4.091620177256664,
+     "part_gagnants": 0.17230864180357439,
+     "part_perdants": 0.8273015649806646,
+     "poids": 0.04237377511694443
+    },
+    "Bretagne": {
+     "variation_euros_par_uc": -950.9891310957627,
+     "variation_pct": -3.9166512638472053,
+     "part_gagnants": 0.1580505440356875,
+     "part_perdants": 0.8413903032006458,
+     "poids": 0.052147548425813615
+    },
+    "Centre-Val de Loire": {
+     "variation_euros_par_uc": -909.6006083801831,
+     "variation_pct": -3.8105037760304814,
+     "part_gagnants": 0.16431405634203589,
+     "part_perdants": 0.8356859436579641,
+     "poids": 0.03804592686442555
+    },
+    "Corse": {
+     "variation_euros_par_uc": -963.493980242691,
+     "variation_pct": -3.8687629879366985,
+     "part_gagnants": 0.19156391813424298,
+     "part_perdants": 0.807840366311521,
+     "poids": 0.005523036199817964
+    },
+    "Grand Est": {
+     "variation_euros_par_uc": -997.2362827417367,
+     "variation_pct": -3.996201465434282,
+     "part_gagnants": 0.17747570184058434,
+     "part_perdants": 0.8223116728716587,
+     "poids": 0.08465526779738262
+    },
+    "Guadeloupe": {
+     "variation_euros_par_uc": -691.2895504857174,
+     "variation_pct": -3.4715934469339746,
+     "part_gagnants": 0.1995975863398081,
+     "part_perdants": 0.7990639308597273,
+     "poids": 0.005967545967712175
+    },
+    "Guyane": {
+     "variation_euros_par_uc": -649.8948875810539,
+     "variation_pct": -3.0410519880578137,
+     "part_gagnants": 0.26576292117534406,
+     "part_perdants": 0.7342370788246558,
+     "poids": 0.002787175833906318
+    },
+    "Hauts-de-France": {
+     "variation_euros_par_uc": -914.7714795396577,
+     "variation_pct": -3.8219920054476333,
+     "part_gagnants": 0.18367197806715557,
+     "part_perdants": 0.8150610878749288,
+     "poids": 0.08514216934268784
+    },
+    "La Réunion": {
+     "variation_euros_par_uc": -707.5211667811676,
+     "variation_pct": -3.3832005420785003,
+     "part_gagnants": 0.19372584893434006,
+     "part_perdants": 0.8053567775140417,
+     "poids": 0.01105845282498385
+    },
+    "Martinique": {
+     "variation_euros_par_uc": -784.7031396657055,
+     "variation_pct": -3.450154921537474,
+     "part_gagnants": 0.19104251470959552,
+     "part_perdants": 0.8069631930339186,
+     "poids": 0.005369498338861231
+    },
+    "Normandie": {
+     "variation_euros_par_uc": -903.2184142702465,
+     "variation_pct": -3.7820935593088088,
+     "part_gagnants": 0.169301526604498,
+     "part_perdants": 0.8303694835905816,
+     "poids": 0.04918195444952673
+    },
+    "Nouvelle-Aquitaine": {
+     "variation_euros_par_uc": -1082.5219032853806,
+     "variation_pct": -4.334265245700244,
+     "part_gagnants": 0.1661178140044096,
+     "part_perdants": 0.8335577702411461,
+     "poids": 0.0945024906613025
+    },
+    "Occitanie": {
+     "variation_euros_par_uc": -1105.7792380384622,
+     "variation_pct": -4.363767616917792,
+     "part_gagnants": 0.16179124486396057,
+     "part_perdants": 0.837331228859487,
+     "poids": 0.09420003438365553
+    },
+    "Pays de la Loire": {
+     "variation_euros_par_uc": -1034.2667842076849,
+     "variation_pct": -4.06713673212607,
+     "part_gagnants": 0.18318289195289536,
+     "part_perdants": 0.8161641279315354,
+     "poids": 0.05687951281831212
+    },
+    "Provence-Alpes-Côte d'Azur": {
+     "variation_euros_par_uc": -1038.53456756189,
+     "variation_pct": -4.138660826645286,
+     "part_gagnants": 0.1706468964428992,
+     "part_perdants": 0.8288036314196564,
+     "poids": 0.07881354641507292
+    },
+    "Île-de-France": {
+     "variation_euros_par_uc": -1314.5828870236069,
+     "variation_pct": -4.473846739416467,
+     "part_gagnants": 0.1801036575618667,
+     "part_perdants": 0.8192450183965518,
+     "poids": 0.17313386748923504
+    }
+   },
+   "famille": {
+    "Couple sans enfant mineur": {
+     "variation_euros_par_uc": -1421.6709161164388,
+     "variation_pct": -4.772704561541543,
+     "part_gagnants": 0.08477270463539521,
+     "part_perdants": 0.9148643085715131,
+     "poids": 0.3567350675004195
+    },
+    "Couple, 1-2 enfants": {
+     "variation_euros_par_uc": -1168.517089336349,
+     "variation_pct": -3.8156475457824595,
+     "part_gagnants": 0.26207571144316094,
+     "part_perdants": 0.7375499048104682,
+     "poids": 0.17247183995098578
+    },
+    "Couple, 3 enfants ou plus": {
+     "variation_euros_par_uc": -268.160102636136,
+     "variation_pct": -1.1583286186030677,
+     "part_gagnants": 0.48392003831205466,
+     "part_perdants": 0.5156844848378913,
+     "poids": 0.03598425977166224
+    },
+    "Famille monoparentale": {
+     "variation_euros_par_uc": -242.28689129263392,
+     "variation_pct": -1.3733713130042573,
+     "part_gagnants": 0.43293828112460997,
+     "part_perdants": 0.5664118526035161,
+     "poids": 0.050193551691727456
+    },
+    "Personne seule": {
+     "variation_euros_par_uc": -840.0750987954733,
+     "variation_pct": -4.094417629134629,
+     "part_gagnants": 0.15517709887924408,
+     "part_perdants": 0.8437921703493928,
+     "poids": 0.38461528108520515
+    }
+   }
+  },
+  "principaux_perdants": [
+   {
+    "dimension": "csp",
+    "groupe": "Artisans, commerçants, chefs d'entreprise",
+    "pct": -5.63798869772049,
+    "euros_par_uc": -2084.9667322154332,
+    "part_perdants": 0.7270747966217638
+   },
+   {
+    "dimension": "csp",
+    "groupe": "Cadres",
+    "pct": -5.245095368521065,
+    "euros_par_uc": -2507.163944579356,
+    "part_perdants": 0.9139311898543545
+   },
+   {
+    "dimension": "age",
+    "groupe": "60-74 ans",
+    "pct": -5.186841587684837,
+    "euros_par_uc": -1219.1529102952338,
+    "part_perdants": 0.9608470935762824
+   },
+   {
+    "dimension": "age",
+    "groupe": "75 ans et plus",
+    "pct": -5.038847328125,
+    "euros_par_uc": -1006.4064812185323,
+    "part_perdants": 0.9999006926349395
+   },
+   {
+    "dimension": "csp",
+    "groupe": "Retraités",
+    "pct": -5.008928335861855,
+    "euros_par_uc": -1002.6440808265178,
+    "part_perdants": 0.9971516343062053
+   },
+   {
+    "dimension": "famille",
+    "groupe": "Couple sans enfant mineur",
+    "pct": -4.772704561541543,
+    "euros_par_uc": -1421.6709161164388,
+    "part_perdants": 0.9148643085715131
+   },
+   {
+    "dimension": "region",
+    "groupe": "Île-de-France",
+    "pct": -4.473846739416467,
+    "euros_par_uc": -1314.5828870236069,
+    "part_perdants": 0.8192450183965518
+   },
+   {
+    "dimension": "csp",
+    "groupe": "Agriculteurs",
+    "pct": -4.417565864146669,
+    "euros_par_uc": -1445.4256216353333,
+    "part_perdants": 0.7190189270175821
+   }
+  ],
+  "principaux_gagnants": [],
+  "cout_compensation_D1_D3_M€": 1192.187878077541,
+  "inegalites": {
+   "avant": {
+    "mediane": 22179.384655111095,
+    "taux_pauvrete": 17.298049811516,
+    "seuil": 13307.630793066657,
+    "gini": 0.34930401781456777,
+    "d9_d1": 4.104219810767132,
+    "s80_s20": 5.865507080386136
+   },
+   "apres": {
+    "mediane": 21653.71112838877,
+    "taux_pauvrete": 16.058585570608034,
+    "seuil": 12992.226677033263,
+    "gini": 0.33701674325349595,
+    "d9_d1": 3.9592697925338305,
+    "s80_s20": 5.565071315064388
+   },
+   "apres_seuil_fixe": {
+    "mediane": 21653.71112838877,
+    "taux_pauvrete": 17.09008504806177,
+    "seuil": 13307.630793066657,
+    "gini": 0.33701674325349595,
+    "d9_d1": 3.9592697925338305,
+    "s80_s20": 5.565071315064388
+   }
+  }
+ },
+ "v06_R": {
+  "curseurs": {
+   "tva": 2.0,
+   "tva_reduite": 1.0,
+   "successions": 50.0,
+   "isf": 1.0,
+   "pfu": 15.0,
+   "autres_depenses": -10.0,
+   "indexation_pensions": -0.5,
+   "investissement_public": 10.0,
+   "prime_activite": 25.0,
+   "rsa": 25.0,
+   "minimum_vieillesse": 25.0,
+   "age_legal": 65.0
+  },
+  "niveau": "faible",
+  "perte_max_decile_pct": 3.992573896768307,
+  "perte_max_groupe_pct": 2.9696601657487,
+  "droits_reduits": [
+   "indexation_pensions",
+   "age_legal"
+  ],
+  "leviers_difficulte_3": [
+   "successions",
+   "isf",
+   "indexation_pensions",
+   "age_legal"
+  ],
+  "deciles": {
+   "1": {
+    "euros_par_uc": 473.1598378273767,
+    "pct": 8.685427120136103,
+    "gagnants": 0.7735530205702065,
+    "perdants": 0.22535391025177914,
+    "masse_M€": 1922.934542995781
+   },
+   "2": {
+    "euros_par_uc": 477.6296331885046,
+    "pct": 4.392607126156133,
+    "gagnants": 0.8282900193703975,
+    "perdants": 0.16894054613965637,
+    "masse_M€": 2243.669197554794
+   },
+   "3": {
+    "euros_par_uc": 242.055659423357,
+    "pct": 1.660365617220093,
+    "gagnants": 0.5167830248257118,
+    "perdants": 0.48305580071087284,
+    "masse_M€": 1442.9299265493612
+   },
+   "4": {
+    "euros_par_uc": 226.9154675008176,
+    "pct": 1.2999441881135203,
+    "gagnants": 0.5215242032671328,
+    "perdants": 0.478271270974519,
+    "masse_M€": 1208.7058459735788
+   },
+   "5": {
+    "euros_par_uc": 208.13760051405592,
+    "pct": 1.037024289105554,
+    "gagnants": 0.5257651880116831,
+    "perdants": 0.4739114814192901,
+    "masse_M€": 908.4910796853563
+   },
+   "6": {
+    "euros_par_uc": 22.59123784677799,
+    "pct": 0.09925209844525863,
+    "gagnants": 0.42327412556390714,
+    "perdants": 0.5762324331384447,
+    "masse_M€": 74.80545262527897
+   },
+   "7": {
+    "euros_par_uc": -244.28068902606935,
+    "pct": -0.9411024761345292,
+    "gagnants": 0.21021994100722396,
+    "perdants": 0.7893446065606367,
+    "masse_M€": -1048.8677862203647
+   },
+   "8": {
+    "euros_par_uc": -404.0419732386925,
+    "pct": -1.3434087921761042,
+    "gagnants": 0.10103243856644459,
+    "perdants": 0.898084054042199,
+    "masse_M€": -1846.596603337875
+   },
+   "9": {
+    "euros_par_uc": -485.8950951498773,
+    "pct": -1.3354853243060225,
+    "gagnants": 0.06431667720532817,
+    "perdants": 0.9353532445514426,
+    "masse_M€": -2307.9134641675987
+   },
+   "10": {
+    "euros_par_uc": -2857.6100194589712,
+    "pct": -3.992573896768307,
+    "gagnants": 0.008817782160384136,
+    "perdants": 0.9910344757890928,
+    "masse_M€": -15117.493231673103
+   }
+  },
+  "groupes": {
+   "age": {
+    "30-44 ans": {
+     "variation_euros_par_uc": -176.3924841654785,
+     "variation_pct": -0.6236902763056746,
+     "part_gagnants": 0.49972332304482625,
+     "part_perdants": 0.4996379028019539,
+     "poids": 0.23260931007450364
+    },
+    "45-59 ans": {
+     "variation_euros_par_uc": -220.6627962217137,
+     "variation_pct": -0.7393720433847603,
+     "part_gagnants": 0.43824444349977,
+     "part_perdants": 0.5613362255150638,
+     "poids": 0.2873318035386311
+    },
+    "60-74 ans": {
+     "variation_euros_par_uc": -432.6236617109655,
+     "variation_pct": -1.8405815886011627,
+     "part_gagnants": 0.27378678283756935,
+     "part_perdants": 0.7253556991367387,
+     "poids": 0.22575606331906278
+    },
+    "75 ans et plus": {
+     "variation_euros_par_uc": -324.56679108625775,
+     "variation_pct": -1.6250317725328451,
+     "part_gagnants": 0.26662167361069816,
+     "part_perdants": 0.7324416824637536,
+     "poids": 0.14544848721658835
+    },
+    "moins de 30 ans": {
+     "variation_euros_par_uc": 139.26640559941137,
+     "variation_pct": 0.7042282291524194,
+     "part_gagnants": 0.5016130847788746,
+     "part_perdants": 0.4976034135597791,
+     "poids": 0.10885433585121423
+    }
+   },
+   "csp": {
+    "Actifs, catégorie inconnue": {
+     "variation_euros_par_uc": 185.3204473030214,
+     "variation_pct": 1.2009201865712706,
+     "part_gagnants": 0.45945821424150995,
+     "part_perdants": 0.540041394348408,
+     "poids": 0.06592690612899746
+    },
+    "Agriculteurs": {
+     "variation_euros_par_uc": -486.03656428099964,
+     "variation_pct": -1.485443804895112,
+     "part_gagnants": 0.48395075566852874,
+     "part_perdants": 0.5160492443314711,
+     "poids": 0.008898082746217
+    },
+    "Artisans, commerçants, chefs d'entreprise": {
+     "variation_euros_par_uc": -1098.200614356458,
+     "variation_pct": -2.9696601657487,
+     "part_gagnants": 0.4707714991173922,
+     "part_perdants": 0.5292285008826078,
+     "poids": 0.04561372774653102
+    },
+    "Autres inactifs (étudiants, au foyer…)": {
+     "variation_euros_par_uc": 579.6546225118792,
+     "variation_pct": 8.108407480063471,
+     "part_gagnants": 0.6547891157170316,
+     "part_perdants": 0.3437575868821602,
+     "poids": 0.05610359968161023
+    },
+    "Cadres": {
+     "variation_euros_par_uc": -1225.8749344896155,
+     "variation_pct": -2.564583363277555,
+     "part_gagnants": 0.16685169605644545,
+     "part_perdants": 0.8325660501944451,
+     "poids": 0.12261760744583831
+    },
+    "Employés": {
+     "variation_euros_par_uc": 264.9235769984207,
+     "variation_pct": 1.1688630684341568,
+     "part_gagnants": 0.6314509562801838,
+     "part_perdants": 0.3678203429601352,
+     "poids": 0.13489575628252745
+    },
+    "Ouvriers": {
+     "variation_euros_par_uc": 242.11467905840757,
+     "variation_pct": 1.0481954230601962,
+     "part_gagnants": 0.59927955740716,
+     "part_perdants": 0.40020127442060655,
+     "poids": 0.11925358308880761
+    },
+    "Professions intermédiaires": {
+     "variation_euros_par_uc": -273.75534015048567,
+     "variation_pct": -0.9043223407652503,
+     "part_gagnants": 0.37950846478254363,
+     "part_perdants": 0.6202586355070006,
+     "poids": 0.146961075821675
+    },
+    "Retraités": {
+     "variation_euros_par_uc": -328.745443662787,
+     "variation_pct": -1.64231994138,
+     "part_gagnants": 0.23911076861387823,
+     "part_perdants": 0.7598755669414281,
+     "poids": 0.29972966105779597
+    }
+   },
+   "region": {
+    "Auvergne-Rhône-Alpes": {
+     "variation_euros_par_uc": -210.99136193484324,
+     "variation_pct": -0.8288183271871776,
+     "part_gagnants": 0.391737148374536,
+     "part_perdants": 0.6077132387306161,
+     "poids": 0.12021819707035966
+    },
+    "Bourgogne-Franche-Comté": {
+     "variation_euros_par_uc": -205.68011744797624,
+     "variation_pct": -0.845939081340538,
+     "part_gagnants": 0.38495480195922155,
+     "part_perdants": 0.6150451980407785,
+     "poids": 0.04237377511694443
+    },
+    "Bretagne": {
+     "variation_euros_par_uc": -162.98881167445248,
+     "variation_pct": -0.671269854054111,
+     "part_gagnants": 0.3653891464508567,
+     "part_perdants": 0.6341410268695125,
+     "poids": 0.052147548425813615
+    },
+    "Centre-Val de Loire": {
+     "variation_euros_par_uc": -126.23095944201934,
+     "variation_pct": -0.5288074163256513,
+     "part_gagnants": 0.38582366954904707,
+     "part_perdants": 0.6130829784939118,
+     "poids": 0.03804592686442555
+    },
+    "Corse": {
+     "variation_euros_par_uc": -139.15912009342364,
+     "variation_pct": -0.5587722023085878,
+     "part_gagnants": 0.43682146030466484,
+     "part_perdants": 0.5609616313438085,
+     "poids": 0.005523036199817964
+    },
+    "Grand Est": {
+     "variation_euros_par_uc": -199.51801414071673,
+     "variation_pct": -0.799523838320028,
+     "part_gagnants": 0.39602714342674694,
+     "part_perdants": 0.6032992086527104,
+     "poids": 0.08465526779738262
+    },
+    "Guadeloupe": {
+     "variation_euros_par_uc": 101.16897958766307,
+     "variation_pct": 0.5080614430273882,
+     "part_gagnants": 0.5207126904698106,
+     "part_perdants": 0.4765728807604176,
+     "poids": 0.005967545967712175
+    },
+    "Guyane": {
+     "variation_euros_par_uc": 258.34843464364974,
+     "variation_pct": 1.2088893693392995,
+     "part_gagnants": 0.6537175852366591,
+     "part_perdants": 0.3462824147633407,
+     "poids": 0.002787175833906318
+    },
+    "Hauts-de-France": {
+     "variation_euros_par_uc": -135.30587837836862,
+     "variation_pct": -0.5653193141881019,
+     "part_gagnants": 0.4185379652786246,
+     "part_perdants": 0.5805563733982784,
+     "poids": 0.08514216934268784
+    },
+    "La Réunion": {
+     "variation_euros_par_uc": 122.73338581872174,
+     "variation_pct": 0.5868823109873941,
+     "part_gagnants": 0.5364188355541399,
+     "part_perdants": 0.4632886554077872,
+     "poids": 0.01105845282498385
+    },
+    "Martinique": {
+     "variation_euros_par_uc": 62.55952839187132,
+     "variation_pct": 0.2750595146875913,
+     "part_gagnants": 0.496371866790043,
+     "part_perdants": 0.503628133209957,
+     "poids": 0.005369498338861231
+    },
+    "Normandie": {
+     "variation_euros_par_uc": -123.86211375557349,
+     "variation_pct": -0.5186542870207305,
+     "part_gagnants": 0.3900000904260456,
+     "part_perdants": 0.6090138330748003,
+     "poids": 0.04918195444952673
+    },
+    "Nouvelle-Aquitaine": {
+     "variation_euros_par_uc": -274.4536759087276,
+     "variation_pct": -1.0988738661413293,
+     "part_gagnants": 0.3825455695179328,
+     "part_perdants": 0.6168840872257401,
+     "poids": 0.0945024906613025
+    },
+    "Occitanie": {
+     "variation_euros_par_uc": -278.7723648495484,
+     "variation_pct": -1.1001272011400685,
+     "part_gagnants": 0.3870356404211451,
+     "part_perdants": 0.6123572635807975,
+     "poids": 0.09420003438365553
+    },
+    "Pays de la Loire": {
+     "variation_euros_par_uc": -244.02871526360892,
+     "variation_pct": -0.9596152237475897,
+     "part_gagnants": 0.38815943041017076,
+     "part_perdants": 0.6106204561551131,
+     "poids": 0.05687951281831212
+    },
+    "Provence-Alpes-Côte d'Azur": {
+     "variation_euros_par_uc": -217.50512123556928,
+     "variation_pct": -0.8667789719948242,
+     "part_gagnants": 0.4010929508183798,
+     "part_perdants": 0.5985786282946342,
+     "poids": 0.07881354641507292
+    },
+    "Île-de-France": {
+     "variation_euros_par_uc": -411.7824728627328,
+     "variation_pct": -1.4013963605877244,
+     "part_gagnants": 0.4021912549639233,
+     "part_perdants": 0.5970502080464625,
+     "poids": 0.17313386748923504
+    }
+   },
+   "famille": {
+    "Couple sans enfant mineur": {
+     "variation_euros_par_uc": -484.0495733978847,
+     "variation_pct": -1.6250072930232955,
+     "part_gagnants": 0.26755330466581106,
+     "part_perdants": 0.7313113506557329,
+     "poids": 0.3567350675004195
+    },
+    "Couple, 1-2 enfants": {
+     "variation_euros_par_uc": -399.3064487723694,
+     "variation_pct": -1.3038856557405811,
+     "part_gagnants": 0.41280318191444126,
+     "part_perdants": 0.5862141082438207,
+     "poids": 0.17247183995098578
+    },
+    "Couple, 3 enfants ou plus": {
+     "variation_euros_par_uc": -44.87496381502392,
+     "variation_pct": -0.19383925623063483,
+     "part_gagnants": 0.5237392700887283,
+     "part_perdants": 0.4759218040048585,
+     "poids": 0.03598425977166224
+    },
+    "Famille monoparentale": {
+     "variation_euros_par_uc": 444.99181983333835,
+     "variation_pct": 2.522377486541492,
+     "part_gagnants": 0.7133357679231718,
+     "part_perdants": 0.28495395586501626,
+     "poids": 0.050193551691727456
+    },
+    "Personne seule": {
+     "variation_euros_par_uc": -34.641725762771884,
+     "variation_pct": -0.16883930123641552,
+     "part_gagnants": 0.4577550106737774,
+     "part_perdants": 0.5422147384176847,
+     "poids": 0.38461528108520515
+    }
+   }
+  },
+  "principaux_perdants": [
+   {
+    "dimension": "csp",
+    "groupe": "Artisans, commerçants, chefs d'entreprise",
+    "pct": -2.9696601657487,
+    "euros_par_uc": -1098.200614356458,
+    "part_perdants": 0.5292285008826078
+   },
+   {
+    "dimension": "csp",
+    "groupe": "Cadres",
+    "pct": -2.564583363277555,
+    "euros_par_uc": -1225.8749344896155,
+    "part_perdants": 0.8325660501944451
+   },
+   {
+    "dimension": "age",
+    "groupe": "60-74 ans",
+    "pct": -1.8405815886011627,
+    "euros_par_uc": -432.6236617109655,
+    "part_perdants": 0.7253556991367387
+   },
+   {
+    "dimension": "csp",
+    "groupe": "Retraités",
+    "pct": -1.64231994138,
+    "euros_par_uc": -328.745443662787,
+    "part_perdants": 0.7598755669414281
+   },
+   {
+    "dimension": "age",
+    "groupe": "75 ans et plus",
+    "pct": -1.6250317725328451,
+    "euros_par_uc": -324.56679108625775,
+    "part_perdants": 0.7324416824637536
+   },
+   {
+    "dimension": "famille",
+    "groupe": "Couple sans enfant mineur",
+    "pct": -1.6250072930232955,
+    "euros_par_uc": -484.0495733978847,
+    "part_perdants": 0.7313113506557329
+   },
+   {
+    "dimension": "csp",
+    "groupe": "Agriculteurs",
+    "pct": -1.485443804895112,
+    "euros_par_uc": -486.03656428099964,
+    "part_perdants": 0.5160492443314711
+   },
+   {
+    "dimension": "region",
+    "groupe": "Île-de-France",
+    "pct": -1.4013963605877244,
+    "euros_par_uc": -411.7824728627328,
+    "part_perdants": 0.5970502080464625
+   }
+  ],
+  "principaux_gagnants": [
+   {
+    "dimension": "csp",
+    "groupe": "Autres inactifs (étudiants, au foyer…)",
+    "pct": 8.108407480063471,
+    "euros_par_uc": 579.6546225118792,
+    "part_perdants": 0.3437575868821602
+   },
+   {
+    "dimension": "famille",
+    "groupe": "Famille monoparentale",
+    "pct": 2.522377486541492,
+    "euros_par_uc": 444.99181983333835,
+    "part_perdants": 0.28495395586501626
+   },
+   {
+    "dimension": "csp",
+    "groupe": "Actifs, catégorie inconnue",
+    "pct": 1.2009201865712706,
+    "euros_par_uc": 185.3204473030214,
+    "part_perdants": 0.540041394348408
+   },
+   {
+    "dimension": "csp",
+    "groupe": "Employés",
+    "pct": 1.1688630684341568,
+    "euros_par_uc": 264.9235769984207,
+    "part_perdants": 0.3678203429601352
+   },
+   {
+    "dimension": "csp",
+    "groupe": "Ouvriers",
+    "pct": 1.0481954230601962,
+    "euros_par_uc": 242.11467905840757,
+    "part_perdants": 0.40020127442060655
+   },
+   {
+    "dimension": "age",
+    "groupe": "moins de 30 ans",
+    "pct": 0.7042282291524194,
+    "euros_par_uc": 139.26640559941137,
+    "part_perdants": 0.4976034135597791
+   },
+   {
+    "dimension": "region",
+    "groupe": "La Réunion",
+    "pct": 0.5868823109873941,
+    "euros_par_uc": 122.73338581872174,
+    "part_perdants": 0.4632886554077872
+   },
+   {
+    "dimension": "region",
+    "groupe": "Guadeloupe",
+    "pct": 0.5080614430273882,
+    "euros_par_uc": 101.16897958766307,
+    "part_perdants": 0.4765728807604176
+   }
+  ],
+  "cout_compensation_D1_D3_M€": -0.0,
+  "inegalites": {
+   "avant": {
+    "mediane": 22179.384655111095,
+    "taux_pauvrete": 17.298049811516,
+    "seuil": 13307.630793066657,
+    "gini": 0.34930401781456777,
+    "d9_d1": 4.104219810767132,
+    "s80_s20": 5.865507080386136
+   },
+   "apres": {
+    "mediane": 22280.480218777917,
+    "taux_pauvrete": 16.431082106847317,
+    "seuil": 13368.28813126675,
+    "gini": 0.33432938008252855,
+    "d9_d1": 3.844372070464521,
+    "s80_s20": 5.395807649738025
+   },
+   "apres_seuil_fixe": {
+    "mediane": 22280.480218777917,
+    "taux_pauvrete": 16.218925344839256,
+    "seuil": 13307.630793066657,
+    "gini": 0.33432938008252855,
+    "d9_d1": 3.844372070464521,
+    "s80_s20": 5.395807649738025
+   }
+  }
+ }
+}

@@ -90,6 +90,19 @@ def hypotheses(mod) -> dict:
             "chomage_structurel": 7.5, "elast_commerce": ELAST_COMMERCE}
 
 
+def chomage_structurel(t: int, H: dict) -> float:
+    """Chômage structurel (v0.7) : 7,5 % jusqu'en 2026 (ancienne hypothèse du projet), puis convergence linéaire vers le
+    chômage de long terme de la référence (CHOMAGE_LT = 7 %, hypothèse COR) atteint en 2031. En v0.6, u* restait à 7,5 %
+    alors que la référence convergeait vers 7 % : un écart permanent de −0,5 point que les termes de calage compensaient
+    (variable endogène artificiellement contrainte, audit phase 3)."""
+    u0 = H["chomage_structurel"]
+    if t <= 2026:
+        return u0
+    if t >= 2031:
+        return CHOMAGE_LT
+    return u0 + (CHOMAGE_LT - u0) * (t - 2026) / 5
+
+
 def exogenes(mod, annees, H=None) -> M8.Exogenes:
     """Exogènes observés jusqu'en 2025, projetés ensuite (voir l'en-tête)."""
     H = H or hypotheses(mod)
@@ -125,7 +138,7 @@ def exogenes(mod, annees, H=None) -> M8.Exogenes:
                      conso_publique=prol(m.g, H["g_conso_publique"]),
                      autres_investissements=prol(obs.autres_investissements, H["g_autres_investissements"]),
                      population_active=pd.Series(pa).sort_index(),
-                     chomage_structurel=pd.Series({t: H["chomage_structurel"] for t in ans}), taux_long=tl,
+                     chomage_structurel=pd.Series({t: chomage_structurel(t, H) for t in ans}), taux_long=tl,
                      taux_is=pd.Series({t: float(M8.S.taux_is().get(t, 25.83)) for t in ans}),
                      prestations_volume=prol(obs.prestations_volume.dropna(), H["g_autres_prestations"]),
                      autres_depenses_pib=obs.autres_depenses_pib, fermeture_offre=M8.RHO_DEFAUT)
@@ -297,6 +310,15 @@ def compte_reference(mod, annees, journal=print):
         ex, diag = caler(mod, ex, annees, H, journal=journal)
         central = mod.simuler(annees, ex)
     P, _ = pensions(mod, central, pens=pens)
+    # v0.7 : productivité globale des facteurs implicite de la référence (bloc d'offre). L'écart de production de la
+    # référence est, par construction, −OKUN × (u − u*) ; les variantes se mesurent ensuite à ce potentiel.
+    ex.lpgf = central["lpgf_implicite"].copy()
+    ex.fermeture_mode = "production"
+    central = mod.simuler(annees, ex)
+    ex.lpot_ref = np.log(central["pib_potentiel"]).copy()   # potentiel de référence (anticipation des chocs d'offre)
+    ex.lk_ref = np.log(central["capital_marchand"]).copy()  # capital et PIB de référence (emploi de long terme)
+    ex.ly_ref = np.log(central["pib"]).copy()
+    central = mod.simuler(annees, ex)
     d = {"exogenes": ex, "trajectoire": central, "pensions": P, "hypotheses": H, "diagnostic": diag, "empreinte": emp}
     f.parent.mkdir(exist_ok=True)
     f.write_bytes(pickle.dumps({k: v for k, v in d.items() if k != "trajectoire"}))

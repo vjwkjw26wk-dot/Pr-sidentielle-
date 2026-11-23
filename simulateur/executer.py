@@ -39,7 +39,34 @@ RENDEMENT_POINT_PFU = 600.0       # M€ par point (assiette d'environ 60 Md€)
 ASSIETTE_ISF, RENDEMENT_IFI = 930_000.0, 2_200.0     # M€ : patrimoine taxable au-delà du seuil (ISF 2017 revalorisé) ; IFI remplacé
 RENDEMENT_SUCCESSIONS = 18_000.0  # M€ (droits de mutation à titre gratuit)
 DEPENSE_ASSURANCE_CHOMAGE = 40_000.0
-EFFET_CHOMAGE_STRUCTUREL = 0.1    # points de chômage structurel pour 10 % de variation des allocations (hypothèse D, 0-0,3)
+EFFET_CHOMAGE_STRUCTUREL = 0.1    # v0.6 (conservé pour comparaison)
+# v0.7 : chômage structurel pour 10 % de variation des allocations = élasticité de la durée indemnisée (0,3, Le Barbanchon,
+# Rathelot et Roulet 2019) × 10 % × part des chômeurs indemnisés (0,6) × chômage (7 %) × 0,5 (effets d'éviction entre
+# demandeurs d'emploi) ≈ 0,06 point ; plage 0 à 0,13 [L]
+EFFET_AC = {"basse": 0.0, "centrale": 0.063, "haute": 0.13}
+# v0.7 : répercussion des variations de TVA sur les prix (part, atteinte à 60 % la première année, en totalité la deuxième) ;
+# asymétrie hausse/baisse (Benzarti, Carloni, Harju et Kosonen 2020 : réaction deux fois plus forte aux hausses ; taux
+# réduit de la restauration en France : 2009, baisse peu répercutée ; 2012 et 2014, hausses répercutées à 50 % et 38 %) [E étrangère/L]
+REPERCUSSION_TVA_V07 = {("normal", "hausse"): 0.95, ("normal", "baisse"): 0.5, ("reduit", "hausse"): 0.5, ("reduit", "baisse"): 0.25}
+PROFIL_REPERCUSSION = 0.6
+# v0.7 : recherche et développement (aide publique) — additionnalité (€ de R&D privée par € d'aide ; CNEPI 2021 : 0,9 à
+# 1,5 pour les PME, pas d'effet de levier pour les grandes entreprises) ; élasticité de la production au stock de R&D
+# (0,03-0,15 ; revue Hall, Mairesse et Mohnen 2010) ; stock de R&D des entreprises ≈ 235 Md€ (DIRDE ≈ 1,45 % du PIB,
+# dépréciation 15 %) ; délai de 2 ans [L, exploratoire]
+ADDITIONNALITE_RD = {"basse": 0.3, "centrale": 0.7, "haute": 1.2}
+ELAST_STOCK_RD = {"basse": 0.03, "centrale": 0.08, "haute": 0.15}
+STOCK_RD_2025, DEPREC_RD, DELAI_RD = 235_000.0, 0.15, 2
+# v0.7 : formation professionnelle (dépense publique) — baisse du chômage structurel par milliard dépensé durablement,
+# hypothèse exploratoire fondée sur des effets modestes des programmes de formation des demandeurs d'emploi (quelques points
+# de taux de retour à l'emploi) [H, exploratoire]
+EFFET_FORMATION = {"basse": 0.0, "centrale": 0.02, "haute": 0.05}   # points de chômage structurel par Md€ et par an
+NIVEAUX_COMPORT = {"basse": {"PSI_CHOMAGE": 0.1, "PSI_TAUX": 0.0, "ASYM_SALAIRES": 1.0, "SEMI_ELAST_IS": 0.2, "THETA_TRESORERIE": 0.0,
+                             "ELAST_DELOC_ENERGIE": 0.0},
+                   "centrale": {},
+                   "haute": {"PSI_CHOMAGE": 0.6, "PSI_TAUX": 0.5, "ASYM_SALAIRES": 0.25, "SEMI_ELAST_IS": 1.5, "THETA_TRESORERIE": 0.3,
+                             "ELAST_DELOC_ENERGIE": 0.4},
+                   # sensibilité de la fermeture (anticipation des révisions du potentiel), document 17
+                   "anticipation_faible": {"THETA_ANTICIPATION": 1.0}, "anticipation_forte": {"THETA_ANTICIPATION": 2.0}}
 DEPENSE_ASPA = 4_100.0
 REPERCUSSION_IMPOTS_PRODUCTION = 0.5   # part répercutée sur les prix de la valeur ajoutée marchande (hypothèse D)
 RENDEMENT_POINT_TVA_REDUITE, PART_TAUX_REDUITS = 5_000.0, 0.35
@@ -50,7 +77,8 @@ COUT_LOGEMENT_SOCIAL, SUBVENTION_LOGEMENT = 170.0, 0.25    # k€ par logement ;
 ELAST_CAPITAL_PUBLIC, PART_CAPITAL_PUBLIC, DEPRECIATION_PUBLIQUE = 0.08, 0.55, 0.04
 DEBUT_DEFAUT = 2028      # premier budget voté après l'élection présidentielle de 2027
 HORIZON_DEFAUT = 2032    # fin du mandat
-VARIABLES = {"pib": "PIB en volume (M€ 2015)", "c": "Consommation des ménages", "fbcf": "Investissement", "x": "Exportations",
+VARIABLES = {"ecart_production": "Écart de production (% du PIB potentiel, v0.7)", "pib_potentiel": "PIB potentiel (v0.7)",
+             "emploi_structurel": "Emploi structurel (milliers, v0.7)", "pib": "PIB en volume (M€ 2015)", "c": "Consommation des ménages", "fbcf": "Investissement", "x": "Exportations",
              "m": "Importations", "emploi": "Emploi (milliers)", "chomage": "Taux de chômage (%)", "pc": "Prix à la consommation (indice)",
              "salaire": "Salaire moyen par tête", "rdb": "Revenu disponible brut (M€)", "solde_pib": "Solde public (% du PIB)",
              "dette_pib": "Dette publique (% du PIB)", "recettes": "Recettes publiques (M€)", "depenses": "Dépenses publiques (M€)",
@@ -62,7 +90,7 @@ VARIABLES = {"pib": "PIB en volume (M€ 2015)", "c": "Consommation des ménages
              "part_industrie": "Industrie manufacturière (% du PIB, valeur ajoutée)", "emploi_industrie": "Emploi industriel (milliers)",
              "population_active": "Population active (milliers)", "rnb": "Revenu national brut, en valeur (M€)",
              "taux_epargne": "Taux d'épargne des ménages (% du RDB)", "solde_exterieur_pib": "Solde extérieur courant (% du PIB)"}
-EN_POINTS = {"chomage", "solde_pib", "dette_pib", "tuc_industrie", "croissance", "inflation", "recettes_pib", "depenses_pib",
+EN_POINTS = {"ecart_production", "chomage", "solde_pib", "dette_pib", "tuc_industrie", "croissance", "inflation", "recettes_pib", "depenses_pib",
              "interets_pib", "taux_apparent", "pensions_pib", "retraites_pour_100_actifs", "part_industrie", "taux_epargne",
              "solde_exterieur_pib"}
 
@@ -118,6 +146,8 @@ def construire(scenario: dict, mod, central=None, journal=None):
     """Exogènes de référence et du scénario, et informations complémentaires (distribution, M9)."""
     H = scenario.get("hypotheses", {})
     NIV_COMP = H.get("comportements", "centrale")   # réactions des hauts revenus (M13) : basse, centrale, haute
+    NIV7 = H.get("comportements_v07", "centrale")    # v0.7 : intensité des comportements de la phase 3 (basse, centrale, haute)
+    NIV7_LEV = NIV7 if NIV7 in ("basse", "centrale", "haute") else "centrale"   # niveau des paramètres propres aux mesures
     ans = range(mod.B + 1, scenario.get("horizon", HORIZON_DEFAUT) + 1)
     rho = H.get("fermeture_offre", M8.RHO_DEFAUT)
     mesures = scenario.get("mesures", [])
@@ -131,6 +161,18 @@ def construire(scenario: dict, mod, central=None, journal=None):
                                journal=(journal.append if journal is not None else (lambda *a: None)))
     info["reference"] = RF.VARIANTES_REFERENCE[nom_ref]
     ref.fermeture_offre = rho
+    if NIV7 != "centrale":
+        ref.comportements = dict(NIVEAUX_COMPORT[NIV7])
+    if H.get("fermeture_mode"):
+        ref.fermeture_mode = H["fermeture_mode"]
+    if central is None and (NIV7 != "centrale" or H.get("fermeture_mode")):
+        # v0.7 : la référence est recalculée avec les mêmes comportements que le scénario (sinon l'écart mêlerait
+        # l'effet de la mesure et celui du changement de paramètres) ; potentiel de référence mis à jour
+        an_r = range(mod.B + 1, max(2035, max(ans)) + 1)
+        central = mod.simuler(an_r, ref)
+        if ref.lpot_ref is not None:
+            ref.lpot_ref = np.log(central["pib_potentiel"]).copy()
+            central = mod.simuler(an_r, ref)
     var = copy.deepcopy(ref)
     if central is None:
         central = R["trajectoire"] if nom_ref == "inchangee" else mod.simuler(range(mod.B + 1, max(2035, max(ans)) + 1), ref)
@@ -166,6 +208,13 @@ def construire(scenario: dict, mod, central=None, journal=None):
         for a in niveaux[k].index:
             if a >= debut:
                 niveaux[k][a] += v
+    def ajouter_niveau_progressif(k, debut, v, premiere=PROFIL_REPERCUSSION):
+        niveaux.setdefault(k, pd.Series({a: 0.0 for a in var.population_active.index}))
+        for a in niveaux[k].index:
+            if a >= debut:
+                niveaux[k][a] += v * (premiere if a == debut else 1.0)
+    def repercussion_tva(taux, points):
+        return REPERCUSSION_TVA_V07[(taux, "hausse" if points > 0 else "baisse")]
     def ajouter_transfert(debut, montant_M):                # M€ de 2025, indexés sur le PIB nominal
         aj = var.ajust_prestations.copy()
         for a in idx_nom:
@@ -205,6 +254,34 @@ def construire(scenario: dict, mod, central=None, journal=None):
             base_r = var.autres_depenses_pib
             var.autres_depenses_pib = pd.Series({a: float(base_r.get(a, ratio0)) + (md * 1e3 / pib0 if a >= debut else 0.0)
                                                  for a in var.population_active.index})
+        elif t == "recherche":
+            # v0.7 : aide publique à la R&D des entreprises (Md€ de 2025 par an) : dépense publique (subvention), R&D privée
+            # additionnelle comptée en investissement, productivité par le stock de R&D (délai DELAI_RD)
+            md = float(p["md"])
+            base_r = var.autres_depenses_pib
+            var.autres_depenses_pib = pd.Series({a: float(base_r.get(a, ratio0)) + (md * 1e3 / pib0 if a >= debut else 0.0)
+                                                 for a in var.population_active.index})
+            rd = md * ADDITIONNALITE_RD[NIV7_LEV]
+            f = 1 + rd * 1e3 / float(m_.p_fbcf[A0]) / float(var.autres_investissements[A0])
+            var.autres_investissements = pd.Series({a: v * (f if a >= debut else 1.0) for a, v in var.autres_investissements.items()})
+            stock, niv_prev, prod = 0.0, 0.0, {}
+            for a in sorted(idx_nom):
+                niv_a = ELAST_STOCK_RD[NIV7_LEV] * stock / (STOCK_RD_2025 / 1e3) if a >= debut + DELAI_RD else 0.0
+                prod[a] = niv_a - niv_prev
+                niv_prev = niv_a
+                stock = stock * (1 - DEPREC_RD) + (rd if a >= debut else 0.0)
+            base_p = var.productivite if var.productivite is not None else pd.Series(dtype=float)
+            var.productivite = pd.Series({a: float(base_p.get(a, 0.0)) + prod.get(a, 0.0) for a in var.population_active.index})
+            comport["recherche"] = {"rd_privee_additionnelle_Md€": rd, "productivite_2047_%": 100 * sum(prod.values())}
+        elif t == "formation":
+            # v0.7 : formation professionnelle (Md€ de 2025 par an) : consommation publique et baisse du chômage structurel
+            # progressive (5 ans) — exploratoire
+            md = float(p["md"])
+            var.conso_publique = _serie_g(mod, var, md * 1e3 / pib0 * 100, debut)
+            eff = EFFET_FORMATION[NIV7_LEV] * md
+            var.chomage_structurel = pd.Series({a: u - (eff * min(1.0, (a - debut + 1) / 5) if a >= debut else 0.0)
+                                                for a, u in var.chomage_structurel.items()})
+            comport["formation_chomage_structurel_pt"] = -eff
         elif t == "point_indice":
             ajouter_niveau("salaire_public", debut, float(p["hausse"]))
         elif t == "taux_is":
@@ -235,14 +312,20 @@ def construire(scenario: dict, mod, central=None, journal=None):
         elif t == "tva":
             rec = float(p["points"]) * RENDEMENT_POINT_TVA
             ajouter_niveau("impots_produits", debut, rec / float(apu.d2rec[A0]))
-            ajouter_niveau("prix_conso", debut, float(np.log1p(REPERCUSSION_TVA * PART_TAUX_NORMAL * float(p["points"]) / 120)))
-            extras.append(("tva_normale", -rec))
+            rp = repercussion_tva("normal", float(p["points"]))
+            ajouter_niveau_progressif("prix_conso", debut, float(np.log1p(rp * PART_TAUX_NORMAL * float(p["points"]) / 120)))
+            mm["profits"] = mm.get("profits", 0.0) - (1 - rp) * rec        # part non répercutée : marges des entreprises
+            extras.append(("tva_normale", -rec * rp))
+            comport["tva_repercussion"] = rp
             comport["tva_M€"] = rec
         elif t == "tva_reduite":
             rec = float(p["points"]) * RENDEMENT_POINT_TVA_REDUITE
             ajouter_niveau("impots_produits", debut, rec / float(apu.d2rec[A0]))
-            ajouter_niveau("prix_conso", debut, float(np.log1p(REPERCUSSION_TVA * PART_TAUX_REDUITS * float(p["points"]) / 108)))
-            extras.append(("tva_reduite", -rec))
+            rp = repercussion_tva("reduit", float(p["points"]))
+            ajouter_niveau_progressif("prix_conso", debut, float(np.log1p(rp * PART_TAUX_REDUITS * float(p["points"]) / 108)))
+            mm["profits"] = mm.get("profits", 0.0) - (1 - rp) * rec
+            extras.append(("tva_reduite", -rec * rp))
+            comport["tva_reduite_repercussion"] = rp
         elif t == "temps_travail":
             dh = float(p["heures"]) / 35.0 - 1.0
             n = int(p.get("montee", 2))
@@ -310,7 +393,7 @@ def construire(scenario: dict, mod, central=None, journal=None):
         elif t == "assurance_chomage":
             v = float(p["variation"])
             ajouter_transfert(debut, v * DEPENSE_ASSURANCE_CHOMAGE)
-            var.chomage_structurel = pd.Series({a: u + (EFFET_CHOMAGE_STRUCTUREL * v * 10 if a >= debut else 0.0)
+            var.chomage_structurel = pd.Series({a: u + (EFFET_AC[NIV7_LEV] * v * 10 if a >= debut else 0.0)
                                                 for a, u in var.chomage_structurel.items()})
         elif t == "minimum_vieillesse":
             mt = float(p["hausse"]) * DEPENSE_ASPA
@@ -335,6 +418,26 @@ def construire(scenario: dict, mod, central=None, journal=None):
             var.reindustrialisation = {"produits": {x: 1 - float(p["baisse_parts_importees"]) for x in prods}, "debut": debut,
                                        "duree": int(p.get("duree", 5)), "surcout": float(p.get("surcout", 0.10))}
             var.phi_impose = central.phi
+    # --- v0.7 : offre de travail (M15) — participation et heures des ménages selon les incitations financières
+    lev15 = {}
+    for m in mesures:
+        t, p = m["type"], m.get("parametres", {})
+        if t in ("rsa", "prime_activite", "allocations_familiales", "aides_logement"):
+            lev15[t] = lev15.get(t, 0.0) + float(p["facteur"]) - 1
+        elif t == "bareme_ir" and (p.get("taux") or {}).get("1", (p.get("taux") or {}).get(1)) is not None:
+            lev15["ir_t1"] = 100 * (float((p.get("taux") or {}).get("1", (p.get("taux") or {}).get(1))) - 0.11)
+        elif t == "csg":
+            lev15["csg_activite"] = float(p.get("activite_points", 0.0))
+    if lev15 and H.get("offre_travail", True):
+        import m15_offre_travail as M15
+        e15 = M15.effets(lev15, NIV7_LEV)
+        d0 = debut_socio_fiscal(mesures)
+        dpa, dh = e15["population_active_milliers"], e15["heures_pct_emploi"] / 100
+        var.population_active = pd.Series({a: v + (dpa * min(1.0, (a - d0 + 1) / 2) if a >= d0 else 0.0) for a, v in var.population_active.items()})
+        base_p = var.productivite if var.productivite is not None else pd.Series(dtype=float)
+        var.productivite = pd.Series({a: float(base_p.get(a, 0.0)) + (dh / 2 if d0 <= a < d0 + 2 else 0.0) for a in var.population_active.index})
+        comport["offre_travail"] = {"population_active_milliers": dpa, "heures_pct_emploi": 100 * dh,
+                                    "detail": {k: v for k, v in e15["detail"].items() if abs(v["participation_milliers"]) > 0.5}}
     if choc_w:
         var.choc_salaire = pd.Series(choc_w)
     if niveaux:
@@ -392,6 +495,8 @@ def construire(scenario: dict, mod, central=None, journal=None):
         extra = (lambda k, men, ind, foyers: sum(f(k, men, ind, foyers) for f in fonctions)) if fonctions else None
         D = C.distribution(base, r, extra=extra)
         info["distribution"] = D.reset_index().to_dict(orient="records")
+        info["inegalites"] = D.attrs.get("inegalites")
+        info["groupes"] = D.attrs.get("groupes")
         import m14_heterogeneite as H14
         mm["conso"] = H14.ajustement_conso(info["distribution"], H.get("pmc", "central"))
         info["statique"]["ajustement_conso_M€"] = mm["conso"]
@@ -405,7 +510,7 @@ def construire(scenario: dict, mod, central=None, journal=None):
     return ref, var, ans, info
 
 
-VERSION_MODELE = "0.6"
+VERSION_MODELE = "0.7"
 
 
 def empreintes() -> dict:
@@ -487,6 +592,7 @@ def executer(scenario: dict) -> dict:
         for pr_ in profils_res:
             pr_["variation_revenu_disponible"] += aj[pr_["profil"]]
     return {"scenario": scenario, "trajectoires": traj, "distribution": info["distribution"], "statique": info["statique"],
+            "inegalites": info.get("inegalites"), "groupes": info.get("groupes"),
             "comportements": info.get("comportements"), "version": empreintes(), "reference": info.get("reference"),
             "profils": profils_res,
             "europe": europe, "incertitude": incert, "transparence": transparence(scenario), "duree_s": round(time.time() - t0),

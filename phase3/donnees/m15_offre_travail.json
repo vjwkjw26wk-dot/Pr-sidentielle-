@@ -1,0 +1,223 @@
+{
+ "base": {
+  "seul": {
+   "gain_0.5": 6158.0677490234375,
+   "gain_1.0": 11533.362548828125,
+   "tme_15": 0.1482157108653548
+  },
+  "parent_isole": {
+   "gain_0.5": 5902.0577392578125,
+   "gain_1.0": 13774.3046875,
+   "tme_15": 0.7415359758603193
+  },
+  "couple_sans_enfant_conjoint_emploi": {
+   "gain_0.5": 3263.6053466796875,
+   "gain_1.0": 9882.900146484375,
+   "tme_15": 0.14631550944401095
+  },
+  "couple_enfants_conjoint_emploi": {
+   "gain_0.5": 3755.6053466796875,
+   "gain_1.0": 9442.900146484375,
+   "tme_15": 0.6180200999743573
+  },
+  "couple_enfants_conjoint_sans_emploi": {
+   "gain_0.5": 5483.6053466796875,
+   "gain_1.0": 14246.954833984375,
+   "tme_15": 0.5724166576110292
+  }
+ },
+ "leviers": {
+  "rsa": {
+   "seul": {
+    "dlog_gain_0.5": -0.05791721747490743,
+    "dlog_gain_1.0": -0.03050618040648052,
+    "dlog_1_tme": 0.0
+   },
+   "parent_isole": {
+    "dlog_gain_0.5": -0.07353826486142978,
+    "dlog_gain_1.0": -0.03668562758405612,
+    "dlog_1_tme": 0.0
+   },
+   "couple_sans_enfant_conjoint_emploi": {
+    "dlog_gain_0.5": 0.0,
+    "dlog_gain_1.0": 0.0,
+    "dlog_1_tme": 0.0
+   },
+   "couple_enfants_conjoint_emploi": {
+    "dlog_gain_0.5": 0.0,
+    "dlog_gain_1.0": 0.0,
+    "dlog_1_tme": 0.0
+   },
+   "couple_enfants_conjoint_sans_emploi": {
+    "dlog_gain_0.5": 0.0,
+    "dlog_gain_1.0": -0.051118837339666746,
+    "dlog_1_tme": 0.0
+   }
+  },
+  "prime_activite": {
+   "seul": {
+    "dlog_gain_0.5": 0.06180792374487057,
+    "dlog_gain_1.0": 0.04227785144830841,
+    "dlog_1_tme": 0.0
+   },
+   "parent_isole": {
+    "dlog_gain_0.5": 0.0011659467035129967,
+    "dlog_gain_1.0": 0.048943272280800705,
+    "dlog_1_tme": 0.0
+   },
+   "couple_sans_enfant_conjoint_emploi": {
+    "dlog_gain_0.5": 0.002107672191916008,
+    "dlog_gain_1.0": 0.011301024962695232,
+    "dlog_1_tme": 0.0
+   },
+   "couple_enfants_conjoint_emploi": {
+    "dlog_gain_0.5": 0.001831811052310591,
+    "dlog_gain_1.0": 0.011824485398726336,
+    "dlog_1_tme": -9.108788978237222e-07
+   },
+   "couple_enfants_conjoint_sans_emploi": {
+    "dlog_gain_0.5": 0.0012548639688082048,
+    "dlog_gain_1.0": 0.06273236292845487,
+    "dlog_1_tme": -3.2549241633623146e-06
+   }
+  },
+  "allocations_familiales": {
+   "seul": {
+    "dlog_gain_0.5": 0.0,
+    "dlog_gain_1.0": 0.0,
+    "dlog_1_tme": 0.0
+   },
+   "parent_isole": {
+    "dlog_gain_0.5": 0.010956996917403034,
+    "dlog_gain_1.0": 0.0,
+    "dlog_1_tme": 0.0
+   },
+   "couple_sans_enfant_conjoint_emploi": {
+    "dlog_gain_0.5": 0.0,
+    "dlog_gain_1.0": 0.0,
+    "dlog_1_tme": 0.0
+   },
+   "couple_enfants_conjoint_emploi": {
+    "dlog_gain_0.5": 0.0,
+    "dlog_gain_1.0": 0.0,
+    "dlog_1_tme": 0.0
+   },
+   "couple_enfants_conjoint_sans_emploi": {
+    "dlog_gain_0.5": -1.3356576148908172e-07,
+    "dlog_gain_1.0": 0.0,
+    "dlog_1_tme": 0.0
+   }
+  },
+  "aides_logement": {
+   "seul": {
+    "dlog_gain_0.5": 0.001363134748896324,
+    "dlog_gain_1.0": 0.01804426499082205,
+    "dlog_1_tme": 0.0
+   },
+   "parent_isole": {
+    "dlog_gain_0.5": -3.33066907387547e-16,
+    "dlog_gain_1.0": 0.005040163639412948,
+    "dlog_1_tme": 0.07640580374883776
+   },
+   "couple_sans_enfant_conjoint_emploi": {
+    "dlog_gain_0.5": 0.06580921090590869,
+    "dlog_gain_1.0": 0.029785999893775575,
+    "dlog_1_tme": 0.0
+   },
+   "couple_enfants_conjoint_emploi": {
+    "dlog_gain_0.5": 0.044984096276458434,
+    "dlog_gain_1.0": 0.03569987458049665,
+    "dlog_1_tme": 0.057981444432632596
+   },
+   "couple_enfants_conjoint_sans_emploi": {
+    "dlog_gain_0.5": 0.0,
+    "dlog_gain_1.0": 0.003950925508130512,
+    "dlog_1_tme": 0.0417778951588798
+   }
+  },
+  "ir_t1": {
+   "seul": {
+    "dlog_gain_0.5": 0.0,
+    "dlog_gain_1.0": 0.0,
+    "dlog_1_tme": -0.013475476786512413
+   },
+   "parent_isole": {
+    "dlog_gain_0.5": 0.0,
+    "dlog_gain_1.0": 0.0,
+    "dlog_1_tme": -0.0528347908954213
+   },
+   "couple_sans_enfant_conjoint_emploi": {
+    "dlog_gain_0.5": 0.0,
+    "dlog_gain_1.0": -0.013651532621796896,
+    "dlog_1_tme": -0.017967513856798865
+   },
+   "couple_enfants_conjoint_emploi": {
+    "dlog_gain_0.5": 0.0,
+    "dlog_gain_1.0": 0.0,
+    "dlog_1_tme": 0.0
+   },
+   "couple_enfants_conjoint_sans_emploi": {
+    "dlog_gain_0.5": 0.0,
+    "dlog_gain_1.0": 0.0,
+    "dlog_1_tme": 0.0
+   }
+  },
+  "csg_activite": {
+   "seul": {
+    "dlog_gain_0.5": -0.01551949514113071,
+    "dlog_gain_1.0": -0.011665209713774032,
+    "dlog_1_tme": -0.014783821103282939
+   },
+   "parent_isole": {
+    "dlog_gain_0.5": -0.03525818127390183,
+    "dlog_gain_1.0": -0.009758103634752355,
+    "dlog_1_tme": -0.029949481498669155
+   },
+   "couple_sans_enfant_conjoint_emploi": {
+    "dlog_gain_0.5": -0.029488065045950092,
+    "dlog_gain_1.0": -0.013626650316775986,
+    "dlog_1_tme": -0.014750670154053212
+   },
+   "couple_enfants_conjoint_emploi": {
+    "dlog_gain_0.5": -0.025575149621903524,
+    "dlog_gain_1.0": -0.01426614597089351,
+    "dlog_1_tme": -0.020188942365289286
+   },
+   "couple_enfants_conjoint_sans_emploi": {
+    "dlog_gain_0.5": -0.01744507522063838,
+    "dlog_gain_1.0": -0.009432841721542152,
+    "dlog_1_tme": -0.017999621470241776
+   }
+  }
+ },
+ "populations": {
+  "couple_enfants_conjoint_emploi|0.5": 1232.8902079394513,
+  "couple_enfants_conjoint_emploi|1.0": 2703.963996048294,
+  "couple_enfants_conjoint_emploi|1.5": 3339.4199219773236,
+  "couple_enfants_conjoint_emploi|haut": 2107.464984994206,
+  "couple_enfants_conjoint_sans_emploi|0.5": 178.9796988826346,
+  "couple_enfants_conjoint_sans_emploi|1.0": 406.9908006132072,
+  "couple_enfants_conjoint_sans_emploi|1.5": 596.9531115381247,
+  "couple_enfants_conjoint_sans_emploi|haut": 296.78148400515323,
+  "couple_sans_enfant_conjoint_emploi|0.5": 1491.9870763467738,
+  "couple_sans_enfant_conjoint_emploi|1.0": 2930.343888269628,
+  "couple_sans_enfant_conjoint_emploi|1.5": 3744.2138004884573,
+  "couple_sans_enfant_conjoint_emploi|haut": 2099.1612443861004,
+  "parent_isole|0.5": 191.29468287631772,
+  "parent_isole|1.0": 280.54802421605405,
+  "parent_isole|1.5": 444.8642928367188,
+  "parent_isole|haut": 200.40734961136846,
+  "seul|0.5": 688.8863388563043,
+  "seul|1.0": 1158.7812326454662,
+  "seul|1.5": 2005.728826187617,
+  "seul|haut": 1116.2541176162151
+ },
+ "unites": {
+  "rsa": 0.1,
+  "prime_activite": 0.1,
+  "allocations_familiales": 0.1,
+  "aides_logement": -0.1,
+  "ir_t1": 1.0,
+  "csg_activite": 1.0
+ }
+}

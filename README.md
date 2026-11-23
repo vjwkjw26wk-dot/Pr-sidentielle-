@@ -3,6 +3,21 @@
 Modèle quantitatif destiné à servir de socle à un simulateur public de politiques publiques. Il n'utilise que des
 données ouvertes. Version 0.4 du simulateur (novembre 2026).
 
+## Version 0.7 (phase 3, 23 novembre 2026)
+
+Comportements économiques, fiabilisation du modèle et première optimisation des politiques publiques.
+
+- Audit de la v0.6 : `doc/15_audit_v06_phase3.md` (paradoxe des chocs d'offre : cause structurelle, absence de PIB potentiel).
+- Registre des paramètres de comportement (valeurs basse, centrale, haute ; sources) : `doc/16_parametres_comportements_v07.md`.
+- Équations ajoutées ou modifiées : `doc/17_modele_v07.md` (PIB potentiel, fermeture sur l'écart de production avec anticipation,
+  emploi et approfondissement du capital, Phillips prix, épargne de précaution, rigidité salariale, transfert de bénéfices,
+  trésorerie, TVA asymétrique, délocalisation énergétique, stabilisateur chômage, R&D et formation exploratoires).
+- Nouveau module M15 (offre de travail, OpenFisca) : `src/m15_offre_travail.py` ; groupes de ménages dans `src/m10_couplage.py`.
+- Scripts, résultats et livrables : `phase3/` (rapport PDF `phase3/livrables/rapport_phase3_v07.pdf`, comparaison
+  v0.6/v0.7 et stratégies en Excel).
+- Tests de cohérence comportementale : `tests/test_phase3.py` (12 tests, tous réussis le 23 novembre 2026).
+- La v0.6 reste disponible (étiquette `v0.6`) ; ses résultats sont dans `rapport/resultats/`.
+
 ## Contenu
 
 - `doc/` : documentation.

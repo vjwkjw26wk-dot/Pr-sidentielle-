@@ -1,0 +1,51 @@
+\chapter*{Résumé}
+\addcontentsline{toc}{chapter}{Résumé}
+
+\paragraph{Pourquoi une version 0.7.} L'audit de la version 0.6 a révélé un défaut structurel : un ralentissement de la
+productivité ou une baisse de la population active y réduisaient le chômage \emph{et} la dette publique. La cause est
+l'absence de bloc d'offre : sans PIB potentiel, le modèle ne distinguait pas une baisse de la demande d'une baisse de
+la capacité de produire. La v0.7 ajoute un PIB potentiel, une fermeture sur l'écart de production avec anticipation, et
+dix-huit corrections ou mécanismes comportementaux (offre de travail calculée avec OpenFisca, transfert de bénéfices,
+répercussion asymétrique de la TVA, épargne de précaution, rigidité des salaires, stabilisateur chômage, délocalisation
+énergétique, R\&D, formation). Chaque paramètre est sourcé, avec une fourchette basse et haute.
+
+\paragraph{Validation.} Les chocs d'offre ont désormais le bon signe : $-0{,}3$ point de productivité par an réduit le
+PIB de 3,2 \% et augmente la dette de 1,8 point en 2037 (v0.6 : $-0{,}9$ \% et $-4{,}5$ points). Une baisse de 20\md\ de
+cotisations crée 120 000 à 160 000 emplois, en accord avec les évaluations du CICE. Douze tests automatisés de
+cohérence comportementale passent. Le choc de productivité n'est pas validé sur données historiques : c'est une
+cohérence théorique.
+
+\paragraph{Ce qui change par rapport à la v0.6.} Les mesures fiscales et budgétaires gardent des effets proches. Les
+réformes d'offre changent nettement : relever l'âge légal à 65 ans réduit désormais la dette (1,6 point en 2037) au lieu
+de l'accroître ; la prime d'activité augmente la population active, le RSA la réduit légèrement ; une hausse d'IS
+rapporte 40 \% de moins.
+
+\paragraph{Optimisation.} À partir de 35 leviers, cinq stratégies ont été construites, chacune par un objectif et des
+contraintes explicites, puis vérifiées par le modèle complet, à 5, 10, 15 et 20 ans, sous dix environnements, trois
+niveaux de comportement, deux intensités d'anticipation et une mise en œuvre partielle. Principaux enseignements :
+\begin{itemize}
+\item La stratégie de \textbf{redressement accéléré} (S4) réduit la dette de 19 points en 2037 et de 57 points en
+2047, de façon robuste, au prix de 0,8 point de PIB, de 0,3 point de chômage en 2037 et d'une perte de niveau de vie
+de 0,5 à 1,5 \% pour tous les déciles : acceptabilité faible.
+\item La stratégie de \textbf{protection} (S1) augmente le niveau de vie de tous les déciles (de 7,8 \% pour le
+premier à 2,2 \% pour le dernier), réduit la pauvreté de 3,5 points et le chômage de 1,4 point, sans accroître la
+dette en 2037 ; elle repose sur une hausse de l'IS et des droits de succession dont le coût pour les ménages n'est pas
+mesuré.
+\item Les stratégies \textbf{emploi} (S2) et \textbf{productivité} (S3) ont les plus forts effets sur l'activité
+(+2,4 et +4,4 \% de PIB en 2037), mais accroissent la dette pendant la transition et reposent sur des hypothèses
+fragiles ; pour S3, les mesures d'offre ne s'additionnent pas (dette +6 points en 2037 au lieu de l'équilibre).
+\item L'\textbf{optimisation sans pondération} (S5) est modeste mais robuste (+1,1 \% de PIB, $-1{,}7$ point de dette en
+2037, $-10$ en 2047), avec des perdants limités.
+\item Leviers retenus quelles que soient les préférences : prime d'activité, RSA, droits de succession, baisse de la
+CSG sur les revenus d'activité, âge légal, investissement public.
+\end{itemize}
+
+\paragraph{Limites.} Effets distributifs statiques, entreprises non différenciées par taille, taux souverains exogènes,
+anticipation non estimée, efficacité de la dépense publique non représentée. Elles sont détaillées au
+chapitre~\ref{ch:limites} avec les travaux prioritaires.
+
+\begin{hypothese}[Comment lire ce rapport]
+Les résultats sont des \emph{écarts à une trajectoire de référence conventionnelle} (politique inchangée), et non des
+prévisions. Chaque chiffre provient d'une simulation exécutée ; les fichiers sont fournis. Les niveaux de preuve des
+paramètres sont indiqués : E (estimé sur données françaises), L (littérature), H (hypothèse), X (exploratoire).
+\end{hypothese}

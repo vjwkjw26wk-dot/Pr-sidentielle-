@@ -1,0 +1,50 @@
+% ============================================================================================================
+\chapter{Limites restantes et travaux à mener}\label{ch:limites}
+% ============================================================================================================
+
+\section{Ce que la v0.7 ne fait pas encore}
+
+\begin{enumerate}
+\item \textbf{Les effets distributifs restent statiques.} Les gagnants et les perdants sont calculés sur les revenus
+de l'année de la microsimulation, avant les effets macroéconomiques (emploi, salaires, prix). Une mesure qui crée des
+emplois améliore la situation de ménages qui n'apparaissent pas comme gagnants dans ce calcul. L'inverse vaut pour une
+mesure qui détruit des emplois. C'est la limite la plus importante pour l'acceptabilité.
+\item \textbf{Les comportements des entreprises sont agrégés.} Le modèle ne distingue pas les entreprises par taille ;
+les branches sont distinguées pour la production, l'emploi et l'investissement, mais les réactions à l'IS, à la
+trésorerie et à la TVA sont uniformes. Le transfert de bénéfices et l'additionnalité de la R\&D sont, en réalité,
+concentrés sur les grands groupes ou les PME.
+\item \textbf{Pas de politique monétaire propre, taux souverains exogènes.} La BCE réagit à la zone euro, pas à la
+France ; le module M11 représente une partie de cet effet. Une dégradation de la dette ne relève pas les taux
+français dans le scénario central (pas de prime de risque endogène).
+\item \textbf{Pas de bilans patrimoniaux.} Pas d'effets de richesse, de désendettement privé, de prix immobiliers.
+\item \textbf{Les leviers d'offre sont fragiles.} Les effets de long terme de la R\&D, de la formation, de la durée du
+travail et de l'âge de départ passent par le PIB potentiel ; ils dépendent d'élasticités dont la transposition à
+grande échelle est incertaine.
+\item \textbf{L'anticipation est une hypothèse.} Le paramètre $\theta$ n'est pas estimé ; il est choisi pour que le
+modèle se comporte de façon cohérente après un choc d'offre. Les résultats de long terme des mesures qui modifient le
+potentiel en dépendent.
+\item \textbf{L'efficacité de la dépense publique n'est pas représentée.} Dans le modèle, une économie de dépense
+réduit la demande de la même façon, qu'elle supprime un service ou un gaspillage. Les gains d'efficacité ne peuvent
+donc pas être distingués des coupes.
+\item \textbf{La référence est conventionnelle.} La trajectoire « politique inchangée » conduit à une dette de près de
+180 \% du PIB en 2037 et de 300 \% en 2047, avec des taux de marché à 4,9 \%. Elle sert d'étalon pour mesurer les
+écarts, non de prévision.
+\item \textbf{L'optimisation repose sur un métamodèle linéaire.} Les interactions entre mesures sont vérifiées a
+posteriori par le modèle complet pour les stratégies retenues, pas pour tout le front de Pareto.
+\end{enumerate}
+
+\section{Travaux prioritaires pour les phases suivantes}
+
+\begin{enumerate}
+\item Microsimulation dynamique : faire évoluer les revenus des ménages avec l'emploi, les salaires et les prix du
+modèle macroéconomique, pour publier des gagnants et perdants « après effets de second tour ».
+\item Démographie des entreprises : distinguer TPE, PME, ETI et grands groupes (données ouvertes Ésane, FARE,
+Insee).
+\item Prime de risque souveraine endogène et politique monétaire de la zone euro.
+\item Estimation, et non calibration, des paramètres de la fermeture et de l'anticipation (méthode des moments sur
+les chocs historiques).
+\item Bilans sectoriels (comptes de patrimoine de l'Insee et de la Banque de France).
+\item Représentation de l'efficacité de la dépense publique (indicateurs de production des services publics).
+\item Énergie : un levier de politique (prix réglementés, contrats de long terme, subventions) plutôt qu'un prix
+exogène.
+\end{enumerate}

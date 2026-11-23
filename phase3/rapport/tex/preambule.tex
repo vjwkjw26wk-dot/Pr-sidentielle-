@@ -1,0 +1,73 @@
+\usepackage{amsmath,amssymb}
+\usepackage[sc]{mathpazo}
+\usepackage[no-math]{fontspec}
+\setmainfont{texgyrepagella}[Extension=.otf,UprightFont=*-regular,BoldFont=*-bold,ItalicFont=*-italic,BoldItalicFont=*-bolditalic]
+\setsansfont{DejaVu Sans}[Scale=0.88]
+\setmonofont{DejaVu Sans Mono}[Scale=0.82]
+\usepackage{polyglossia}
+\setdefaultlanguage{french}
+\usepackage[a4paper,top=2.6cm,bottom=2.6cm,inner=2.7cm,outer=2.3cm,headheight=14pt]{geometry}
+\usepackage{xcolor}
+\definecolor{bleu}{HTML}{1F4E79}
+\definecolor{bleuclair}{HTML}{EEF3F8}
+\definecolor{orange}{HTML}{C55A11}
+\definecolor{orangeclair}{HTML}{FDF1E7}
+\definecolor{vert}{HTML}{2C7C3C}
+\definecolor{vertclair}{HTML}{EDF6EE}
+\definecolor{rouge}{HTML}{A61B1B}
+\definecolor{rougeclair}{HTML}{FBECEC}
+\definecolor{gris}{HTML}{555555}
+\usepackage{graphicx}
+\graphicspath{{../figures/}}
+\usepackage{booktabs,longtable,tabularx,array,multirow}
+\usepackage{caption}
+\usepackage{adjustbox}
+\newcommand{\tabfit}[1]{\adjustbox{max width=\linewidth}{\input{#1}}}
+\captionsetup{font={small},labelfont={bf,color=bleu},format=hang}
+\usepackage[most]{tcolorbox}
+\usepackage{enumitem}
+\setlist{itemsep=2pt,topsep=4pt}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE]{\small\sffamily\color{gris}\leftmark}
+\fancyhead[RO]{\small\sffamily\color{gris}\rightmark}
+\fancyfoot[C]{\small\sffamily\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+\usepackage{titlesec}
+\titleformat{\chapter}[display]{\sffamily\bfseries\color{bleu}}{\large\MakeUppercase{\chaptertitlename}\ \thechapter}{4pt}{\LARGE}
+\titleformat{\section}{\sffamily\bfseries\Large\color{bleu}}{\thesection}{0.8em}{}
+\titleformat{\subsection}{\sffamily\bfseries\large\color{bleu}}{\thesubsection}{0.8em}{}
+\titleformat{\subsubsection}{\sffamily\bfseries\normalsize\color{bleu!80!black}}{\thesubsubsection}{0.6em}{}
+\titleformat{\part}[display]{\centering\sffamily\bfseries\color{bleu}}{\Large\MakeUppercase{\partname}\ \thepart}{12pt}{\Huge}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{2}
+\usepackage{siunitx}
+\sisetup{output-decimal-marker={,},group-separator={\,},group-minimum-digits=4}
+\usepackage[hidelinks,bookmarksnumbered]{hyperref}
+\hypersetup{pdftitle={Phase 3 : comportements économiques, fiabilisation du modèle et première optimisation},pdfauthor={Projet Présidentielle}}
+\usepackage{xurl}
+
+% Encadrés
+\newtcolorbox{encadre}[1]{enhanced,breakable,colback=bleuclair,colframe=bleu,fonttitle=\sffamily\bfseries\small,title={#1},boxrule=0.5pt,arc=1mm,left=6pt,right=6pt,top=4pt,bottom=4pt,fontupper=\small}
+\newtcolorbox{hypothese}[1][Hypothèses retenues]{enhanced,breakable,colback=orangeclair,colframe=orange,fonttitle=\sffamily\bfseries\small,title={#1},boxrule=0.5pt,arc=1mm,left=6pt,right=6pt,top=4pt,bottom=4pt,fontupper=\small}
+\newtcolorbox{limites}[1][Limites]{enhanced,breakable,colback=rougeclair,colframe=rouge,fonttitle=\sffamily\bfseries\small,title={#1},boxrule=0.5pt,arc=1mm,left=6pt,right=6pt,top=4pt,bottom=4pt,fontupper=\small}
+\newtcolorbox{resultat}[1][À retenir]{enhanced,breakable,colback=vertclair,colframe=vert,fonttitle=\sffamily\bfseries\small,title={#1},boxrule=0.5pt,arc=1mm,left=6pt,right=6pt,top=4pt,bottom=4pt,fontupper=\small}
+\newtcolorbox{exemple}[1][Exemple numérique]{enhanced,breakable,colback=white,colframe=gris,fonttitle=\sffamily\bfseries\small,title={#1},boxrule=0.4pt,arc=1mm,left=6pt,right=6pt,top=4pt,bottom=4pt,fontupper=\small}
+
+% Niveaux de preuve
+\newcommand{\preuve}[1]{\textsf{\small\bfseries\color{bleu}[#1]}}
+\newcommand{\fiab}[1]{\textsf{\footnotesize\bfseries\colorbox{bleuclair}{\color{bleu}#1}}}
+\newcommand{\src}[1]{{\small\color{gris}[#1]}}
+\newcommand{\code}[1]{\texttt{\small #1}}
+\newcommand{\md}{\,Md€}
+\newcommand{\pt}{\,pt}
+\renewcommand{\arraystretch}{1.15}
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+\setlength{\parskip}{3pt}
+\raggedbottom
+\emergencystretch=3em
+\renewcommand{\code}[1]{\texttt{\small\hyphenchar\font=`\-\relax #1}}
+\usepackage{makecell}

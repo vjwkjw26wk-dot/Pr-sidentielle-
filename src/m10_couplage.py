@@ -174,6 +174,15 @@ def distribution(base: dict, ref: dict, prestations=PRESTATIONS, extra=None) -> 
         men["nv_base"] = (rfr.reindex(men.index).fillna(0) - irb.reindex(men.index).fillna(0) + pb) / men.uc
         men["delta"] = (-(irr - irb).reindex(men.index).fillna(0) + (pr - pb)) / men.uc
         men["rfr"] = rfr.reindex(men.index).fillna(0)
+        men["npers"] = ind.groupby("men").size().reindex(men.index).fillna(1)
+        # v0.7 (phase 3) : caractéristiques de la personne de référence et composition du ménage (acceptabilité)
+        pr = ind[ind.LPRM.astype(str) == "1"].drop_duplicates("men").set_index("men")
+        men["age_pr"] = pr.age.reindex(men.index)
+        men["tact_pr"] = pr.TACT.astype(str).reindex(men.index)
+        men["gs_pr"] = pr.GS.astype(str).reindex(men.index)
+        men["region"] = pr.REGION.astype(str).reindex(men.index)
+        men["adultes"] = (ind.age >= 18).groupby(ind.men).sum().reindex(men.index).fillna(1)
+        men["enfants"] = (ind.age < 18).groupby(ind.men).sum().reindex(men.index).fillna(0)
         if extra is not None:
             men["delta"] += extra(k, men, ind, foyers) / men.uc
         lignes.append(men)
@@ -183,7 +192,7 @@ def distribution(base: dict, ref: dict, prestations=PRESTATIONS, extra=None) -> 
     cum = m.poids.cumsum() / m.poids.sum()
     m["decile"] = np.minimum((cum * 10).astype(int) + 1, 10)
     g = m.groupby("decile")
-    return pd.DataFrame({"niveau_de_vie_moyen": g.apply(lambda x: np.average(x.nv_base, weights=x.poids)),
+    out = pd.DataFrame({"niveau_de_vie_moyen": g.apply(lambda x: np.average(x.nv_base, weights=x.poids)),
                          "variation_euros_par_uc": g.apply(lambda x: np.average(x.delta, weights=x.poids)),
                          "variation_pct": g.apply(lambda x: np.average(x.delta, weights=x.poids) / np.average(x.nv_base, weights=x.poids) * 100),
                          "part_gagnants": g.apply(lambda x: np.average(x.delta > 1, weights=x.poids)),
@@ -191,6 +200,82 @@ def distribution(base: dict, ref: dict, prestations=PRESTATIONS, extra=None) -> 
                          # masses par décile (M€ par an) : variation totale et revenu de base (niveau de vie × UC)
                          "masse_M€": g.apply(lambda x: float((x.delta * x.uc * x.poids).sum()) / 1e6),
                          "revenu_M€": g.apply(lambda x: float((x.nv_base * x.uc * x.poids).sum()) / 1e6)})
+    out.attrs["groupes"] = groupes(m)
+    out.attrs["inegalites"] = {"avant": inegalites(m.nv_base, m.poids * m.npers),
+                               "apres": inegalites(m.nv_base + m.delta, m.poids * m.npers, seuil_fixe=None),
+                               "apres_seuil_fixe": inegalites(m.nv_base + m.delta, m.poids * m.npers,
+                                                              seuil_fixe=0.6 * _quantile(m.nv_base, m.poids * m.npers, 0.5))}
+    return out
+
+
+REGIONS = {"01": "Guadeloupe", "02": "Martinique", "03": "Guyane", "04": "La Réunion", "11": "Île-de-France",
+           "24": "Centre-Val de Loire", "27": "Bourgogne-Franche-Comté", "28": "Normandie", "32": "Hauts-de-France",
+           "44": "Grand Est", "52": "Pays de la Loire", "53": "Bretagne", "75": "Nouvelle-Aquitaine", "76": "Occitanie",
+           "84": "Auvergne-Rhône-Alpes", "93": "Provence-Alpes-Côte d'Azur", "94": "Corse"}
+CSP = {"1": "Agriculteurs", "2": "Artisans, commerçants, chefs d'entreprise", "3": "Cadres", "4": "Professions intermédiaires",
+       "5": "Employés", "6": "Ouvriers"}
+
+
+def groupes(m: pd.DataFrame) -> dict:
+    """Variation du niveau de vie par groupe (personne de référence du ménage) : âge, statut et catégorie sociale,
+    région, configuration familiale. Pour chaque groupe : variation moyenne (€ par UC et %), parts de gagnants et de
+    perdants (variation de plus de 1 € par UC et par an), poids dans la population des ménages."""
+    def age(a):
+        return "moins de 30 ans" if a < 30 else "30-44 ans" if a < 45 else "45-59 ans" if a < 60 else "60-74 ans" if a < 75 else "75 ans et plus"
+
+    def csp(r):
+        if r.tact_pr == "21":
+            return "Retraités"
+        if r.tact_pr in ("11", "12"):
+            return CSP.get(r.gs_pr, "Actifs, catégorie inconnue")
+        return "Autres inactifs (étudiants, au foyer…)"
+
+    def famille(r):
+        if r.adultes <= 1:
+            return "Personne seule" if r.enfants == 0 else "Famille monoparentale"
+        return "Couple sans enfant mineur" if r.enfants == 0 else ("Couple, 1-2 enfants" if r.enfants <= 2 else "Couple, 3 enfants ou plus")
+
+    m = m.copy()
+    m["g_age"] = m.age_pr.fillna(50).map(age)
+    m["g_csp"] = m.apply(csp, axis=1)
+    m["g_region"] = m.region.map(REGIONS).fillna("Autre")
+    m["g_famille"] = m.apply(famille, axis=1)
+    out = {}
+    for dim in ("g_age", "g_csp", "g_region", "g_famille"):
+        g = m.groupby(dim)
+        out[dim[2:]] = {k: {"variation_euros_par_uc": float(np.average(x.delta, weights=x.poids)),
+                            "variation_pct": float(np.average(x.delta, weights=x.poids) / np.average(x.nv_base, weights=x.poids) * 100),
+                            "part_gagnants": float(np.average(x.delta > 1, weights=x.poids)),
+                            "part_perdants": float(np.average(x.delta < -1, weights=x.poids)),
+                            "poids": float(x.poids.sum() / m.poids.sum())} for k, x in g}
+    return out
+
+
+def _quantile(x, w, q):
+    o = np.argsort(np.asarray(x))
+    xs, ws = np.asarray(x)[o], np.asarray(w)[o]
+    c = np.cumsum(ws) / ws.sum()
+    return float(xs[np.searchsorted(c, q)])
+
+
+def inegalites(nv, w, seuil_fixe=None):
+    """Indicateurs de niveau de vie (pondération par personne) : médiane, taux de pauvreté à 60 % de la médiane (seuil
+    recalculé, ou fixe si `seuil_fixe`), indice de Gini, rapports D9/D1 et S80/S20. Niveau de vie approché de la
+    microsimulation (revenu fiscal − impôt + prestations simulées, par unité de consommation) : niveaux différents de
+    ceux de l'Insee (ERFS), variations comparables."""
+    nv, w = np.asarray(nv, float), np.asarray(w, float)
+    med = _quantile(nv, w, 0.5)
+    seuil = seuil_fixe if seuil_fixe is not None else 0.6 * med
+    o = np.argsort(nv)
+    x, ww = nv[o], w[o]
+    cw = np.cumsum(ww) / ww.sum()
+    xp = np.clip(x, 0, None)
+    cx = np.cumsum(xp * ww) / (xp * ww).sum()
+    gini = float(1 - np.sum((cx[1:] + cx[:-1]) * np.diff(cw)) - cx[0] * cw[0])
+    d1, d9 = _quantile(nv, w, 0.1), _quantile(nv, w, 0.9)
+    s20 = float((xp * ww)[cw <= 0.2].sum()); s80 = float((xp * ww)[cw > 0.8].sum())
+    return {"mediane": med, "taux_pauvrete": float(ww[x < seuil].sum() / ww.sum() * 100), "seuil": float(seuil), "gini": gini,
+            "d9_d1": d9 / d1 if d1 > 0 else float("nan"), "s80_s20": s80 / s20 if s20 > 0 else float("nan")}
 
 
 def mesure_pour_m8(base: dict, ref: dict, prestations=PRESTATIONS) -> dict:
