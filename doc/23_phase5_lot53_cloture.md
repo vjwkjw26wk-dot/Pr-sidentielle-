@@ -86,7 +86,20 @@ sur le contenu en emplois des stratégies (substitution capital-travail) et, par
 pour S3). Les signes de l'emploi de S4 et du chômage de S1 et S4 changent avec σ : ce sont les mêmes cas non robustes
 que dans le tableau des régimes.
 
-{PRIX}
+**Équation des prix de VA v0.9** (environnement `p4_prix_v09`, calibré en 45 minutes ; référence : dette 267,3 % du
+PIB en 2047) comparée à l'équation de frontière de P4, à 20 ans :
+
+| Stratégie | PIB P4 / prix v0.9 (%) | dette (pt) | prix (%) | emploi (milliers) |
+|---|---|---|---|---|
+| S1 | 0,32 / 0,28 | 16,9 / 14,3 | 0,71 / 0,99 | 179 / 203 |
+| S2 | 2,39 / 2,40 | 24,2 / 23,9 | −1,03 / −1,12 | 103 / 104 |
+| S3 | 5,19 / 5,23 | 37,8 / 38,3 | −1,85 / −1,90 | 759 / 758 |
+| S4 | −1,00 / −1,05 | −38,5 / −39,7 | 0,29 / 0,37 | −14 / −1 |
+| S5 | 1,33 / 1,33 | 11,2 / 9,3 | −1,67 / −1,72 | −92 / −77 |
+
+Lecture : chaque équation de prix étant évaluée avec son propre environnement calibré, les écarts sont faibles
+(≤ 0,05 point de PIB, ≤ 2,6 points de dette, surtout pour S1 dont les effets passent par les prix). Les classements
+sont identiques. P4 (frontière) reste la configuration de travail ; l'équation v0.9 est une variante disponible.
 
 ## 4. Enrichissements comportementaux
 

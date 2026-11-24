@@ -29,7 +29,7 @@ bloquant (B) l'interdit.
 | C4 | contrôles d'intégration 142/142 (phase 4, doc 21 §8 ; suite de la phase 4.3 rejouée sans échec) ; identité dette-solde dans les 9 simulations de programmes : écart relatif ≤ 1,1e-16 à partir de 2027 ; transfert des programmes : écart nul | **oui** | les années calées 2024-2025 portent des ajustements de stock observés (hors champ) |
 | C5 | suites phase 4.3, 5, lots 5.2-5.3, 6 : 32/32 ; reproduction v0.8 / v0.9 / R0 exacte ; revalidation refusant un coefficient modifié | **oui** | deux échecs v0.8 antérieurs, documentés |
 | C6 | PIB et dette, 10 et 20 ans : 20/20 signes robustes aux 10 régimes ; toutes variables : 49/60 | **oui** pour PIB et dette | emploi et chômage : 11 cas non robustes (régime actif symétrique, fermetures, σ) à présenter comme tels |
-| C7 | amplitude maximale à 20 ans : PIB 0,13 point (réaction de la BCE à l'activité), dette 7,6 points (prime souveraine, sous régime BCE), σ : PIB 0,05 point, dette 7,1 points ; aucun changement de classement en PIB ni en dette dans aucun test | **oui** | l'effet du régime monétaire lui-même (jusqu'à 15 points de dette) domine : il sera présenté en variante systématique |
+| C7 | amplitude maximale à 20 ans : PIB 0,13 point (réaction de la BCE à l'activité), dette 7,6 points (prime souveraine, sous régime BCE), σ : PIB 0,05 point, dette 7,1 points ; équation de prix v0.9 : PIB 0,05 point, dette 2,6 points ; aucun changement de classement en PIB ni en dette dans aucun test | **oui** | l'effet du régime monétaire lui-même (jusqu'à 15 points de dette) domine : il sera présenté en variante systématique |
 | C8 | 66 mesures sourcées (test) ; conversions écrites mesure par mesure ; statuts [D]/[E]/[C]/[H] dans les registres (docs 20, 24, 25, 26) et `STRUCTURELS` | **oui** | |
 | C9 | doc 26 : équations, théorie, données, méthodes, calibrations, hypothèses, tests, limites, alternatives, mécanismes manquants | **oui** | détail des estimations dans les documents de module |
 | C10 | toutes les mesures du corpus relevant du droit de l'Union qualifiées (niveaux 1 à 4) ; les autres relèvent de la compétence nationale | **oui** | qualification sommaire, non juridique |
@@ -49,7 +49,5 @@ sur le PIB et la dette (C6) et doivent être donnés avec leur fourchette de ré
 3. **Variantes de composition** pour les enveloppes non ventilées (P03, P05, H01, L11, H11) et passes « programme =
    régime » (R1/R2 actifs) pour le RN et Horizons.
 4. **Variantes d'additionnalité** de l'investissement hors APU (L33 : 100 / 50 / 25 %).
-5. **Environnement à équation de prix v0.9** : calibration en cours au moment de l'évaluation ; comparaison à
-   ajouter au doc 23 (§3) dès qu'elle est disponible (`phase5/lot53_environnements.py p4_prix_v09`).
-6. Si la baisse de TVA sur l'énergie reste centrale dans le programme RN : distinction des produits énergétiques
+5. Si la baisse de TVA sur l'énergie reste centrale dans le programme RN : distinction des produits énergétiques
    (priorité 4 du doc 26).
