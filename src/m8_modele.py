@@ -246,6 +246,9 @@ class Exogenes:
     #                                        politique fiscale observée, assiette comprise) ; None : rapport des taux légaux
     variante_societes: dict = None         # phase 4.3 : variantes du compte des sociétés (M21.VARIANTES : "phi_dette", "mu_taux",
     #                                        "div_lissage", "fiscalite_dividendes")
+    regime_hook: object = None             # phase 5 (M23) : objet appelé au début de chaque année simulée,
+    #                                        hook(modele, exogenes, t, resultats_precedents) ; applique une règle de
+    #                                        politique économique (effort budgétaire) à partir des seules années passées
     calage: dict = None                    # termes de calage par année (compte de référence recalé sur l'observé) :
     #   "c", "x", "m", "investissement", "emploi", "prix", "salaire" : ajout au taux de croissance (log) de l'équation ;
     #   "recettes", "depenses" : ajout en points de PIB ; "dette" : ajustement stock-flux (M€)
@@ -745,6 +748,9 @@ class Modele:
         r_central = r
         theta_c = theta
         for t in annees:
+            if ex.regime_hook is not None:
+                # phase 5 : règle de réaction (régime de politique économique) ; n'utilise que les années < t
+                ex.regime_hook(self, ex, t, res)
             if SPEC["salaire_public"] == "instrument":
                 # v0.9 : salaire public par tête = indexation sur les prix de l'année précédente × dérive réelle
                 # tendancielle (GVT, mesures catégorielles) ; décisions (point d'indice) : niveaux["salaire_public"]

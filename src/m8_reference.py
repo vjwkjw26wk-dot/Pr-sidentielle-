@@ -103,8 +103,33 @@ def chomage_structurel(t: int, H: dict) -> float:
     return u0 + (CHOMAGE_LT - u0) * (t - 2026) / 5
 
 
-def exogenes(mod, annees, H=None) -> M8.Exogenes:
+# Phase 5 : convention de dépense de la référence « politique inchangée ».
+#   "historique" (défaut, versions antérieures) : consommation publique et prestations hors pensions en volume à leur
+#     rythme 2011-2019 ;
+#   "part_constante" : consommation publique et prestations hors pensions en volume à la croissance du PIB potentiel
+#     conventionnel (population active × (1 − u*) × productivité de long terme), donc à part constante du PIB potentiel ;
+#     pensions (M9) et allocations chômage (stabilisateur, M8) inchangées.
+CONVENTIONS_DEPENSE = ("historique", "part_constante")
+
+
+def croissance_potentielle_conventionnelle(mod, H, annees) -> dict:
+    """Croissance du PIB potentiel conventionnel (hypothèses de la référence, non simulée) : emploi structurel
+    (population active × (1 − u*)) × productivité par tête de long terme (PRODUCTIVITE_LT)."""
+    import m9_retraites as R
+    act = R.ActiviteSeniors()
+    out = {}
+    for t in annees:
+        if t <= FIN_OBSERVE:
+            continue
+        n1 = act.population_active(t, "actuelle") * (1 - chomage_structurel(t, H) / 100)
+        n0 = act.population_active(t - 1, "actuelle") * (1 - chomage_structurel(t - 1, H) / 100)
+        out[t] = (n1 / n0) * (1 + PRODUCTIVITE_LT / 100) - 1
+    return out
+
+
+def exogenes(mod, annees, H=None, convention="historique") -> M8.Exogenes:
     """Exogènes observés jusqu'en 2025, projetés ensuite (voir l'en-tête)."""
+    assert convention in CONVENTIONS_DEPENSE, convention
     H = H or hypotheses(mod)
     fin = max(annees)
     obs = M8.exogenes_observes(mod, range(mod.B + 1, FIN_OBSERVE + 1))
@@ -133,14 +158,19 @@ def exogenes(mod, annees, H=None) -> M8.Exogenes:
         if t > FIN_OBSERVE:
             pa[t] = pa[FIN_OBSERVE] * act.population_active(t, "actuelle") / pa_ref
     tl = pd.Series({t: (float(m.taux_long[t]) if t <= FIN_OBSERVE else H["oat"][1]) for t in ans})
+    if convention == "part_constante":
+        gp = croissance_potentielle_conventionnelle(mod, H, ans)
+        g_cp = g_pr = (lambda t: gp[t])  # noqa: E731
+    else:
+        g_cp, g_pr = H["g_conso_publique"], H["g_autres_prestations"]
     ex = M8.Exogenes(demande_mondiale=prol(m.ue_m, lambda t: H["elast_commerce"] * g_ze(t)),
                      prix_mondial=prol(m.p_ue_m, pi_ze), prix_import=pm.sort_index(),
-                     conso_publique=prol(m.g, H["g_conso_publique"]),
+                     conso_publique=prol(m.g, g_cp),
                      autres_investissements=prol(obs.autres_investissements, H["g_autres_investissements"]),
                      population_active=pd.Series(pa).sort_index(),
                      chomage_structurel=pd.Series({t: chomage_structurel(t, H) for t in ans}), taux_long=tl,
                      taux_is=pd.Series({t: float(M8.S.taux_is().get(t, 25.83)) for t in ans}),
-                     prestations_volume=prol(obs.prestations_volume.dropna(), H["g_autres_prestations"]),
+                     prestations_volume=prol(obs.prestations_volume.dropna(), g_pr),
                      autres_depenses_pib=obs.autres_depenses_pib, fermeture_offre=M8.RHO_DEFAUT)
     return ex
 
@@ -284,7 +314,7 @@ def caler(mod, ex, annees, H, iterations=7, journal=print):
 _CACHE = {}
 
 
-def compte_reference(mod, annees, journal=print):
+def compte_reference(mod, annees, journal=print, convention="historique"):
     """Exogènes de référence calés (avec pensions M9) et trajectoire. Mis en cache par (base, horizon), en mémoire et
     sur disque (outputs/compte_reference_<base>_<horizon>.pkl), invalidé si le code de ce module ou de M8 change."""
     import hashlib
@@ -292,6 +322,8 @@ def compte_reference(mod, annees, journal=print):
     import json as _json
     import m7_equations as _E
     spec_txt = _json.dumps(getattr(M8, "SPEC", {}), sort_keys=True) + f"|sigma={_E.SIGMA_TRAVAIL}"   # v0.9 : la spécification fait partie de la clé
+    if convention != "historique":                       # phase 5 : la convention fait partie de la clé
+        spec_txt += f"|depense={convention}"
     cle = (mod.B, max(annees), spec_txt)
     if cle in _CACHE:
         return _CACHE[cle]
@@ -304,7 +336,7 @@ def compte_reference(mod, annees, journal=print):
             _CACHE[cle] = d
             return d
     H = hypotheses(mod)
-    ex = exogenes(mod, annees, H)
+    ex = exogenes(mod, annees, H, convention=convention)
     central = mod.simuler(annees, ex)
     pens = None
     for passe in range(2):

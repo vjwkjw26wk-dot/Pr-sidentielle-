@@ -356,3 +356,31 @@ dynamiques de court terme et le calendrier des mesures.
 2. Les cibles et paramètres de la règle R2 : d* ou s*, α, β, plafond, répartition entre instruments. Les valeurs
    ci-dessus sont des propositions, à afficher comme hypothèses.
 3. Le régime du résultat principal (3.4). Proposition : B2 figé, M0, jeu central.
+
+---
+
+## 8. Décisions du 24 novembre 2026 et état du lot 5.0
+
+Décisions :
+- politique inchangée = consommation publique et prestations hors pensions à part constante du PIB potentiel
+  conventionnel ;
+- R1 et R2 retenus ; α = 0,5, β = 0,02, plafond 0,5 point par an, 50/50 dépenses-recettes, tous paramétrables ;
+- régime principal : R2 figé, taux exogènes, paramètres centraux.
+
+**Cible de dette centrale : d* = 90 %.** C'est le seuil de la clause de sauvegarde des règles européennes de 2024
+(réduction moyenne d'au moins 1 point par an au-dessus de 90 %, 0,5 point entre 60 et 90 %). Variantes : 60 %
+(valeur du traité), 100 % (niveau d'avant la crise sanitaire) et R1 (stabilisation au niveau atteint). Résultat du
+lot 5.0 : sur 2027-2047, le plafond de 0,5 point par an est presque toujours contraignant. Les trajectoires R2 à 60, 90
+et 100 % sont donc identiques ; la cible ne joue qu'une fois la dette stabilisée, ce qui n'arrive pas avant 2047.
+
+**Absence de relâchement automatique.** L'effort est un cliquet : il n'est jamais rendu, même si la dette passe sous la
+cible ou si les taux baissent. Conséquences :
+- risque de dépassement de la cible ;
+- biais dans l'évaluation en mode actif : un programme qui creuse le déficit déclenche un effort, un programme qui le
+  réduit ne libère rien.
+
+En mode figé (central), l'effort est commun à la référence et au programme : la comparaison des programmes n'est pas
+biaisée. La règle symétrique (`R2_sym`) est donc recommandée pour toute évaluation en mode actif. Sur la référence
+actuelle, les trajectoires symétrique et asymétrique sont identiques : la règle ne demande jamais de relâchement.
+
+Mise en œuvre : `phase5/LISEZMOI.md`.
