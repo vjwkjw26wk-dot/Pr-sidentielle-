@@ -41,6 +41,18 @@
   "sha256": "afa6cf00c120d36cd2f6a8f2a181f92f44e5733dca6752bf638c4626c10ec114",
   "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_pjan?format=JSON&geo=FR&sex=F&sex=M&sinceTimePeriod=2003&unit=NR&age=Y15&age=Y16&age=Y17&age=Y18&age=Y19&age=Y20&age=Y21&age=Y22&age=Y23&age=Y24&age=Y25&age=Y26&age=Y27&age=Y28&age=Y29&age=Y30&age=Y31&age=Y32&age=Y33&age=Y34&age=Y35&age=Y36&age=Y37&age=Y38&age=Y39&age=Y40&age=Y41&age=Y42&age=Y43&age=Y44&age=Y45&age=Y46&age=Y47&age=Y48&age=Y49&age=Y50&age=Y51&age=Y52&age=Y53&age=Y54&age=Y55&age=Y56&age=Y57&age=Y58&age=Y59&age=Y60&age=Y61&age=Y62&age=Y63&age=Y64&age=Y65&age=Y66&age=Y67&age=Y68&age=Y69&age=Y70&age=Y71&age=Y72&age=Y73&age=Y74&age=Y75&age=Y76&age=Y77&age=Y78&age=Y79&age=Y80&age=Y81&age=Y82&age=Y83&age=Y84&age=Y85&age=Y86&age=Y87&age=Y88&age=Y89&age=Y90&age=Y91&age=Y92&age=Y93&age=Y94&age=Y95&age=Y96&age=Y97&age=Y98&age=Y99"
  },
+ "eurostat_ei_bsco_m_FR.json": {
+  "date": "2026-11-24T08:43:56",
+  "octets": 38276,
+  "sha256": "944cc410aded9b0206204d6da181f6917de5c701cb4659758a98d765de260b4e",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/ei_bsco_m?format=JSON&geo=FR&indic=BS-PT-NY&indic=BS-PT-LY&sinceTimePeriod=1990-01"
+ },
+ "eurostat_ei_bsin_m_r2_FR.json": {
+  "date": "2026-11-24T08:43:58",
+  "octets": 38457,
+  "sha256": "59112bbb1529c26c2d7c5767d4bea0333fe89b5694c7993077df8f7533983372",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/ei_bsin_m_r2?format=JSON&geo=FR&indic=BS-ISPE&indic=BS-ICI&sinceTimePeriod=1990-01"
+ },
  "eurostat_gov_10a_main_FR.json": {
   "date": "2026-11-23T18:51:37",
   "octets": 10514,
@@ -233,6 +245,12 @@
   "sha256": "3484027d70ffd55e87a8e8d3cd65ae62b655b49538cf6af5a1a257891a63cd89",
   "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/namq_10_fcs?format=JSON&geo=FR&s_adj=SCA&unit=CP_MEUR&unit=CLV15_MEUR&na_item=P31_S14&sinceTimePeriod=1995-Q1"
  },
+ "eurostat_namq_10_gdp_P7_FR.json": {
+  "date": "2026-11-24T08:43:59",
+  "octets": 45004,
+  "sha256": "48e5421ecfd338396b3491ae9718529269dedfdc002e20528d97775413fdd217",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/namq_10_gdp?format=JSON&geo=FR&na_item=P7&na_item=P6&na_item=B1GQ&unit=CP_MEUR&unit=CLV15_MEUR&sinceTimePeriod=1995-Q1"
+ },
  "eurostat_nasa_10_f_bs_FR.json": {
   "date": "2026-11-23T18:52:16",
   "octets": 16117,
@@ -268,6 +286,12 @@
   "octets": 11312,
   "sha256": "be544b87fdb1187f154800dff3064cc839b683db561e30facd60cbaaa3211084",
   "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nasa_10_nf_tr?format=JSON&geo=FR&unit=CP_MEUR&sector=S14_S15&direct=PAID&direct=RECV&na_item=D1&na_item=B2A3G&na_item=D4&na_item=D62&na_item=D61&na_item=D5&na_item=D7&na_item=B6G&na_item=D63&sinceTimePeriod=1995"
+ },
+ "eurostat_nasa_10_nf_tr_secteurs_FR.json": {
+  "date": "2026-11-24T09:22:41",
+  "octets": 283119,
+  "sha256": "0a5a37bae4b2c20eeec3dfae0d771e4cda235b83b1c263ed43c7595c8c675391",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nasa_10_nf_tr?format=JSON&geo=FR&unit=CP_MEUR&sector=S11&sector=S12&sector=S14_S15&sector=S13&sector=S2&sinceTimePeriod=1995"
  },
  "eurostat_nasa_B5G_S1_FR.json": {
   "date": "2026-11-23T19:06:10",

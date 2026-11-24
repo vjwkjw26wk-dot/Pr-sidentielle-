@@ -256,3 +256,39 @@ def simuler_va(d, r, spec, b, debut, fin):
               + r.params["ecm_1"] * (lp[t - 1] - float(x.lclu[t - 1])) + sum(r.params[k] * float(x[k][t]) for k in VA_SPECS[spec]))
         lp[t] = lp[t - 1] + dl
     return pd.Series(lp).diff().dropna()
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# Phase 4.2 (A.2) : frontière des prix de facteurs (option SPEC["prix_va"] = "frontiere")
+#   Δln pva = a_b + α0 Δln csu + α1 Δln q + γ TUC + λ [ln pva − θ_b ln csu − (1 − θ_b) ln ck]_{t−1}
+#   ck = p_I · K_{t−1} / q (coût du capital par unité de VA, au prix de l'investissement ; le taux réel normatif et le
+#   déclassement sont constants par branche et absorbés par l'effet fixe : pas de canal « taux d'intérêt → prix »,
+#   rejeté par l'estimation libre) ; θ_b = part médiane du coût du travail dans la VA de la branche (1997-2019).
+#   Approximation log-linéaire de la frontière CES des prix de facteurs (marge constante à long terme).
+# ---------------------------------------------------------------------------------------------------------------
+def panel_frontiere(pm7):
+    import m7_equations as E
+    p = pm7.sort_values(["branche", "annee"]).copy()
+    p["clu"] = p.wb / p.hs * p.h / p.q
+    out = []
+    for b, d in p.groupby("branche"):
+        d = d.copy()
+        d["lpva"] = np.log(d.va_cp / d.q); d["lclu"] = np.log(d.clu); d["lck"] = np.log(d.pi * d.k.shift(1) / d.q)
+        d["dlpva"] = d.lpva.diff(); d["dlclu"] = d.lclu.diff(); d["dlq"] = np.log(d.q).diff()
+        for k in ("lpva", "lclu", "lck"):
+            d[k + "_1"] = d[k].shift(1)
+        d["theta_b"] = float((d.clu * d.q / d.va_cp).loc[(d.annee >= 1997) & (d.annee <= 2019)].median())
+        out.append(d)
+    p = pd.concat(out).reset_index(drop=True)
+    p["tucd"] = E.tension_capacites(p)
+    p["ecm_f"] = p.lpva_1 - p.theta_b * p.lclu_1 - (1 - p.theta_b) * p.lck_1
+    return p
+
+
+def estimer_frontiere(p, debut=1998, fin=2019):
+    d = p[(p.annee >= debut) & (p.annee <= fin)]
+    X = pd.DataFrame({"dlclu": d.dlclu, "dlq": d.dlq, "tucd": d.tucd, "ecm_f": d.ecm_f})
+    X = pd.concat([X, pd.get_dummies(d.branche, prefix="fe", drop_first=True, dtype=float)], axis=1)
+    ok = X.notna().all(axis=1) & d.dlpva.notna() & np.isfinite(X).all(axis=1)
+    w = d.groupby("annee").va_cp.transform(lambda s: s / s.sum())
+    return sm.WLS(d.dlpva[ok], sm.add_constant(X[ok]), weights=w[ok]).fit(cov_type="cluster", cov_kwds={"groups": d.annee[ok]})

@@ -6,7 +6,7 @@ import pandas as pd
 rows = {}
 origines = [(int(a), int(b)) for a, b in (x.split("-") for x in sys.argv[1:] if not x.startswith("--"))] or [(2010, 2019), (2014, 2019), (2021, 2025)]
 for B, fin in origines:
-    for nom in (SELECTION_C if '--rattrapage' in sys.argv else SELECTION_B if '--brut' in sys.argv else SELECTION if '--selection' in sys.argv else CONFIGS):
+    for nom in (SELECTION_T if '--t' in sys.argv else SELECTION_A2 if '--a2' in sys.argv else SELECTION_C if '--rattrapage' in sys.argv else SELECTION_B if '--brut' in sys.argv else SELECTION if '--selection' in sys.argv else CONFIGS):
         spec = CONFIGS[nom]
         try:
             rows[f"{B}-{fin} {nom}"] = run(B, fin, "v08", spec)

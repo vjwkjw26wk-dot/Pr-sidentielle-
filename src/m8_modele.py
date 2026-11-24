@@ -62,11 +62,17 @@ SPEC = {
     "cout_travail": "v08",        # "net_subventions" : coût du travail = rémunérations (D1) − subventions sur les rémunérations
                                   #   (CICE, D391, 2013-2018), à l'estimation comme en simulation ; D1 et revenus inchangés
     # ---- phase 4.2 (branche phase42), chantier A : défauts = v0.9 à l'identique
-    "prix_va": "v09",             # "ci_hausse" : prix de VA sensible aux hausses de coûts intermédiaires (M18, spécification V4)
+    "prix_va": "v09",             # "ci_hausse" : prix de VA sensible aux hausses de coûts intermédiaires (M18, spécification V4) ;
+                                  #   "frontiere" : cible de long terme = frontière des prix de facteurs (θ_b CSU + (1 − θ_b)
+                                  #   coût du capital au prix de l'investissement), M18 / phase42/a2/b4
     "salaires": "v09",            # "brut" : équation v0.9 estimée sur les rémunérations brutes D1 ;
                                   #   "cible_conso" : cible de long terme en salaire réel de consommation (M19, W4) ;
                                   #   "cible_conso_smic" : W6, + SMIC endogène par sa règle légale
     "indexation_salaires": None,  # variante : indexation de court terme des salaires sur les prix imposée (sensibilité)
+    "tension_prix": "v09",        # "aucune" : retire l'effet du TUC sur les prix de VA de l'industrie (la pente κ sur l'écart
+                                  #   de production des autres branches est conservée) : non significatif (0,001 ± 0,001 par
+                                  #   point), source de dérive dans les simulations longues (choc de taux, phase42/a2/b6)
+    "capacites": "v09",           # "capital_desire" : capacité rapportée au capital désiré (coût d'usage), cf. _tuc
     "indexation_retard": 0.0,     # rattrapage : effet de l'inflation de l'année précédente sur le salaire ; 0,17 dérivé de
                                   #   l'équation trimestrielle 1997-2019 (phase42/a8_salaires_trimestriels.py), non ajusté
                                   #   sur les backtests (l'équation annuelle ne l'identifie pas)
@@ -98,7 +104,7 @@ def configurer_v09(**modifs):
 def configurer_v08():
     SPEC.update({"demande_travail": "v08", "cible_k": True, "potentiel": "cobb_douglas", "sigma": None,
                  "non_marchand": "v08", "salaire_public": "v08", "dette": "v08", "cout_travail": "v08",
-                 "prix_va": "v09", "salaires": "v09", "indexation_salaires": None, "indexation_retard": 0.0})
+                 "prix_va": "v09", "salaires": "v09", "indexation_salaires": None, "indexation_retard": 0.0, "capacites": "v09", "tension_prix": "v09"})
     E.SIGMA_TRAVAIL = _SIGMA_V08
 
 
@@ -284,6 +290,11 @@ class Modele:
             import m18_prix as M18
             self._pva_panel = M18.panel_va(pm7=self.panel_cout)
             self.eq["prix_va"].res = M18.estimer_va(self._pva_panel, "V4 hausses seules", 1998, fe)
+        if SPEC["prix_va"] == "frontiere":
+            import m18_prix as M18
+            self._pf_panel = M18.panel_frontiere(self.panel_cout)
+            self.eq["prix_va"].res = M18.estimer_frontiere(self._pf_panel, 1998, fe)
+            self._theta_b = self._pf_panel.groupby("branche").theta_b.first().to_dict()
         if SPEC["salaires"] == "brut":
             # phase 4.2 : même équation que la v0.9 (cible : part des salaires en prix de VA), estimée sur les rémunérations
             # brutes D1 (la v0.9 l'estimait sur le coût net du CICE : mauvais concept pour un salaire)
@@ -393,8 +404,14 @@ class Modele:
                 if "z_ci_h" in rp:
                     zz = self._pva_panel[(self._pva_panel.branche == b) & (self._pva_panel.annee == t)].z_ci_h
                     z_h = float(zz.iloc[0]) if len(zz) and zz.notna().all() else 0.0
+                if "ecm_f" in rp:   # phase 4.2 : frontière des prix de facteurs
+                    th = self._theta_b[b]
+                    lck1 = np.log(h.pi[t - 1] * h.k[t - 2] / h.q[t - 1])
+                    ecm_t = rp["ecm_f"] * (lpva[t - 1] - th * lclu[t - 1] - (1 - th) * lck1)
+                else:
+                    ecm_t = rp["ecm_1"] * (lpva[t - 1] - lclu[t - 1])
                 res_p.append((lpva[t] - lpva[t - 1]) - (rp["dlclu"] * (lclu[t] - lclu[t - 1]) + rp["dlq"] * (lq[t] - lq[t - 1])
-                                                       + rp.get("tucd", 0.0) * tucd(b, t) + rp["ecm_1"] * (lpva[t - 1] - lclu[t - 1])
+                                                       + rp.get("tucd", 0.0) * tucd(b, t) + ecm_t
                                                        + rp.get("z_ci_h", 0.0) * z_h))
                 res_i.append((li[t] - li[t - 1]) - (ri["dlq"] * (lq[t] - lq[t - 1]) + ri["dlq_1"] * (lq[t - 1] - lq[t - 2])
                                                    + ri["li_1"] * li[t - 1] + ri["lk_1"] * lk[t - 1] + ri["lq_1"] * lq[t - 1]))
@@ -508,6 +525,14 @@ class Modele:
         pci_k = (pp @ self.Ad0 + pm @ self.Am0) / np.where(ci_k > 0, ci_k, 1.0) / np.where(self._pci0 > 0, self._pci0, 1.0)
         return {b: float((self._ci_w[self.br_prod == b] * pci_k[self.br_prod == b]).sum() / max(self._ci_w[self.br_prod == b].sum(), 1e-9))
                 for b in self.BR}
+
+    def _lck(self, b, t, A, H):
+        """Phase 4.2 : ln du coût du capital par unité de VA (prix de l'investissement × K_{t−1} / q_t), branche b, année t.
+        Observé jusqu'à l'année de base ; ensuite prix de l'investissement de la branche à l'année de base × indice
+        simulé du prix de l'investissement (agrégé)."""
+        h, B = self.hist[b], self.B
+        pi_t = float(h.pi[t]) if t <= B else float(h.pi[B]) * A["pi_idx"][t] / A["pi_idx"].get(B, 1.0)
+        return float(np.log(pi_t * H[b]["k"][t - 1] / H[b]["q"][t]))
 
     def _coin_cout(self, ex, t):
         """v0.9 : rapport (1 − s_t)/(1 − s_B) entre coût du travail employeur et rémunérations, s = taux de subvention sur
@@ -813,6 +838,7 @@ class Modele:
                     sh = self.part_imp[k] * phi
                     return float(((v * (1 - sh) * pp).sum() + (v * sh * pm).sum()) / v.sum())
                 pc_idx, px_idx, pi_idx = pfin("C"), pfin("X"), pfin("I")
+                A.setdefault("pi_idx", {B: 1.0})[t] = pi_idx
                 pc = m.p_c[B] * pc_idx * float(np.exp(_niv(ex, "prix_conso", t)))
                 px = m.p_x[B] * px_idx
                 pm_agg = m.p_m[B] * float((pm * (self.Am0 @ self.x0 + sum(self.Fm[k] for k in CAT))).sum() / (self.Am0 @ self.x0 + sum(self.Fm[k] for k in CAT)).sum())
@@ -889,9 +915,13 @@ class Modele:
                     z_h = 0.0
                     if "z_ci_h" in rp:   # phase 4.2 : hausses des coûts intermédiaires × levier CI/VA de base
                         z_h = self._levier_ci[b] * max(np.log(A["pci"][b][t] / A["pci"][b][t - 1]), 0.0)
+                    if SPEC["tension_prix"] == "aucune":
+                        tucd_b = 0.0      # phase 4.2 : effet de tension non significatif (0,001 ± 0,001), source de dérive
                     dp = (self.c_prix[b] + rp["dlclu"] * np.log(clu / clu1) + rp["dlq"] * (lq - lq1) + rp.get("tucd", 0.0) * tucd_b
                           + rp.get("z_ci_h", 0.0) * z_h
-                          + ecm(("p", b), rp["ecm_1"] * (np.log(hb["pva"][t - 1]) - np.log(clu1) - mk_1)) + _cal(ex, "prix", t)
+                          + ecm(("p", b), (rp["ecm_f"] * (np.log(hb["pva"][t - 1]) - self._theta_b[b] * np.log(clu1)
+                                                          - (1 - self._theta_b[b]) * self._lck(b, t - 1, A, H) - mk_1) if "ecm_f" in rp
+                                           else rp["ecm_1"] * (np.log(hb["pva"][t - 1]) - np.log(clu1) - mk_1))) + _cal(ex, "prix", t)
                           + mk_t - mk_1 + (0.0 if b in S.TUC_BRANCHE else kappa_p * gap_hist[t - 1]))
                     pva_new[b] = hb["pva"][t - 1] * np.exp(dp)
                     if "prix_salaires" in gel:
@@ -1155,6 +1185,11 @@ class Modele:
         installé en début d'année × exp(g_cap (t − B))."""
         B = self.B
         cap = (H[b]["k"][t - 1] / H[b]["k"][B - 1]) * np.exp(self.g_cap[b] * (t - B))
+        if SPEC["capacites"] == "capital_desire" and getattr(self, "A_courant", None) is not None:
+            # phase 4.2 (A.2) : capacité = production réalisable au capital DÉSIRÉ. Un coût d'usage plus élevé réduit le
+            # capital désiré par unité produite (multiplicateur m_cu de l'investissement) : un capital plus bas n'est alors
+            # pas une tension (incohérence démontrée : choc de taux permanent → dérive des prix industriels).
+            cap = cap / self.A_courant["mcu"].get(t - 1, 1.0)
         return self.tuc_B[b] * (q / H[b]["q"][B]) / cap
 
     def _idx_mesure(self, mm, pib_nom, t):

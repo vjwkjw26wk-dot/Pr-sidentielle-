@@ -23,3 +23,12 @@ SELECTION_C = ["v0.9", "v0.9 + prix VA (CI)", "v0.9 + rattrapage salarial (0,17)
 SELECTION_B = ["v0.9", "v0.9 + prix VA + salaires bruts", "v0.9 + prix VA + salaires bruts, indexation 0,5"]
 SELECTION = ["v0.8", "v0.9", "v0.9 + prix VA (CI)", "v0.9 + prix VA, indexation 0,5", "v0.9 + prix VA, indexation 0,8",
              "v0.9 + prix VA + salaires bruts", "v0.9 + prix VA + salaires bruts, indexation 0,5"]
+
+# ---- A.2
+CONFIGS["C1 frontière des prix de facteurs"] = {**V09, "prix_va": "frontiere"}
+CONFIGS["C2 frontière + rattrapage salarial"] = {**V09, "prix_va": "frontiere", "indexation_retard": 0.17}
+SELECTION_A2 = ["v0.8", "v0.9", "v0.9 + rattrapage salarial (0,17)", "C1 frontière des prix de facteurs", "C2 frontière + rattrapage salarial"]
+CONFIGS["T0 v0.9 sans tension"] = {**V09, "tension_prix": "aucune"}
+CONFIGS["T1 frontière sans tension"] = {**V09, "prix_va": "frontiere", "tension_prix": "aucune"}
+CONFIGS["T2 frontière sans tension + rattrapage"] = {**V09, "prix_va": "frontiere", "tension_prix": "aucune", "indexation_retard": 0.17}
+SELECTION_T = ["v0.9", "T0 v0.9 sans tension", "T1 frontière sans tension", "T2 frontière sans tension + rattrapage"]
