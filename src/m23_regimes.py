@@ -60,12 +60,7 @@ class RegleBudgetaire:
         assert abs(sum(self.parts.values()) - 1) < 1e-9 and set(self.parts) <= set(INSTRUMENTS)
 
 
-@dataclass
-class ReglesMonetaire:
-    type: str = "exogene"                  # "exogene" ; "bce" au lot 5.2
-
-    def __post_init__(self):
-        assert self.type == "exogene", "règle BCE : lot 5.2"
+from m24_monetaire import RegimeMonetaire as ReglesMonetaire, AppliqueurMonetaire  # noqa: E402  (lot 5.2)
 
 
 # Jeux de paramètres fragiles applicables sans réestimation ni recalibration (note 22, § 3.3). σ et le partage
@@ -74,6 +69,10 @@ JEUX_PARAMETRES = {
     "central": {},
     "ancrage_faible": {"phillips": 2.0, "kappa_prix": 2.0},
     "ancrage_fort": {"phillips": 0.5, "kappa_prix": 0.5},
+    # lot 5.3 : retour au potentiel (paramètre le plus influent à moyen terme, rapport 21 § 5.5)
+    "fermeture_lente": {"fermeture_rho": 0.1},
+    "fermeture_rapide": {"fermeture_rho": 0.3},
+    "fermeture_chomage": {"fermeture_mode": "chomage", "fermeture_rho": 0.15},
 }
 
 
@@ -88,15 +87,24 @@ class Regime:
         assert self.parametres in JEUX_PARAMETRES, self.parametres
 
     def description(self) -> dict:
-        return {"nom": self.nom, "budgetaire": vars(self.budgetaire), "monetaire": vars(self.monetaire), "parametres": self.parametres}
+        return {"nom": self.nom, "budgetaire": dict(vars(self.budgetaire)), "monetaire": dict(vars(self.monetaire)), "parametres": self.parametres}
 
 
-def regime(code: str, **kw) -> Regime:
-    """Régimes nommés : R0 (aucune règle), R1 (stabilisation), R2 (ajustement progressif, central), R2_actif, R2_sym."""
+def regime(code: str, monetaire: dict | str | None = None, **kw) -> Regime:
+    """Régimes nommés : R0 (aucune règle), R1 (stabilisation), R2 (ajustement progressif, central), R2_actif, R2_sym.
+    `monetaire` : "exogene" (défaut), "bce" (règle de la BCE, prime souveraine estimée en écart à la référence), ou dict
+    d'arguments de RegimeMonetaire."""
     base = {"R0": dict(type="aucune"), "R1": dict(type="stabilisation"), "R2": dict(type="ajustement"),
             "R2_actif": dict(type="ajustement", mode="active"), "R2_sym": dict(type="ajustement", symetrique=True)}[code]
     par = kw.pop("parametres", "central")
-    return Regime(budgetaire=RegleBudgetaire(**{**base, **kw}), parametres=par, nom=code)
+    if monetaire is None or monetaire == "exogene":
+        mon = ReglesMonetaire()
+    elif monetaire == "bce":
+        mon = ReglesMonetaire(type="bce", prime="ecart_reference")
+    else:
+        mon = ReglesMonetaire(**monetaire)
+    return Regime(budgetaire=RegleBudgetaire(**{**base, **kw}), monetaire=mon, parametres=par,
+                  nom=code + ("" if mon.type == "exogene" and mon.prime == "aucune" else f"+{mon.type}"))
 
 
 REGIME_PRINCIPAL = "R2"
@@ -135,6 +143,15 @@ class Environnement:
         mod = M8.Modele(base)
         R = RF.compte_reference(mod, range(base + 1, fin + 1), journal=lambda *a: None, convention=convention)
         return cls(conf, convention, mod, R, fin)
+
+    def reference_monetaire(self, taux_court_reference="observe") -> pd.DataFrame:
+        """Trajectoire R0 à taux exogènes (même trajectoire exogène du taux directeur) : base des écarts auxquels réagissent
+        la BCE et la prime souveraine. Mise en cache (une simulation)."""
+        cle = "_refmon_" + taux_court_reference
+        if not hasattr(self, cle):
+            reg = Regime(monetaire=ReglesMonetaire(taux_court_reference=taux_court_reference), nom="R0")
+            setattr(self, cle, simuler(self, reg)["trajectoire"])
+        return getattr(self, cle)
 
     def activer(self):
         """Rétablit la configuration du modèle de l'environnement (SPEC, σ) avant toute simulation."""
@@ -244,6 +261,10 @@ def _appliquer_parametres(jeu: str, ex):
         E.PHILLIPS = sauv[0] * p["phillips"]
     if "kappa_prix" in p:
         ex.kappa_prix = M8.KAPPA_PRIX * p["kappa_prix"]
+    if "fermeture_rho" in p:
+        ex.fermeture_offre = p["fermeture_rho"]
+    if "fermeture_mode" in p:
+        ex.fermeture_mode = p["fermeture_mode"]
     return sauv
 
 
@@ -306,7 +327,15 @@ def simuler(env: Environnement, reg: Regime, prog: Programme = PROGRAMME_NUL, ef
         prog.appliquer(env.mod, ex)
     sauv = _appliquer_parametres(reg.parametres, ex)
     app = AppliqueurBudgetaire(reg.budgetaire, env.mod, effort_impose)
-    ex.regime_hook = app
+    m = reg.monetaire
+    besoin_ref = m.type == "bce" or m.prime == "ecart_reference"
+    ref_m = env.reference_monetaire(m.taux_court_reference) if besoin_ref else None
+    mon = AppliqueurMonetaire(m, env.mod, env.R["exogenes"], ref_m)
+
+    def crochet(mod, ex_, t, res):
+        mon(mod, ex_, t, res)
+        app(mod, ex_, t, res)
+    ex.regime_hook = crochet
     try:
         r = env.mod.simuler(env.annees, ex)
     finally:
@@ -315,6 +344,9 @@ def simuler(env: Environnement, reg: Regime, prog: Programme = PROGRAMME_NUL, ef
     for k in ["effort"] + [f"effort_{i}" for i in INSTRUMENTS]:
         r["impose_" + k] = j[k].astype(float).fillna(0.0) if k in j else 0.0
     r["solde_primaire_pib"] = r.solde_pib + 100 * r.interets / r.pib_nominal
+    jm = pd.DataFrame(mon.journal).T.reindex(r.index)
+    for k in ("taux_directeur", "ecart_directeur", "ecart_bund", "ecart_souverain", "oat", "ecart_credit_menages", "ecart_credit_entreprises"):
+        r["mon_" + k] = jm[k].astype(float) if k in jm else np.nan
     return {"trajectoire": r, "effort": dict(app.e), "journal": app.journal, "duree_s": time.time() - t0,
             "regime": reg.description(), "programme": prog.nom, "environnement": env.empreinte()}
 
@@ -331,3 +363,36 @@ def evaluer(env: Environnement, reg: Regime, prog: Programme, ref: dict | None =
         "prix (%)": 100 * np.log(a.pc / b.pc), "solde (pt PIB)": a.solde_pib - b.solde_pib, "dette (pt PIB)": a.dette_pib - b.dette_pib,
         "effort imposé (pt PIB)": a.impose_effort - b.impose_effort})
     return {"reference": ref, "variante": var, "ecart": ecart}
+
+
+# ------------------------------------------------------------------------------------------- robustesse (lot 5.3)
+REGIMES_ROBUSTESSE = {
+    "principal (R2 figé, taux exogènes, central)": dict(code="R2"),
+    "sans règle budgétaire (R0)": dict(code="R0"),
+    "stabilisation (R1)": dict(code="R1"),
+    "R2 active symétrique": dict(code="R2_sym", mode="active"),
+    "R2 + BCE et prime": dict(code="R2", monetaire="bce"),
+    "R2, ancrage faible": dict(code="R2", parametres="ancrage_faible"),
+    "R2, ancrage fort": dict(code="R2", parametres="ancrage_fort"),
+    "R2, fermeture lente": dict(code="R2", parametres="fermeture_lente"),
+    "R2, fermeture rapide": dict(code="R2", parametres="fermeture_rapide"),
+    "R2, fermeture sur le chômage": dict(code="R2", parametres="fermeture_chomage"),
+}
+
+
+def robustesse(env: Environnement, prog: Programme, horizons=(5, 15), debut=2027, regimes: dict | None = None) -> pd.DataFrame:
+    """Tableau de robustesse d'un programme : effet (programme − référence du même régime) dans chaque régime, aux
+    horizons donnés (années après `debut`). Les paramètres structurels qui exigent un autre environnement (σ, équation
+    des prix de VA) ne sont pas couverts ici (environnements distincts, à calibrer une fois)."""
+    regimes = regimes or REGIMES_ROBUSTESSE
+    rows = {}
+    for nom, k in regimes.items():
+        kk = dict(k); code = kk.pop("code")
+        e = evaluer(env, regime(code, **kk), prog)
+        ec = e["ecart"]
+        for h in horizons:
+            t = debut + h - 1
+            rows[(nom, h)] = ec.loc[t].to_dict()
+    df = pd.DataFrame(rows).T
+    df.index.names = ["régime", "horizon"]
+    return df

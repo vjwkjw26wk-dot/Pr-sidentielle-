@@ -335,6 +335,21 @@ def compte_reference(mod, annees, journal=print, convention="historique"):
             d["trajectoire"] = mod.simuler(annees, d["exogenes"])
             _CACHE[cle] = d
             return d
+        # phase 5 : revalidation par resimulation. Si le code a changé mais que la trajectoire de référence resimulée avec
+        # les exogènes calibrées est identique (écart relatif < 1e-9 sur toutes les colonnes communes) à la trajectoire de
+        # contrôle enregistrée, la calibration reste valide : elle est conservée (nouvelle empreinte), sans recalibrer.
+        if "trajectoire_controle" in d:
+            tr = mod.simuler(annees, d["exogenes"])
+            ctl = d["trajectoire_controle"]
+            cols = [c for c in ctl.columns if c in tr.columns and np.issubdtype(ctl[c].dtype, np.number)]
+            ecart = max(float(((tr[c] - ctl[c]).abs() / max(float(ctl[c].abs().max()), 1e-12)).max()) for c in cols)
+            if ecart < 1e-9:
+                journal(f"référence revalidée par resimulation (écart relatif maximal {ecart:.1e}) : pas de recalibration")
+                d["empreinte"], d["trajectoire"], d["revalidation"] = emp, tr, ecart
+                f.write_bytes(pickle.dumps({k: v for k, v in d.items() if k != "trajectoire"}))
+                _CACHE[cle] = d
+                return d
+            journal(f"revalidation impossible (écart relatif {ecart:.1e}) : recalibration")
     H = hypotheses(mod)
     ex = exogenes(mod, annees, H, convention=convention)
     central = mod.simuler(annees, ex)
@@ -354,7 +369,8 @@ def compte_reference(mod, annees, journal=print, convention="historique"):
     ex.lk_ref = np.log(central["capital_marchand"]).copy()  # capital et PIB de référence (emploi de long terme)
     ex.ly_ref = np.log(central["pib"]).copy()
     central = mod.simuler(annees, ex)
-    d = {"exogenes": ex, "trajectoire": central, "pensions": P, "hypotheses": H, "diagnostic": diag, "empreinte": emp}
+    d = {"exogenes": ex, "trajectoire": central, "pensions": P, "hypotheses": H, "diagnostic": diag, "empreinte": emp,
+         "trajectoire_controle": central.copy()}
     f.parent.mkdir(exist_ok=True)
     f.write_bytes(pickle.dumps({k: v for k, v in d.items() if k != "trajectoire"}))
     _CACHE[cle] = d

@@ -43,7 +43,7 @@ def test_regles_parametrables():
 
 def test_R0_reproduit_l_environnement(env, sans_recalibration):
     import m23_regimes as G
-    tr = G.simuler(env, G.regime("R0"))["trajectoire"]
+    tr = G.simuler(env, G.regime("R0", monetaire={"taux_court_reference": "derive"}))["trajectoire"]
     for c in ("pib", "pc", "chomage", "dette", "solde", "emploi"):
         assert (tr[c] - env.reference[c]).abs().max() <= 1e-9 * env.reference[c].abs().max(), c
 

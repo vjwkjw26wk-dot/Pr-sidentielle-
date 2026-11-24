@@ -1,0 +1,19 @@
+{
+ "bce_lissage": 0.7277678855443206,
+ "bce_inflation": 0.3927856301299078,
+ "bce_activite": 0.30221799468167493,
+ "bce_forme": "contemporaine appliquée à t − 1 [E*]",
+ "bund_transmission": 0.38578569748931485,
+ "menages_vitesse": 0.4293649434104831,
+ "menages_court": 0.21667913083113946,
+ "menages_long": 0.16792448823517708,
+ "menages_transmission_lt": 0.8957499324732396,
+ "entreprises_vitesse": 0.9262966556620541,
+ "entreprises_court": 0.6781090618919132,
+ "entreprises_long": 0.04403734353110972,
+ "entreprises_transmission_lt": 0.7796059728909218,
+ "prime_dette": 0.013041238733434934,
+ "prime_solde": -0.01476638840864031,
+ "prime_dette_avec_crise": 0.012224194113742122,
+ "prime_solde_avec_crise": -0.11844487936661645
+}

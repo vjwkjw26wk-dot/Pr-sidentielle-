@@ -246,6 +246,10 @@ class Exogenes:
     #                                        politique fiscale observée, assiette comprise) ; None : rapport des taux légaux
     variante_societes: dict = None         # phase 4.3 : variantes du compte des sociétés (M21.VARIANTES : "phi_dette", "mu_taux",
     #                                        "div_lissage", "fiscalite_dividendes")
+    taux_prive_menages: pd.Series = None   # phase 5 (M24) : taux de financement des ménages (%) dans l'équation de consommation
+    #                                        (terme de taux réel) ; None : taux long (comportement antérieur)
+    taux_prive_entreprises: pd.Series = None  # phase 5 (M24) : taux de financement des sociétés (%) dans le coût d'usage ;
+    #                                        None : taux long
     regime_hook: object = None             # phase 5 (M23) : objet appelé au début de chaque année simulée,
     #                                        hook(modele, exogenes, t, resultats_precedents) ; applique une règle de
     #                                        politique économique (effort budgétaire) à partir des seules années passées
@@ -258,6 +262,14 @@ def _par(ex, nom):
     """Paramètre de comportement v0.7 (surchargé par ex.comportements pour les analyses de sensibilité)."""
     c = getattr(ex, "comportements", None) or {}
     return c.get(nom, globals()[nom])
+
+
+def _taux_prive(ex, nom, t, defaut=None):
+    """Phase 5 (M24) : taux de financement privé de l'année t s'il est fourni, sinon taux long (comportement antérieur)."""
+    s = getattr(ex, nom, None)
+    if s is not None and t in s.index:
+        return float(s[t])
+    return float(ex.taux_long.get(t, ex.taux_long.iloc[-1] if defaut is None else defaut))
 
 
 def _niv(ex, k, t) -> float:
@@ -967,7 +979,7 @@ class Modele:
                     I_new[b] = hb["i"][t - 1] / m_cu1 * np.exp(di)
                 # effet du coût d'usage (IS, taux) : élasticité de long terme agrégée, ajustement à la vitesse des branches
                 tau = float(ex.taux_is.get(t, ex.taux_is.iloc[-1])); tau0 = float(ex.taux_is.get(B, tau))
-                rr_ = float(ex.taux_long.get(t, ex.taux_long.iloc[-1])); rr0 = float(ex.taux_long.get(B, rr_))
+                rr_ = _taux_prive(ex, "taux_prive_entreprises", t); rr0 = float(ex.taux_long.get(B, rr_))
                 lcu = np.log((max(rr_, -5) / 100 + E.DELTA_USAGE) / (1 - tau / 100)) - np.log((max(rr0, -5) / 100 + E.DELTA_USAGE) / (1 - tau0 / 100))
                 eps_cu = self.eq["investissement_snf"].lr["long terme : élasticité au coût d'usage du capital"]
                 if alt and t >= alt.get("debut", 2026) and "investissement_snf" in alt.get("params", {}):
@@ -1001,8 +1013,8 @@ class Modele:
                 rdbr, rdbr1 = rdb_c / pc, A["rdbc"][t - 1] / A["pc"][t - 1]
                 u_cur = prev["u"] if it == 0 else u_cur
                 # v0.7 : épargne de précaution (variation du chômage) et taux d'intérêt réel (variation)
-                rr_t = float(ex.taux_long.get(t, ex.taux_long.iloc[-1])) - 100 * np.log(A["pc"][t - 1] / A["pc"][t - 2]) if (t - 2) in A["pc"] else 0.0
-                rr_1 = float(ex.taux_long.get(t - 1, ex.taux_long.iloc[0])) - 100 * np.log(A["pc"][t - 2] / A["pc"][t - 3]) if (t - 3) in A["pc"] else rr_t
+                rr_t = _taux_prive(ex, "taux_prive_menages", t) - 100 * np.log(A["pc"][t - 1] / A["pc"][t - 2]) if (t - 2) in A["pc"] else 0.0
+                rr_1 = _taux_prive(ex, "taux_prive_menages", t - 1, ex.taux_long.iloc[0]) - 100 * np.log(A["pc"][t - 2] / A["pc"][t - 3]) if (t - 3) in A["pc"] else rr_t
                 dC = (rc["const"] + rc["dlrdb"] * np.log(rdbr / rdbr1) + rc.get("du", 0.0) * (u_cur - prev["u"]) + ecm("c", rc["ecart_1"] * (np.log(A["C"][t - 1]) - np.log(rdbr1))) + _cal(ex, "c", t)
                       - _par(ex, "PSI_CHOMAGE") / 100 * (u_cur - prev["u"]) - _par(ex, "PSI_TAUX") / 100 * (rr_t - rr_1))
                 C_cn = A["C"][t - 1] * np.exp(dC)
