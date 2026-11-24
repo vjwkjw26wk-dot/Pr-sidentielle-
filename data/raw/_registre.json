@@ -209,6 +209,30 @@
   "sha256": "1773e50a17bacf25003bb4ccae5b40b4b0b449127aa8ba93f75c8063c24e64be",
   "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nama_10_pe?format=JSON&geo=FR&unit=THS_PER&na_item=EMP_DC&na_item=SAL_DC&na_item=POP_NC&sinceTimePeriod=1995"
  },
+ "eurostat_namq_10_a10_D1_FR.json": {
+  "date": "2026-11-24T08:08:34",
+  "octets": 52115,
+  "sha256": "54adf18d2593f22137be6f51eb66d3d715d3d92090295e4546f81287aa44a3be",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/namq_10_a10?format=JSON&geo=FR&na_item=D1&unit=CP_MEUR&sinceTimePeriod=1995-Q1"
+ },
+ "eurostat_namq_10_a10_FR.json": {
+  "date": "2026-11-24T08:06:35",
+  "octets": 53475,
+  "sha256": "338662d0eaf722c0520dda17a0fd93a3fe2bf93712a4eaf059f2c55f9032e321",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/namq_10_a10?format=JSON&geo=FR&s_adj=SCA&unit=CP_MEUR&unit=CLV15_MEUR&na_item=D1&na_item=B1G&sinceTimePeriod=1995-Q1"
+ },
+ "eurostat_namq_10_a10_e_FR.json": {
+  "date": "2026-11-24T08:07:06",
+  "octets": 52385,
+  "sha256": "4acc859f9751cd1e1a6dac4982f84edddb4910854a803152fdfb4678e73d862b",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/namq_10_a10_e?format=JSON&geo=FR&na_item=SAL_DC&unit=THS_PER&sinceTimePeriod=1995-Q1"
+ },
+ "eurostat_namq_10_fcs_FR.json": {
+  "date": "2026-11-24T08:06:37",
+  "octets": 10979,
+  "sha256": "3484027d70ffd55e87a8e8d3cd65ae62b655b49538cf6af5a1a257891a63cd89",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/namq_10_fcs?format=JSON&geo=FR&s_adj=SCA&unit=CP_MEUR&unit=CLV15_MEUR&na_item=P31_S14&sinceTimePeriod=1995-Q1"
+ },
  "eurostat_nasa_10_f_bs_FR.json": {
   "date": "2026-11-23T18:52:16",
   "octets": 16117,
@@ -292,6 +316,12 @@
   "octets": 4058,
   "sha256": "6b41e185e1f7ea087ce17b7e74fbccf577c64745e45c859b968df91311c00f9b",
   "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/une_rt_a?format=JSON&geo=FR&age=Y15-74&sex=T&unit=PC_ACT&sinceTimePeriod=1980"
+ },
+ "eurostat_une_rt_q_FR.json": {
+  "date": "2026-11-24T08:06:38",
+  "octets": 7586,
+  "sha256": "739366e6cc417303438b0d178d70af1cedfe65805c062ac621d6665275e1ce21",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/une_rt_q?format=JSON&geo=FR&s_adj=SA&age=Y15-74&sex=T&unit=PC_ACT&sinceTimePeriod=1995-Q1"
  },
  "fmi_weo_2026_10_GGXCNL_NGDP.json": {
   "date": "2026-11-23T20:34:53",

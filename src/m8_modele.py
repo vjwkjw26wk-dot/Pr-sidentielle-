@@ -61,6 +61,15 @@ SPEC = {
     "dette": "v08",               # "cohortes" : charge d'intérêts par cohortes d'émission (M17) au lieu du renouvellement 1/8
     "cout_travail": "v08",        # "net_subventions" : coût du travail = rémunérations (D1) − subventions sur les rémunérations
                                   #   (CICE, D391, 2013-2018), à l'estimation comme en simulation ; D1 et revenus inchangés
+    # ---- phase 4.2 (branche phase42), chantier A : défauts = v0.9 à l'identique
+    "prix_va": "v09",             # "ci_hausse" : prix de VA sensible aux hausses de coûts intermédiaires (M18, spécification V4)
+    "salaires": "v09",            # "brut" : équation v0.9 estimée sur les rémunérations brutes D1 ;
+                                  #   "cible_conso" : cible de long terme en salaire réel de consommation (M19, W4) ;
+                                  #   "cible_conso_smic" : W6, + SMIC endogène par sa règle légale
+    "indexation_salaires": None,  # variante : indexation de court terme des salaires sur les prix imposée (sensibilité)
+    "indexation_retard": 0.0,     # rattrapage : effet de l'inflation de l'année précédente sur le salaire ; 0,17 dérivé de
+                                  #   l'équation trimestrielle 1997-2019 (phase42/a8_salaires_trimestriels.py), non ajusté
+                                  #   sur les backtests (l'équation annuelle ne l'identifie pas)
 }
 
 
@@ -88,7 +97,8 @@ def configurer_v09(**modifs):
 
 def configurer_v08():
     SPEC.update({"demande_travail": "v08", "cible_k": True, "potentiel": "cobb_douglas", "sigma": None,
-                 "non_marchand": "v08", "salaire_public": "v08", "dette": "v08", "cout_travail": "v08"})
+                 "non_marchand": "v08", "salaire_public": "v08", "dette": "v08", "cout_travail": "v08",
+                 "prix_va": "v09", "salaires": "v09", "indexation_salaires": None, "indexation_retard": 0.0})
     E.SIGMA_TRAVAIL = _SIGMA_V08
 
 
@@ -268,6 +278,24 @@ class Modele:
                 if c_ in self.panel_cout:
                     self.panel_cout[c_] = self.panel_cout[c_] * f_
         self.eq = E.toutes(self.panel_cout, self.macro, E.DEBUT, fe)
+        self.fe = fe
+        if SPEC["prix_va"] == "ci_hausse":
+            # phase 4.2 : prix de VA + effet des hausses de coûts intermédiaires (M18 V4), estimé jusqu'à l'origine
+            import m18_prix as M18
+            self._pva_panel = M18.panel_va(pm7=self.panel_cout)
+            self.eq["prix_va"].res = M18.estimer_va(self._pva_panel, "V4 hausses seules", 1998, fe)
+        if SPEC["salaires"] == "brut":
+            # phase 4.2 : même équation que la v0.9 (cible : part des salaires en prix de VA), estimée sur les rémunérations
+            # brutes D1 (la v0.9 l'estimait sur le coût net du CICE : mauvais concept pour un salaire)
+            import m19_salaires as M19
+            self._w_donnees = M19.donnees(self.panel, self.macro)
+            self.eq["salaires"].res = M19.estimer(self._w_donnees, "W0 M7 (v0.9)", 1998, fe)
+        if SPEC["salaires"] in ("cible_conso", "cible_conso_smic"):
+            # phase 4.2 : équation de salaires M19 (rémunérations brutes D1 par salarié), estimée jusqu'à l'origine
+            import m19_salaires as M19
+            self._w_donnees = M19.donnees(self.panel, self.macro)
+            nom = "W4 cible prix conso" if SPEC["salaires"] == "cible_conso" else "W6 cible prix conso + SMIC"
+            self.eq["salaires"].res = M19.estimer(self._w_donnees, nom, 1998, fe)
         self.theta = float(self.eq["transmission"].lr["part transmise l'année même θ"])
         self.men, self.apu = comptes_menages_apu()
         self.eq["revenus_d4"] = E.revenus_menages(self.macro, self.men, "d4", E.DEBUT, fe)
@@ -361,8 +389,13 @@ class Modele:
                 z = ln[t - 1] - lq[t - 1] + E.SIGMA_TRAVAIL * (lcn[t - 1] - lpva[t - 1]) + g * (t - 1 - B)
                 res_e.append((ln[t] - ln[t - 1]) - (re["dlq"] * (lq[t] - lq[t - 1]) + re["dlq_1"] * (lq[t - 1] - lq[t - 2])
                                                    + re["dlh_1"] * (ln[t - 1] - ln[t - 2]) + re["ecm_1"] * z))
+                z_h = 0.0
+                if "z_ci_h" in rp:
+                    zz = self._pva_panel[(self._pva_panel.branche == b) & (self._pva_panel.annee == t)].z_ci_h
+                    z_h = float(zz.iloc[0]) if len(zz) and zz.notna().all() else 0.0
                 res_p.append((lpva[t] - lpva[t - 1]) - (rp["dlclu"] * (lclu[t] - lclu[t - 1]) + rp["dlq"] * (lq[t] - lq[t - 1])
-                                                       + rp.get("tucd", 0.0) * tucd(b, t) + rp["ecm_1"] * (lpva[t - 1] - lclu[t - 1])))
+                                                       + rp.get("tucd", 0.0) * tucd(b, t) + rp["ecm_1"] * (lpva[t - 1] - lclu[t - 1])
+                                                       + rp.get("z_ci_h", 0.0) * z_h))
                 res_i.append((li[t] - li[t - 1]) - (ri["dlq"] * (lq[t] - lq[t - 1]) + ri["dlq_1"] * (lq[t - 1] - lq[t - 2])
                                                    + ri["li_1"] * li[t - 1] + ri["lk_1"] * lk[t - 1] + ri["lq_1"] * lq[t - 1]))
             self.c_emp[b], self.c_prix[b], self.c_inv[b] = map(lambda v: float(np.mean(v)), (res_e, res_p, res_i))
@@ -458,6 +491,23 @@ class Modele:
         return {"C": {t: A["C"][t] for t in annees}, "Z": {t: self._Z_hist[t] for t in annees},
                 "prix_salaires": {"w": {t: A["w"][t] for t in annees}, "pva": {b: {t: H[b]["pva"][t] for t in annees} for b in self.BR}},
                 "emploi": {b: {t: H[b]["n"][t] for t in annees} for b in self.BR}}
+
+    def _prix_ci_branches(self, pp, pm):
+        """Phase 4.2 : indice (base 1) du prix des consommations intermédiaires de chaque branche marchande : coûts
+        unitaires en intrants domestiques (prix de production) et importés (prix d'importation), coefficients techniques
+        de l'année de base, pondérés par les CI des produits de la branche."""
+        if not hasattr(self, "_ci_w"):
+            ci_k = (self.Ad0.sum(axis=0) + self.Am0.sum(axis=0))
+            self._ci_w = ci_k * self.x0
+            un = np.ones(len(self.P))
+            pp0 = self._prix(np.ones(len(self.P)), un)
+            self._pci0 = (pp0 @ self.Ad0 + un @ self.Am0) / np.where(ci_k > 0, ci_k, 1.0)
+            B = self.B
+            self._levier_ci = {b: float((self.hist[b].y_cp[B] - self.hist[b].va_cp[B]) / self.hist[b].va_cp[B]) for b in self.BR}
+        ci_k = (self.Ad0.sum(axis=0) + self.Am0.sum(axis=0))
+        pci_k = (pp @ self.Ad0 + pm @ self.Am0) / np.where(ci_k > 0, ci_k, 1.0) / np.where(self._pci0 > 0, self._pci0, 1.0)
+        return {b: float((self._ci_w[self.br_prod == b] * pci_k[self.br_prod == b]).sum() / max(self._ci_w[self.br_prod == b].sum(), 1e-9))
+                for b in self.BR}
 
     def _coin_cout(self, ex, t):
         """v0.9 : rapport (1 − s_t)/(1 − s_B) entre coût du travail employeur et rémunérations, s = taux de subvention sur
@@ -753,6 +803,11 @@ class Modele:
                 else:
                     pva_prod = np.array([pva[b] / H[b]["pva"][B] if b in pva else w_idx for b in self.br_prod]) * surcout_prod
                 pp = self._prix(pva_prod, pm)
+                if SPEC["prix_va"] == "ci_hausse":
+                    pci_b = self._prix_ci_branches(pp, pm)
+                    A.setdefault("pci", {b: {B: 1.0} for b in BR})
+                    for b in BR:
+                        A["pci"][b][t] = pci_b[b]
                 def pfin(k):
                     v = self.struct[k] * self.tot[k]
                     sh = self.part_imp[k] * phi
@@ -770,11 +825,24 @@ class Modele:
                 u_prev = hist_vol[t - 1]["u"]
                 rw = r["salaires"]
                 ugap = u_prev - float(ex.chomage_structurel.get(t, ex.chomage_structurel.iloc[-1]))
-                dlw = (rw["const"] + rw["dlpc"] * np.log(pc / A["pc"][t - 1]) + rw["dlprod"] * np.log(prod_m / A["prod_m"][t - 1])
-                       + rw["ecm_1"] * (np.log(A["w"][t - 1]) - np.log(A["pva_m"][t - 1]) - np.log(A["prod_m"][t - 1]))
+                # phase 4.2 : cible de long terme en prix de VA (v0.9) ou en prix à la consommation (M19) ; SMIC endogène
+                if SPEC["salaires"] in ("cible_conso", "cible_conso_smic"):
+                    lam_w, lcible1 = rw["ecm_c_1"], np.log(A["pc"][t - 1])
+                else:
+                    lam_w, lcible1 = rw["ecm_1"], np.log(A["pva_m"][t - 1])
+                b_pc = rw["dlpc"] if SPEC["indexation_salaires"] is None else SPEC["indexation_salaires"]
+                dlsmic = 0.0
+                if "dlsmic" in rw:
+                    lsm = A.setdefault("lsmic", {a_: float(self._w_donnees.lsmic[a_]) for a_ in range(B - 2, B + 1)})
+                    dlw_1 = np.log(A["w"][t - 1] / A["w"][t - 2])
+                    dlpc_1 = np.log(A["pc"][t - 1] / A["pc"][t - 2]) if (t - 2) in A["pc"] else float(np.log(m.p_c[t - 1] / m.p_c[t - 2]))
+                    lsm[t] = lsm[t - 1] + np.log(pc / A["pc"][t - 1]) + 0.5 * max(dlw_1 - dlpc_1, 0.0) + _niv(ex, "coup_de_pouce_smic", t)
+                    dlsmic = lsm[t] - lsm[t - 1]
+                dlw = (rw["const"] + b_pc * np.log(pc / A["pc"][t - 1]) + rw["dlprod"] * np.log(prod_m / A["prod_m"][t - 1])
+                       + rw.get("dlsmic", 0.0) * dlsmic
+                       + SPEC["indexation_retard"] * (np.log(A["pc"][t - 1] / A["pc"][t - 2]) if (t - 2) in A["pc"] else float(np.log(m.p_c[t - 1] / m.p_c[t - 2])))
                        + E.PHILLIPS * ugap * (_par(ex, "ASYM_SALAIRES") if ugap > 0 else 1.0))
-                dlw = dlw - rw["ecm_1"] * (np.log(A["w"][t - 1]) - np.log(A["pva_m"][t - 1]) - np.log(A["prod_m"][t - 1])) \
-                    + ecm("w", rw["ecm_1"] * (np.log(A["w"][t - 1]) - np.log(A["pva_m"][t - 1]) - np.log(A["prod_m"][t - 1])
+                dlw = dlw + ecm("w", lam_w * (np.log(A["w"][t - 1]) - lcible1 - np.log(A["prod_m"][t - 1])
                                               - _niv(ex, "ancre_salaire", t)))
                 # v0.8 : "ancre_salaire" (log) déplace la cible de long terme du coût salarial par tête : incidence de long
                 # terme des prélèvements sur les entreprises (part supportée par les salariés), document 19
@@ -818,7 +886,11 @@ class Modele:
                     tucd_b = self._tuc(b, t, q_br[b], H) - self.tuc_moy[S.TUC_BRANCHE[b]] if b in S.TUC_BRANCHE else 0.0
                     mk = (ex.marges_branche or {}).get(b, {})
                     mk_t, mk_1 = float(mk.get(t, 0.0)), float(mk.get(t - 1, 0.0))
+                    z_h = 0.0
+                    if "z_ci_h" in rp:   # phase 4.2 : hausses des coûts intermédiaires × levier CI/VA de base
+                        z_h = self._levier_ci[b] * max(np.log(A["pci"][b][t] / A["pci"][b][t - 1]), 0.0)
                     dp = (self.c_prix[b] + rp["dlclu"] * np.log(clu / clu1) + rp["dlq"] * (lq - lq1) + rp.get("tucd", 0.0) * tucd_b
+                          + rp.get("z_ci_h", 0.0) * z_h
                           + ecm(("p", b), rp["ecm_1"] * (np.log(hb["pva"][t - 1]) - np.log(clu1) - mk_1)) + _cal(ex, "prix", t)
                           + mk_t - mk_1 + (0.0 if b in S.TUC_BRANCHE else kappa_p * gap_hist[t - 1]))
                     pva_new[b] = hb["pva"][t - 1] * np.exp(dp)
@@ -1180,7 +1252,10 @@ class Modele:
         niv["dette"] = niv["dette"] - solde + _cal(ex, "dette", t)
         return dict(recettes=tr, depenses=te, solde=solde, solde_pib=solde / pibn * 100, dette=niv["dette"], dette_pib=niv["dette"] / pibn * 100,
                     is_=is_t, dividendes_non_residents=self._profits(ex, t, pib_nom)["non_residents"], cotisations=d61, tva_etc=d2, prestations=d62, interets=d41, pib_nominal=pibn,
-                    taux_apparent=niv["taux_app"] * 100)
+                    taux_apparent=niv["taux_app"] * 100,
+                    # phase 4.2 : marges des branches marchandes (EBE approché = VA nominale − coût du travail employeur)
+                    ebe_marchand=ebe_m, va_marchande_nom=sum(q_br[b] * pva[b] for b in self.BR),
+                    taux_marge=100 * ebe_m / sum(q_br[b] * pva[b] for b in self.BR))
 
 
 def exogenes_observes(mod: Modele, annees) -> Exogenes:

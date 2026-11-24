@@ -214,12 +214,13 @@ VA_SPECS = {
     "V1 + coûts intermédiaires (linéaire)": ["z_ci"],
     "V2 + hausse / baisse des coûts intermédiaires": ["z_ci_h", "z_ci_b"],
     "V3 = V2 + effet retardé": ["z_ci_h", "z_ci_b", "z_ci_1"],
+    "V4 hausses seules": ["z_ci_h"],
 }
 
 
-def panel_va(p=None):
+def panel_va(p=None, pm7=None):
     import m7_equations as E
-    pm7 = S.panel_branches()
+    pm7 = S.panel_branches() if pm7 is None else pm7
     d = E._prep_panel(pm7, 1995, 2025)
     p = panel_prix() if p is None else p
     x = p.set_index(["branche", "annee"])

@@ -64,6 +64,7 @@ SPECS_W = {"W0 M7 (v0.9)": ["dlpc", "dlprod", "ecm_1"], "W1 + inflation passée"
 
 
 def estimer(d, spec, debut=1998, fin=2019, phillips=None):
+    """Estimation par MCO (le terme de Phillips est calibré et retiré de la variable expliquée, comme en M7)."""
     import m7_equations as E
     ph = E.PHILLIPS if phillips is None else phillips
     dd = d.loc[debut:fin]
