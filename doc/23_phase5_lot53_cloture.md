@@ -40,18 +40,53 @@ Paramètres monétaires : la première passe les évaluait à taux exogènes, o�
 construction, ce n'était pas un résultat) ; corrigé dans `sensibilite_structurelle` (évaluation sous R2 + BCE + prime)
 et relancé :
 
-{MON}
+Effets centraux sous R2 + BCE + prime (20 ans) : S1 +0,23 % de PIB / +23,4 pt de dette ; S2 +2,28 / +32,1 ;
+S3 +4,99 / +52,4 ; S4 −0,94 / −43,6 ; S5 +1,30 / +13,4. L'endogénéité des taux amplifie les effets sur la dette
+(prime souveraine et charge d'intérêts), beaucoup moins ceux sur le PIB.
+
+| Paramètre | PIB (pt de %) | dette (pt de PIB) | stratégie la plus sensible | classements |
+|---|---|---|---|---|
+| prime_solde (0 / −0,118) | 0,01 | 7,63 | S3 | inchangés |
+| prime_dette (0,007 / 0,03) | 0,02 | 7,09 | S3 | inchangés |
+| bce_activite (0,1 / 0,5) | 0,13 | 6,47 | S3 | inchangés |
+| bund_transmission (0,2 / 0,6) | 0,00 | 2,32 | S3 | inchangés |
+| entreprises_vitesse (0,6 / 1,0) | 0,08 | 0,69 | S3 | inchangés |
+| bce_inflation (0,2 / 0,6) | 0,00 | 0,27 | S5 | inchangés |
+| menages_vitesse (0,25 / 0,6) | 0,00 | 0,13 | S3 | inchangés |
+
+Les paramètres de prime souveraine sont les plus influents sur la dette des stratégies déficitaires ; ils restent
+au second rang derrière le choix du régime monétaire lui-même (taux exogènes ou BCE + prime : jusqu'à 15 points de
+dette pour S3).
 
 Lecture : à l'horizon de 20 ans, les effets des stratégies sont beaucoup plus sensibles au régime (règle budgétaire,
-fermeture, ancrage) qu'aux paramètres structurels de comportement testés ici ; ceux-ci déplacent surtout la dette, de
-moins de 1,5 point de PIB.
+politique monétaire, fermeture, ancrage) qu'aux paramètres structurels testés ici. Les paramètres de comportement
+déplacent la dette de moins de 1,5 point de PIB ; les paramètres monétaires (sous régime BCE) jusqu'à 7,6 points pour
+la stratégie la plus déficitaire. Aucun ne modifie les classements en PIB ou en dette.
 
 ## 3. Environnements calibrés : σ = 0,3 et 0,6, équation de prix v0.9
 
 Chaque environnement est calibré une fois (référence recalée sur les mêmes cibles), puis S1-S5 sont évalués sous le
 régime principal :
 
-{ENV}
+Références (2047) : dette 273,8 % du PIB (σ = 0,45), 275,4 % (σ = 0,3), 268,8 % (σ = 0,6) ; mêmes cibles de calage
+(chômage 7,0 % en 2047). Durée de calibration : environ 100 minutes chacune en parallèle (≈ 50 minutes de calcul).
+
+Effets à 20 ans (année 2046), régime principal :
+
+| Stratégie | PIB σ 0,3 / 0,45 / 0,6 (%) | dette σ 0,3 / 0,45 / 0,6 (pt) | emploi σ 0,3 / 0,45 / 0,6 (milliers) | chômage σ 0,3 / 0,45 / 0,6 (pt) |
+|---|---|---|---|---|
+| S1 | 0,36 / 0,32 / 0,30 | 17,1 / 16,9 / 17,0 | 167 / 179 / 206 | 0,04 / 0,01 / −0,07 |
+| S2 | 2,37 / 2,39 / 2,40 | 23,0 / 24,2 / 26,4 | 153 / 103 / 41 | 0,00 / 0,15 / 0,33 |
+| S3 | 5,21 / 5,19 / 5,17 | 35,0 / 37,8 / 42,1 | 845 / 759 / 637 | 1,14 / 1,38 / 1,73 |
+| S4 | −0,95 / −1,00 / −1,03 | −37,8 / −38,5 / −39,4 | −38 / −14 / +19 | 0,11 / 0,04 / −0,06 |
+| S5 | 1,37 / 1,33 / 1,31 | 10,6 / 11,2 / 12,4 | −58 / −92 / −130 | 0,50 / 0,60 / 0,71 |
+
+Lecture : σ ne change presque pas les effets sur le PIB (≤ 0,05 point) ni les classements en PIB et en dette ; il agit
+sur le contenu en emplois des stratégies (substitution capital-travail) et, par là, sur la dette (jusqu'à 7 points
+pour S3). Les signes de l'emploi de S4 et du chômage de S1 et S4 changent avec σ : ce sont les mêmes cas non robustes
+que dans le tableau des régimes.
+
+{PRIX}
 
 ## 4. Enrichissements comportementaux
 
