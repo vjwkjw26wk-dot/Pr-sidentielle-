@@ -1,0 +1,13 @@
+,PIB (%),PIB (%),chômage (pt),chômage (pt),dette (pt PIB),dette (pt PIB),prix (%),prix (%)
+,10,20,10,20,10,20,10,20
+régime,,,,,,,,
+R2 + BCE et prime,S3 > S2 > S1 > S5 > S4,S3 > S2 > S5 > S1 > S4,S1 > S2 > S4 > S5 > S3,S4 > S1 > S2 > S5 > S3,S4 > S5 > S1 > S2 > S3,S4 > S5 > S1 > S2 > S3,S5 > S2 > S3 > S4 > S1,S3 > S5 > S2 > S4 > S1
+R2 active symétrique,S3 > S2 > S5 > S1 > S4,S3 > S2 > S5 > S1 > S4,S4 > S1 > S2 > S5 > S3,S2 > S3 > S5 > S1 > S4,S4 > S1 > S5 > S2 > S3,S4 > S1 > S5 > S2 > S3,S5 > S3 > S2 > S4 > S1,S3 > S5 > S2 > S4 > S1
+"R2, ancrage faible",S3 > S2 > S1 > S5 > S4,S3 > S2 > S5 > S1 > S4,S1 > S2 > S4 > S5 > S3,S4 > S1 > S2 > S5 > S3,S4 > S1 > S5 > S2 > S3,S4 > S1 > S5 > S2 > S3,S5 > S3 > S2 > S4 > S1,S3 > S5 > S2 > S4 > S1
+"R2, ancrage fort",S3 > S2 > S1 > S5 > S4,S3 > S2 > S5 > S1 > S4,S1 > S2 > S4 > S5 > S3,S1 > S4 > S2 > S5 > S3,S4 > S5 > S1 > S2 > S3,S4 > S5 > S1 > S2 > S3,S5 > S2 > S3 > S4 > S1,S5 > S3 > S2 > S1 > S4
+"R2, fermeture lente",S3 > S2 > S1 > S5 > S4,S3 > S2 > S5 > S1 > S4,S1 > S2 > S4 > S5 > S3,S1 > S4 > S2 > S5 > S3,S4 > S1 > S5 > S2 > S3,S4 > S1 > S5 > S2 > S3,S5 > S2 > S3 > S4 > S1,S3 > S5 > S2 > S4 > S1
+"R2, fermeture rapide",S3 > S2 > S5 > S1 > S4,S3 > S2 > S5 > S1 > S4,S1 > S2 > S4 > S5 > S3,S4 > S2 > S1 > S5 > S3,S4 > S5 > S1 > S2 > S3,S4 > S5 > S1 > S2 > S3,S5 > S2 > S3 > S4 > S1,S3 > S5 > S2 > S4 > S1
+"R2, fermeture sur le chômage",S3 > S2 > S1 > S5 > S4,S3 > S2 > S5 > S1 > S4,S1 > S4 > S2 > S5 > S3,S4 > S1 > S5 > S2 > S3,S4 > S5 > S1 > S2 > S3,S4 > S5 > S1 > S2 > S3,S5 > S3 > S2 > S4 > S1,S3 > S5 > S2 > S4 > S1
+"principal (R2 figé, taux exogènes, central)",S3 > S2 > S1 > S5 > S4,S3 > S2 > S5 > S1 > S4,S1 > S2 > S4 > S5 > S3,S1 > S4 > S2 > S5 > S3,S4 > S5 > S1 > S2 > S3,S4 > S5 > S1 > S2 > S3,S5 > S2 > S3 > S4 > S1,S3 > S5 > S2 > S4 > S1
+sans règle budgétaire (R0),S3 > S2 > S1 > S5 > S4,S3 > S2 > S5 > S1 > S4,S1 > S2 > S4 > S5 > S3,S1 > S4 > S2 > S5 > S3,S4 > S1 > S5 > S2 > S3,S4 > S5 > S1 > S2 > S3,S5 > S3 > S2 > S4 > S1,S3 > S5 > S2 > S4 > S1
+stabilisation (R1),S3 > S2 > S1 > S5 > S4,S3 > S2 > S5 > S1 > S4,S1 > S2 > S4 > S5 > S3,S1 > S4 > S2 > S5 > S3,S4 > S5 > S1 > S2 > S3,S4 > S5 > S1 > S2 > S3,S5 > S2 > S3 > S4 > S1,S3 > S5 > S2 > S4 > S1

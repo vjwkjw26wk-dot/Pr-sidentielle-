@@ -388,6 +388,18 @@ def construire(scenario: dict, mod, central=None, journal=None):
             base_r = var.autres_depenses_pib
             var.autres_depenses_pib = pd.Series({a: float(base_r.get(a, ratio0)) + (SUBVENTION_LOGEMENT * md * 1e3 / pib0 if a >= debut else 0.0)
                                                  for a in var.population_active.index})
+        elif t == "investissement_hors_apu":
+            # phase 6 (corpus) : investissement financé hors administrations publiques (établissement public de crédit,
+            # entreprises publiques marchandes) ; effet de demande seul, sans coût pour le solde ni la dette maastrichtienne
+            # des APU ; part subventionnée optionnelle (part_publique) comptée en dépense publique.
+            md = float(p["md"])
+            f = 1 + md * 1e3 / float(m_.p_fbcf[A0]) / float(var.autres_investissements[A0])
+            var.autres_investissements = pd.Series({a: v * (f if a >= debut else 1.0) for a, v in var.autres_investissements.items()})
+            pp = float(p.get("part_publique", 0.0))
+            if pp:
+                base_r = var.autres_depenses_pib
+                var.autres_depenses_pib = pd.Series({a: float(base_r.get(a, ratio0)) + (pp * md * 1e3 / pib0 if a >= debut else 0.0)
+                                                     for a in var.population_active.index})
         elif t == "impots_production":
             md = float(p["md"])
             ajouter_recette_apu(debut, md * 1e3)

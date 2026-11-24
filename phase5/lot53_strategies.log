@@ -1,0 +1,81 @@
+Contrôle du transfert (S2, environnement historique) : écart relatif maximal 0.0e+00
+fait S1_protection 344 s
+fait S2_emploi 547 s
+fait S3_productivite 746 s
+fait S4_redressement 918 s
+fait S5_global 1092 s
+                                            principal         min         max                    régime min                    régime max signe robuste
+stratégie       horizon variable                                                                                                                       
+S1_protection   10      PIB (%)              1.004746    0.323274    1.494418          R2 active symétrique           R2, fermeture lente          True
+                        emploi (milliers)  420.651939  222.335855  531.104242          R2 active symétrique           R2, fermeture lente          True
+                        chômage (pt)        -0.696575   -1.018763   -0.117085           R2, fermeture lente          R2 active symétrique          True
+                        prix (%)             1.060106    0.585784    1.960532              R2, ancrage fort            R2, ancrage faible          True
+                        solde (pt PIB)      -0.857691   -1.186677    -0.41432             R2 + BCE et prime          R2 active symétrique          True
+                        dette (pt PIB)       3.637665    0.575448      5.3229            R2, ancrage faible          R2, fermeture rapide          True
+                20      PIB (%)              0.323485    0.102711    0.776815          R2, fermeture rapide           R2, fermeture lente          True
+                        emploi (milliers)  178.679757   65.558865  295.640322          R2 active symétrique           R2, fermeture lente          True
+                        chômage (pt)         0.008871   -0.336387     0.34251           R2, fermeture lente          R2 active symétrique         False
+                        prix (%)             0.705224    0.290078    1.395806              R2, ancrage fort            R2, ancrage faible          True
+                        solde (pt PIB)      -1.708466   -2.477524   -1.005747             R2 + BCE et prime            R2, ancrage faible          True
+                        dette (pt PIB)      16.924996    9.310423   23.426978            R2, ancrage faible             R2 + BCE et prime          True
+S2_emploi       10      PIB (%)              1.476787    1.143846    1.661825  R2, fermeture sur le chômage           R2, fermeture lente          True
+                        emploi (milliers)  203.631443  136.587317  251.748005  R2, fermeture sur le chômage           R2, fermeture lente          True
+                        chômage (pt)        -0.147985   -0.288247    0.047984           R2, fermeture lente  R2, fermeture sur le chômage         False
+                        prix (%)            -0.469973   -0.616139   -0.192295              R2, ancrage fort            R2, ancrage faible          True
+                        solde (pt PIB)      -1.234238   -1.517199   -1.081523             R2 + BCE et prime           R2, fermeture lente          True
+                        dette (pt PIB)       8.431582    7.341641    9.654726           R2, fermeture lente  R2, fermeture sur le chômage          True
+                20      PIB (%)               2.39295    1.886803    2.926685  R2, fermeture sur le chômage          R2 active symétrique          True
+                        emploi (milliers)  102.732427  -28.240957  300.538209  R2, fermeture sur le chômage          R2 active symétrique         False
+                        chômage (pt)         0.147068   -0.436895    0.534509          R2 active symétrique  R2, fermeture sur le chômage         False
+                        prix (%)            -1.030479    -1.40158   -0.912344          R2 active symétrique           R2, fermeture lente          True
+                        solde (pt PIB)      -2.099973   -3.314795   -1.967234             R2 + BCE et prime           R2, fermeture lente          True
+                        dette (pt PIB)      24.223851   22.278284   32.061516           R2, fermeture lente             R2 + BCE et prime          True
+S3_productivite 10      PIB (%)              2.758939     2.21835    3.254373  R2, fermeture sur le chômage          R2 active symétrique          True
+                        emploi (milliers)  458.215352  346.551558  531.836257  R2, fermeture sur le chômage          R2 active symétrique          True
+                        chômage (pt)         0.738694    0.527198    1.058922          R2 active symétrique  R2, fermeture sur le chômage          True
+                        prix (%)            -0.447188   -0.862253   -0.347355          R2 active symétrique           R2, fermeture lente          True
+                        solde (pt PIB)      -2.241426   -2.724979   -2.075732             R2 + BCE et prime           R2, fermeture lente          True
+                        dette (pt PIB)      14.141355   12.927381   16.341623           R2, fermeture lente  R2, fermeture sur le chômage          True
+                20      PIB (%)              5.192692     4.53098     6.66017  R2, fermeture sur le chômage          R2 active symétrique          True
+                        emploi (milliers)  758.842256   581.09899   1293.9419  R2, fermeture sur le chômage          R2 active symétrique          True
+                        chômage (pt)         1.382783   -0.142642    1.895629          R2 active symétrique  R2, fermeture sur le chômage         False
+                        prix (%)             -1.85312   -2.815604   -1.334207          R2 active symétrique              R2, ancrage fort          True
+                        solde (pt PIB)      -3.014252   -5.384152   -2.599283             R2 + BCE et prime              R2, ancrage fort          True
+                        dette (pt PIB)      37.748248   33.204066   52.357329              R2, ancrage fort             R2 + BCE et prime          True
+S4_redressement 10      PIB (%)              -0.79199   -0.928967   -0.446939           R2, fermeture lente  R2, fermeture sur le chômage          True
+                        emploi (milliers)  -69.033046 -100.116049   44.163839           R2, fermeture lente          R2 active symétrique         False
+                        chômage (pt)         0.202908    -0.12981     0.29427          R2 active symétrique           R2, fermeture lente         False
+                        prix (%)             0.375106    0.047182    0.549491            R2, ancrage faible              R2, ancrage fort          True
+                        solde (pt PIB)       2.375079    2.098745    2.565532          R2 active symétrique             R2 + BCE et prime          True
+                        dette (pt PIB)     -16.584366  -17.549611  -15.303374  R2, fermeture sur le chômage          R2 active symétrique          True
+                20      PIB (%)             -0.998643   -1.432209   -0.383291          R2 active symétrique  R2, fermeture sur le chômage          True
+                        emploi (milliers)  -14.000379 -120.718637  133.774836          R2 active symétrique  R2, fermeture sur le chômage         False
+                        chômage (pt)         0.041539   -0.396905    0.358168  R2, fermeture sur le chômage          R2 active symétrique         False
+                        prix (%)             0.291159    0.078338    0.592559            R2, ancrage faible          R2 active symétrique          True
+                        solde (pt PIB)       3.042247    2.844803    3.797249            R2, ancrage faible             R2 + BCE et prime          True
+                        dette (pt PIB)     -38.536932  -44.071627  -35.493911  R2, fermeture sur le chômage          R2 active symétrique          True
+S5_global       10      PIB (%)              0.637915    0.566944    0.944898           R2, fermeture lente          R2 active symétrique          True
+                        emploi (milliers)  -47.888039  -61.368799   56.395145           R2, fermeture lente          R2 active symétrique         False
+                        chômage (pt)         0.465222    0.159801    0.505045          R2 active symétrique           R2, fermeture lente          True
+                        prix (%)            -1.110708   -1.476063   -0.913844            R2, ancrage faible              R2, ancrage fort          True
+                        solde (pt PIB)      -0.270016   -0.471881   -0.176487          R2 active symétrique              R2, ancrage fort          True
+                        dette (pt PIB)       3.215709    2.352042    4.921074              R2, ancrage fort            R2, ancrage faible          True
+                20      PIB (%)              1.334793    1.117082    1.561161           R2, fermeture lente          R2 active symétrique          True
+                        emploi (milliers)  -92.052539 -141.641214   57.931747           R2, fermeture lente          R2 active symétrique         False
+                        chômage (pt)         0.599107    0.155716    0.745523          R2 active symétrique           R2, fermeture lente          True
+                        prix (%)            -1.665899   -2.142068   -1.362954            R2, ancrage faible              R2, ancrage fort          True
+                        solde (pt PIB)       -1.03185   -1.671149    -0.70156            R2, ancrage faible              R2, ancrage fort          True
+                        dette (pt PIB)      11.174717    7.654813   18.072962              R2, ancrage fort            R2, ancrage faible          True
+                                                            PIB (%)                                    chômage (pt)                                  dette (pt PIB)                                        prix (%)                        
+                                                                 10                      20                      10                      20                      10                      20                      10                      20
+régime                                                                                                                                                                                                                                     
+R2 + BCE et prime                            S3 > S2 > S1 > S5 > S4  S3 > S2 > S5 > S1 > S4  S1 > S2 > S4 > S5 > S3  S4 > S1 > S2 > S5 > S3  S4 > S5 > S1 > S2 > S3  S4 > S5 > S1 > S2 > S3  S5 > S2 > S3 > S4 > S1  S3 > S5 > S2 > S4 > S1
+R2 active symétrique                         S3 > S2 > S5 > S1 > S4  S3 > S2 > S5 > S1 > S4  S4 > S1 > S2 > S5 > S3  S2 > S3 > S5 > S1 > S4  S4 > S1 > S5 > S2 > S3  S4 > S1 > S5 > S2 > S3  S5 > S3 > S2 > S4 > S1  S3 > S5 > S2 > S4 > S1
+R2, ancrage faible                           S3 > S2 > S1 > S5 > S4  S3 > S2 > S5 > S1 > S4  S1 > S2 > S4 > S5 > S3  S4 > S1 > S2 > S5 > S3  S4 > S1 > S5 > S2 > S3  S4 > S1 > S5 > S2 > S3  S5 > S3 > S2 > S4 > S1  S3 > S5 > S2 > S4 > S1
+R2, ancrage fort                             S3 > S2 > S1 > S5 > S4  S3 > S2 > S5 > S1 > S4  S1 > S2 > S4 > S5 > S3  S1 > S4 > S2 > S5 > S3  S4 > S5 > S1 > S2 > S3  S4 > S5 > S1 > S2 > S3  S5 > S2 > S3 > S4 > S1  S5 > S3 > S2 > S1 > S4
+R2, fermeture lente                          S3 > S2 > S1 > S5 > S4  S3 > S2 > S5 > S1 > S4  S1 > S2 > S4 > S5 > S3  S1 > S4 > S2 > S5 > S3  S4 > S1 > S5 > S2 > S3  S4 > S1 > S5 > S2 > S3  S5 > S2 > S3 > S4 > S1  S3 > S5 > S2 > S4 > S1
+R2, fermeture rapide                         S3 > S2 > S5 > S1 > S4  S3 > S2 > S5 > S1 > S4  S1 > S2 > S4 > S5 > S3  S4 > S2 > S1 > S5 > S3  S4 > S5 > S1 > S2 > S3  S4 > S5 > S1 > S2 > S3  S5 > S2 > S3 > S4 > S1  S3 > S5 > S2 > S4 > S1
+R2, fermeture sur le chômage                 S3 > S2 > S1 > S5 > S4  S3 > S2 > S5 > S1 > S4  S1 > S4 > S2 > S5 > S3  S4 > S1 > S5 > S2 > S3  S4 > S5 > S1 > S2 > S3  S4 > S5 > S1 > S2 > S3  S5 > S3 > S2 > S4 > S1  S3 > S5 > S2 > S4 > S1
+principal (R2 figé, taux exogènes, central)  S3 > S2 > S1 > S5 > S4  S3 > S2 > S5 > S1 > S4  S1 > S2 > S4 > S5 > S3  S1 > S4 > S2 > S5 > S3  S4 > S5 > S1 > S2 > S3  S4 > S5 > S1 > S2 > S3  S5 > S2 > S3 > S4 > S1  S3 > S5 > S2 > S4 > S1
+sans règle budgétaire (R0)                   S3 > S2 > S1 > S5 > S4  S3 > S2 > S5 > S1 > S4  S1 > S2 > S4 > S5 > S3  S1 > S4 > S2 > S5 > S3  S4 > S1 > S5 > S2 > S3  S4 > S5 > S1 > S2 > S3  S5 > S3 > S2 > S4 > S1  S3 > S5 > S2 > S4 > S1
+stabilisation (R1)                           S3 > S2 > S1 > S5 > S4  S3 > S2 > S5 > S1 > S4  S1 > S2 > S4 > S5 > S3  S1 > S4 > S2 > S5 > S3  S4 > S5 > S1 > S2 > S3  S4 > S5 > S1 > S2 > S3  S5 > S2 > S3 > S4 > S1  S3 > S5 > S2 > S4 > S1

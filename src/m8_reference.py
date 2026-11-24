@@ -314,6 +314,42 @@ def caler(mod, ex, annees, H, iterations=7, journal=print):
 _CACHE = {}
 
 
+def empreinte_parametres(mod, ex=None, H=None) -> dict:
+    """Phase 5 : empreintes (sha1) de tout ce dont dépend la calibration de la référence, au-delà des sorties :
+      - coefficients estimés de toutes les équations du modèle (M7 et remplacements M18, M19) ;
+      - constantes du module de référence (horizons, productivité, chômage de long terme, élasticité du commerce) et
+        paramètres globaux de M8 (Okun, pente des prix, durée de vie de la dette, part du capital, σ) ;
+      - cibles de calage (comptes observés 2023-2025, FMI, hypothèses de long terme) ;
+      - exogènes calibrées (termes de calage, potentiel de référence, pensions), si `ex` est fourni."""
+    import hashlib
+    import pickle
+    import m7_equations as _E
+
+    def h(obj):
+        return hashlib.sha1(pickle.dumps(obj)).hexdigest()[:16]
+
+    def arrondi(x):
+        if isinstance(x, (pd.Series, pd.DataFrame)):
+            return np.round(x.astype(float).values, 10).tolist() if np.issubdtype(np.asarray(x.values).dtype, np.number) else repr(x)
+        if isinstance(x, dict):
+            return {k: arrondi(v) for k, v in sorted(x.items(), key=lambda kv: str(kv[0]))}
+        if isinstance(x, (float, np.floating)):
+            return round(float(x), 10)
+        return x
+    coef = {k: arrondi(getattr(getattr(v, "res", None), "params", pd.Series(dtype=float))) for k, v in sorted(mod.eq.items())}
+    const = {k: globals()[k] for k in ("FIN_OBSERVE", "ANNEE_FMI", "FIN_FMI", "PRODUCTIVITE_LT", "CHOMAGE_LT", "ELAST_COMMERCE",
+                                      "CONVERGENCE_PRODUCTIVITE") if k in globals()}
+    glob = {k: getattr(M8, k) for k in ("OKUN", "KAPPA_PRIX", "DUREE_VIE_DETTE", "ALPHA_K", "RHO_DEFAUT") if hasattr(M8, k)}
+    glob["SIGMA_TRAVAIL"] = _E.SIGMA_TRAVAIL
+    out = {"coefficients": h(coef), "constantes": h(arrondi({**const, **glob}))}
+    if H is not None:
+        out["cibles"] = h(arrondi(_cibles(mod, H, FIN_FMI + 4)))
+    if ex is not None:
+        champs = {k: arrondi(v) for k, v in vars(ex).items() if k not in ("regime_hook",) and not callable(v)}
+        out["exogenes_calibrees"] = h(champs)
+    return out
+
+
 def compte_reference(mod, annees, journal=print, convention="historique"):
     """Exogènes de référence calés (avec pensions M9) et trajectoire. Mis en cache par (base, horizon), en mémoire et
     sur disque (outputs/compte_reference_<base>_<horizon>.pkl), invalidé si le code de ce module ou de M8 change."""
@@ -339,13 +375,23 @@ def compte_reference(mod, annees, journal=print, convention="historique"):
         # les exogènes calibrées est identique (écart relatif < 1e-9 sur toutes les colonnes communes) à la trajectoire de
         # contrôle enregistrée, la calibration reste valide : elle est conservée (nouvelle empreinte), sans recalibrer.
         if "trajectoire_controle" in d:
+            # 1. paramètres : coefficients estimés, constantes, cibles de calage et exogènes calibrées identiques
+            ep_ok, ep_detail = True, {}
+            if "empreinte_parametres" in d:
+                ep = empreinte_parametres(mod, d["exogenes"], d.get("hypotheses"))
+                ep_detail = {k: (ep.get(k) == v) for k, v in d["empreinte_parametres"].items()}
+                ep_ok = all(ep_detail.values())
+            # 2. sorties : toutes les colonnes numériques de la trajectoire (≈ 70 séries, 25 ans)
             tr = mod.simuler(annees, d["exogenes"])
             ctl = d["trajectoire_controle"]
             cols = [c for c in ctl.columns if c in tr.columns and np.issubdtype(ctl[c].dtype, np.number)]
             ecart = max(float(((tr[c] - ctl[c]).abs() / max(float(ctl[c].abs().max()), 1e-12)).max()) for c in cols)
-            if ecart < 1e-9:
+            if not ep_ok:
+                journal(f"revalidation refusée : paramètres modifiés {[k for k, v in ep_detail.items() if not v]}")
+            if ecart < 1e-9 and ep_ok:
                 journal(f"référence revalidée par resimulation (écart relatif maximal {ecart:.1e}) : pas de recalibration")
-                d["empreinte"], d["trajectoire"], d["revalidation"] = emp, tr, ecart
+                d["empreinte"], d["trajectoire"], d["revalidation"] = emp, tr, {"ecart_trajectoire": ecart, "colonnes": len(cols),
+                                                                                "parametres": ep_detail or "empreinte absente (fichier antérieur)"}
                 f.write_bytes(pickle.dumps({k: v for k, v in d.items() if k != "trajectoire"}))
                 _CACHE[cle] = d
                 return d
@@ -370,7 +416,7 @@ def compte_reference(mod, annees, journal=print, convention="historique"):
     ex.ly_ref = np.log(central["pib"]).copy()
     central = mod.simuler(annees, ex)
     d = {"exogenes": ex, "trajectoire": central, "pensions": P, "hypotheses": H, "diagnostic": diag, "empreinte": emp,
-         "trajectoire_controle": central.copy()}
+         "trajectoire_controle": central.copy(), "empreinte_parametres": empreinte_parametres(mod, ex, H)}
     f.parent.mkdir(exist_ok=True)
     f.write_bytes(pickle.dumps({k: v for k, v in d.items() if k != "trajectoire"}))
     _CACHE[cle] = d

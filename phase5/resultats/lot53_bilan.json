@@ -1,0 +1,11 @@
+{
+ "controle_transfert": 0.0,
+ "duree_s": 1091.6741302013397,
+ "microsimulation_reprise": {
+  "S1_protection": true,
+  "S2_emploi": true,
+  "S3_productivite": true,
+  "S4_redressement": true,
+  "S5_global": true
+ }
+}

@@ -245,6 +245,18 @@
   "sha256": "3df14c80f69afb76a8c6d1f13cd2fb9e861ba9e162bc1e516c6fb2ed77338b00",
   "url": "https://static.data.gouv.fr/resources/limpot-sur-le-revenu-par-collectivite-territoriale-ircom/20260526-131537/ircom-2025-revenus-2024.zip"
  },
+ "ecb_mir_fr_menages_habitat.csv": {
+  "date": "2026-11-24T18:31:40",
+  "octets": 192156,
+  "sha256": "7e4781fd7e8d67b07df571b6369b29efbba8dd5b1ba1d0eb95705c3b255a78f0",
+  "url": "https://data-api.ecb.europa.eu/service/data/MIR/M.FR.B.A2C.AM.R.A.2250.EUR.N?format=csvdata&startPeriod=2003-01"
+ },
+ "ecb_mir_fr_snf_composite.csv": {
+  "date": "2026-11-24T18:31:41",
+  "octets": 176192,
+  "sha256": "2300a2a009f8ea39b588614297abf274f00d99c84d12ec974124eb151489542d",
+  "url": "https://data-api.ecb.europa.eu/service/data/MIR/M.FR.B.A2I.AM.R.A.2240.EUR.N?format=csvdata&startPeriod=2003-01"
+ },
  "eurostat_demo_pjan_FR.json": {
   "date": "2026-11-23T18:51:37",
   "octets": 65557,
@@ -281,6 +293,12 @@
   "sha256": "d552556a60ec7e202897e72085ef29edbb295c4f02f600083c1c81566be26083",
   "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/gov_10dd_edpt1?format=JSON&geo=FR&sector=S13&na_item=GD&unit=MIO_EUR&sinceTimePeriod=1995"
  },
+ "eurostat_gov_10dd_edpt1_panel_ZE.json": {
+  "date": "2026-11-24T18:31:42",
+  "octets": 10531,
+  "sha256": "085897d0aae5353447bf7051abf2b7572f31be3d79c423a353b9c7f691233220",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/gov_10dd_edpt1?format=JSON&lang=en&unit=PC_GDP&sector=S13&na_item=GD&na_item=B9&geo=DE&geo=FR&geo=IT&geo=ES&geo=BE&geo=NL&geo=AT&geo=PT&geo=IE&geo=FI"
+ },
  "eurostat_hbs_str_t223_FR.json": {
   "date": "2026-11-23T23:16:14",
   "octets": 35963,
@@ -305,6 +323,12 @@
   "sha256": "cb9792822f3645313bdc6b593144c678f5c24d2541fa300b9cbc7b080472f606",
   "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/irt_lt_mcby_a?format=JSON&geo=FR&geo=DE&sinceTimePeriod=1980"
  },
+ "eurostat_irt_lt_mcby_a_panel_ZE.json": {
+  "date": "2026-11-24T18:31:38",
+  "octets": 11310,
+  "sha256": "c988b739f0f4e7f07e2d187e4be2a541313bada5b7382f7f35d844eae641b562",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/irt_lt_mcby_a?format=JSON&lang=en&geo=DE&geo=FR&geo=IT&geo=ES&geo=BE&geo=NL&geo=AT&geo=PT&geo=IE&geo=FI"
+ },
  "eurostat_irt_lt_mcby_m_FR_2026_11.json": {
   "date": "2026-11-23T20:34:55",
   "octets": 3436,
@@ -316,6 +340,12 @@
   "octets": 3664,
   "sha256": "0f6586f41845c6fd1331b0a6eab04acae1fbdf7f39dac51ea8caf0381d34c10a",
   "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/irt_st_a?format=JSON&geo=EA&int_rt=IRT_M3&sinceTimePeriod=1994"
+ },
+ "eurostat_irt_st_m_EA_2026_11.json": {
+  "date": "2026-11-24T18:17:47",
+  "octets": 3494,
+  "sha256": "9086e7c5edf39a344ec4edfedc5a8d9a57fd117db864ae7dacab66f9ab4233ad",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/irt_st_m?geo=EA&int_rt=IRT_M3&sinceTimePeriod=2025-01&format=JSON&lang=en"
  },
  "eurostat_lfsa_argan_FR_2024.json": {
   "date": "2026-11-23T18:51:40",

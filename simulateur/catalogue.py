@@ -183,6 +183,12 @@ MESURES.update({
         "parametres": {"md": "variation du rendement en Md€ (négatif : baisse)", "debut": "année"},
         "modules": ["M8"], "preuve": "B (rendement : environ 16 Md€ pour CVAE, CFE et C3S), D (répercussion de 50 % sur les prix de la valeur ajoutée)",
         "limites": "Effet sur l'investissement et la localisation des activités non modélisé au-delà de l'effet prix ; compensation aux collectivités non représentée."},
+    "investissement_hors_apu": {
+        "libelle": "Investissement financé hors administrations publiques (pôle public bancaire, entreprises publiques)",
+        "parametres": {"md": "Md€ par an", "part_publique": "part subventionnée par les APU (défaut 0)", "debut": "année"},
+        "modules": ["M8"], "preuve": "B (effet de demande, comme l'investissement public)",
+        "limites": "Pas de curseur d'interface (programmes du corpus seulement). Financement, dette de l'établissement "
+                   "prêteur, risque de requalification en dette publique et effet d'offre non représentés."},
     "recettes_neutres": {
         "libelle": "Recettes ou économies sans effet direct sur la demande intérieure",
         "parametres": {"md": "Md€ par an (positif : amélioration du solde)", "debut": "année"},

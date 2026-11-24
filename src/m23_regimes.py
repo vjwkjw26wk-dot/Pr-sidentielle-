@@ -76,21 +76,53 @@ JEUX_PARAMETRES = {
 }
 
 
+# Lot 5.3 : paramètres structurels modifiables sans recalibration (registre). Valeurs : central, bas, haut ; statut :
+# [E] estimé, [C] calibré, [L] littérature, [H] hypothèse. « cible » : où la valeur est appliquée.
+STRUCTURELS = {
+    # comportements de M8 (surcharge par Exogenes.comportements)
+    "PSI_TAUX": ("comportements", 0.2, 0.1, 0.4, "[L]", "consommation : −% par point de taux réel (FR-BDF, Mésange : 0,1-0,4)"),
+    "PSI_CHOMAGE": ("comportements", 0.3, 0.1, 0.5, "[H/L]", "épargne de précaution : −% de consommation par point de chômage"),
+    "SEMI_ELAST_IS": ("comportements", 0.8, 0.2, 1.5, "[L]", "transfert de bénéfices : semi-élasticité de la base de l'IS (Heckemeyer et Overesch 2017)"),
+    "PART_IS_MULTINAT": ("comportements", 0.5, 0.3, 0.7, "[C]", "part de l'IS acquittée par les groupes multinationaux"),
+    "THETA_TRESORERIE": ("comportements", 0.10, 0.0, 0.3, "[H]", "part des profits conservés réinvestie (contrainte de trésorerie)"),
+    "THETA_ANTICIPATION": ("comportements", 0.75, 0.5, 1.0, "[E]", "anticipation du potentiel (phase 3.1, inférence indirecte)"),
+    # compte des sociétés (M21, Exogenes.variante_societes)
+    "mu_taux": ("societes", None, 0.35, 0.83, "[E]", "vitesse de renouvellement du taux apparent des SNF (0,60 estimé 1999-2024)"),
+    "phi_dette": ("societes", None, 0.5, 1.5, "[E]", "dette des SNF / besoin de financement (1,06 ± 0,31)"),
+    "div_lissage": ("societes", 1.0, 0.3, None, "[H]", "vitesse d'ajustement des dividendes au taux de distribution (Lintner non identifié)"),
+    "fiscalite_dividendes": ("societes", False, None, True, "[E fragile]", "effets de la contribution de 3 % et du PFU sur la distribution"),
+    # politique monétaire et conditions financières (M24, RegimeMonetaire.surcharges)
+    "bund_transmission": ("monetaire", None, 0.2, 0.6, "[E]", "Δ Bund / Δ Euribor (0,39 ± 0,09)"),
+    "menages_vitesse": ("monetaire", None, 0.25, 0.6, "[E]", "vitesse d'ajustement des taux des crédits à l'habitat (0,43 ± 0,07)"),
+    "entreprises_vitesse": ("monetaire", None, 0.6, 1.0, "[E]", "vitesse d'ajustement du coût du crédit aux SNF (0,93 ± 0,02)"),
+    "bce_inflation": ("monetaire", None, 0.2, 0.6, "[E]", "réponse de court terme de la BCE à l'inflation (0,39 ± 0,18)"),
+    "bce_activite": ("monetaire", None, 0.1, 0.5, "[E]", "réponse de court terme de la BCE à l'activité (0,30 ± 0,09)"),
+    "prime_dette": ("monetaire", None, 0.007, 0.03, "[E]/[L]", "prime souveraine par point de dette (1,3 pb ; France seule 0,7 pb ; littérature 3 pb)"),
+    "prime_solde": ("monetaire", None, 0.0, -0.118, "[E fragile]", "prime par point de solde (−1,5 pb hors crise ; −11,8 pb avec la crise)"),
+}
+
+
 @dataclass
 class Regime:
     budgetaire: RegleBudgetaire = field(default_factory=RegleBudgetaire)
     monetaire: ReglesMonetaire = field(default_factory=ReglesMonetaire)
     parametres: str = "central"
     nom: str = ""
+    structurels: dict = field(default_factory=dict)          # lot 5.3 : {nom du registre STRUCTURELS: valeur}
 
     def __post_init__(self):
         assert self.parametres in JEUX_PARAMETRES, self.parametres
+        assert set(self.structurels) <= set(STRUCTURELS), set(self.structurels) - set(STRUCTURELS)
+        sur = {k: v for k, v in self.structurels.items() if STRUCTURELS[k][0] == "monetaire"}
+        if sur:
+            self.monetaire = copy.deepcopy(self.monetaire)
+            self.monetaire.surcharges = {**(self.monetaire.surcharges or {}), **sur}
 
     def description(self) -> dict:
         return {"nom": self.nom, "budgetaire": dict(vars(self.budgetaire)), "monetaire": dict(vars(self.monetaire)), "parametres": self.parametres}
 
 
-def regime(code: str, monetaire: dict | str | None = None, **kw) -> Regime:
+def regime(code: str, monetaire: dict | str | None = None, structurels: dict | None = None, **kw) -> Regime:
     """Régimes nommés : R0 (aucune règle), R1 (stabilisation), R2 (ajustement progressif, central), R2_actif, R2_sym.
     `monetaire` : "exogene" (défaut), "bce" (règle de la BCE, prime souveraine estimée en écart à la référence), ou dict
     d'arguments de RegimeMonetaire."""
@@ -103,7 +135,7 @@ def regime(code: str, monetaire: dict | str | None = None, **kw) -> Regime:
         mon = ReglesMonetaire(type="bce", prime="ecart_reference")
     else:
         mon = ReglesMonetaire(**monetaire)
-    return Regime(budgetaire=RegleBudgetaire(**{**base, **kw}), monetaire=mon, parametres=par,
+    return Regime(budgetaire=RegleBudgetaire(**{**base, **kw}), monetaire=mon, parametres=par, structurels=dict(structurels or {}),
                   nom=code + ("" if mon.type == "exogene" and mon.prime == "aucune" else f"+{mon.type}"))
 
 
@@ -122,7 +154,10 @@ PROGRAMME_NUL = Programme()
 
 
 # ---------------------------------------------------------------------------------------------------- environnement
-CONFIGURATIONS = {"p4": M8.configurer_phase4, "v09": M8.configurer_v09, "v08": M8.configurer_v08}
+CONFIGURATIONS = {"p4": M8.configurer_phase4, "v09": M8.configurer_v09, "v08": M8.configurer_v08,
+                  # lot 5.3 : environnements de sensibilité structurelle (calibrés une fois chacun)
+                  "p4_sigma03": lambda: M8.configurer_phase4(sigma=0.3), "p4_sigma06": lambda: M8.configurer_phase4(sigma=0.6),
+                  "p4_prix_v09": lambda: M8.configurer_phase4(prix_va="v09", tension_prix="v09")}
 
 
 class Environnement:
@@ -326,6 +361,12 @@ def simuler(env: Environnement, reg: Regime, prog: Programme = PROGRAMME_NUL, ef
     if prog.appliquer is not None:
         prog.appliquer(env.mod, ex)
     sauv = _appliquer_parametres(reg.parametres, ex)
+    comp = {k: v for k, v in reg.structurels.items() if STRUCTURELS[k][0] == "comportements"}
+    if comp:
+        ex.comportements = {**(ex.comportements or {}), **comp}
+    soc = {k: v for k, v in reg.structurels.items() if STRUCTURELS[k][0] == "societes"}
+    if soc:
+        ex.variante_societes = {**(ex.variante_societes or {}), **soc}
     app = AppliqueurBudgetaire(reg.budgetaire, env.mod, effort_impose)
     m = reg.monetaire
     besoin_ref = m.type == "bce" or m.prime == "ecart_reference"
@@ -395,4 +436,36 @@ def robustesse(env: Environnement, prog: Programme, horizons=(5, 15), debut=2027
             rows[(nom, h)] = ec.loc[t].to_dict()
     df = pd.DataFrame(rows).T
     df.index.names = ["régime", "horizon"]
+    return df
+
+
+def sensibilite_structurelle(env: Environnement, prog: Programme, noms=None, horizons=(5, 10, 20), code="R2", debut=2027,
+                             monetaire_si_besoin: dict | str = None) -> pd.DataFrame:
+    """Effet d'un programme (régime principal) quand un paramètre structurel prend sa valeur basse ou haute (un à un).
+
+    Les paramètres de catégorie « monétaire » n'agissent que si les taux sont endogènes : ils sont évalués sous le
+    régime monétaire `monetaire_si_besoin` (défaut : BCE et prime souveraine en écart à la référence), avec sa propre
+    valeur centrale (ligne « central (monétaire) »). Correction du lot 5.3 : la première passe les évaluait à taux
+    exogènes (effet nul par construction)."""
+    noms = noms or list(STRUCTURELS)
+    mon = monetaire_si_besoin or {"type": "bce", "prime": "ecart_reference"}
+    rows = {}
+    base = evaluer(env, regime(code), prog)["ecart"]
+    for h in horizons:
+        rows[("central", "", h)] = base.loc[debut + h - 1].to_dict()
+    if any(STRUCTURELS[n][0] == "monetaire" for n in noms):
+        bm = evaluer(env, regime(code, monetaire=mon), prog)["ecart"]
+        for h in horizons:
+            rows[("central (monétaire)", "", h)] = bm.loc[debut + h - 1].to_dict()
+    for n in noms:
+        cat, _c, bas, haut, *_ = STRUCTURELS[n]
+        for lab, val in (("bas", bas), ("haut", haut)):
+            if val is None:
+                continue
+            kw = {"monetaire": mon} if cat == "monetaire" else {}
+            ec = evaluer(env, regime(code, structurels={n: val}, **kw), prog)["ecart"]
+            for h in horizons:
+                rows[(n, lab, h)] = ec.loc[debut + h - 1].to_dict()
+    df = pd.DataFrame(rows).T
+    df.index.names = ["paramètre", "valeur", "horizon"]
     return df

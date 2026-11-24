@@ -190,6 +190,7 @@ class RegimeMonetaire:
     chocs_inflation_ze: dict = field(default_factory=dict)   # reste de la zone euro (points)
     chocs_activite_ze: dict = field(default_factory=dict)
     debut: int = 2027
+    surcharges: dict = field(default_factory=dict)          # lot 5.3 : valeurs alternatives des paramètres de parametres()
 
     def __post_init__(self):
         assert self.type in ("exogene", "bce") and self.anticipations in ("adaptatives", "rationnelles")
@@ -203,7 +204,8 @@ class AppliqueurMonetaire:
 
     def __init__(self, reg: RegimeMonetaire, mod, ex_ref, ref_traj: pd.DataFrame | None):
         self.r, self.mod, self.ref = reg, mod, ref_traj
-        self.p = parametres()
+        self.p = {**parametres(), **(reg.surcharges or {})}
+        assert set(reg.surcharges or {}) <= set(self.p), f"paramètres inconnus : {set(reg.surcharges) - set(self.p)}"
         self.oat0 = ex_ref.taux_long.copy().astype(float)
         self.tc0 = self._taux_court_reference(ex_ref)
         self.d = {}            # écarts : i, bund, ecart, oat, menages, entreprises

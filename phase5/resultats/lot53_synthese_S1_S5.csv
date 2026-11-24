@@ -1,0 +1,91 @@
+stratégie,horizon,variable,principal,min,max,régime min,régime max,signe robuste
+S1_protection,5,PIB (%),1.8998139359735342,1.4620140337105947,2.1847982871405147,R2 active symétrique,"R2, fermeture lente",True
+S1_protection,5,emploi (milliers),496.50093133224436,416.82609129566845,535.4885879471731,R2 active symétrique,"R2, fermeture lente",True
+S1_protection,5,chômage (pt),-0.9196006292940151,-1.03525324053113,-0.6853411314356794,"R2, fermeture lente",R2 active symétrique,True
+S1_protection,5,prix (%),0.2576732400326264,0.07459988333577969,0.6167296330390784,"R2, ancrage fort","R2, ancrage faible",True
+S1_protection,5,solde (pt PIB),-0.6558610816360391,-0.7516689113549759,-0.38822629440554746,R2 + BCE et prime,R2 active symétrique,True
+S1_protection,5,dette (pt PIB),0.5466264428961551,-0.21561363344588358,0.9686371321603531,"R2, ancrage faible","R2, fermeture rapide",False
+S1_protection,10,PIB (%),1.004746299701963,0.3232741263136007,1.494418202757091,R2 active symétrique,"R2, fermeture lente",True
+S1_protection,10,emploi (milliers),420.65193918873047,222.33585478490932,531.1042416067357,R2 active symétrique,"R2, fermeture lente",True
+S1_protection,10,chômage (pt),-0.6965749290612333,-1.0187634299781525,-0.11708536042087658,"R2, fermeture lente",R2 active symétrique,True
+S1_protection,10,prix (%),1.0601056612355422,0.5857844776424947,1.9605321354756684,"R2, ancrage fort","R2, ancrage faible",True
+S1_protection,10,solde (pt PIB),-0.8576907729550527,-1.1866771405728471,-0.4143195665847408,R2 + BCE et prime,R2 active symétrique,True
+S1_protection,10,dette (pt PIB),3.6376651438961574,0.5754478221020065,5.322900194572526,"R2, ancrage faible","R2, fermeture rapide",True
+S1_protection,20,PIB (%),0.3234848105425213,0.10271066861003562,0.7768146919612193,"R2, fermeture rapide","R2, fermeture lente",True
+S1_protection,20,emploi (milliers),178.67975681215466,65.55886476602973,295.64032180714275,R2 active symétrique,"R2, fermeture lente",True
+S1_protection,20,chômage (pt),0.008871484718131484,-0.33638726859448553,0.3425102674505123,"R2, fermeture lente",R2 active symétrique,False
+S1_protection,20,prix (%),0.7052243343725156,0.29007836372169693,1.3958058253220853,"R2, ancrage fort","R2, ancrage faible",True
+S1_protection,20,solde (pt PIB),-1.7084659135457727,-2.477524273943926,-1.0057468844780395,R2 + BCE et prime,"R2, ancrage faible",True
+S1_protection,20,dette (pt PIB),16.924995982238443,9.310422513504307,23.426978025845727,"R2, ancrage faible",R2 + BCE et prime,True
+S2_emploi,5,PIB (%),1.3735902488856844,0.945838147253903,1.5398337644403481,R2 active symétrique,"R2, fermeture lente",True
+S2_emploi,5,emploi (milliers),283.340459525396,204.93568372969094,306.65370098526546,R2 active symétrique,"R2, fermeture lente",True
+S2_emploi,5,chômage (pt),-0.3798647728781024,-0.4493335151594664,-0.14912110494358366,"R2, fermeture lente",R2 active symétrique,True
+S2_emploi,5,prix (%),-0.31405229825531533,-0.38714380996450337,-0.04276020526529436,"R2, ancrage fort",R2 active symétrique,True
+S2_emploi,5,solde (pt PIB),-0.9125712027640178,-0.9781216957087384,-0.647664154733846,R2 + BCE et prime,R2 active symétrique,True
+S2_emploi,5,dette (pt PIB),3.1590239637489503,2.882466068501799,3.4185749352131154,"R2, fermeture lente","R2, fermeture rapide",True
+S2_emploi,10,PIB (%),1.4767867342027716,1.1438463134591546,1.661825339213193,"R2, fermeture sur le chômage","R2, fermeture lente",True
+S2_emploi,10,emploi (milliers),203.6314431364117,136.58731728581552,251.74800541896184,"R2, fermeture sur le chômage","R2, fermeture lente",True
+S2_emploi,10,chômage (pt),-0.14798544567159588,-0.28824732283433363,0.04798412974734845,"R2, fermeture lente","R2, fermeture sur le chômage",False
+S2_emploi,10,prix (%),-0.46997273363642733,-0.6161386391336631,-0.19229497757586753,"R2, ancrage fort","R2, ancrage faible",True
+S2_emploi,10,solde (pt PIB),-1.23423817028638,-1.5171991818721278,-1.0815230507757239,R2 + BCE et prime,"R2, fermeture lente",True
+S2_emploi,10,dette (pt PIB),8.431582272992046,7.341640738465827,9.654726120591022,"R2, fermeture lente","R2, fermeture sur le chômage",True
+S2_emploi,20,PIB (%),2.392950032371326,1.8868027584110028,2.9266853577621226,"R2, fermeture sur le chômage",R2 active symétrique,True
+S2_emploi,20,emploi (milliers),102.73242693451539,-28.240957482856174,300.5382091908941,"R2, fermeture sur le chômage",R2 active symétrique,False
+S2_emploi,20,chômage (pt),0.14706830090034373,-0.4368945831254365,0.5345092186019631,R2 active symétrique,"R2, fermeture sur le chômage",False
+S2_emploi,20,prix (%),-1.0304789995069363,-1.4015796774738651,-0.9123440340288986,R2 active symétrique,"R2, fermeture lente",True
+S2_emploi,20,solde (pt PIB),-2.099972534593304,-3.3147948275219736,-1.967233900863313,R2 + BCE et prime,"R2, fermeture lente",True
+S2_emploi,20,dette (pt PIB),24.223851014133544,22.278284340857766,32.06151612849703,"R2, fermeture lente",R2 + BCE et prime,True
+S3_productivite,5,PIB (%),2.19999880819358,1.7717402417584645,2.3978246234316996,R2 active symétrique,"R2, fermeture lente",True
+S3_productivite,5,emploi (milliers),427.67955022228125,348.97111046423015,455.0575289405606,R2 active symétrique,"R2, fermeture lente",True
+S3_productivite,5,chômage (pt),-0.08983373711377673,-0.17197420132273322,0.1400104044660626,"R2, fermeture lente",R2 active symétrique,False
+S3_productivite,5,prix (%),-0.1852084920084189,-0.24375766803558335,0.08694771636058177,"R2, ancrage fort",R2 active symétrique,False
+S3_productivite,5,solde (pt PIB),-1.8194921303901666,-1.9256211012815694,-1.5528282255444594,R2 + BCE et prime,R2 active symétrique,True
+S3_productivite,5,dette (pt PIB),5.046804126989855,4.725505079775871,5.530011715414645,"R2, fermeture lente","R2, fermeture sur le chômage",True
+S3_productivite,10,PIB (%),2.7589385883439776,2.21834993937211,3.254372877164375,"R2, fermeture sur le chômage",R2 active symétrique,True
+S3_productivite,10,emploi (milliers),458.21535230062364,346.5515579564635,531.8362566397591,"R2, fermeture sur le chômage",R2 active symétrique,True
+S3_productivite,10,chômage (pt),0.7386939153343093,0.5271981394378447,1.0589216648507431,R2 active symétrique,"R2, fermeture sur le chômage",True
+S3_productivite,10,prix (%),-0.4471881661011107,-0.8622528774601232,-0.3473551585168748,R2 active symétrique,"R2, fermeture lente",True
+S3_productivite,10,solde (pt PIB),-2.241425656976581,-2.724978850377436,-2.0757315839409074,R2 + BCE et prime,"R2, fermeture lente",True
+S3_productivite,10,dette (pt PIB),14.141355054076968,12.927381269447807,16.34162327639649,"R2, fermeture lente","R2, fermeture sur le chômage",True
+S3_productivite,20,PIB (%),5.192691624945748,4.530979645175185,6.660169994874282,"R2, fermeture sur le chômage",R2 active symétrique,True
+S3_productivite,20,emploi (milliers),758.8422556458681,581.0989896265601,1293.9419001876013,"R2, fermeture sur le chômage",R2 active symétrique,True
+S3_productivite,20,chômage (pt),1.3827825716707256,-0.14264160041370744,1.8956288677192443,R2 active symétrique,"R2, fermeture sur le chômage",False
+S3_productivite,20,prix (%),-1.8531197261201666,-2.815603581920454,-1.3342070282102307,R2 active symétrique,"R2, ancrage fort",True
+S3_productivite,20,solde (pt PIB),-3.0142518648701753,-5.384151645368927,-2.599283282333632,R2 + BCE et prime,"R2, ancrage fort",True
+S3_productivite,20,dette (pt PIB),37.74824820153782,33.20406634724827,52.35732945526672,"R2, ancrage fort",R2 + BCE et prime,True
+S4_redressement,5,PIB (%),-0.6562585448378737,-0.7316289721497147,-0.17295675149093595,"R2, fermeture lente",R2 active symétrique,True
+S4_redressement,5,emploi (milliers),-62.69435395360779,-72.94742479046909,60.87489861202994,"R2, fermeture lente",R2 active symétrique,False
+S4_redressement,5,chômage (pt),0.18542793963972493,-0.18004662802264626,0.21575293192955947,R2 active symétrique,"R2, fermeture lente",False
+S4_redressement,5,prix (%),0.6180703965891509,0.29221255585555456,0.6879471589412014,R2 active symétrique,"R2, ancrage fort",True
+S4_redressement,5,solde (pt PIB),2.0514728141446366,1.7973263053172364,2.082095616780526,R2 active symétrique,R2 + BCE et prime,True
+S4_redressement,5,dette (pt PIB),-7.000347877953061,-7.144846642586401,-6.592412998046441,"R2, ancrage fort",R2 active symétrique,True
+S4_redressement,10,PIB (%),-0.7919901659458973,-0.9289673187960269,-0.446938575727352,"R2, fermeture lente","R2, fermeture sur le chômage",True
+S4_redressement,10,emploi (milliers),-69.03304640516944,-100.11604938770688,44.163838835651404,"R2, fermeture lente",R2 active symétrique,False
+S4_redressement,10,chômage (pt),0.20290817533293826,-0.12981035055652512,0.2942701497420934,R2 active symétrique,"R2, fermeture lente",False
+S4_redressement,10,prix (%),0.37510591984414143,0.047182440395196125,0.5494910975586739,"R2, ancrage faible","R2, ancrage fort",True
+S4_redressement,10,solde (pt PIB),2.375078704535749,2.0987451554829377,2.5655316838296764,R2 active symétrique,R2 + BCE et prime,True
+S4_redressement,10,dette (pt PIB),-16.584365535352475,-17.549610728546668,-15.303373747243683,"R2, fermeture sur le chômage",R2 active symétrique,True
+S4_redressement,20,PIB (%),-0.9986428187266374,-1.4322090459103163,-0.3832907304515152,R2 active symétrique,"R2, fermeture sur le chômage",True
+S4_redressement,20,emploi (milliers),-14.000379380679078,-120.71863690788086,133.77483601036147,R2 active symétrique,"R2, fermeture sur le chômage",False
+S4_redressement,20,chômage (pt),0.04153864424399778,-0.3969053388297574,0.3581680450072007,"R2, fermeture sur le chômage",R2 active symétrique,False
+S4_redressement,20,prix (%),0.29115939980808636,0.07833755445365344,0.5925594294376275,"R2, ancrage faible",R2 active symétrique,True
+S4_redressement,20,solde (pt PIB),3.042246833229173,2.8448033871160288,3.797248746402481,"R2, ancrage faible",R2 + BCE et prime,True
+S4_redressement,20,dette (pt PIB),-38.53693175482039,-44.07162713781369,-35.49391117533125,"R2, fermeture sur le chômage",R2 active symétrique,True
+S5_global,5,PIB (%),0.3268420281908641,0.3113351826971895,0.43045221666095956,sans règle budgétaire (R0),"R2, fermeture sur le chômage",True
+S5_global,5,emploi (milliers),-29.660780931160843,-35.17380263682935,-15.943828880805086,sans règle budgétaire (R0),"R2, fermeture sur le chômage",True
+S5_global,5,chômage (pt),0.41703202147479423,0.3767516953994363,0.43768807152839706,"R2, fermeture sur le chômage",sans règle budgétaire (R0),True
+S5_global,5,prix (%),-0.5187717592530231,-0.6867920362383747,-0.4334535361213837,"R2, ancrage faible","R2, ancrage fort",True
+S5_global,5,solde (pt PIB),-0.0858475234623155,-0.16322389929747683,-0.04703711053977866,"R2, ancrage faible","R2, ancrage fort",True
+S5_global,5,dette (pt PIB),1.430889298365969,1.1775047682449156,1.9370301043556424,"R2, ancrage fort","R2, ancrage faible",True
+S5_global,10,PIB (%),0.6379146538355491,0.566944056987593,0.9448975423064401,"R2, fermeture lente",R2 active symétrique,True
+S5_global,10,emploi (milliers),-47.88803941783044,-61.36879851972117,56.395145340160525,"R2, fermeture lente",R2 active symétrique,False
+S5_global,10,chômage (pt),0.465222304979207,0.1598007290896657,0.505045249848834,R2 active symétrique,"R2, fermeture lente",True
+S5_global,10,prix (%),-1.1107083612244952,-1.476062583021017,-0.9138444360110616,"R2, ancrage faible","R2, ancrage fort",True
+S5_global,10,solde (pt PIB),-0.2700160901950408,-0.4718805720529531,-0.17648728221310162,R2 active symétrique,"R2, ancrage fort",True
+S5_global,10,dette (pt PIB),3.215708698255497,2.352042269593767,4.9210738803150775,"R2, ancrage fort","R2, ancrage faible",True
+S5_global,20,PIB (%),1.3347925356010224,1.1170821977455865,1.561160505340107,"R2, fermeture lente",R2 active symétrique,True
+S5_global,20,emploi (milliers),-92.05253884308695,-141.6412141342662,57.93174700416421,"R2, fermeture lente",R2 active symétrique,False
+S5_global,20,chômage (pt),0.5991067096501421,0.15571602961584752,0.7455229619089501,R2 active symétrique,"R2, fermeture lente",True
+S5_global,20,prix (%),-1.665899251516408,-2.1420679845288113,-1.3629541075716536,"R2, ancrage faible","R2, ancrage fort",True
+S5_global,20,solde (pt PIB),-1.0318497896228536,-1.6711486537688085,-0.7015604901910262,"R2, ancrage faible","R2, ancrage fort",True
+S5_global,20,dette (pt PIB),11.174717217958914,7.654812892925065,18.072961613683674,"R2, ancrage fort","R2, ancrage faible",True
