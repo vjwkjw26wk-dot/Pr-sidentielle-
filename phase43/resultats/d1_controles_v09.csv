@@ -1,0 +1,67 @@
+configuration,choc,controle,reussi,detail
+v09,demande publique +1 pt de PIB,pas de valeur manquante,True,
+v09,demande publique +1 pt de PIB,"stabilité (variation annuelle des écarts de PIB et de prix < 0,25 pt sur 2042-2046)",True,"{'PIB (%)': 0.015, 'prix conso (%)': 0.033}"
+v09,demande publique +1 pt de PIB,signe attendu à 5 ans : PIB (%) +,True,0.803
+v09,demande publique +1 pt de PIB,signe attendu à 5 ans : emploi (milliers) +,True,369.312
+v09,demande publique +1 pt de PIB,signe attendu à 5 ans : chômage (pt) −,True,-1.092
+v09,demande publique +1 pt de PIB,signe attendu à 5 ans : prix conso (%) +,True,0.809
+v09,demande publique +1 pt de PIB,signe attendu à 5 ans : solde public (pt PIB) −,True,-0.022
+v09,demande publique +1 pt de PIB,"cohérence chômage-emploi (écart < 0,05 pt)",True,-1.092 vs -1.092
+v09,impôts des ménages +1 pt de PIB,pas de valeur manquante,True,
+v09,impôts des ménages +1 pt de PIB,"stabilité (variation annuelle des écarts de PIB et de prix < 0,25 pt sur 2042-2046)",True,"{'PIB (%)': 0.011, 'prix conso (%)': 0.007}"
+v09,impôts des ménages +1 pt de PIB,signe attendu à 5 ans : PIB (%) −,True,-0.583
+v09,impôts des ménages +1 pt de PIB,signe attendu à 5 ans : emploi (milliers) −,True,-140.150
+v09,impôts des ménages +1 pt de PIB,signe attendu à 5 ans : chômage (pt) +,True,0.415
+v09,impôts des ménages +1 pt de PIB,signe attendu à 5 ans : solde public (pt PIB) +,True,0.538
+v09,impôts des ménages +1 pt de PIB,"cohérence chômage-emploi (écart < 0,05 pt)",True,0.415 vs 0.415
+v09,impôts sur les produits +10 %,pas de valeur manquante,True,
+v09,impôts sur les produits +10 %,"stabilité (variation annuelle des écarts de PIB et de prix < 0,25 pt sur 2042-2046)",True,"{'PIB (%)': 0.006, 'prix conso (%)': 0.009}"
+v09,impôts sur les produits +10 %,signe attendu à 5 ans : PIB (%) −,True,-0.324
+v09,impôts sur les produits +10 %,signe attendu à 5 ans : emploi (milliers) −,True,-92.435
+v09,impôts sur les produits +10 %,signe attendu à 5 ans : chômage (pt) +,True,0.273
+v09,impôts sur les produits +10 %,signe attendu à 5 ans : prix conso (%) +,True,1.675
+v09,impôts sur les produits +10 %,signe attendu à 5 ans : solde public (pt PIB) +,True,1.557
+v09,impôts sur les produits +10 %,"cohérence chômage-emploi (écart < 0,05 pt)",True,0.273 vs 0.273
+v09,coût du travail −2 % (allègement),pas de valeur manquante,True,
+v09,coût du travail −2 % (allègement),"stabilité (variation annuelle des écarts de PIB et de prix < 0,25 pt sur 2042-2046)",True,"{'PIB (%)': 0.008, 'prix conso (%)': 0.004}"
+v09,coût du travail −2 % (allègement),signe attendu à 5 ans : PIB (%) +,True,0.197
+v09,coût du travail −2 % (allègement),signe attendu à 5 ans : emploi (milliers) +,True,106.106
+v09,coût du travail −2 % (allègement),signe attendu à 5 ans : chômage (pt) −,True,-0.314
+v09,coût du travail −2 % (allègement),signe attendu à 5 ans : prix conso (%) −,True,-1.119
+v09,coût du travail −2 % (allègement),signe attendu à 5 ans : solde public (pt PIB) −,True,-0.778
+v09,coût du travail −2 % (allègement),"cohérence chômage-emploi (écart < 0,05 pt)",True,-0.314 vs -0.314
+v09,IS −5 points,pas de valeur manquante,True,
+v09,IS −5 points,"stabilité (variation annuelle des écarts de PIB et de prix < 0,25 pt sur 2042-2046)",True,"{'PIB (%)': 0.014, 'prix conso (%)': 0.021}"
+v09,IS −5 points,signe attendu à 5 ans : solde public (pt PIB) −,True,-0.462
+v09,IS −5 points,"cohérence chômage-emploi (écart < 0,05 pt)",True,-0.055 vs -0.055
+v09,taux d'intérêt +1 pt,pas de valeur manquante,True,
+v09,taux d'intérêt +1 pt,"stabilité (variation annuelle des écarts de PIB et de prix < 0,25 pt sur 2042-2046)",True,"{'PIB (%)': 0.018, 'prix conso (%)': 0.015}"
+v09,taux d'intérêt +1 pt,signe attendu à 5 ans : PIB (%) −,True,-0.147
+v09,taux d'intérêt +1 pt,signe attendu à 5 ans : emploi (milliers) −,True,-31.247
+v09,taux d'intérêt +1 pt,signe attendu à 5 ans : chômage (pt) +,True,0.092
+v09,taux d'intérêt +1 pt,signe attendu à 5 ans : prix conso (%) −,True,-0.013
+v09,taux d'intérêt +1 pt,signe attendu à 5 ans : solde public (pt PIB) −,True,-1.104
+v09,taux d'intérêt +1 pt,"cohérence chômage-emploi (écart < 0,05 pt)",True,0.092 vs 0.092
+v09,demande mondiale +5 %,pas de valeur manquante,True,
+v09,demande mondiale +5 %,"stabilité (variation annuelle des écarts de PIB et de prix < 0,25 pt sur 2042-2046)",True,"{'PIB (%)': 0.015, 'prix conso (%)': 0.015}"
+v09,demande mondiale +5 %,signe attendu à 5 ans : PIB (%) +,True,0.346
+v09,demande mondiale +5 %,signe attendu à 5 ans : emploi (milliers) +,True,95.969
+v09,demande mondiale +5 %,signe attendu à 5 ans : chômage (pt) −,True,-0.284
+v09,demande mondiale +5 %,signe attendu à 5 ans : solde public (pt PIB) +,True,0.303
+v09,demande mondiale +5 %,"cohérence chômage-emploi (écart < 0,05 pt)",True,-0.284 vs -0.284
+v09,énergie importée +50 %,pas de valeur manquante,True,
+v09,énergie importée +50 %,"stabilité (variation annuelle des écarts de PIB et de prix < 0,25 pt sur 2042-2046)",True,"{'PIB (%)': 0.044, 'prix conso (%)': 0.045}"
+v09,énergie importée +50 %,signe attendu à 5 ans : PIB (%) −,True,-1.505
+v09,énergie importée +50 %,signe attendu à 5 ans : emploi (milliers) −,True,-360.882
+v09,énergie importée +50 %,signe attendu à 5 ans : chômage (pt) +,True,1.067
+v09,énergie importée +50 %,signe attendu à 5 ans : prix conso (%) +,True,6.171
+v09,énergie importée +50 %,"cohérence chômage-emploi (écart < 0,05 pt)",True,1.067 vs 1.067
+v09,productivité +1 %,pas de valeur manquante,True,
+v09,productivité +1 %,"stabilité (variation annuelle des écarts de PIB et de prix < 0,25 pt sur 2042-2046)",True,"{'PIB (%)': 0.003, 'prix conso (%)': 0.018}"
+v09,productivité +1 %,signe attendu à 5 ans : PIB (%) +,True,1.039
+v09,productivité +1 %,signe attendu à 5 ans : prix conso (%) −,True,-1.182
+v09,productivité +1 %,"cohérence chômage-emploi (écart < 0,05 pt)",True,0.399 vs 0.399
+v09,salaires +2 % (temporaire),pas de valeur manquante,True,
+v09,salaires +2 % (temporaire),"stabilité (variation annuelle des écarts de PIB et de prix < 0,25 pt sur 2042-2046)",True,"{'PIB (%)': 0.002, 'prix conso (%)': 0.021}"
+v09,salaires +2 % (temporaire),signe attendu à 5 ans : prix conso (%) +,True,0.890
+v09,salaires +2 % (temporaire),"cohérence chômage-emploi (écart < 0,05 pt)",True,0.141 vs 0.141

@@ -53,23 +53,24 @@ def choc(nom):
 CHOCS = ["pétrole +50 % temporaire (2 ans)", "pétrole +50 % permanent", "salaires +2 % temporaire", "productivité +1 % permanente",
          "coût du travail −2 % permanent (subvention)", "demande publique +5 % permanente", "taux d'intérêt +1 pt permanent",
          "anticipations d'inflation +1 pt (1 an, proxy)"]
-rows = {}
-for cn, spec in CONF.items():
-    b = lab.run(2010, 2025, "v08", spec, retour=True)[1]
-    for ch in CHOCS:
-        v = lab.run(2010, 2025, "v08", spec, exp_mod=choc(ch), retour=True)[1]
-        lp = np.log(v.pc / b.pc)
-        prod_v, prod_b = v.pib / v.emploi, b.pib / b.emploi
-        for t in AN:
-            rows[(ch, cn, t - T0 + 1)] = {
-                "niveau prix (%)": 100 * lp[t], "inflation (pt)": 100 * (lp[t] - (lp[t - 1] if t - 1 in lp.index else 0.0)),
-                "salaire (%)": 100 * np.log(v.salaire[t] / b.salaire[t]), "salaire réel (%)": 100 * (np.log(v.salaire[t] / b.salaire[t]) - lp[t]),
-                "prix VA (%)": 100 * np.log(v.pva_m[t] / b.pva_m[t]), "marge (pt)": v.taux_marge[t] - b.taux_marge[t],
-                "productivité (%)": 100 * np.log(prod_v[t] / prod_b[t]), "emploi (milliers)": v.emploi[t] - b.emploi[t],
-                "PIB (%)": 100 * np.log(v.pib[t] / b.pib[t]), "solde (pt PIB)": v.solde_pib[t] - b.solde_pib[t]}
-    print("fait :", cn, flush=True)
-df = pd.DataFrame(rows).T
-df.index.names = ["choc", "configuration", "année"]
-df.to_csv(H.parent / ("b5_chocs_ancrage_sans_tension.csv" if "--sans-tension" in sys.argv else "b5_chocs_ancrage.csv"))
-pd.set_option("display.width", 250); pd.set_option("display.max_rows", 400)
-print(df.round(2).to_string())
+if __name__ == "__main__":   # phase 4.3 : garde ajoutée (l'import de `choc` relançait toute la batterie)
+    rows = {}
+    for cn, spec in CONF.items():
+        b = lab.run(2010, 2025, "v08", spec, retour=True)[1]
+        for ch in CHOCS:
+            v = lab.run(2010, 2025, "v08", spec, exp_mod=choc(ch), retour=True)[1]
+            lp = np.log(v.pc / b.pc)
+            prod_v, prod_b = v.pib / v.emploi, b.pib / b.emploi
+            for t in AN:
+                rows[(ch, cn, t - T0 + 1)] = {
+                    "niveau prix (%)": 100 * lp[t], "inflation (pt)": 100 * (lp[t] - (lp[t - 1] if t - 1 in lp.index else 0.0)),
+                    "salaire (%)": 100 * np.log(v.salaire[t] / b.salaire[t]), "salaire réel (%)": 100 * (np.log(v.salaire[t] / b.salaire[t]) - lp[t]),
+                    "prix VA (%)": 100 * np.log(v.pva_m[t] / b.pva_m[t]), "marge (pt)": v.taux_marge[t] - b.taux_marge[t],
+                    "productivité (%)": 100 * np.log(prod_v[t] / prod_b[t]), "emploi (milliers)": v.emploi[t] - b.emploi[t],
+                    "PIB (%)": 100 * np.log(v.pib[t] / b.pib[t]), "solde (pt PIB)": v.solde_pib[t] - b.solde_pib[t]}
+        print("fait :", cn, flush=True)
+    df = pd.DataFrame(rows).T
+    df.index.names = ["choc", "configuration", "année"]
+    df.to_csv(H.parent / ("b5_chocs_ancrage_sans_tension.csv" if "--sans-tension" in sys.argv else "b5_chocs_ancrage.csv"))
+    pd.set_option("display.width", 250); pd.set_option("display.max_rows", 400)
+    print(df.round(2).to_string())

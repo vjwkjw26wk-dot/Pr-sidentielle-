@@ -1,4 +1,214 @@
 {
+ "dbnomics_imf_weo_2010_10_ggxcnl_ngdp.json": {
+  "date": "2026-11-24T11:21:26",
+  "octets": 260125,
+  "sha256": "8d9d6477ccc65ebd9135b1c0b315a22690aecf79fa8c306352107c37d57904ef",
+  "url": "https://api.db.nomics.world/v22/series/IMF/WEO:2010-10?dimensions=%7B%22weo-subject%22:%5B%22GGXCNL_NGDP%22%5D%7D&observations=1&limit=1000"
+ },
+ "dbnomics_imf_weo_2010_10_ggxwdg_ngdp.json": {
+  "date": "2026-11-24T11:21:30",
+  "octets": 257421,
+  "sha256": "e8cfce94c19b6d4d8abeb8dee8ca7610d835322ab17efe4c0d848967602994df",
+  "url": "https://api.db.nomics.world/v22/series/IMF/WEO:2010-10?dimensions=%7B%22weo-subject%22:%5B%22GGXWDG_NGDP%22%5D%7D&observations=1&limit=1000"
+ },
+ "dbnomics_imf_weo_2010_10_lur.json": {
+  "date": "2026-11-24T11:20:14",
+  "octets": 252309,
+  "sha256": "794084ceaf04cddd2e32a988d7f6c6d7a24d973877d33e0bcd3078fad48d5f16",
+  "url": "https://api.db.nomics.world/v22/series/IMF/WEO:2010-10?dimensions=%7B%22weo-subject%22:%5B%22LUR%22%5D%7D&observations=1&limit=1000"
+ },
+ "dbnomics_imf_weo_2010_10_ngdp_rpch.json": {
+  "date": "2026-11-24T11:20:02",
+  "octets": 257837,
+  "sha256": "bd3a3ea15593ad9d57d6e1dc395943d5dcddbaf586044b38aca90cb362928256",
+  "url": "https://api.db.nomics.world/v22/series/IMF/WEO:2010-10?dimensions=%7B%22weo-subject%22:%5B%22NGDP_RPCH%22%5D%7D&observations=1&limit=1000"
+ },
+ "dbnomics_imf_weo_2010_10_pcpipch.json": {
+  "date": "2026-11-24T11:20:10",
+  "octets": 256313,
+  "sha256": "e7c629150526db4b9746ec6d32141b92b229926510c855e9c812d77eb79c75cc",
+  "url": "https://api.db.nomics.world/v22/series/IMF/WEO:2010-10?dimensions=%7B%22weo-subject%22:%5B%22PCPIPCH%22%5D%7D&observations=1&limit=1000"
+ },
+ "dbnomics_imf_weo_2012_10_ggxcnl_ngdp.json": {
+  "date": "2026-11-24T11:22:26",
+  "octets": 274416,
+  "sha256": "5a76586c05c87c11be2bfb2037a484353ebf625650ad8be347de6428be8ea0a8",
+  "url": "https://api.db.nomics.world/v22/series/IMF/WEO:2012-10?dimensions=%7B%22weo-subject%22:%5B%22GGXCNL_NGDP%22%5D%7D&observations=1&limit=1000"
+ },
+ "dbnomics_imf_weo_2012_10_ggxwdg_ngdp.json": {
+  "date": "2026-11-24T11:22:30",
+  "octets": 271802,
+  "sha256": "70ea96e55ef81ff69757eb43882a9b80d24ab40d23105820c29d5d30de737862",
+  "url": "https://api.db.nomics.world/v22/series/IMF/WEO:2012-10?dimensions=%7B%22weo-subject%22:%5B%22GGXWDG_NGDP%22%5D%7D&observations=1&limit=1000"
+ },
+ "dbnomics_imf_weo_2012_10_lur.json": {
+  "date": "2026-11-24T11:22:19",
+  "octets": 266031,
+  "sha256": "009f6b8e2094c32369345ab4e57434cdf9d42123d4f369f2db02d424f8d1dcf1",
+  "url": "https://api.db.nomics.world/v22/series/IMF/WEO:2012-10?dimensions=%7B%22weo-subject%22:%5B%22LUR%22%5D%7D&observations=1&limit=1000"
+ },
+ "dbnomics_imf_weo_2012_10_ngdp_rpch.json": {
+  "date": "2026-11-24T11:22:09",
+  "octets": 271807,
+  "sha256": "85fd946acb8d0f5072ea81d5956475a3a3b0cc290439de504a23d4493e6ad582",
+  "url": "https://api.db.nomics.world/v22/series/IMF/WEO:2012-10?dimensions=%7B%22weo-subject%22:%5B%22NGDP_RPCH%22%5D%7D&observations=1&limit=1000"
+ },
+ "dbnomics_imf_weo_2012_10_pcpipch.json": {
+  "date": "2026-11-24T11:22:15",
+  "octets": 270341,
+  "sha256": "57822cfb1762c6f95c275fea8398132cdcead579c057b20841d42829e5f72295",
+  "url": "https://api.db.nomics.world/v22/series/IMF/WEO:2012-10?dimensions=%7B%22weo-subject%22:%5B%22PCPIPCH%22%5D%7D&observations=1&limit=1000"
+ },
+ "dbnomics_imf_weo_2014_10_ggxcnl_ngdp.json": {
+  "date": "2026-11-24T11:23:26",
+  "octets": 288894,
+  "sha256": "4fc8903cb653cac5aaf81e695ce2b1198d76ae1960ead03b93ecade59f1768b0",
+  "url": "https://api.db.nomics.world/v22/series/IMF/WEO:2014-10?dimensions=%7B%22weo-subject%22:%5B%22GGXCNL_NGDP%22%5D%7D&observations=1&limit=1000"
+ },
+ "dbnomics_imf_weo_2014_10_ggxwdg_ngdp.json": {
+  "date": "2026-11-24T11:23:32",
+  "octets": 286352,
+  "sha256": "01f175a60b6523631a9486602bf7fd622d5094934e673e592b179696c06bac7b",
+  "url": "https://api.db.nomics.world/v22/series/IMF/WEO:2014-10?dimensions=%7B%22weo-subject%22:%5B%22GGXWDG_NGDP%22%5D%7D&observations=1&limit=1000"
+ },
+ "dbnomics_imf_weo_2014_10_lur.json": {
+  "date": "2026-11-24T11:23:21",
+  "octets": 280013,
+  "sha256": "4020a785c07d03c9755482db11474e20e24532bfc17135bbd5de796ea663e9da",
+  "url": "https://api.db.nomics.world/v22/series/IMF/WEO:2014-10?dimensions=%7B%22weo-subject%22:%5B%22LUR%22%5D%7D&observations=1&limit=1000"
+ },
+ "dbnomics_imf_weo_2014_10_ngdp_rpch.json": {
+  "date": "2026-11-24T11:23:10",
+  "octets": 285859,
+  "sha256": "86e928793bd31e39b78e31650d099c0133688af531af79744143859fbd373432",
+  "url": "https://api.db.nomics.world/v22/series/IMF/WEO:2014-10?dimensions=%7B%22weo-subject%22:%5B%22NGDP_RPCH%22%5D%7D&observations=1&limit=1000"
+ },
+ "dbnomics_imf_weo_2014_10_pcpipch.json": {
+  "date": "2026-11-24T11:23:16",
+  "octets": 284356,
+  "sha256": "b0474b1ced0ce8bf8ebf05934a07d5f52038e40bdf7cd3ac3a42f6f9d196b8b1",
+  "url": "https://api.db.nomics.world/v22/series/IMF/WEO:2014-10?dimensions=%7B%22weo-subject%22:%5B%22PCPIPCH%22%5D%7D&observations=1&limit=1000"
+ },
+ "dbnomics_imf_weo_2016_10_ggxcnl_ngdp.json": {
+  "date": "2026-11-24T11:24:23",
+  "octets": 302471,
+  "sha256": "59d84f7dec76cb3cd12a4ba0a5e3759b517bbcdb341ce0471f40cb640a689606",
+  "url": "https://api.db.nomics.world/v22/series/IMF/WEO:2016-10?dimensions=%7B%22weo-subject%22:%5B%22GGXCNL_NGDP%22%5D%7D&observations=1&limit=1000"
+ },
+ "dbnomics_imf_weo_2016_10_ggxwdg_ngdp.json": {
+  "date": "2026-11-24T11:24:28",
+  "octets": 299914,
+  "sha256": "d2e02b2635cefe41e684146c0ce96adc9df0bce656bfea7b0822d438ef134db4",
+  "url": "https://api.db.nomics.world/v22/series/IMF/WEO:2016-10?dimensions=%7B%22weo-subject%22:%5B%22GGXWDG_NGDP%22%5D%7D&observations=1&limit=1000"
+ },
+ "dbnomics_imf_weo_2016_10_lur.json": {
+  "date": "2026-11-24T11:24:19",
+  "octets": 292597,
+  "sha256": "d66a190c8601232b4e4de61e71856e37deca99695c37c9f7510f75541e68f0fc",
+  "url": "https://api.db.nomics.world/v22/series/IMF/WEO:2016-10?dimensions=%7B%22weo-subject%22:%5B%22LUR%22%5D%7D&observations=1&limit=1000"
+ },
+ "dbnomics_imf_weo_2016_10_ngdp_rpch.json": {
+  "date": "2026-11-24T11:24:09",
+  "octets": 298717,
+  "sha256": "dbc2ee05bd7d9374f8369b23dbc78d4dfd150182bd6a0b57c880563935d15aa6",
+  "url": "https://api.db.nomics.world/v22/series/IMF/WEO:2016-10?dimensions=%7B%22weo-subject%22:%5B%22NGDP_RPCH%22%5D%7D&observations=1&limit=1000"
+ },
+ "dbnomics_imf_weo_2016_10_pcpipch.json": {
+  "date": "2026-11-24T11:24:14",
+  "octets": 297384,
+  "sha256": "a630177f791e30cf861e8a965dc789b4235bf5adc1f434a3877fa6777966308f",
+  "url": "https://api.db.nomics.world/v22/series/IMF/WEO:2016-10?dimensions=%7B%22weo-subject%22:%5B%22PCPIPCH%22%5D%7D&observations=1&limit=1000"
+ },
+ "dbnomics_imf_weo_2021_10_ggxcnl_ngdp.json": {
+  "date": "2026-11-24T11:25:23",
+  "octets": 336359,
+  "sha256": "f3db310131f14b789f147ec8b232f4b36280555435a2ecb3368b05ef774e611e",
+  "url": "https://api.db.nomics.world/v22/series/IMF/WEO:2021-10?dimensions=%7B%22weo-subject%22:%5B%22GGXCNL_NGDP%22%5D%7D&observations=1&limit=1000"
+ },
+ "dbnomics_imf_weo_2021_10_ggxwdg_ngdp.json": {
+  "date": "2026-11-24T11:25:28",
+  "octets": 333974,
+  "sha256": "29308ae8ef1a8758e119a3a6aa68ae3139b1a0515580ba159bd7107c856c5961",
+  "url": "https://api.db.nomics.world/v22/series/IMF/WEO:2021-10?dimensions=%7B%22weo-subject%22:%5B%22GGXWDG_NGDP%22%5D%7D&observations=1&limit=1000"
+ },
+ "dbnomics_imf_weo_2021_10_lur.json": {
+  "date": "2026-11-24T11:25:17",
+  "octets": 324972,
+  "sha256": "130ee3537b0250ebe4b6588c500557216e6d7250789917525bd39bf6c3ceff06",
+  "url": "https://api.db.nomics.world/v22/series/IMF/WEO:2021-10?dimensions=%7B%22weo-subject%22:%5B%22LUR%22%5D%7D&observations=1&limit=1000"
+ },
+ "dbnomics_imf_weo_2021_10_ngdp_rpch.json": {
+  "date": "2026-11-24T11:25:05",
+  "octets": 332164,
+  "sha256": "3ccf6ffa9857b368cf675bb74010a3d4cca3b2509e93284587d4fe4f19f8cb88",
+  "url": "https://api.db.nomics.world/v22/series/IMF/WEO:2021-10?dimensions=%7B%22weo-subject%22:%5B%22NGDP_RPCH%22%5D%7D&observations=1&limit=1000"
+ },
+ "dbnomics_imf_weo_2021_10_pcpipch.json": {
+  "date": "2026-11-24T11:25:11",
+  "octets": 330718,
+  "sha256": "fc27b8f7a123ca1df750b8f95de8b248ca63c3aa1c717f9c16cbda2f5f3bdc7d",
+  "url": "https://api.db.nomics.world/v22/series/IMF/WEO:2021-10?dimensions=%7B%22weo-subject%22:%5B%22PCPIPCH%22%5D%7D&observations=1&limit=1000"
+ },
+ "dbnomics_imf_weo_2024_10_ggxcnl_ngdp.json": {
+  "date": "2026-11-24T11:19:07",
+  "octets": 352349,
+  "sha256": "0d7e9738582f11c1441ef3020e5aa2d2cb9594de6fbce9ec2b7c56eca49998c1",
+  "url": "https://api.db.nomics.world/v22/series/IMF/WEO:2024-10?dimensions=%7B%22weo-subject%22:%5B%22GGXCNL_NGDP%22%5D%7D&observations=1&limit=1000"
+ },
+ "dbnomics_imf_weo_2024_10_ggxwdg_ngdp.json": {
+  "date": "2026-11-24T11:19:12",
+  "octets": 350223,
+  "sha256": "1eb0d74ec8c0acac802af7da1dc1b4e8d52e1f0d0801bd6787e96a5578f2276c",
+  "url": "https://api.db.nomics.world/v22/series/IMF/WEO:2024-10?dimensions=%7B%22weo-subject%22:%5B%22GGXWDG_NGDP%22%5D%7D&observations=1&limit=1000"
+ },
+ "dbnomics_imf_weo_2024_10_lur.json": {
+  "date": "2026-11-24T11:19:01",
+  "octets": 340144,
+  "sha256": "4a47fa1dbf710e50ee7ce03be28a4d7ba9d9edb45ddb440af2ecdae49af4523e",
+  "url": "https://api.db.nomics.world/v22/series/IMF/WEO:2024-10?dimensions=%7B%22weo-subject%22:%5B%22LUR%22%5D%7D&observations=1&limit=1000"
+ },
+ "dbnomics_imf_weo_2024_10_ngdp_rpch.json": {
+  "date": "2026-11-24T11:18:47",
+  "octets": 347769,
+  "sha256": "d33e6deada90e6b4160c1d6c4e75944456a0850a6c73f5b1fdfc148964b58657",
+  "url": "https://api.db.nomics.world/v22/series/IMF/WEO:2024-10?dimensions=%7B%22weo-subject%22:%5B%22NGDP_RPCH%22%5D%7D&observations=1&limit=1000"
+ },
+ "dbnomics_imf_weo_2024_10_pcpipch.json": {
+  "date": "2026-11-24T11:18:54",
+  "octets": 346402,
+  "sha256": "76e9675e83baa0c7793917af36f8f5df282ceb96cb32759e2206c6ec85493c40",
+  "url": "https://api.db.nomics.world/v22/series/IMF/WEO:2024-10?dimensions=%7B%22weo-subject%22:%5B%22PCPIPCH%22%5D%7D&observations=1&limit=1000"
+ },
+ "dbnomics_imf_weoagg_2010_10_tm_rpch.json": {
+  "date": "2026-11-24T11:19:22",
+  "octets": 32380,
+  "sha256": "2235306841724eb01fbae5bc93d090e0b6b5427efad406b53751eabcb02d14a0",
+  "url": "https://api.db.nomics.world/v22/series/IMF/WEOAGG:2010-10?dimensions=%7B%22weo-subject%22:%5B%22TM_RPCH%22%5D%7D&observations=1&limit=1000"
+ },
+ "dbnomics_imf_weoagg_2012_10_tm_rpch.json": {
+  "date": "2026-11-24T11:20:29",
+  "octets": 33255,
+  "sha256": "84050227b57bc35be044335e0a12810ad1cf09760876c00eaa23157bdf1d2763",
+  "url": "https://api.db.nomics.world/v22/series/IMF/WEOAGG:2012-10?dimensions=%7B%22weo-subject%22:%5B%22TM_RPCH%22%5D%7D&observations=1&limit=1000"
+ },
+ "dbnomics_imf_weoagg_2014_10_tm_rpch.json": {
+  "date": "2026-11-24T11:20:30",
+  "octets": 34904,
+  "sha256": "adb896178bb7d5081f6642920d8401599b608241d713769325146fa75b49d5c1",
+  "url": "https://api.db.nomics.world/v22/series/IMF/WEOAGG:2014-10?dimensions=%7B%22weo-subject%22:%5B%22TM_RPCH%22%5D%7D&observations=1&limit=1000"
+ },
+ "dbnomics_imf_weoagg_2016_10_tm_rpch.json": {
+  "date": "2026-11-24T11:20:31",
+  "octets": 35688,
+  "sha256": "285fcf188fec3e85271e319f71e61e81d259e0007abc196b57754d21e8b0ad81",
+  "url": "https://api.db.nomics.world/v22/series/IMF/WEOAGG:2016-10?dimensions=%7B%22weo-subject%22:%5B%22TM_RPCH%22%5D%7D&observations=1&limit=1000"
+ },
+ "dbnomics_imf_weoagg_2021_10_tm_rpch.json": {
+  "date": "2026-11-24T11:20:32",
+  "octets": 34179,
+  "sha256": "a10bfcf8475a9f71b294028ed557acefa861e87c1ab7a65943c681c581a6a8cc",
+  "url": "https://api.db.nomics.world/v22/series/IMF/WEOAGG:2021-10?dimensions=%7B%22weo-subject%22:%5B%22TM_RPCH%22%5D%7D&observations=1&limit=1000"
+ },
  "dgfip_ir_credits_deciles.xlsx": {
   "date": "2026-11-23T18:51:21",
   "octets": 118865,
@@ -256,6 +466,18 @@
   "octets": 16117,
   "sha256": "cb0a88734ecb6c03b778bbd12ea9b8f7b42b2216b3088ea62fb1e3d984287abb",
   "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nasa_10_f_bs?format=JSON&geo=FR&unit=MIO_EUR&co_nco=NCO&na_item=BF90&na_item=F&sinceTimePeriod=2018"
+ },
+ "eurostat_nasa_10_f_bs_S11_CO_FR.json": {
+  "date": "2026-11-24T11:01:56",
+  "octets": 7569,
+  "sha256": "17f52c93db4e58811c8bc48e5617febeb0d2fe453ea5979de868a2c2e3a8bea2",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nasa_10_f_bs?format=JSON&geo=FR&sector=S11&na_item=F3&na_item=F4&na_item=F2&na_item=F5&unit=MIO_EUR&co_nco=CO"
+ },
+ "eurostat_nasa_10_f_bs_S11_dette_FR.json": {
+  "date": "2026-11-24T11:01:30",
+  "octets": 14732,
+  "sha256": "00138f71f665280ffae8c71a8fbfec21067ec89df1274c15212ba04ccfd6aa1c",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nasa_10_f_bs?format=JSON&geo=FR&sector=S11&sector=S14_S15&sector=S13&na_item=F3&na_item=F4&na_item=F5&na_item=F2&unit=MIO_EUR&co_nco=NCO"
  },
  "eurostat_nasa_10_f_tr_FR.json": {
   "date": "2026-11-23T18:52:17",

@@ -76,6 +76,11 @@ SPEC = {
     "indexation_retard": 0.0,     # rattrapage : effet de l'inflation de l'année précédente sur le salaire ; 0,17 dérivé de
                                   #   l'équation trimestrielle 1997-2019 (phase42/a8_salaires_trimestriels.py), non ajusté
                                   #   sur les backtests (l'équation annuelle ne l'identifie pas)
+    # ---- phase 4.3 (branche phase43), chantier B : défaut = v0.9 à l'identique
+    "societes": "v09",            # "compte" : compte des sociétés non financières (M21) : intérêts (taux apparent, dette S11),
+                                  #   IS sur le résultat courant, dividendes distribués (résultat de t − 1), épargne, capacité
+                                  #   de financement, dette ; revenus du capital des ménages et du reste du monde reconstruits à
+                                  #   partir des dividendes (les profits induits des mesures, M14, passent par ce compte)
 }
 
 
@@ -104,8 +109,18 @@ def configurer_v09(**modifs):
 def configurer_v08():
     SPEC.update({"demande_travail": "v08", "cible_k": True, "potentiel": "cobb_douglas", "sigma": None,
                  "non_marchand": "v08", "salaire_public": "v08", "dette": "v08", "cout_travail": "v08",
-                 "prix_va": "v09", "salaires": "v09", "indexation_salaires": None, "indexation_retard": 0.0, "capacites": "v09", "tension_prix": "v09"})
+                 "prix_va": "v09", "salaires": "v09", "indexation_salaires": None, "indexation_retard": 0.0, "capacites": "v09", "tension_prix": "v09",
+                 "societes": "v09"})
     E.SIGMA_TRAVAIL = _SIGMA_V08
+
+
+# Configuration candidate de la phase 4 (T1 + compte des sociétés), activable ; la v0.9 reste la configuration par défaut.
+CANDIDATE_PHASE4 = {"prix_va": "frontiere", "tension_prix": "aucune", "societes": "compte"}
+
+
+def configurer_phase4(**modifs):
+    """v0.9 + candidate T1 (prix de VA sur la frontière des prix de facteurs, sans effet du TUC) + compte des sociétés."""
+    configurer_v09(**{**CANDIDATE_PHASE4, **modifs})
 
 
 DUREE_VIE_DETTE = 7.0  # v0.9 : durée de vie moyenne de la dette (années) servant aux poids d'émission (AFT : ≈ 7 ans en 2010,
@@ -227,6 +242,10 @@ class Exogenes:
     #                                        Modele.trajectoires_gel) : "C", "prix_salaires", "emploi", "Z"
     subvention_en_depense: bool = False    # v0.9 : ajouter la subvention aux dépenses publiques (mesure nouvelle ; en backtest
     #                                        elle est déjà dans les autres dépenses observées)
+    taux_is_apparent: pd.Series = None     # phase 4.3 : taux apparent de l'IS de S11 observé (rétrosimulation conditionnelle :
+    #                                        politique fiscale observée, assiette comprise) ; None : rapport des taux légaux
+    variante_societes: dict = None         # phase 4.3 : variantes du compte des sociétés (M21.VARIANTES : "phi_dette", "mu_taux",
+    #                                        "div_lissage", "fiscalite_dividendes")
     calage: dict = None                    # termes de calage par année (compte de référence recalé sur l'observé) :
     #   "c", "x", "m", "investissement", "emploi", "prix", "salaire" : ajout au taux de croissance (log) de l'équation ;
     #   "recettes", "depenses" : ajout en points de PIB ; "dette" : ajustement stock-flux (M€)
@@ -608,6 +627,12 @@ class Modele:
     def simuler(self, annees, ex: Exogenes, iterations=60, amorti=0.5, observe_jusqu_a=None):
         B, P, BR = self.B, self.P, self.BR
         self._pf_etat = {}                           # v0.9 : portefeuille de dette par année (cohortes)
+        self.soc = None
+        if SPEC["societes"] == "compte":
+            import m21_societes as M21
+            assert not ex.patrimoine_endogene, "compte des sociétés et revenus du patrimoine estimés : double compte"
+            self.soc = M21.CompteSocietes(self.B, ex.variante_societes)
+            self.soc.initialiser()
         self._Z_hist = {}
         r = {k: e.res.params for k, e in self.eq.items()}
         m, men, apu, em = self.macro, self.men, self.apu, self.emp
@@ -1091,6 +1116,8 @@ class Modele:
             hist_vol[t] = {"C": self.dem["C"], "X": self.dem["X"], "I": self.dem["I"], "G": self.dem["G"], "M": Mtot,
                            "q": dict(q_br), "q_nm": q_nm, "n_nm": n_nm, "u": u_cur}
             etat["phi"] = phi
+            # FBCF des branches marchandes en valeur, rapportée à la base (compte des sociétés)
+            A.setdefault("fbcf_ent_ratio", {})[t] = fbcf_br * pi_idx / (fbcf_br_B * conv_I)
             fp = self._finances(t, A, niv, mb, ab, ex, w, n_br, n_nm, pc, pib_vol, q_br, pva)
             tuc_m = sum(self._tuc(b, t, q_br[b], H) * H[b]["q"][B] for b in S.TUC_BRANCHE) / sum(H[b]["q"][B] for b in S.TUC_BRANCHE)
             IND = [b for b in BR if b.startswith("C")]
@@ -1161,6 +1188,13 @@ class Modele:
         g = mm.get("profits", 0.0)
         if not g:
             return {"menages": 0.0, "non_residents": 0.0, "conserve": 0.0, "autres_residents": 0.0}
+        if self.soc is not None:
+            # phase 4.3 : le supplément de profit entre dans le résultat de S11 (M21) ; sa distribution aux ménages et au
+            # reste du monde passe par la règle de distribution du compte (pas de second canal M14)
+            if pib_nom is None:
+                pib_nom = self.A_courant["pib_nom_idx"][t]
+            return {"menages": 0.0, "non_residents": 0.0, "autres_residents": 0.0, "brut": g * self._idx_mesure(mm, pib_nom, t),
+                    "conserve": g * self._idx_mesure(mm, pib_nom, t) * (1 - self.soc.kappa_s11 * self.soc.rho_B)}
         if pib_nom is None:
             pib_nom = self.A_courant["pib_nom_idx"][t]
         import m14_heterogeneite as H14
@@ -1177,7 +1211,12 @@ class Modele:
         import m14_heterogeneite as H14
         pib_nom = self.A_courant["pib_nom_idx"][t]
         v = mm.get("conso", 0.0) * self._idx_mesure(mm, pib_nom, t)
-        v += self._profits(ex, t, pib_nom)["menages"] * (H14.facteur_top1(mm.get("variante_pmc", "central")) - 1)
+        if self.soc is not None:
+            # dividendes concentrés au sommet de la distribution : propension du dernier centile sur l'écart des dividendes
+            # reçus par les ménages (compte des sociétés)
+            v += self.soc.part_men * self.soc.ecart_div(t, pib_nom) * (H14.facteur_top1(mm.get("variante_pmc", "central")) - 1) if t in self.soc.etat["div"] else 0.0
+        else:
+            v += self._profits(ex, t, pib_nom)["menages"] * (H14.facteur_top1(mm.get("variante_pmc", "central")) - 1)
         return v
 
     def _tuc(self, b, t, q, H):
@@ -1214,7 +1253,12 @@ class Modele:
         2018 liée au prélèvement forfaitaire unique n'étant pas expliquée) et n'améliorent que peu 2023-2024."""
         if not ex.patrimoine_endogene:
             idx = A["pib_nom_idx"][t]
-            return [self.men.ebe[self.B] * idx, self.men.d4[self.B] * idx]
+            d4 = self.men.d4[self.B] * idx
+            if self.soc is not None and t > self.B:
+                # phase 4.3 : la composante « dividendes » suit les dividendes distribués (M21) au lieu du PIB nominal
+                self.soc.dividendes(t)
+                d4 += self.soc.part_men * self.soc.ecart_div(t, idx)
+            return [self.men.ebe[self.B] * idx, d4]
         out = []
         pibn_t = self.macro.pib_cp[self.B] * A["pib_nom_idx"][t]
         pibn_1 = self.macro.pib_cp[self.B] * A["pib_nom_idx"][t - 1] if (t - 1) in A["pib_nom_idx"] and t - 1 > self.B else self.macro.pib_cp[t - 1]
@@ -1245,7 +1289,24 @@ class Modele:
         tau, tau0 = float(ex.taux_is.get(t, ex.taux_is.iloc[-1])), float(ex.taux_is.get(B, 25.0))
         is0 = 0.15 * ab.d5rec                                   # part de l'IS dans les impôts courants sur le revenu (≈ 15 % ; ordre de grandeur, à caler sur les comptes de l'État)
         # v0.7 : transfert de bénéfices des groupes (semi-élasticité de la base au taux)
-        is_t = is0 * (ebe_m / ebe_m0) * (tau / tau0) * (1 - _par(ex, "PART_IS_MULTINAT") * (1 - np.exp(-_par(ex, "SEMI_ELAST_IS") * (tau - tau0) / 100)))
+        corr_tb = (1 - _par(ex, "PART_IS_MULTINAT") * (1 - np.exp(-_par(ex, "SEMI_ELAST_IS") * (tau - tau0) / 100)))
+        is_t = is0 * (ebe_m / ebe_m0) * (tau / tau0) * corr_tb
+        soc_out = {}
+        if self.soc is not None:
+            # phase 4.3 : IS = IS de S11 (compte des sociétés, assis sur le résultat courant avant impôt) + IS de S12 (∝ PIB
+            # nominal) ; la part « sociétés » des impôts courants reçus par les APU est celle des comptes de secteurs
+            sb = self.soc.b
+            is0 = float(sb.is_ + sb.is_s12)
+            va_m0 = sum(self.hist[b].va_cp[B] for b in self.BR)
+            soc_out = self.soc.compte(t, ebe_m / ebe_m0, pib_nom, sum(q_br[b] * pva[b] for b in self.BR) / va_m0,
+                                      A["fbcf_ent_ratio"][t], float(ex.taux_long.get(t, ex.taux_long.iloc[-1])),
+                                      *((float(ex.taux_is_apparent[t]) / float(ex.taux_is_apparent[B]), 1.0)
+                                        if ex.taux_is_apparent is not None and t in ex.taux_is_apparent.index else (tau / tau0, corr_tb)),
+                                      mesure_profits=self._profits(ex, t, pib_nom).get("brut", 0.0),
+                                      taux_court=(float(ex.taux_court[t]) if ex.taux_court is not None and t in ex.taux_court.index else None),
+                                      fiscalite=(ex.variante_societes or {}).get("fiscalite"))
+            is_t = soc_out["is_s11"] + float(sb.is_s12) * pib_nom
+            soc_out = {k: v for k, v in soc_out.items()}
         mm = ex.mesure_menages or {}
         d5_men = (ab.d5rec - is0) * (mb.d1 * masse + A["ebe"][t] + A["d4"][t] + mb.d62 * prest) / (mb.d1 + mb.ebe + mb.d4 + mb.d62)
         d5_men += mm.get("impots", 0.0) * self._idx_mesure(mm, pib_nom, t) + _niv(ex, "impots_menages_pib", t) / 100 * self.macro.pib_cp[self.B] * pib_nom
@@ -1286,11 +1347,11 @@ class Modele:
         niv[("solde", t)] = solde                               # v0.9 : besoin de financement de l'année (cohortes)
         niv["dette"] = niv["dette"] - solde + _cal(ex, "dette", t)
         return dict(recettes=tr, depenses=te, solde=solde, solde_pib=solde / pibn * 100, dette=niv["dette"], dette_pib=niv["dette"] / pibn * 100,
-                    is_=is_t, dividendes_non_residents=self._profits(ex, t, pib_nom)["non_residents"], cotisations=d61, tva_etc=d2, prestations=d62, interets=d41, pib_nominal=pibn,
+                    is_=is_t, dividendes_non_residents=(soc_out["dividendes_rdm_ecart"] if soc_out else self._profits(ex, t, pib_nom)["non_residents"]), cotisations=d61, tva_etc=d2, prestations=d62, interets=d41, pib_nominal=pibn,
                     taux_apparent=niv["taux_app"] * 100,
                     # phase 4.2 : marges des branches marchandes (EBE approché = VA nominale − coût du travail employeur)
                     ebe_marchand=ebe_m, va_marchande_nom=sum(q_br[b] * pva[b] for b in self.BR),
-                    taux_marge=100 * ebe_m / sum(q_br[b] * pva[b] for b in self.BR))
+                    taux_marge=100 * ebe_m / sum(q_br[b] * pva[b] for b in self.BR), **soc_out)
 
 
 def exogenes_observes(mod: Modele, annees) -> Exogenes:

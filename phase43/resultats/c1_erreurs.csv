@@ -1,0 +1,521 @@
+methode,origine,h,var,err
+v0.9 — conditionnel,2010,1,pib_g,-1.67493102831191
+v0.9 — conditionnel,2010,1,inflation,0.03079673080490508
+v0.9 — conditionnel,2010,1,chomage,0.5739244591743304
+v0.9 — conditionnel,2010,1,solde_pib,-0.6599273372826637
+v0.9 — conditionnel,2010,1,dette_pib,1.6501812163460272
+v0.9 — conditionnel,2010,3,pib_g,-0.39885252417970474
+v0.9 — conditionnel,2010,3,inflation,0.4275541196770538
+v0.9 — conditionnel,2010,3,chomage,0.7415134765806055
+v0.9 — conditionnel,2010,3,solde_pib,-1.289407222556898
+v0.9 — conditionnel,2010,3,dette_pib,4.255907541690348
+v0.9 — conditionnel,2010,5,pib_g,0.12341887244000649
+v0.9 — conditionnel,2010,5,inflation,0.005498160160644083
+v0.9 — conditionnel,2010,5,chomage,0.053709288701293545
+v0.9 — conditionnel,2010,5,solde_pib,-0.5972875800872361
+v0.9 — conditionnel,2010,5,dette_pib,8.037381891095905
+v0.9 — ex_ante,2010,1,pib_g,-0.28462970372880037
+v0.9 — ex_ante,2010,1,inflation,-1.1975842659551539
+v0.9 — ex_ante,2010,1,chomage,-0.021476315907959176
+v0.9 — ex_ante,2010,1,solde_pib,-1.8039750083467156
+v0.9 — ex_ante,2010,1,dette_pib,2.2387253032585335
+v0.9 — ex_ante,2010,3,pib_g,0.4158355593885332
+v0.9 — ex_ante,2010,3,inflation,-0.09250962507998395
+v0.9 — ex_ante,2010,3,chomage,-1.440076975202638
+v0.9 — ex_ante,2010,3,solde_pib,-2.531820582442908
+v0.9 — ex_ante,2010,3,dette_pib,6.156621715534271
+v0.9 — ex_ante,2010,5,pib_g,0.3210574545475131
+v0.9 — ex_ante,2010,5,inflation,0.6151340058885291
+v0.9 — ex_ante,2010,5,chomage,-2.086918508896712
+v0.9 — ex_ante,2010,5,solde_pib,-3.9664184495924313
+v0.9 — ex_ante,2010,5,dette_pib,12.623447054552884
+T1 — conditionnel,2010,1,pib_g,-1.662307536043972
+T1 — conditionnel,2010,1,inflation,0.005626778126432974
+T1 — conditionnel,2010,1,chomage,0.5694258077420695
+T1 — conditionnel,2010,1,solde_pib,-0.6383403473048137
+T1 — conditionnel,2010,1,dette_pib,1.5386810942979707
+T1 — conditionnel,2010,3,pib_g,-0.40525515167100234
+T1 — conditionnel,2010,3,inflation,0.4316019568309404
+T1 — conditionnel,2010,3,chomage,0.7351593594136219
+T1 — conditionnel,2010,3,solde_pib,-1.2114807016497258
+T1 — conditionnel,2010,3,dette_pib,3.763816684283313
+T1 — conditionnel,2010,5,pib_g,0.12312456257190796
+T1 — conditionnel,2010,5,inflation,0.07718559125022839
+T1 — conditionnel,2010,5,chomage,-0.0048929163062485515
+T1 — conditionnel,2010,5,solde_pib,-0.4489006110327938
+T1 — conditionnel,2010,5,dette_pib,6.568407141413587
+T1 — ex_ante,2010,1,pib_g,-0.2944294068436104
+T1 — ex_ante,2010,1,inflation,-1.14996459512815
+T1 — ex_ante,2010,1,chomage,-0.019464625680681635
+T1 — ex_ante,2010,1,solde_pib,-1.7792879023930723
+T1 — ex_ante,2010,1,dette_pib,2.0663434947888675
+T1 — ex_ante,2010,3,pib_g,0.43056047853038404
+T1 — ex_ante,2010,3,inflation,-0.11284473499117986
+T1 — ex_ante,2010,3,chomage,-1.479734956695907
+T1 — ex_ante,2010,3,solde_pib,-2.4491566978131027
+T1 — ex_ante,2010,3,dette_pib,5.6943725829148235
+T1 — ex_ante,2010,5,pib_g,0.3380801746174056
+T1 — ex_ante,2010,5,inflation,0.5631732788367705
+T1 — ex_ante,2010,5,chomage,-2.164575661991746
+T1 — ex_ante,2010,5,solde_pib,-3.813018250949582
+T1 — ex_ante,2010,5,dette_pib,11.868494231757396
+P4 (T1 + compte des sociétés) — conditionnel,2010,1,pib_g,-1.5585993968044054
+P4 (T1 + compte des sociétés) — conditionnel,2010,1,inflation,-0.025897057724000305
+P4 (T1 + compte des sociétés) — conditionnel,2010,1,chomage,0.5385821814017309
+P4 (T1 + compte des sociétés) — conditionnel,2010,1,solde_pib,-0.39715604052875086
+P4 (T1 + compte des sociétés) — conditionnel,2010,1,dette_pib,1.2394359170291835
+P4 (T1 + compte des sociétés) — conditionnel,2010,3,pib_g,-0.3972661095862806
+P4 (T1 + compte des sociétés) — conditionnel,2010,3,inflation,0.43414813689768295
+P4 (T1 + compte des sociétés) — conditionnel,2010,3,chomage,0.7084747528898241
+P4 (T1 + compte des sociétés) — conditionnel,2010,3,solde_pib,-0.8240818329093047
+P4 (T1 + compte des sociétés) — conditionnel,2010,3,dette_pib,2.7587999050727063
+P4 (T1 + compte des sociétés) — conditionnel,2010,5,pib_g,0.1381124961046476
+P4 (T1 + compte des sociétés) — conditionnel,2010,5,inflation,0.0781062472616334
+P4 (T1 + compte des sociétés) — conditionnel,2010,5,chomage,-0.04590756834305587
+P4 (T1 + compte des sociétés) — conditionnel,2010,5,solde_pib,-0.1874588950484566
+P4 (T1 + compte des sociétés) — conditionnel,2010,5,dette_pib,4.975961175151738
+P4 (T1 + compte des sociétés) — ex_ante,2010,1,pib_g,-0.203016672623324
+P4 (T1 + compte des sociétés) — ex_ante,2010,1,inflation,-1.1770243807551317
+P4 (T1 + compte des sociétés) — ex_ante,2010,1,chomage,-0.0465022797476351
+P4 (T1 + compte des sociétés) — ex_ante,2010,1,solde_pib,-1.7235891809349404
+P4 (T1 + compte des sociétés) — ex_ante,2010,1,dette_pib,1.9604604563251087
+P4 (T1 + compte des sociétés) — ex_ante,2010,3,pib_g,0.46156786774449454
+P4 (T1 + compte des sociétés) — ex_ante,2010,3,inflation,-0.11688240849891951
+P4 (T1 + compte des sociétés) — ex_ante,2010,3,chomage,-1.5368435509126765
+P4 (T1 + compte des sociétés) — ex_ante,2010,3,solde_pib,-2.3584076984635853
+P4 (T1 + compte des sociétés) — ex_ante,2010,3,dette_pib,5.404850713424892
+P4 (T1 + compte des sociétés) — ex_ante,2010,5,pib_g,0.3519158805514788
+P4 (T1 + compte des sociétés) — ex_ante,2010,5,inflation,0.5692071652829256
+P4 (T1 + compte des sociétés) — ex_ante,2010,5,chomage,-2.223308303554644
+P4 (T1 + compte des sociétés) — ex_ante,2010,5,solde_pib,-3.7194134576161297
+P4 (T1 + compte des sociétés) — ex_ante,2010,5,dette_pib,11.384721218915857
+FMI — ex_ante,2010,1,pib_g,-0.8369999999999989
+FMI — ex_ante,2010,1,inflation,-0.6809999999999983
+FMI — ex_ante,2010,1,chomage,0.5790000000000006
+FMI — ex_ante,2010,1,solde_pib,-0.7209999999999992
+FMI — ex_ante,2010,1,dette_pib,-0.11700000000000443
+FMI — ex_ante,2010,3,pib_g,0.6036635228486187
+FMI — ex_ante,2010,3,inflation,-0.12828847446604286
+FMI — ex_ante,2010,3,chomage,-1.2929999999999993
+FMI — ex_ante,2010,3,solde_pib,1.15
+FMI — ex_ante,2010,3,dette_pib,-3.2700000000000102
+FMI — ex_ante,2010,5,pib_g,0.7917597918145169
+FMI — ex_ante,2010,5,inflation,0.5443222593685348
+FMI — ex_ante,2010,5,chomage,-2.0920000000000005
+FMI — ex_ante,2010,5,solde_pib,1.6880000000000002
+FMI — ex_ante,2010,5,dette_pib,-7.100999999999999
+naïf — ex_ante,2010,1,pib_g,-1.4988544735765608
+naïf — ex_ante,2010,1,inflation,-0.5457253659537864
+naïf — ex_ante,2010,1,chomage,0.10000000000000142
+naïf — ex_ante,2010,1,solde_pib,-1.8475988982412188
+naïf — ex_ante,2010,1,dette_pib,1.1469898724286196
+naïf — ex_ante,2010,3,pib_g,-0.19119105204805642
+naïf — ex_ante,2010,3,inflation,0.02596059573685139
+naïf — ex_ante,2010,3,chomage,-1.0249999999999986
+naïf — ex_ante,2010,3,solde_pib,-2.2136444426786666
+naïf — ex_ante,2010,3,dette_pib,2.5752483659083936
+naïf — ex_ante,2010,5,pib_g,-0.15213043572275264
+naïf — ex_ante,2010,5,inflation,0.45207766604125066
+naïf — ex_ante,2010,5,chomage,-1.0999999999999996
+naïf — ex_ante,2010,5,solde_pib,-3.259949280871411
+naïf — ex_ante,2010,5,dette_pib,7.391996463624238
+v0.9 — conditionnel,2012,1,pib_g,-0.6817528223354685
+v0.9 — conditionnel,2012,1,inflation,-0.1058654410609483
+v0.9 — conditionnel,2012,1,chomage,0.23208163764433642
+v0.9 — conditionnel,2012,1,solde_pib,-0.20505511694277523
+v0.9 — conditionnel,2012,1,dette_pib,1.7602581559880406
+v0.9 — conditionnel,2012,3,pib_g,0.11694561683195381
+v0.9 — conditionnel,2012,3,inflation,-0.5420574874135831
+v0.9 — conditionnel,2012,3,chomage,0.3776602976064254
+v0.9 — conditionnel,2012,3,solde_pib,0.12435404981092635
+v0.9 — conditionnel,2012,3,dette_pib,5.004410742838431
+v0.9 — conditionnel,2012,5,pib_g,0.0204359845663582
+v0.9 — conditionnel,2012,5,inflation,-0.5459963520821676
+v0.9 — conditionnel,2012,5,chomage,0.6005706885207385
+v0.9 — conditionnel,2012,5,solde_pib,0.6323259220937469
+v0.9 — conditionnel,2012,5,dette_pib,5.49175091052706
+v0.9 — ex_ante,2012,1,pib_g,-0.18588040255143046
+v0.9 — ex_ante,2012,1,inflation,0.8789690557373664
+v0.9 — ex_ante,2012,1,chomage,-0.18105752493772975
+v0.9 — ex_ante,2012,1,solde_pib,-0.35384795247979905
+v0.9 — ex_ante,2012,1,dette_pib,0.7191896364383297
+v0.9 — ex_ante,2012,3,pib_g,0.030514179001350783
+v0.9 — ex_ante,2012,3,inflation,1.2300537752438112
+v0.9 — ex_ante,2012,3,chomage,0.10075613885527979
+v0.9 — ex_ante,2012,3,solde_pib,-2.043291573310691
+v0.9 — ex_ante,2012,3,dette_pib,4.894970665058636
+v0.9 — ex_ante,2012,5,pib_g,-0.13134473292553128
+v0.9 — ex_ante,2012,5,inflation,1.284184966605073
+v0.9 — ex_ante,2012,5,chomage,0.9029865480950718
+v0.9 — ex_ante,2012,5,solde_pib,-3.1076356300350936
+v0.9 — ex_ante,2012,5,dette_pib,9.759116066740106
+T1 — conditionnel,2012,1,pib_g,-0.6148734607619666
+T1 — conditionnel,2012,1,inflation,-0.295377368448424
+T1 — conditionnel,2012,1,chomage,0.212045052674652
+T1 — conditionnel,2012,1,solde_pib,-0.19899336809841106
+T1 — conditionnel,2012,1,dette_pib,1.858202240337178
+T1 — conditionnel,2012,3,pib_g,0.1433558302696536
+T1 — conditionnel,2012,3,inflation,-0.7263829986829617
+T1 — conditionnel,2012,3,chomage,0.37233326356424534
+T1 — conditionnel,2012,3,solde_pib,0.1551028022133658
+T1 — conditionnel,2012,3,dette_pib,5.365383173120662
+T1 — conditionnel,2012,5,pib_g,0.04903125706681166
+T1 — conditionnel,2012,5,inflation,-0.762493278970322
+T1 — conditionnel,2012,5,chomage,0.6183619511912024
+T1 — conditionnel,2012,5,solde_pib,0.695076679626498
+T1 — conditionnel,2012,5,dette_pib,6.188902855537407
+T1 — ex_ante,2012,1,pib_g,-0.1011291616475285
+T1 — ex_ante,2012,1,inflation,0.6415234774122203
+T1 — ex_ante,2012,1,chomage,-0.20625753577703954
+T1 — ex_ante,2012,1,solde_pib,-0.35000637027278625
+T1 — ex_ante,2012,1,dette_pib,0.8609265936794515
+T1 — ex_ante,2012,3,pib_g,0.07160635385976555
+T1 — ex_ante,2012,3,inflation,0.9552508708289498
+T1 — ex_ante,2012,3,chomage,0.09181936958760417
+T1 — ex_ante,2012,3,solde_pib,-2.025721610675791
+T1 — ex_ante,2012,3,dette_pib,5.564967098411373
+T1 — ex_ante,2012,5,pib_g,-0.0954744133133234
+T1 — ex_ante,2012,5,inflation,0.9773042692025058
+T1 — ex_ante,2012,5,chomage,0.9599612244600131
+T1 — ex_ante,2012,5,solde_pib,-3.0885495873786954
+T1 — ex_ante,2012,5,dette_pib,11.09560369793789
+P4 (T1 + compte des sociétés) — conditionnel,2012,1,pib_g,-0.7241050402195359
+P4 (T1 + compte des sociétés) — conditionnel,2012,1,inflation,-0.26482295887821916
+P4 (T1 + compte des sociétés) — conditionnel,2012,1,chomage,0.2450005030687752
+P4 (T1 + compte des sociétés) — conditionnel,2012,1,solde_pib,-0.2542017065139488
+P4 (T1 + compte des sociétés) — conditionnel,2012,1,dette_pib,1.9810608201344166
+P4 (T1 + compte des sociétés) — conditionnel,2012,3,pib_g,0.112826071851857
+P4 (T1 + compte des sociétés) — conditionnel,2012,3,inflation,-0.7256567490539823
+P4 (T1 + compte des sociétés) — conditionnel,2012,3,chomage,0.4310432941632527
+P4 (T1 + compte des sociétés) — conditionnel,2012,3,solde_pib,-0.08031268594396046
+P4 (T1 + compte des sociétés) — conditionnel,2012,3,dette_pib,5.884825761940988
+P4 (T1 + compte des sociétés) — conditionnel,2012,5,pib_g,0.04730038150264626
+P4 (T1 + compte des sociétés) — conditionnel,2012,5,inflation,-0.7719583835355315
+P4 (T1 + compte des sociétés) — conditionnel,2012,5,chomage,0.6503367346393656
+P4 (T1 + compte des sociétés) — conditionnel,2012,5,solde_pib,0.7800080400882279
+P4 (T1 + compte des sociétés) — conditionnel,2012,5,dette_pib,6.788840681371795
+P4 (T1 + compte des sociétés) — ex_ante,2012,1,pib_g,-0.23342308792342337
+P4 (T1 + compte des sociétés) — ex_ante,2012,1,inflation,0.678660083696192
+P4 (T1 + compte des sociétés) — ex_ante,2012,1,chomage,-0.1663265400958256
+P4 (T1 + compte des sociétés) — ex_ante,2012,1,solde_pib,-0.43132359664505593
+P4 (T1 + compte des sociétés) — ex_ante,2012,1,dette_pib,1.0226655560763191
+P4 (T1 + compte des sociétés) — ex_ante,2012,3,pib_g,0.02511277102206222
+P4 (T1 + compte des sociétés) — ex_ante,2012,3,inflation,0.9587804491602236
+P4 (T1 + compte des sociétés) — ex_ante,2012,3,chomage,0.17113641873117125
+P4 (T1 + compte des sociétés) — ex_ante,2012,3,solde_pib,-2.1605400228556406
+P4 (T1 + compte des sociétés) — ex_ante,2012,3,dette_pib,6.003698794900487
+P4 (T1 + compte des sociétés) — ex_ante,2012,5,pib_g,-0.12080001095511328
+P4 (T1 + compte des sociétés) — ex_ante,2012,5,inflation,0.9705241777381968
+P4 (T1 + compte des sociétés) — ex_ante,2012,5,chomage,1.0504129923439596
+P4 (T1 + compte des sociétés) — ex_ante,2012,5,solde_pib,-3.2482813275549383
+P4 (T1 + compte des sociétés) — ex_ante,2012,5,dette_pib,11.862804149836592
+FMI — ex_ante,2012,1,pib_g,-0.550000000000006
+FMI — ex_ante,2012,1,inflation,-0.0220000000000109
+FMI — ex_ante,2012,1,chomage,0.2159999999999993
+FMI — ex_ante,2012,1,solde_pib,1.4340000000000002
+FMI — ex_ante,2012,1,dette_pib,-1.193000000000012
+FMI — ex_ante,2012,3,pib_g,0.009614184643336188
+FMI — ex_ante,2012,3,inflation,0.47351706240852387
+FMI — ex_ante,2012,3,chomage,-0.5840000000000014
+FMI — ex_ante,2012,3,solde_pib,1.8119999999999998
+FMI — ex_ante,2012,3,dette_pib,-3.1500000000000057
+FMI — ex_ante,2012,5,pib_g,0.12412082431034754
+FMI — ex_ante,2012,5,inflation,0.6878597529746511
+FMI — ex_ante,2012,5,chomage,-0.5920000000000005
+FMI — ex_ante,2012,5,solde_pib,3.403
+FMI — ex_ante,2012,5,dette_pib,-11.912000000000006
+naïf — ex_ante,2012,1,pib_g,-0.3635210972911196
+naïf — ex_ante,2012,1,inflation,0.5099316654537445
+naïf — ex_ante,2012,1,chomage,-0.5499999999999989
+naïf — ex_ante,2012,1,solde_pib,-0.23267461336854556
+naïf — ex_ante,2012,1,dette_pib,2.4371977470542276
+naïf — ex_ante,2012,3,pib_g,-0.5304709175694589
+naïf — ex_ante,2012,3,inflation,0.7866967307867956
+naïf — ex_ante,2012,3,chomage,-0.625
+naïf — ex_ante,2012,3,solde_pib,-1.2789794515612898
+naïf — ex_ante,2012,3,dette_pib,10.523274016614067
+naïf — ex_ante,2012,5,pib_g,-0.7386570559172911
+naïf — ex_ante,2012,5,inflation,0.717592169182879
+naïf — ex_ante,2012,5,chomage,0.3000000000000007
+naïf — ex_ante,2012,5,solde_pib,-1.8085932110142373
+naïf — ex_ante,2012,5,dette_pib,19.246194424360766
+v0.9 — conditionnel,2014,1,pib_g,0.7061094376061616
+v0.9 — conditionnel,2014,1,inflation,-0.8498750637233599
+v0.9 — conditionnel,2014,1,chomage,-0.4596406110995037
+v0.9 — conditionnel,2014,1,solde_pib,0.21429348373190615
+v0.9 — conditionnel,2014,1,dette_pib,1.1905256568545468
+v0.9 — conditionnel,2014,3,pib_g,0.15768138665965825
+v0.9 — conditionnel,2014,3,inflation,-0.5991250974201168
+v0.9 — conditionnel,2014,3,chomage,-0.5662056386489009
+v0.9 — conditionnel,2014,3,solde_pib,0.6930065503342449
+v0.9 — conditionnel,2014,3,dette_pib,1.5769996165652458
+v0.9 — conditionnel,2014,5,pib_g,-0.08787543633679284
+v0.9 — conditionnel,2014,5,inflation,-0.2606369913172424
+v0.9 — conditionnel,2014,5,chomage,-0.271616575724444
+v0.9 — conditionnel,2014,5,solde_pib,1.2449474169654793
+v0.9 — conditionnel,2014,5,dette_pib,-1.6792513732994792
+v0.9 — ex_ante,2014,1,pib_g,0.23731580394723562
+v0.9 — ex_ante,2014,1,inflation,0.17955537287928092
+v0.9 — ex_ante,2014,1,chomage,-0.16584303703679915
+v0.9 — ex_ante,2014,1,solde_pib,-0.5882666789571647
+v0.9 — ex_ante,2014,1,dette_pib,2.000674239387166
+v0.9 — ex_ante,2014,3,pib_g,-0.02285074449619451
+v0.9 — ex_ante,2014,3,inflation,0.37453885560116973
+v0.9 — ex_ante,2014,3,chomage,0.37000503950567953
+v0.9 — ex_ante,2014,3,solde_pib,-1.02081665294937
+v0.9 — ex_ante,2014,3,dette_pib,4.534967377879767
+v0.9 — ex_ante,2014,5,pib_g,-0.2754413140478418
+v0.9 — ex_ante,2014,5,inflation,0.2805938713838607
+v0.9 — ex_ante,2014,5,chomage,0.79149955498605
+v0.9 — ex_ante,2014,5,solde_pib,-2.0160751622780593
+v0.9 — ex_ante,2014,5,dette_pib,8.292633976954804
+T1 — conditionnel,2014,1,pib_g,0.7048011178323099
+T1 — conditionnel,2014,1,inflation,-0.8583832463045504
+T1 — conditionnel,2014,1,chomage,-0.45962888687342485
+T1 — conditionnel,2014,1,solde_pib,0.21780941612377536
+T1 — conditionnel,2014,1,dette_pib,1.1677766205817903
+T1 — conditionnel,2014,3,pib_g,0.1584766296784057
+T1 — conditionnel,2014,3,inflation,-0.6243909075122178
+T1 — conditionnel,2014,3,chomage,-0.5626735390921649
+T1 — conditionnel,2014,3,solde_pib,0.6997527073085283
+T1 — conditionnel,2014,3,dette_pib,1.5754386295048306
+T1 — conditionnel,2014,5,pib_g,-0.08308020099754287
+T1 — conditionnel,2014,5,inflation,-0.31394950521423937
+T1 — conditionnel,2014,5,chomage,-0.25215747439827574
+T1 — conditionnel,2014,5,solde_pib,1.2485503069935737
+T1 — conditionnel,2014,5,dette_pib,-1.5118723666602705
+T1 — ex_ante,2014,1,pib_g,0.2365072104798971
+T1 — ex_ante,2014,1,inflation,0.1689674616342174
+T1 — ex_ante,2014,1,chomage,-0.16597169791216437
+T1 — ex_ante,2014,1,solde_pib,-0.5846752295726358
+T1 — ex_ante,2014,1,dette_pib,1.9795035879286331
+T1 — ex_ante,2014,3,pib_g,-0.021766390454547313
+T1 — ex_ante,2014,3,inflation,0.34688020150266397
+T1 — ex_ante,2014,3,chomage,0.37397490982118065
+T1 — ex_ante,2014,3,solde_pib,-1.0152102809875174
+T1 — ex_ante,2014,3,dette_pib,4.551417487679544
+T1 — ex_ante,2014,5,pib_g,-0.2717358316760121
+T1 — ex_ante,2014,5,inflation,0.23074372266771448
+T1 — ex_ante,2014,5,chomage,0.8153165459234479
+T1 — ex_ante,2014,5,solde_pib,-2.0186716247650516
+T1 — ex_ante,2014,5,dette_pib,8.49201008076922
+P4 (T1 + compte des sociétés) — conditionnel,2014,1,pib_g,0.7078638342764787
+P4 (T1 + compte des sociétés) — conditionnel,2014,1,inflation,-0.859269764516013
+P4 (T1 + compte des sociétés) — conditionnel,2014,1,chomage,-0.4605120580597415
+P4 (T1 + compte des sociétés) — conditionnel,2014,1,solde_pib,0.12514690745392087
+P4 (T1 + compte des sociétés) — conditionnel,2014,1,dette_pib,1.2585673346247432
+P4 (T1 + compte des sociétés) — conditionnel,2014,3,pib_g,0.16758430365098054
+P4 (T1 + compte des sociétés) — conditionnel,2014,3,inflation,-0.6261428370702649
+P4 (T1 + compte des sociétés) — conditionnel,2014,3,chomage,-0.5746508684590168
+P4 (T1 + compte des sociétés) — conditionnel,2014,3,solde_pib,0.9057290149468487
+P4 (T1 + compte des sociétés) — conditionnel,2014,3,dette_pib,1.5131059265938092
+P4 (T1 + compte des sociétés) — conditionnel,2014,5,pib_g,-0.08567377609511873
+P4 (T1 + compte des sociétés) — conditionnel,2014,5,inflation,-0.31094417608554803
+P4 (T1 + compte des sociétés) — conditionnel,2014,5,chomage,-0.2518887607552269
+P4 (T1 + compte des sociétés) — conditionnel,2014,5,solde_pib,1.4171820580280248
+P4 (T1 + compte des sociétés) — conditionnel,2014,5,dette_pib,-1.769743256075003
+P4 (T1 + compte des sociétés) — ex_ante,2014,1,pib_g,0.2396379507310753
+P4 (T1 + compte des sociétés) — ex_ante,2014,1,inflation,0.1680482197793598
+P4 (T1 + compte des sociétés) — ex_ante,2014,1,chomage,-0.16687475992936385
+P4 (T1 + compte des sociétés) — ex_ante,2014,1,solde_pib,-0.5803620759292145
+P4 (T1 + compte des sociétés) — ex_ante,2014,1,dette_pib,1.9732693774506913
+P4 (T1 + compte des sociétés) — ex_ante,2014,3,pib_g,-0.024066200669725646
+P4 (T1 + compte des sociétés) — ex_ante,2014,3,inflation,0.3476549777838178
+P4 (T1 + compte des sociétés) — ex_ante,2014,3,chomage,0.37603414133633173
+P4 (T1 + compte des sociétés) — ex_ante,2014,3,solde_pib,-1.0142128749838912
+P4 (T1 + compte des sociétés) — ex_ante,2014,3,dette_pib,4.546235780625537
+P4 (T1 + compte des sociétés) — ex_ante,2014,5,pib_g,-0.27596963622105175
+P4 (T1 + compte des sociétés) — ex_ante,2014,5,inflation,0.2314476379162711
+P4 (T1 + compte des sociétés) — ex_ante,2014,5,chomage,0.8244615037129677
+P4 (T1 + compte des sociétés) — ex_ante,2014,5,solde_pib,-2.03305029053789
+P4 (T1 + compte des sociétés) — ex_ante,2014,5,dette_pib,8.520004544614025
+FMI — ex_ante,2014,1,pib_g,-0.031999999999987594
+FMI — ex_ante,2014,1,inflation,0.8419999999999872
+FMI — ex_ante,2014,1,chomage,-0.30400000000000027
+FMI — ex_ante,2014,1,solde_pib,-0.4129999999999998
+FMI — ex_ante,2014,1,dette_pib,2.2169999999999987
+FMI — ex_ante,2014,3,pib_g,0.10901189547740664
+FMI — ex_ante,2014,3,inflation,0.5007095910661619
+FMI — ex_ante,2014,3,chomage,0.17999999999999972
+FMI — ex_ante,2014,3,solde_pib,0.42700000000000005
+FMI — ex_ante,2014,3,dette_pib,0.6479999999999961
+FMI — ex_ante,2014,5,pib_g,0.10354117390969364
+FMI — ex_ante,2014,5,inflation,0.13291069056637905
+FMI — ex_ante,2014,5,chomage,0.831999999999999
+FMI — ex_ante,2014,5,solde_pib,1.3479999999999999
+FMI — ex_ante,2014,5,dette_pib,-1.7680000000000007
+naïf — ex_ante,2014,1,pib_g,0.21016753740481509
+naïf — ex_ante,2014,1,inflation,0.7837297194494219
+naïf — ex_ante,2014,1,chomage,-0.125
+naïf — ex_ante,2014,1,solde_pib,-0.6815287867232249
+naïf — ex_ante,2014,1,dette_pib,1.608350950659613
+naïf — ex_ante,2014,3,pib_g,-0.05847028739540683
+naïf — ex_ante,2014,3,inflation,0.6106596578570267
+naïf — ex_ante,2014,3,chomage,0.8000000000000007
+naïf — ex_ante,2014,3,solde_pib,-1.2111425461761725
+naïf — ex_ante,2014,3,dette_pib,4.668709743730062
+naïf — ex_ante,2014,5,pib_g,-0.2586156643310522
+naïf — ex_ante,2014,5,inflation,0.22665427572026164
+naïf — ex_ante,2014,5,chomage,1.7249999999999996
+naïf — ex_ante,2014,5,solde_pib,-2.1797030054984017
+naïf — ex_ante,2014,5,dette_pib,10.115462689855377
+v0.9 — conditionnel,2016,1,pib_g,-0.5591843423548015
+v0.9 — conditionnel,2016,1,inflation,-0.5746847722038151
+v0.9 — conditionnel,2016,1,chomage,0.28827970608569053
+v0.9 — conditionnel,2016,1,solde_pib,-0.11494417940370738
+v0.9 — conditionnel,2016,1,dette_pib,1.0089727886722244
+v0.9 — conditionnel,2016,3,pib_g,-0.5349656767501987
+v0.9 — conditionnel,2016,3,inflation,-0.275072767128659
+v0.9 — conditionnel,2016,3,chomage,0.8880849384141118
+v0.9 — conditionnel,2016,3,solde_pib,0.3183037001305977
+v0.9 — conditionnel,2016,3,dette_pib,0.33182815397833565
+v0.9 — ex_ante,2016,1,pib_g,-0.8890704110277703
+v0.9 — ex_ante,2016,1,inflation,-0.8114361146040694
+v0.9 — ex_ante,2016,1,chomage,0.5152534071958232
+v0.9 — ex_ante,2016,1,solde_pib,0.08532621513166694
+v0.9 — ex_ante,2016,1,dette_pib,0.8460010267530151
+v0.9 — ex_ante,2016,3,pib_g,-0.861890848776703
+v0.9 — ex_ante,2016,3,inflation,-1.0644592757389493
+v0.9 — ex_ante,2016,3,chomage,1.2195582327380485
+v0.9 — ex_ante,2016,3,solde_pib,-0.25845911734526084
+v0.9 — ex_ante,2016,3,dette_pib,3.4526293470238727
+T1 — conditionnel,2016,1,pib_g,-0.5477244683078419
+T1 — conditionnel,2016,1,inflation,-0.6084628625190103
+T1 — conditionnel,2016,1,chomage,0.2851825165001802
+T1 — conditionnel,2016,1,solde_pib,-0.11475100638287783
+T1 — conditionnel,2016,1,dette_pib,1.034442655052075
+T1 — conditionnel,2016,3,pib_g,-0.5281685905706102
+T1 — conditionnel,2016,3,inflation,-0.31885518474545904
+T1 — conditionnel,2016,3,chomage,0.8895025498284781
+T1 — conditionnel,2016,3,solde_pib,0.3131764294198587
+T1 — conditionnel,2016,3,dette_pib,0.5011046738259495
+T1 — ex_ante,2016,1,pib_g,-0.8784321099707837
+T1 — ex_ante,2016,1,inflation,-0.845217388822117
+T1 — ex_ante,2016,1,chomage,0.512311686790099
+T1 — ex_ante,2016,1,solde_pib,0.08621834683056928
+T1 — ex_ante,2016,1,dette_pib,0.8651317538105872
+T1 — ex_ante,2016,3,pib_g,-0.8609129634591817
+T1 — ex_ante,2016,3,inflation,-1.0906373773590161
+T1 — ex_ante,2016,3,chomage,1.224423948121732
+T1 — ex_ante,2016,3,solde_pib,-0.2589289676149873
+T1 — ex_ante,2016,3,dette_pib,3.5349648073268156
+P4 (T1 + compte des sociétés) — conditionnel,2016,1,pib_g,-0.5465658856758981
+P4 (T1 + compte des sociétés) — conditionnel,2016,1,inflation,-0.6088018586893229
+P4 (T1 + compte des sociétés) — conditionnel,2016,1,chomage,0.2848578901241545
+P4 (T1 + compte des sociétés) — conditionnel,2016,1,solde_pib,0.16888615537381657
+P4 (T1 + compte des sociétés) — conditionnel,2016,1,dette_pib,0.7500867837488698
+P4 (T1 + compte des sociétés) — conditionnel,2016,3,pib_g,-0.5360197076859308
+P4 (T1 + compte des sociétés) — conditionnel,2016,3,inflation,-0.3170896428077663
+P4 (T1 + compte des sociétés) — conditionnel,2016,3,chomage,0.8992281132530575
+P4 (T1 + compte des sociétés) — conditionnel,2016,3,solde_pib,0.5610491613636843
+P4 (T1 + compte des sociétés) — conditionnel,2016,3,dette_pib,-0.12018139722633236
+P4 (T1 + compte des sociétés) — ex_ante,2016,1,pib_g,-0.8768854347657618
+P4 (T1 + compte des sociétés) — ex_ante,2016,1,inflation,-0.845676361677794
+P4 (T1 + compte des sociétés) — ex_ante,2016,1,chomage,0.5118783071386108
+P4 (T1 + compte des sociétés) — ex_ante,2016,1,solde_pib,0.09394505217014348
+P4 (T1 + compte des sociétés) — ex_ante,2016,1,dette_pib,0.8564444939481035
+P4 (T1 + compte des sociétés) — ex_ante,2016,3,pib_g,-0.8619618236417992
+P4 (T1 + compte des sociétés) — ex_ante,2016,3,inflation,-1.090156684318866
+P4 (T1 + compte des sociétés) — ex_ante,2016,3,chomage,1.2248595270413087
+P4 (T1 + compte des sociétés) — ex_ante,2016,3,solde_pib,-0.24978661323971219
+P4 (T1 + compte des sociétés) — ex_ante,2016,3,dette_pib,3.5090783764956655
+FMI — ex_ante,2016,1,pib_g,-0.9449999999999958
+FMI — ex_ante,2016,1,inflation,-0.16199999999999548
+FMI — ex_ante,2016,1,chomage,0.1769999999999996
+FMI — ex_ante,2016,1,solde_pib,0.41100000000000003
+FMI — ex_ante,2016,1,dette_pib,-0.5789999999999935
+FMI — ex_ante,2016,3,pib_g,-0.4463332920202179
+FMI — ex_ante,2016,3,inflation,-0.37591179205926917
+FMI — ex_ante,2016,3,chomage,0.5339999999999989
+FMI — ex_ante,2016,3,solde_pib,0.246
+FMI — ex_ante,2016,3,dette_pib,-0.27200000000000557
+naïf — ex_ante,2016,1,pib_g,-1.3060653708176995
+naïf — ex_ante,2016,1,inflation,-0.28301766227503133
+naïf — ex_ante,2016,1,chomage,0.625
+naïf — ex_ante,2016,1,solde_pib,-0.4023773399069652
+naïf — ex_ante,2016,1,dette_pib,1.2688519846655595
+naïf — ex_ante,2016,3,pib_g,-1.1412517142292966
+naïf — ex_ante,2016,3,inflation,-0.6752537978579776
+naïf — ex_ante,2016,3,chomage,1.549999999999999
+naïf — ex_ante,2016,3,solde_pib,-1.3709377992291945
+naïf — ex_ante,2016,3,dette_pib,5.632256092812199
+v0.9 — conditionnel,2021,1,pib_g,-2.0396846437858995
+v0.9 — conditionnel,2021,1,inflation,-1.0730562711990466
+v0.9 — conditionnel,2021,1,chomage,1.2145677304052596
+v0.9 — conditionnel,2021,1,solde_pib,-2.668087454701162
+v0.9 — conditionnel,2021,1,dette_pib,6.534946214274996
+v0.9 — conditionnel,2021,3,pib_g,-1.3393371771244222
+v0.9 — conditionnel,2021,3,inflation,-1.735132860133759
+v0.9 — conditionnel,2021,3,chomage,2.4887373410285694
+v0.9 — conditionnel,2021,3,solde_pib,-4.562537785286603
+v0.9 — conditionnel,2021,3,dette_pib,19.31189787142192
+v0.9 — ex_ante,2021,1,pib_g,-2.2801736569848297
+v0.9 — ex_ante,2021,1,inflation,-3.6835601866550105
+v0.9 — ex_ante,2021,1,chomage,0.6954724939755144
+v0.9 — ex_ante,2021,1,solde_pib,-1.4664360942635968
+v0.9 — ex_ante,2021,1,dette_pib,5.930646170323911
+v0.9 — ex_ante,2021,3,pib_g,-0.9254949574834637
+v0.9 — ex_ante,2021,3,inflation,-3.4100036550742896
+v0.9 — ex_ante,2021,3,chomage,1.3280636762923912
+v0.9 — ex_ante,2021,3,solde_pib,-0.4121832486399333
+v0.9 — ex_ante,2021,3,dette_pib,11.575550001490328
+T1 — conditionnel,2021,1,pib_g,-2.099754839827117
+T1 — conditionnel,2021,1,inflation,-0.9634766389623683
+T1 — conditionnel,2021,1,chomage,1.2270567629647084
+T1 — conditionnel,2021,1,solde_pib,-2.6789342516592134
+T1 — conditionnel,2021,1,dette_pib,6.413074942963647
+T1 — conditionnel,2021,3,pib_g,-1.3829183869121575
+T1 — conditionnel,2021,3,inflation,-1.5690981239086188
+T1 — conditionnel,2021,3,chomage,2.4975535473986454
+T1 — conditionnel,2021,3,solde_pib,-4.559562102531006
+T1 — conditionnel,2021,3,dette_pib,18.563279986720616
+T1 — ex_ante,2021,1,pib_g,-2.3409370623945547
+T1 — ex_ante,2021,1,inflation,-3.5838321645396576
+T1 — ex_ante,2021,1,chomage,0.7081185185176979
+T1 — ex_ante,2021,1,solde_pib,-1.4746839487395045
+T1 — ex_ante,2021,1,dette_pib,5.799518177515608
+T1 — ex_ante,2021,3,pib_g,-0.9627105291929228
+T1 — ex_ante,2021,3,inflation,-3.2795513926766606
+T1 — ex_ante,2021,3,chomage,1.3358540710026414
+T1 — ex_ante,2021,3,solde_pib,-0.41908643740000695
+T1 — ex_ante,2021,3,dette_pib,10.970893137343282
+P4 (T1 + compte des sociétés) — conditionnel,2021,1,pib_g,-1.6693877181467975
+P4 (T1 + compte des sociétés) — conditionnel,2021,1,inflation,-1.0054909853865368
+P4 (T1 + compte des sociétés) — conditionnel,2021,1,chomage,1.128533996973336
+P4 (T1 + compte des sociétés) — conditionnel,2021,1,solde_pib,-1.5391944740094567
+P4 (T1 + compte des sociétés) — conditionnel,2021,1,dette_pib,4.84727460714943
+P4 (T1 + compte des sociétés) — conditionnel,2021,3,pib_g,-1.338159637563141
+P4 (T1 + compte des sociétés) — conditionnel,2021,3,inflation,-1.5650912303310616
+P4 (T1 + compte des sociétés) — conditionnel,2021,3,chomage,2.4223902403448854
+P4 (T1 + compte des sociétés) — conditionnel,2021,3,solde_pib,-4.040790560203259
+P4 (T1 + compte des sociétés) — conditionnel,2021,3,dette_pib,16.32051433322316
+P4 (T1 + compte des sociétés) — ex_ante,2021,1,pib_g,-1.874787671186362
+P4 (T1 + compte des sociétés) — ex_ante,2021,1,inflation,-3.6289199424394347
+P4 (T1 + compte des sociétés) — ex_ante,2021,1,chomage,0.6005151272134528
+P4 (T1 + compte des sociétés) — ex_ante,2021,1,solde_pib,-1.1542397579638912
+P4 (T1 + compte des sociétés) — ex_ante,2021,1,dette_pib,5.014439517601588
+P4 (T1 + compte des sociétés) — ex_ante,2021,3,pib_g,-0.8825964613277115
+P4 (T1 + compte des sociétés) — ex_ante,2021,3,inflation,-3.27212686592937
+P4 (T1 + compte des sociétés) — ex_ante,2021,3,chomage,1.221712207500337
+P4 (T1 + compte des sociétés) — ex_ante,2021,3,solde_pib,-0.1671995232567367
+P4 (T1 + compte des sociétés) — ex_ante,2021,3,dette_pib,9.862492392657686
+FMI — ex_ante,2021,1,pib_g,1.312000000000002
+FMI — ex_ante,2021,1,inflation,-4.282999999999992
+FMI — ex_ante,2021,1,chomage,0.9670000000000005
+FMI — ex_ante,2021,1,solde_pib,0.006000000000000227
+FMI — ex_ante,2021,1,dette_pib,2.3589999999999947
+FMI — ex_ante,2021,3,pib_g,0.7998146856321053
+FMI — ex_ante,2021,3,inflation,-3.2455839393505714
+FMI — ex_ante,2021,3,chomage,0.5379999999999994
+FMI — ex_ante,2021,3,solde_pib,2.341
+FMI — ex_ante,2021,3,dette_pib,3.1060000000000088
+naïf — ex_ante,2021,1,pib_g,-1.7873245858588405
+naïf — ex_ante,2021,1,inflation,-3.815380885546693
+naïf — ex_ante,2021,1,chomage,0.6000000000000005
+naïf — ex_ante,2021,1,solde_pib,-1.841002013325724
+naïf — ex_ante,2021,1,dette_pib,4.347336275511566
+naïf — ex_ante,2021,3,pib_g,-1.0205153394744038
+naïf — ex_ante,2021,3,inflation,-3.5800843178704245
+naïf — ex_ante,2021,3,chomage,0.5
+naïf — ex_ante,2021,3,solde_pib,-0.8229795725364362
+naïf — ex_ante,2021,3,dette_pib,8.932521320712453

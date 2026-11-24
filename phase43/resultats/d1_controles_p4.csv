@@ -1,0 +1,77 @@
+configuration,choc,controle,reussi,detail
+p4,demande publique +1 pt de PIB,pas de valeur manquante,True,
+p4,demande publique +1 pt de PIB,"stabilité (variation annuelle des écarts de PIB et de prix < 0,25 pt sur 2042-2046)",True,"{'PIB (%)': 0.011, 'prix conso (%)': 0.022}"
+p4,demande publique +1 pt de PIB,signe attendu à 5 ans : PIB (%) +,True,0.784
+p4,demande publique +1 pt de PIB,signe attendu à 5 ans : emploi (milliers) +,True,367.157
+p4,demande publique +1 pt de PIB,signe attendu à 5 ans : chômage (pt) −,True,-1.086
+p4,demande publique +1 pt de PIB,signe attendu à 5 ans : prix conso (%) +,True,0.838
+p4,demande publique +1 pt de PIB,signe attendu à 5 ans : solde public (pt PIB) −,True,-0.041
+p4,demande publique +1 pt de PIB,"cohérence chômage-emploi (écart < 0,05 pt)",True,-1.086 vs -1.086
+p4,demande publique +1 pt de PIB,identités du compte des sociétés (< 1e-6 M€),True,0.0e+00
+p4,impôts des ménages +1 pt de PIB,pas de valeur manquante,True,
+p4,impôts des ménages +1 pt de PIB,"stabilité (variation annuelle des écarts de PIB et de prix < 0,25 pt sur 2042-2046)",True,"{'PIB (%)': 0.011, 'prix conso (%)': 0.011}"
+p4,impôts des ménages +1 pt de PIB,signe attendu à 5 ans : PIB (%) −,True,-0.588
+p4,impôts des ménages +1 pt de PIB,signe attendu à 5 ans : emploi (milliers) −,True,-140.566
+p4,impôts des ménages +1 pt de PIB,signe attendu à 5 ans : chômage (pt) +,True,0.416
+p4,impôts des ménages +1 pt de PIB,signe attendu à 5 ans : solde public (pt PIB) +,True,0.530
+p4,impôts des ménages +1 pt de PIB,"cohérence chômage-emploi (écart < 0,05 pt)",True,0.416 vs 0.416
+p4,impôts des ménages +1 pt de PIB,identités du compte des sociétés (< 1e-6 M€),True,0.0e+00
+p4,impôts sur les produits +10 %,pas de valeur manquante,True,
+p4,impôts sur les produits +10 %,"stabilité (variation annuelle des écarts de PIB et de prix < 0,25 pt sur 2042-2046)",True,"{'PIB (%)': 0.006, 'prix conso (%)': 0.008}"
+p4,impôts sur les produits +10 %,signe attendu à 5 ans : PIB (%) −,True,-0.337
+p4,impôts sur les produits +10 %,signe attendu à 5 ans : emploi (milliers) −,True,-94.162
+p4,impôts sur les produits +10 %,signe attendu à 5 ans : chômage (pt) +,True,0.278
+p4,impôts sur les produits +10 %,signe attendu à 5 ans : prix conso (%) +,True,1.682
+p4,impôts sur les produits +10 %,signe attendu à 5 ans : solde public (pt PIB) +,True,1.532
+p4,impôts sur les produits +10 %,"cohérence chômage-emploi (écart < 0,05 pt)",True,0.278 vs 0.278
+p4,impôts sur les produits +10 %,identités du compte des sociétés (< 1e-6 M€),True,0.0e+00
+p4,coût du travail −2 % (allègement),pas de valeur manquante,True,
+p4,coût du travail −2 % (allègement),"stabilité (variation annuelle des écarts de PIB et de prix < 0,25 pt sur 2042-2046)",True,"{'PIB (%)': 0.007, 'prix conso (%)': 0.014}"
+p4,coût du travail −2 % (allègement),signe attendu à 5 ans : PIB (%) +,True,0.208
+p4,coût du travail −2 % (allègement),signe attendu à 5 ans : emploi (milliers) +,True,106.254
+p4,coût du travail −2 % (allègement),signe attendu à 5 ans : chômage (pt) −,True,-0.314
+p4,coût du travail −2 % (allègement),signe attendu à 5 ans : prix conso (%) −,True,-1.118
+p4,coût du travail −2 % (allègement),signe attendu à 5 ans : solde public (pt PIB) −,True,-0.759
+p4,coût du travail −2 % (allègement),"cohérence chômage-emploi (écart < 0,05 pt)",True,-0.314 vs -0.314
+p4,coût du travail −2 % (allègement),identités du compte des sociétés (< 1e-6 M€),True,0.0e+00
+p4,IS −5 points,pas de valeur manquante,True,
+p4,IS −5 points,"stabilité (variation annuelle des écarts de PIB et de prix < 0,25 pt sur 2042-2046)",True,"{'PIB (%)': 0.013, 'prix conso (%)': 0.035}"
+p4,IS −5 points,signe attendu à 5 ans : solde public (pt PIB) −,True,-0.520
+p4,IS −5 points,"cohérence chômage-emploi (écart < 0,05 pt)",True,-0.086 vs -0.086
+p4,IS −5 points,identités du compte des sociétés (< 1e-6 M€),True,0.0e+00
+p4,taux d'intérêt +1 pt,pas de valeur manquante,True,
+p4,taux d'intérêt +1 pt,"stabilité (variation annuelle des écarts de PIB et de prix < 0,25 pt sur 2042-2046)",True,"{'PIB (%)': 0.018, 'prix conso (%)': 0.027}"
+p4,taux d'intérêt +1 pt,signe attendu à 5 ans : PIB (%) −,True,-0.154
+p4,taux d'intérêt +1 pt,signe attendu à 5 ans : emploi (milliers) −,True,-32.937
+p4,taux d'intérêt +1 pt,signe attendu à 5 ans : chômage (pt) +,True,0.097
+p4,taux d'intérêt +1 pt,signe attendu à 5 ans : prix conso (%) −,True,-0.024
+p4,taux d'intérêt +1 pt,signe attendu à 5 ans : solde public (pt PIB) −,True,-1.141
+p4,taux d'intérêt +1 pt,"cohérence chômage-emploi (écart < 0,05 pt)",True,0.097 vs 0.097
+p4,taux d'intérêt +1 pt,identités du compte des sociétés (< 1e-6 M€),True,0.0e+00
+p4,demande mondiale +5 %,pas de valeur manquante,True,
+p4,demande mondiale +5 %,"stabilité (variation annuelle des écarts de PIB et de prix < 0,25 pt sur 2042-2046)",True,"{'PIB (%)': 0.016, 'prix conso (%)': 0.021}"
+p4,demande mondiale +5 %,signe attendu à 5 ans : PIB (%) +,True,0.357
+p4,demande mondiale +5 %,signe attendu à 5 ans : emploi (milliers) +,True,97.950
+p4,demande mondiale +5 %,signe attendu à 5 ans : chômage (pt) −,True,-0.290
+p4,demande mondiale +5 %,signe attendu à 5 ans : solde public (pt PIB) +,True,0.316
+p4,demande mondiale +5 %,"cohérence chômage-emploi (écart < 0,05 pt)",True,-0.290 vs -0.290
+p4,demande mondiale +5 %,identités du compte des sociétés (< 1e-6 M€),True,0.0e+00
+p4,énergie importée +50 %,pas de valeur manquante,True,
+p4,énergie importée +50 %,"stabilité (variation annuelle des écarts de PIB et de prix < 0,25 pt sur 2042-2046)",True,"{'PIB (%)': 0.045, 'prix conso (%)': 0.029}"
+p4,énergie importée +50 %,signe attendu à 5 ans : PIB (%) −,True,-1.580
+p4,énergie importée +50 %,signe attendu à 5 ans : emploi (milliers) −,True,-367.524
+p4,énergie importée +50 %,signe attendu à 5 ans : chômage (pt) +,True,1.087
+p4,énergie importée +50 %,signe attendu à 5 ans : prix conso (%) +,True,6.302
+p4,énergie importée +50 %,"cohérence chômage-emploi (écart < 0,05 pt)",True,1.087 vs 1.087
+p4,énergie importée +50 %,identités du compte des sociétés (< 1e-6 M€),True,0.0e+00
+p4,productivité +1 %,pas de valeur manquante,True,
+p4,productivité +1 %,"stabilité (variation annuelle des écarts de PIB et de prix < 0,25 pt sur 2042-2046)",True,"{'PIB (%)': 0.001, 'prix conso (%)': 0.028}"
+p4,productivité +1 %,signe attendu à 5 ans : PIB (%) +,True,1.060
+p4,productivité +1 %,signe attendu à 5 ans : prix conso (%) −,True,-1.230
+p4,productivité +1 %,"cohérence chômage-emploi (écart < 0,05 pt)",True,0.398 vs 0.398
+p4,productivité +1 %,identités du compte des sociétés (< 1e-6 M€),True,0.0e+00
+p4,salaires +2 % (temporaire),pas de valeur manquante,True,
+p4,salaires +2 % (temporaire),"stabilité (variation annuelle des écarts de PIB et de prix < 0,25 pt sur 2042-2046)",True,"{'PIB (%)': 0.0, 'prix conso (%)': 0.025}"
+p4,salaires +2 % (temporaire),signe attendu à 5 ans : prix conso (%) +,True,0.868
+p4,salaires +2 % (temporaire),"cohérence chômage-emploi (écart < 0,05 pt)",True,0.139 vs 0.139
+p4,salaires +2 % (temporaire),identités du compte des sociétés (< 1e-6 M€),True,0.0e+00
