@@ -1,0 +1,41 @@
+...............F........F.                                               [100%]
+=================================== FAILURES ===================================
+____________________ test_choc_de_productivite_defavorable _____________________
+
+mod = <m8_modele.Modele object at 0x7f23ef0701a0>
+refx = {'exogenes': Exogenes(demande_mondiale=2019    6.211489e+06
+2020    5.741814e+06
+2021    6.296503e+06
+2022    6.822879...': ('2026-10', 4.89), 'g_conso_publique': 0.01339694498068944, 'g_autres_prestations': 0.013706515634263061, ...}, ...}
+
+    def test_choc_de_productivite_defavorable(mod, refx):
+        """Productivité −0,3 pt/an : le PIB baisse vers le potentiel, l'écart de production se referme, la dette augmente
+        à long terme (le paradoxe de la v0.6 — baisse du chômage et de la dette — ne doit plus apparaître)."""
+        import verification as V
+        f = [g for n, g in V.chocs().items() if "productivit" in n][0]
+        ref, s = _choc(mod, refx, f)
+        pib = 100 * (s.pib / ref.pib - 1)
+        pot = 100 * (s.pib_potentiel / ref.pib_potentiel - 1)
+        assert pib[2037] < -2.0 and pot[2037] < -2.0
+        assert abs(s.ecart_production[2037] - ref.ecart_production[2037]) < 1.0
+>       assert s.dette_pib[2047] - ref.dette_pib[2047] > 0
+E       assert (np.float64(295.9545314225875) - np.float64(303.84650719641905)) > 0
+
+tests/test_phase3.py:83: AssertionError
+________________________ test_offre_travail_heterogene _________________________
+
+    def test_offre_travail_heterogene():
+        """Les réactions diffèrent selon la situation familiale : le RSA ne touche pas la participation des personnes en
+        couple dont le conjoint travaille ; la prime d'activité augmente la participation mais réduit un peu les heures
+        des seconds apporteurs (effet revenu à la marge intensive)."""
+        rsa = M15.effets({"rsa": 0.25}, "centrale")["detail"]
+        ppa = M15.effets({"prime_activite": 0.25}, "centrale")["detail"]
+>       assert rsa["rsa|seul"]["participation_milliers"] < 0
+               ^^^^^^^^^^^^^^^
+E       KeyError: 'rsa|seul'
+
+tests/test_phase3.py:166: KeyError
+=========================== short test summary info ============================
+FAILED tests/test_phase3.py::test_choc_de_productivite_defavorable - assert (...
+FAILED tests/test_phase3.py::test_offre_travail_heterogene - KeyError: 'rsa|s...
+2 failed, 24 passed in 4627.25s (1:17:07)

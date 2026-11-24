@@ -405,7 +405,7 @@ Arbitrages qui restent ouverts (choix de scénario, pas d'estimation) :
 | Non-régression | v0.9 reproduite après les phases 4.2 et 4.3 (origine 2014, 5 agrégats, 1e-6) | réussi |
 | Non-régression | v0.8 reproduite (origine 2014) | réussi |
 | Non-régression | v0.8 reproduite après un essai v0.9 (défaut de fuite d'état corrigé en 4.3) | réussi après correction |
-| Non-régression | suites v0.8 `test_phase31.py` et `test_phase3.py` (26 tests, référence 2047) | À COMPLÉTER |
+| Non-régression | suites v0.8 `test_phase31.py` et `test_phase3.py` (26 tests, référence 2047, 1 h 17) | 24 réussis, 2 échecs antérieurs à la phase 4.3 (ci-dessous) |
 | Configuration | `configurer_v08` rétablit σ ; `configurer_phase4` garde σ = 0,45 | réussi |
 | Unitaire | Règle légale du SMIC reproduite 2013-2021 (écart < 1,3 pt) | réussi |
 | Unitaire | Indice de prix des CI = 1 à l'année de base | réussi |
@@ -424,6 +424,16 @@ Arbitrages qui restent ouverts (choix de scénario, pas d'estimation) :
 | Validation | Prévisions ex ante comparées au FMI et à une prévision naïve | croissance : meilleure que le FMI ; inflation et dette : moins bonne |
 | Validation | Choc CICE comparé aux évaluations ex post | en dessous (71 000 contre ≈ 100 000 en 2016) |
 | Sensibilité | 13 variantes × 3 chocs | § 5.5 |
+
+Échecs des suites v0.8, antérieurs à la phase 4.3 et non corrigés (ils portent sur la v0.8, à laisser intacte) :
+- `test_offre_travail_heterogene` : le test de la phase 3 attend des clés `rsa|seul`, alors que M15 distingue depuis la
+  v0.8 (commit 51927cb) locataires et propriétaires (`rsa|seul|locataire`). C'est un test périmé, M15 n'a pas été
+  modifié en phase 4.
+- `test_choc_de_productivite_defavorable` : à 20 ans, la dette baisse de 7,9 points au lieu d'augmenter. Les autres
+  assertions du test (PIB, potentiel, écart de production) passent. Le code par défaut de la v0.8 n'a pas changé
+  (reproduction exacte des rétrosimulations) ; l'explication la plus probable, non vérifiée, est la référence 2047
+  recalculée avec les données d'octobre 2026 (OAT 4,89 %, dette explosive, où la hausse des prix d'un choc de
+  productivité défavorable réduit le ratio de dette). C'est la même limite qu'au § 7.1.
 
 Échecs rencontrés pendant la phase 4.3, tous corrigés et conservés dans l'historique :
 - une ligne de `configurer_v08` (rétablissement de σ) avait été déplacée par erreur dans `configurer_phase4` lors de
