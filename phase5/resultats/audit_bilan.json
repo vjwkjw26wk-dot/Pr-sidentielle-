@@ -1,0 +1,12 @@
+{
+ "ecart_cibles_correction_taux_court_max": {
+  "croissance (pt)": 0.011683932431960642,
+  "inflation (pt)": 0.003839056521814932,
+  "chômage (pt)": 0.010058130322543768,
+  "taux d'épargne (pt)": 0.002932036167482721,
+  "solde (pt PIB)": 0.4022669881291687
+ },
+ "seuil_multiplicateur_hausse_ratio_court_terme": 0.5832170695504126,
+ "ecart_rampe_theorique": "écart stationnaire ≈ −(pente de l'effort × multiplicateur) / ρ",
+ "duree_totale_s": 176.28594827651978
+}

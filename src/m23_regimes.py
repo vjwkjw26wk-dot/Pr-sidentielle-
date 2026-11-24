@@ -247,12 +247,61 @@ def _appliquer_parametres(jeu: str, ex):
     return sauv
 
 
-def simuler(env: Environnement, reg: Regime, prog: Programme = PROGRAMME_NUL, effort_impose: dict | None = None) -> dict:
+# Variantes d'environnement appliquées après calibration (hypothèses exogènes alternatives, sans recalibration). À
+# n'utiliser que si l'écart induit aux cibles de calage est négligeable (vérifié dans phase5/audit_taux_composition.py).
+def _taux_court_observe():
+    """Euribor 3 mois (Eurostat irt_st_m, zone euro) : moyenne mensuelle de 2026 (janvier-octobre) et dernier mois
+    observé (octobre 2026), maintenu ensuite — même convention que l'OAT dans la référence."""
+    from telechargement import telecharger
+    f = telecharger("https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/irt_st_m?geo=EA&int_rt=IRT_M3"
+                    "&sinceTimePeriod=2025-01&format=JSON&lang=en", "eurostat_irt_st_m_EA_2026_11.json")
+    d = json.loads(f.read_text())
+    inv = {i: k for k, i in d["dimension"]["time"]["category"]["index"].items()}
+    obs = sorted((inv[int(k)], float(v)) for k, v in d["value"].items())
+    m26 = [v for k, v in obs if k.startswith("2026")]
+    return float(np.mean(m26)), obs[-1]
+
+
+def variante_taux_court_observe(debut=2026):
+    """Corrige le taux court de la référence : M8 le déduisait du taux long moins l'écart moyen 2018-2022 (0,76 pt),
+    soit 4,13 % avec l'OAT à 4,89 %, contre 2,63 % observé (Euribor 3 mois, octobre 2026)."""
+    moy26, (mois, dernier) = _taux_court_observe()
+    import m17_dette as D
+    _lt, st = D.taux_observes()
+
+    def f(mod, ex):
+        idx = sorted(set(ex.taux_long.index))
+        ex.taux_court = pd.Series({t: (float(st[t]) if t in st.index and t < debut else (moy26 if t == 2026 else dernier)) for t in idx})
+    f.description = f"taux court observé (2026 : {moy26:.2f} %, puis {dernier:.2f} %, {mois}) à partir de {debut}"
+    return f
+
+
+def variante_oat(cible=3.82, debut=2027, fin_convergence=2029, avec=None):
+    """OAT convergeant linéairement de son niveau de 2026 vers `cible` (défaut : moyenne des 12 derniers mois observés,
+    novembre 2025-octobre 2026) entre `debut` et `fin_convergence`, constante ensuite. `avec` : variante appliquée avant."""
+    def f(mod, ex):
+        if avec is not None:
+            avec(mod, ex)
+        tl = ex.taux_long.copy().astype(float)
+        x0 = float(tl[debut - 1])
+        for t in tl.index:
+            if t >= debut:
+                k = min(1.0, (t - debut + 1) / (fin_convergence - debut + 1))
+                tl[t] = x0 + k * (cible - x0)
+        ex.taux_long = tl
+    f.description = f"OAT vers {cible} % en {fin_convergence}"
+    return f
+
+
+def simuler(env: Environnement, reg: Regime, prog: Programme = PROGRAMME_NUL, effort_impose: dict | None = None,
+            variante_env=None) -> dict:
     """Une simulation (E, R, P). Ne recalibre jamais l'environnement. Renvoie la trajectoire (avec colonnes « imposé »
-    et « produit »), l'effort budgétaire et la durée."""
+    et « produit »), l'effort budgétaire et la durée. `variante_env` : hypothèse exogène alternative (fonction)."""
     t0 = time.time()
     env.activer()
     ex = copy.deepcopy(env.R["exogenes"])
+    if variante_env is not None:
+        variante_env(env.mod, ex)
     if prog.appliquer is not None:
         prog.appliquer(env.mod, ex)
     sauv = _appliquer_parametres(reg.parametres, ex)
@@ -270,12 +319,12 @@ def simuler(env: Environnement, reg: Regime, prog: Programme = PROGRAMME_NUL, ef
             "regime": reg.description(), "programme": prog.nom, "environnement": env.empreinte()}
 
 
-def evaluer(env: Environnement, reg: Regime, prog: Programme, ref: dict | None = None) -> dict:
+def evaluer(env: Environnement, reg: Regime, prog: Programme, ref: dict | None = None, variante_env=None) -> dict:
     """Effet d'un programme dans un régime : Y(E, R, P) − Y(E, R, ∅). Règle figée : l'effort de la référence (E, R, ∅)
     est imposé à la simulation avec programme. Renvoie référence, variante et écarts."""
-    ref = ref or simuler(env, reg)
+    ref = ref or simuler(env, reg, variante_env=variante_env)
     impose = ref["effort"] if reg.budgetaire.mode == "figee" else None
-    var = simuler(env, reg, prog, effort_impose=impose)
+    var = simuler(env, reg, prog, effort_impose=impose, variante_env=variante_env)
     a, b = var["trajectoire"], ref["trajectoire"]
     ecart = pd.DataFrame({
         "PIB (%)": 100 * np.log(a.pib / b.pib), "emploi (milliers)": a.emploi - b.emploi, "chômage (pt)": a.chomage - b.chomage,
