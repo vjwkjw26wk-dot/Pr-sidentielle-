@@ -71,6 +71,8 @@ def _module_microsimulation_fige():
 # Mesures du catalogue sans curseur d'interface, utilisables par la traduction des programmes (corpus, phase 6)
 MESURES_HORS_CURSEURS = {
     "investissement_hors_apu": lambda v: {"type": "investissement_hors_apu", "parametres": {"md": v}},
+    # réforme des retraites complète : v = {"age", "mode", "duree", "duree_mode", "groupe", "groupe_part"}
+    "retraites": lambda v: {"type": "age_legal", "parametres": dict(v)},
 }
 
 
@@ -108,7 +110,9 @@ def traduire(curseurs: dict, env_hist, nom: str = "programme", statique: dict | 
             mm.setdefault("variante_pmc", "central"); mm.setdefault("variante_distribution", "central")
         return {"ecarts": _ecarts(ref, var), "mesure_menages": mm, "curseurs": curseurs if isinstance(curseurs, dict)
                 else [list(x) for x in curseurs], "nom": nom, "comportements": info.get("comportements"),
-                "microsimulation_reprise": False, "debuts": debuts or {}}
+                "microsimulation_reprise": False, "debuts": debuts or {},
+                "distribution": info.get("distribution"), "inegalites": info.get("inegalites"),
+                "groupes": info.get("groupes"), "statique": info.get("statique"), "regle_age": info.get("regle_age")}
     sc = {"nom": nom, "horizon": env_hist.fin, "hypotheses": {"europe": False, "incertitude": 0, "profils": False,
                                                                "distribution_dynamique": False}, "mesures": mesures}
     statique = statique if statique is not None else _statique(nom)

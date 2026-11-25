@@ -1,0 +1,1 @@
+PIB (%) : 78 % ; chômage (pt) : 100 % ; dette (pt PIB) : 56 % ; emploi (milliers) : 67 % ; pouvoir d'achat (%) : 44 % ; solde (pt PIB) : 67 %

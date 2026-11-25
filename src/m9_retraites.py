@@ -54,11 +54,76 @@ TRANCHES = [(55, 59), (60, 64), (65, 69), (70, 74)]
 # rapports). Les effets sur l'activité ne sont pas modifiés (validés hors échantillon, 2020-2025).
 COEF_PENSION_MARGINALE = 0.55
 
+# ------------------------------------------------------------------------------------------------------------------
+# Durée d'assurance requise et groupes de départ anticipé (finalisation, 24-25 novembre 2026)
+# ------------------------------------------------------------------------------------------------------------------
+# Report de l'âge effectif de cessation d'activité par année supplémentaire de durée requise [E, littérature] :
+# 9 mois pour les hommes, 5 mois pour les femmes (réforme de 1993 : 37,5 → 40 ans ; Bozio, « La réforme des
+# retraites de 1993 : l'impact de l'augmentation de la durée d'assurance », Économie et Statistique n° 441-442, 2011).
+# Appliqué symétriquement aux baisses de durée [H].
+ELASTICITE_DUREE = {"M": 0.75, "F": 5.0 / 12.0}
+# Part de la pension totale soumise à la proratisation et à la décote du régime de base [H] (le régime de base
+# représente de l'ordre de la moitié de la pension d'un salarié du privé ; complémentaires en points non affectées).
+PART_PENSION_BASE = 0.5
+DECOTE_PAR_AN = 0.05            # 1,25 % par trimestre manquant [D, code de la sécurité sociale]
+# Part des départs anticipés pour carrière longue parmi les nouveaux retraités du régime général [D] : 114 000 sur
+# 658 481 en 2024 (CNAV, recueil statistique, données 2024) ; « environ un nouveau liquidant sur cinq » (DREES 2025).
+PART_CARRIERES_LONGUES = 0.17
+
+
+def duree_requise(g: int, spec: str = "actuelle") -> float:
+    """Durée d'assurance requise pour le taux plein (trimestres) de la génération g.
+    spec : "actuelle" (loi de 2023 aménagée par la LFSS pour 2026 : 170 trimestres pour 1963-1964, 171 pour 1965,
+    172 à partir de 1966), "2014" (loi du 20 janvier 2014 : un trimestre toutes les trois générations de 1958 à
+    1973), ou "cible@debut[:mode]" (trimestres ; générations atteignant l'âge légal à partir de `debut` ; mode
+    "immediat" ou "progressif" = un trimestre par génération)."""
+    if spec in ("actuelle", None, ""):
+        if g <= 1957:
+            return 166.0
+        if g <= 1960:
+            return 167.0
+        return {1961: 168.0, 1962: 169.0, 1963: 170.0, 1964: 170.0, 1965: 171.0}.get(g, 172.0)
+    if spec == "2014":
+        if g <= 1957:
+            return 166.0
+        return float(min(172, 167 + (g - 1958) // 3))
+    cible_s, reste = spec.split("@", 1)
+    debut_s, _, mode = reste.partition(":")
+    cible, debut, mode = float(cible_s), int(debut_s), (mode or "immediat")
+    actuel = duree_requise(g, "actuelle")
+    if g + aod(g, "actuelle") < debut:
+        return actuel
+    if mode == "immediat":
+        return cible
+    g0 = next(gg for gg in range(1940, 2010) if gg + aod(gg, "actuelle") >= debut)
+    d0 = duree_requise(g0, "actuelle")
+    pas = 1.0 if cible >= d0 else -1.0
+    return float(np.clip(d0 + pas * (g - g0 + 1), min(cible, d0), max(cible, d0)))
+
+
+def decomposer(regle) -> tuple[str, str | None, tuple | None]:
+    """Règle complète « âge|D=durée|G=groupe:part » → (règle d'âge, spécification de durée, (groupe, part)).
+    Groupe : âge de départ (nombre) d'une fraction `part` de chaque génération (carrières longues), ou « ref » : la
+    fraction garde les conditions de la législation actuelle (départs précoces maintenus)."""
+    r = str(regle)
+    if "|" not in r:
+        return r, None, None
+    base, *opts = r.split("|")
+    dspec, grp = None, None
+    for o in opts:
+        if o.startswith("D="):
+            dspec = o[2:]
+        elif o.startswith("G="):
+            a, _, p_ = o[2:].partition(":")
+            grp = (a, float(p_))
+    return base, dspec, grp
+
 
 def aod(g: int, regle: str = "actuelle") -> float:
     """Âge d'ouverture des droits (années décimales) de la génération g.
     regle : "actuelle" (LFSS 2026), "2023" (loi de 2023 sans suspension), "2010" (62 ans), ou un nombre (cible
     atteinte à +3 mois par génération à partir de la génération 1964)."""
+    regle = decomposer(regle)[0]
     hist = {1950: 60.0, 1951: 60.17, 1952: 60.75, 1953: 61.17, 1954: 61.58}
     if g <= 1950:
         return 60.0
@@ -158,18 +223,73 @@ def sorties_precoces(theta, t):
 
 def regle_en_vigueur(regle: str, t: int) -> str:
     """Une réforme "cible@debut" n'agit sur les comportements et les départs qu'à partir de l'année `debut`."""
-    if "@" in str(regle) and t < int(str(regle).split("@", 1)[1].split(":")[0]):
+    base = decomposer(regle)[0]
+    if "@" in base and t < int(base.split("@", 1)[1].split(":")[0]):
         return "actuelle"
     return regle
 
 
-def taux_age(x, t, A, theta, regle="actuelle"):
-    """beta = theta[4] : part du profil d'activité qui se décale avec l'AOD (le reste reste attaché à l'âge 62 ans)."""
+def pivots(g: int, regle, beta: float, sx: str):
+    """Âges pivots du profil d'activité de la génération g : (législation actuelle, groupe général de la règle,
+    groupe particulier nouveau, groupe particulier en législation actuelle, part du groupe particulier).
+    pivot = β · AOD + (1 − β) · 62 + ε_sexe · Δdurée requise (années)."""
+    base, dspec, grp = decomposer(regle)
+    act = beta * aod(g, "actuelle") + (1 - beta) * 62.0
+    dD = 0.0
+    if dspec:
+        dD = ELASTICITE_DUREE[sx] * (duree_requise(g, dspec) - duree_requise(g, "actuelle")) / 4.0
+    reg = beta * aod(g, base) + (1 - beta) * 62.0 + dD
+    if grp is None:
+        return act, reg, None, None, 0.0
+    a, p_ = grp
+    if a == "ref":
+        return act, reg, act, act, p_
+    # carrières longues : âge de départ du groupe en législation actuelle ≈ max(60, AOD − 2) [H] (bornes de 2023 :
+    # 58, 60, 62 et 63 ans selon l'âge de début ; « 60 ans et 6 mois » pour 1964 commençant avant 20 ans)
+    cl_act = beta * max(60.0, aod(g, "actuelle") - 2.0) + (1 - beta) * 62.0
+    cl_new = beta * float(a) + (1 - beta) * 62.0 + dD
+    return act, reg, cl_new, cl_act, p_
+
+
+def melange(fn, x, g, regle, beta, sx):
+    """Combine une fonction du décalage d = x + 0,5 − pivot entre le groupe général et le groupe particulier, en
+    écart à la législation actuelle (la référence estimée reste exactement reproduite) :
+    fn(d_reg) + p [fn(d_grp) − fn(d_reg)] − p [fn(d_grp_act) − fn(d_act)]."""
+    act, reg, gn, ga, p_ = pivots(g, regle, beta, sx)
+    v = fn(x + 0.5 - reg)
+    if p_:
+        v = v + p_ * (fn(x + 0.5 - gn) - fn(x + 0.5 - reg)) - p_ * (fn(x + 0.5 - ga) - fn(x + 0.5 - act))
+    return v
+
+
+def facteur_pension(g: int, regle, sx: str) -> float:
+    """Effet de la durée requise sur le niveau de pension de la génération g [H] : la fraction (1 − ε) de l'année de
+    durée supplémentaire qui n'est pas compensée par un report subit la proratisation (1/durée) et la décote (5 %
+    par an) sur la part de base de la pension ; symétrique pour une baisse de durée."""
+    _, dspec, _ = decomposer(regle)
+    if not dspec:
+        return 1.0
+    dD = (duree_requise(g, dspec) - duree_requise(g, "actuelle")) / 4.0
+    if dD == 0:
+        return 1.0
+    manque = dD * (1 - ELASTICITE_DUREE[sx])
+    return float(1.0 - PART_PENSION_BASE * manque * (4.0 / duree_requise(g, "actuelle") + DECOTE_PAR_AN))
+
+
+def taux_age(x, t, A, theta, regle="actuelle", sx="M"):
+    """beta = theta[4] : part du profil d'activité qui se décale avec l'AOD (le reste reste attaché à l'âge 62 ans).
+    Les règles complètes (durée requise, groupes de départ anticipé) passent par `melange` ; sans option, calcul
+    identique à la version 0.1."""
     regle = regle_en_vigueur(regle, t)
     _, _, s, k = theta[:4]
     beta = theta[4] if len(theta) > 4 else 1.0
     e = sorties_precoces(theta, t)
     g = t - np.asarray(x) - 1
+    if "|" in str(regle):
+        xs, gs = np.atleast_1d(np.asarray(x, dtype=float)), np.atleast_1d(g)
+        v = np.array([melange(lambda d: float(h(d, e, s, k)), float(xx), int(gg), regle, beta, sx)
+                      for xx, gg in zip(xs, gs)])
+        return A * v
     aods = np.array([aod(int(gg), regle) for gg in np.atleast_1d(g)])
     d = np.asarray(x) + 0.5 - (beta * aods + (1 - beta) * 62.0)
     return A * h(d, e, s, k)
@@ -192,7 +312,7 @@ class ActiviteSeniors:
         theta = self.theta[sx] if theta is None else theta
         ages = np.arange(a0, a1 + 1)
         p = self.pop[sx][t].reindex(ages).to_numpy()
-        r = taux_age(ages, t, self.A(sx, t), theta, regle)
+        r = taux_age(ages, t, self.A(sx, t), theta, regle, sx)
         return float((p * r).sum() / p.sum())
 
     def _estimer(self, sx):
@@ -212,7 +332,7 @@ class ActiviteSeniors:
                 a1 = a0 + 4
                 pop = self.pop[sx][t].reindex(range(a0, a1 + 1)).to_numpy()
                 if a0 >= 55:
-                    r = taux_age(np.arange(a0, a1 + 1), t, self.A(sx, t), self.theta[sx], regle)
+                    r = taux_age(np.arange(a0, a1 + 1), t, self.A(sx, t), self.theta[sx], regle, sx)
                 else:
                     o = self.obs[(self.obs.sexe == sx) & (self.obs.a0 == a0)].set_index("annee").activite
                     r = float(o.get(t, o.iloc[-1]))
@@ -302,7 +422,12 @@ class Pensions:
         _, _, s, k, beta = self.act.theta[sx]
         e = sorties_precoces(self.act.theta[sx], t)
         g = t - x - 1
+        if "|" in str(regle):
+            return float(melange(lambda d: self._part_d(d, e, s, k), x, g, regle, beta, sx))
         d = x + 0.5 - (beta * aod(g, regle) + (1 - beta) * 62.0)
+        return self._part_d(d, e, s, k)
+
+    def _part_d(self, d, e, s, k):
         if d < -L_RAMPE:
             return 0.0
         if d < 0:
@@ -329,7 +454,7 @@ class Pensions:
                 pa = pp(t - 1) / pp(tl - 1)
                 if revalo is not None:
                     pa *= float(np.prod([1 + revalo.get(a, 0.0) / 100 for a in range(tl + 1, t + 1)]))
-                pens = self.nu * sal * pa
+                pens = self.nu * sal * pa * (facteur_pension(g, regle, sx) if "|" in str(regle) else 1.0)
                 nb += pop * r
                 masse += pop * r * pens
         return nb, masse
@@ -387,3 +512,29 @@ def liens_m8(mod, annees, regle="actuelle", regle_ref="actuelle", act=None, pens
         emp[t] = k * d / 1e3
         dp[t] = COEF_PENSION_MARGINALE * (pens.masse(t, regle, **kw)[1] - pens.masse(t, regle_ref, **kw)[1]) / 1e6
     return dict(population_active=pd.Series(pa), emploi_additionnel=pd.Series(emp), ajust_prestations=pd.Series(dp))
+
+
+# ------------------------------------------------------------------------------------------------------------------
+# 6. Effets générationnels d'une règle (finalisation 2026-11)
+# ------------------------------------------------------------------------------------------------------------------
+def effets_generationnels(regle, act: "ActiviteSeniors | None" = None, generations=range(1960, 1996, 5)) -> pd.DataFrame:
+    """Par génération et par sexe : âge d'ouverture des droits, durée requise, âge pivot du profil d'activité
+    (législation actuelle et règle), écart de durée de retraite attendue (≈ −écart de pivot, espérance de vie
+    inchangée) et facteur de niveau de pension dû à la durée requise. Lecture : effets moyens par génération ; ce
+    ne sont pas des trajectoires individuelles."""
+    act = act or ActiviteSeniors()
+    base, dspec, grp = decomposer(regle)
+    rows = []
+    for g in generations:
+        for sx in ("F", "M"):
+            beta = act.theta[sx][4]
+            a, r, gn, ga, p_ = pivots(g, regle, beta, sx)
+            piv = (1 - p_) * r + p_ * gn if p_ else r
+            piv_act = (1 - p_) * a + p_ * ga if p_ else a
+            rows.append({"generation": g, "sexe": sx, "aod_actuelle": aod(g, "actuelle"), "aod_regle": aod(g, base),
+                         "duree_actuelle_trim": duree_requise(g, "actuelle"),
+                         "duree_regle_trim": duree_requise(g, dspec) if dspec else duree_requise(g, "actuelle"),
+                         "pivot_actuel": piv_act, "pivot_regle": piv, "ecart_pivot_ans": piv - piv_act,
+                         "ecart_duree_retraite_ans": -(piv - piv_act),
+                         "facteur_pension": facteur_pension(g, regle, sx) if dspec else 1.0})
+    return pd.DataFrame(rows)

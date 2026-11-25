@@ -1,0 +1,94 @@
+# Registre des mesures politiques et de leur traduction {#sec:annexe-c}
+
+Les tableaux du chapitre \ref{sec:programmes} donnent, pour chaque mesure, le montant, le calendrier, le canal et la
+qualification européenne. Cette annexe en donne les règles de conversion complètes et les sources ; le registre est
+généré à partir du module `src/m27_corpus.py` (corpus daté du 24 novembre 2026).
+
+- **L01** (Mélenchon (LFI)) — Suppression du prélèvement forfaitaire unique (flat tax). *Sources* : LFI_BUDGET, LFI_LCP_BUDGET. *Règle* : Points de PFU = montant / 0,6 Md€ par point (assiette 60 Md€).
+- **L02** (Mélenchon (LFI)) — Rétablissement d'un impôt sur la fortune renforcé. *Sources* : LFI_BUDGET, LFI_LCP_BUDGET. *Règle* : Taux moyen = (montant + rendement de l'IFI remplacé) / assiette ISF 930 Md€.
+- **L03** (Mélenchon (LFI)) — Taxe Zucman (patrimoines supérieurs à 100 M€). *Sources* : LFI_BUDGET, LFI_LCP_BUDGET. *Règle* : [H] Assiette (> 100 M€) distincte de celle de l'ISF du modèle : recette sans effet de demande (propension à consommer quasi nulle) ; l'érosion d'assiette n'est pas représentée (le montant annoncé est une borne haute). Variante : canal isf (érosion M13).
+- **L04** (Mélenchon (LFI)) — Réforme des droits de succession. *Sources* : LFI_BUDGET, LFI_LCP_BUDGET. *Règle* : Variation du rendement = montant / 18 Md€ (au-delà de la borne de l'interface).
+- **L05** (Mélenchon (LFI)) — Impôt sur le revenu à 14 tranches. *Sources* : LFI_BUDGET, LFI_LCP_BUDGET. *Règle* : Barème non publié : canal ir_t1..ir_t4 identifié, paramètres manquants.
+- **L06** (Mélenchon (LFI)) — Rétablissement de la CVAE sur les plus grandes entreprises. *Sources* : LFI_BUDGET, LFI_LCP_BUDGET. *Règle* : Md€ directs.
+- **L07** (Mélenchon (LFI)) — Réforme de l'impôt sur les sociétés. *Sources* : LFI_BUDGET, LFI_LCP_BUDGET. *Règle* : Paramètres non publiés : taux_is calé sur 3 Md€ par le rendement de référence de l'IS du modèle (fonction conversion_is).
+- **L08** (Mélenchon (LFI)) — Taxe universelle sur les multinationales. *Sources* : LFI_BUDGET, LFI_LCP_BUDGET. *Règle* : [H] Recette sans effet de demande intérieure (bénéfices en grande partie distribués aux non-résidents).
+- **L09** (Mélenchon (LFI)) — Renforcement de la taxe sur les services numériques (GAFAM). *Sources* : LFI_BUDGET, LFI_LCP_BUDGET. *Règle* : [H] idem L08.
+- **L10** (Mélenchon (LFI)) — Taxe sur les superprofits. *Sources* : LFI_BUDGET, LFI_LCP_BUDGET. *Règle* : [H] Prélèvement exceptionnel sur profits.
+- **L11** (Mélenchon (LFI)) — Rabot et suppression des niches fiscales et sociales « les plus injustes ». *Sources* : LFI_BUDGET, LFI_LCP_BUDGET. *Règle* : [H] Composition non publiée : moitié ménages (baisse de revenu disponible), moitié entreprises (hausse du coût du travail). Variante : recettes_neutres.
+- **L12** (Mélenchon (LFI)) — Fin des exonérations de cotisations au-dessus de 2 SMIC. *Sources* : LFI_BUDGET, LFI_LCP_BUDGET. *Règle* : Canal cotisations_employeurs ; montant non publié.
+- **L13** (Mélenchon (LFI)) — Taxes sur les transactions financières. *Sources* : LFI_BUDGET, LFI_LCP_BUDGET. *Règle* : —
+- **L14** (Mélenchon (LFI)) — Taxe sur les rachats d'actions. *Sources* : LFI_BUDGET, LFI_LCP_BUDGET. *Règle* : —
+- **L15** (Mélenchon (LFI)) — Taxe sur les crypto-actifs. *Sources* : LFI_BUDGET, LFI_LCP_BUDGET. *Règle* : —
+- **L16** (Mélenchon (LFI)) — Lutte contre la fraude fiscale. *Sources* : LFI_BUDGET, LFI_LCP_BUDGET. *Règle* : —
+- **L20** (Mélenchon (LFI)) — Dégel et hausse de 10 % du point d'indice. *Sources* : LFI_BUDGET, LFI_LCP_BUDGET. *Règle* : Point d'indice +10 %.
+- **L21** (Mélenchon (LFI)) — Revalorisation de 10 % des pensions, allocations familiales et APL. *Sources* : LFI_BUDGET, LFI_LCP_BUDGET. *Règle* : [H] Le montant annoncé (8 Md€) n'est pas compatible avec une revalorisation générale de toutes les pensions (masse de plusieurs centaines de Md€) : périmètre à préciser ; montant annoncé versé en transferts non ciblés. Variante : allocations_familiales et aides_logement +10 % (microsimulation).
+- **L22** (Mélenchon (LFI)) — Logements d'urgence et réquisition de logements vacants. *Sources* : LFI_BUDGET, LFI_LCP_BUDGET. *Règle* : —
+- **L23** (Mélenchon (LFI)) — Garantie d'autonomie pour les jeunes. *Sources* : LFI_BUDGET, LFI_LCP_BUDGET. *Règle* : [H] Transfert non ciblé (pas de mesure jeunes dans M4).
+- **L24** (Mélenchon (LFI)) — SMIC à 1 700 € net. *Sources* : LFI_BUDGET, LFI_LCP_BUDGET, SMIC_2026. *Règle* : Hausse = 1 700 / 1 477,93 − 1 ≈ 15,0 % (SMIC net au 1er juin 2026).
+- **L25** (Mélenchon (LFI)) — Blocage du prix des carburants à 1,70 €/l. *Sources* : LFI_BUDGET, LFI_LCP_BUDGET. *Règle* : Coût dépendant du prix de marché : canal energie_import + subvention, non chiffrable sans hypothèse de prix.
+- **L26** (Mélenchon (LFI)) — 10 000 postes dans l'Éducation nationale. *Sources* : LFI_BUDGET, LFI_LCP_BUDGET. *Règle* : —
+- **L27** (Mélenchon (LFI)) — Gratuité de la cantine scolaire. *Sources* : LFI_BUDGET, LFI_LCP_BUDGET. *Règle* : [H] Dépense de fonctionnement (transfert en nature).
+- **L28** (Mélenchon (LFI)) — 250 000 places à l'université. *Sources* : LFI_BUDGET, LFI_LCP_BUDGET. *Règle* : —
+- **L29** (Mélenchon (LFI)) — Hôpital public (+10 000 postes soignants). *Sources* : LFI_BUDGET, LFI_LCP_BUDGET. *Règle* : —
+- **L30** (Mélenchon (LFI)) — Violences sexistes et sexuelles ; violences faites aux enfants. *Sources* : LFI_BUDGET, LFI_LCP_BUDGET. *Règle* : 2,6 + 2,0 Md€.
+- **L31** (Mélenchon (LFI)) — Indexation des budgets 2027 des services supprimés en 2026. *Sources* : LFI_BUDGET, LFI_LCP_BUDGET. *Règle* : —
+- **L32** (Mélenchon (LFI)) — Adaptation au dérèglement climatique. *Sources* : LFI_BUDGET, LFI_LCP_BUDGET. *Règle* : —
+- **L33** (Mélenchon (LFI)) — Investissements de planification écologique portés par le pôle public bancaire. *Sources* : LFI_BUDGET, LFI_LCP_BUDGET. *Règle* : 100 Md€ par an annoncés hors budget : investissement hors APU (effet de demande sans coût pour le solde public). [H] Montée en charge non précisée : appliqué dès 2028 ; additionnalité totale (borne haute). Financement, dette du pôle public et effet d'offre non représentés.
+- **L34** (Mélenchon (LFI)) — Abrogation de la réforme de 2023 (retour à 62 ans). *Sources* : LFI_BUDGET, LFI_LCP_BUDGET. *Règle* : Retour à 62 ans sans transition et au calendrier de durée de la loi de 2014 ; coût calculé par M9 (le montant annoncé sert de contrôle).
+- **L35** (Mélenchon (LFI)) — Abrogation des réformes de l'assurance chômage. *Sources* : LFI_BUDGET, LFI_LCP_BUDGET. *Règle* : Variation = montant / 40 Md€ de dépense.
+- **L36** (Mélenchon (LFI)) — Retour à 60 ans avec 40 annuités. *Sources* : LFI_BUDGET, LFI_LCP_BUDGET. *Règle* : Objectif de mandat : variante (non incluse dans le paquet 2027) ; 40 annuités = 160 trimestres, un trimestre par génération [H].
+- **L37** (Mélenchon (LFI)) — Plafond du livret A relevé à 30 000 € ; centralisation portée à 80 % ; livret B. *Sources* : LFI_BUDGET, LFI_EPARGNE. *Règle* : Pas de canal de l'intermédiation financière dans le modèle.
+- **L38** (Mélenchon (LFI)) — Contrôle des capitaux ; fin de la cotation continue. *Sources* : LFI_EPARGNE. *Règle* : Mesures de régulation sans canal.
+- **L39** (Mélenchon (LFI)) — Réduction du déficit de 25 Md€ par an ; stabilisation de la dette en un quinquennat. *Sources* : LFI_BUDGET, LFI_LCP_BUDGET. *Règle* : Objectif de solde : élément de régime (pas de règle automatique).
+- **P01** (Le Pen (RN)) — 140 Md€ d'économies nettes d'ici 2032 ; dette de 121 % (2027) à 112 % (2032) ; déficit à 3 % en 2030 ; 30 Md€ de baisses d'impôts. *Sources* : RN_PS_BUDGET, RN_MONEYVOX. *Règle* : Enveloppe agrégée : les mesures détaillées ci-dessous en couvrent une partie.
+- **P02** (Le Pen (RN)) — Règle d'or constitutionnelle par référendum (déficit plafonné au niveau stabilisant la dette). *Sources* : RN_PS_BUDGET. *Règle* : Élément de régime : règle de stabilisation (M23 R1, mode actif).
+- **P03** (Le Pen (RN)) — Économies sur le « coût de l'immigration ». *Sources* : RN_PS_BUDGET. *Règle* : [H] Composition non publiée : baisse de prestations (transferts). La part fondée sur la nationalité est incompatible pour les ressortissants de l'Union (M26, niveau 4) ; cette part n'est pas connue.
+- **P04** (Le Pen (RN)) — Baisse de la contribution au budget de l'Union. *Sources* : RN_PS_BUDGET. *Règle* : Recette nette sans effet de demande.
+- **P05** (Le Pen (RN)) — Réorganisation de l'État (centralisation de la TVA, transferts aux collectivités et à la Sécurité sociale votés par le Parlement). *Sources* : RN_PS_BUDGET. *Règle* : [H] Les sources ne disent pas si les économies sur les collectivités (P06) et les agences (P07) sont incluses : par prudence, P06 et P07 sont traitées comme des composantes de P05 (non additionnées).
+- **P06** (Le Pen (RN)) — Contribution des collectivités (dont suppression des EPCI et métropoles 0,25 Md€, effectifs 0,8 Md€). *Sources* : RN_PS_BUDGET. *Règle* : Composante de P05 [H].
+- **P07** (Le Pen (RN)) — Agences de l'État. *Sources* : RN_PS_BUDGET. *Règle* : Composante de P05 [H] ; une commission sénatoriale évaluait ces économies à environ 0,5 Md€.
+- **P08** (Le Pen (RN)) — Âge légal ramené à 62 ans (60 ans pour les carrières commencées avant 20 ans), 42 annuités ; pilier de capitalisation obligatoire (socle : Fonds de réserve pour les retraites). *Sources* : RN_RETRAITES_PS, RN_RETRAITES_SUD, RN_RETRAITES_BRUT. *Règle* : Coût brut annoncé 18,6 Md€ en 2032. M9 : âge 62 ans, 42 annuités (168 trimestres), départ à 60 ans pour une fraction de chaque génération égale à la part des départs pour carrière longue au régime général (17 %, CNAV 2024) [H : éligibilité « avant 20 ans » approchée par cette part]. Pilier de capitalisation non chiffré : non représenté.
+- **P09** (Le Pen (RN)) — Économies sur les retraites (« corrections de mesures injustes »). *Sources* : RN_PS_BUDGET, RN_MONEYVOX. *Règle* : Fourchette 15-20 Md€, mesures non détaillées.
+- **P10** (Le Pen (RN)) — TVA ramenée de 20 % à 5,5 % sur l'électricité, le gaz, le fioul et les carburants. *Sources* : RN_ENERGIE, MONTAIGNE_TVA_2022. *Règle* : Coût : ordre de grandeur de l'Institut Montaigne (2022), aucun montant du candidat dans les sources. [H] Baisse équivalente du taux normal (le modèle ne distingue pas l'énergie) : la répercussion sur les prix est répartie sur toute la consommation.
+- **P11** (Le Pen (RN)) — Exonération d'impôt sur le revenu des moins de 30 ans (jusqu'à 4 SMIC). *Sources* : RN_LCP_JEUNES. *Règle* : [H] Baisse d'impôt traitée en transfert non ciblé.
+- **P12** (Le Pen (RN)) — Permis de conduire gratuit (18 ans, casier vierge) ; prime d'activité étudiante. *Sources* : RN_LCP_JEUNES. *Règle* : 0,7 + 0,6 Md€.
+- **P13** (Le Pen (RN)) — Part fiscale pleine dès le deuxième enfant. *Sources* : RN_LCP_JEUNES. *Règle* : [H] Transfert non ciblé.
+- **P14** (Le Pen (RN)) — Dons familiaux défiscalisés ; prêt à taux zéro au troisième enfant ; suppression de la CVEC. *Sources* : RN_LCP_JEUNES. *Règle* : —
+- **P15** (Le Pen (RN)) — Suppression de la CFE et des impôts de production « qui nuisent à la relocalisation ». *Sources* : RN_VOTONS. *Règle* : Montant non publié : canal impots_production.
+- **P16** (Le Pen (RN)) — Priorité nationale (logement, emploi, prestations). *Sources* : RN_LCP_JEUNES. *Règle* : —
+- **H01** (Philippe (Horizons)) — Près de 150 Md€ d'économies ; déficit sous 2,5 % du PIB en fin de quinquennat ; moitié de l'effort sur les dépenses sociales, un quart sur l'État et les collectivités, un quart sur la croissance. *Sources* : EP_COMPTES, EP_PS_VOL1. *Règle* : Enveloppe agrégée.
+- **H02** (Philippe (Horizons)) — Règle d'or constitutionnelle par référendum ; aucun nouvel impôt pendant cinq ans. *Sources* : EP_COMPTES, EP_PS_VOL1. *Règle* : Élément de régime : trajectoire de rétablissement (M23 R2, mode actif, instruments de dépense).
+- **H03** (Philippe (Horizons)) — 250 000 postes de fonctionnaires en moins (un départ sur trois non remplacé dans les fonctions de bureau). *Sources* : EP_COMPTES, EP_PS_VOL1. *Règle* : Effectif atteint en 5 ans ; coût moyen du simulateur 56 k€ par agent.
+- **H04** (Philippe (Horizons)) — Hausse de 20 % du salaire des enseignants. *Sources* : EP_PS_VOL1. *Règle* : Masse salariale des enseignants non disponible dans le modèle : canal education (Md€) à chiffrer.
+- **H05** (Philippe (Horizons)) — Âge de départ à 65 ans et 45 annuités ; départ précoce pour un tiers des assurés ; capitalisation collective. *Sources* : EP_COMPTES, EP_PS_VOL1, EP_EURONEWS. *Règle* : M9 : âge 65 ans et 45 annuités (180 trimestres), montée d'un trimestre par génération [H] ; le tiers des assurés annoncé comme pouvant partir plus tôt garde les conditions actuelles [H]. Capitalisation collective non chiffrée : non représentée.
+- **H06** (Philippe (Horizons)) — Fin des 35 heures ; deux heures supplémentaires hebdomadaires exonérées de cotisations. *Sources* : EP_PS_VOL1, EP_EURONEWS. *Règle* : [H] Durée de référence portée à 37 h (2 h supplémentaires) ; exonération non chiffrée.
+- **H07** (Philippe (Horizons)) — Indemnisation limitée à 12 mois pour les moins de 50 ans. *Sources* : EP_COMPTES, EP_PS_VOL1, EP_EURONEWS. *Règle* : Le curseur agit sur les montants, pas sur la durée : montant à chiffrer.
+- **H08** (Philippe (Horizons)) — Baisse de 30 % du nombre d'allocataires du RSA (accompagnement, métiers en tension). *Sources* : EP_COMPTES, EP_PS_VOL1. *Règle* : [H] Le curseur réduit le montant forfaitaire (−30 %) : approximation budgétaire d'une baisse des effectifs ; la réponse de participation passe par M15 (gain à l'emploi accru), pas par l'accompagnement annoncé ; effet distributif différent d'une baisse d'effectifs.
+- **H09** (Philippe (Horizons)) — Trois jours de carence pour tous (public et privé). *Sources* : EP_COMPTES, EP_PS_VOL1. *Règle* : Pas de canal des indemnités journalières.
+- **H10** (Philippe (Horizons)) — Allocation de 350 € par mois dès le premier enfant, dégressive ; exonération d'impôt les trois premières années de l'enfant ; suppression des frais de notaire au premier achat (< 35 ans) ; prêt à taux zéro famille. *Sources* : EP_COMPTES, EP_PS_VOL1, EP_EURONEWS. *Règle* : Barèmes non publiés.
+- **H11** (Philippe (Horizons)) — Baisse de 50 Md€ des impôts de production financée par 50 Md€ de baisse des aides aux entreprises. *Sources* : EP_PS_VOL1, EP_DEAL. *Règle* : [H] Composition des aides non publiée. Le modèle représente une aide supprimée de deux façons : (a) aide assimilable à une moindre imposition de la production (subventions, dépenses fiscales) : même canal que les impôts de production, de signe opposé, donc effet net nul ; (b) allègement de cotisations supprimé : hausse du coût du travail (cotisations_employeurs). Central : moitié (a), moitié (b), soit impôts de production −25 Md€ nets et cotisations +25 Md€. Variantes : (a) seul (mesure neutre dans le modèle) ; (b) seul (impôts de production −50, cotisations +50). Limite : le modèle ne distingue pas les distorsions propres aux impôts de production de celles des subventions (argument central du candidat). Début : première loi de finances du quinquennat (2028).
+- **H12** (Philippe (Horizons)) — Fonds unique d'adaptation au changement climatique. *Sources* : EP_EURONEWS. *Règle* : —
+- **H13** (Philippe (Horizons)) — Fusion, suppression ou privatisation d'une trentaine d'agences (dont France Travail). *Sources* : EP_COMPTES, EP_PS_VOL1. *Règle* : —
+- **H14** (Philippe (Horizons)) — Huit réacteurs nucléaires supplémentaires ; suppression du ZAN. *Sources* : EP_PS_VOL1. *Règle* : —
+
+**Sources du corpus.**
+
+- `LFI_BUDGET` : https://melenchon2027.fr/wp-content/uploads/2026/10/Comment-nous-allons-remettre-de-l-ordre-dans-les-comptes-publics.pdf
+- `LFI_AEC` : https://melenchon2027.fr/?p=24158
+- `LFI_PRESSE` : https://melenchon2027.fr/wp-content/uploads/2026/11/DOSSIER-DE-PRESSE_0611_PROGRAMME_ST.pdf
+- `LFI_LCP_BUDGET` : https://lcp.fr/actualites/contre-budget-lfi-propose-1064-milliards-d-euros-de-recettes-supplementaires-et-817
+- `LFI_EPARGNE` : https://lessentieldeleco.fr/9362-melenchon-epargne/
+- `RN_PS_BUDGET` : https://www.publicsenat.fr/actualites/politique/140-milliards-deuros-deconomies-dici-2032-leffort-radical-propose-par-marine-le-pen-pour-redresser-les-f
+- `RN_LCP_JEUNES` : https://lcp.fr/actualites/permis-de-conduire-gratuit-exoneration-d-impot-jusqu-a-30-ans-comment-le-rn-veut
+- `RN_MONEYVOX` : https://www.moneyvox.fr/impot/actualites/110673/140-milliards-economies-ce-quil-faut-retenir-de-intervention-de-marine-le-pen
+- `RN_RETRAITES_PS` : https://www.publicsenat.fr/actualites/politique/presidentielle-2027-que-contient-la-reforme-des-retraites-presentee-par-marine-le-pen
+- `RN_RETRAITES_SUD` : https://www.sudradio.fr/sud-radio/age-de-depart-cotisation-et-capitalisation-les-propositions-du-rn-pour-reformer-les-retraites
+- `RN_RETRAITES_BRUT` : https://www.brut.media/fr/articles/le-pen-affirme-que-sa-reforme-des-retraites-sera-engagee-des-son-arrivee-au-pouvoir-et-sera-appliquee-au-1er-janvier-2028
+- `RN_ENERGIE` : https://www.les-energies-renouvelables.eu/article/actualites/energies/baisse-de-la-tva-arret-du-photovoltaique-ce-que-le-programme-energie-du-rn-changerait-pour-les-menages-2302/
+- `RN_VOTONS` : https://votons-2027.fr/candidats/le-pen/programme
+- `MONTAIGNE_TVA_2022` : https://www.institutmontaigne.org/presidentielle-2022/marine-le-pen/baisser-la-tva-de-20-a-55-pour-les-carburants-lelectricite-le-gaz-et-le-fioul-domestique
+- `EP_COMPTES` : https://www.edouardphilippe.fr/programme/comptes-publics
+- `EP_PS_VOL1` : https://www.publicsenat.fr/actualites/politique/capitalisation-suppression-de-250-000-postes-de-fonctionnaires-autonomie-des-ecoles-fin-des-35-heures-aides-pour-les-familles-edouard-philippe-presente-son-projet-massif-et
+- `EP_EURONEWS` : https://fr.euronews.com/2026/10/09/presidentielle-2027-edouard-philippe-mise-sur-le-travail-et-la-reduction-des-depenses-publ
+- `EP_DEAL` : https://www.publicsenat.fr/actualites/economie/entreprises-un-deal-a-250-milliards-deuros-sur-un-quinquennat-que-represente-la-proposition-dedouard-philippe
+- `SMIC_2026` : https://www.info.gouv.fr/public/index.php/actualite/le-smic-revalorise-le-1er-juin-2026

@@ -1,0 +1,25 @@
+# Traçabilité des conclusions {#sec:annexe-k}
+
+Chaque conclusion du rapport (chapitres \ref{sec:discussion} et \ref{sec:conclusion}) est reliée ci-dessous aux
+simulations qui la fondent (clés des fichiers `phase7/resultats/<candidat>.pkl`, régénérables par
+`phase7/campagne.py`), aux tableaux et sections où ses chiffres sont présentés, et aux sources documentaires (codes du
+corpus `src/m27_corpus.py`, annexe \ref{sec:annexe-d}). Les tableaux sont produits par `etude/resultats_etude.py`
+sans saisie manuelle de résultats.
+
+| conclusion | simulations (clés de `phase7/resultats/<candidat>.pkl`) | tableaux et sections | sources |
+|---|---|---|---|
+| R1. Les mesures d'offre de travail sont les plus structurantes pour l'activité à moyen terme : retraites pour LFI et le RN (effet négatif), fin des 35 heures puis retraites pour Horizons (effet positif). | mesure:L34, mesure:P08, mesure:H05, mesure:H06 ; A | t9_mesures ; t10_generations ; ch. 9, 10 | LFI_BUDGET ; RN_RETRAITES_PS ; EP_COMPTES ; Bozio (2011) ; CNAV 2024 |
+| R2. Les signes des effets importants (PIB à cinq ans, dette de LFI et d'Horizons à dix ans, chômage) sont stables dans les dix régimes et les trois environnements ; les effets proches de zéro ne le sont pas. | regime:* ; environnement:* | t12_candidats ; t12_part ; ch. 12 | phase7/resultats/*_synthese.csv |
+| R3. L'ampleur des effets sur le chômage est peu fiable ; pour les stratégies S1-S5, leur signe est aussi moins robuste que celui des effets sur le PIB et la dette. | regime:* ; environnement:* ; S1-S5 | t12_S ; t12_candidats ; ch. 12 | phase5/resultats/lot53_synthese_S1_S5.csv |
+| R4. Les mesures documentées du RN et d'Horizons ne représentent qu'une faible part de l'effort nécessaire à leurs objectifs de déficit ; celles de LFI dépassent à court terme l'effort requis par son objectif. | A ; B ; B:oat_382 | t9_B ; t9_cible ; t9_niveaux ; ch. 9 | RN_MONEYVOX ; EP_COMPTES ; LFI_BUDGET |
+| R5. Atteindre les objectifs de déficit du RN et d'Horizons dans ce modèle demande un effort de plusieurs points de PIB, aux effets récessifs importants ; l'ampleur dépend de l'hypothèse de taux longs. | B ; B:oat_382 ; B_variante_2pc | t9_B ; t9_niveaux ; ch. 9, 12 | doc 22 (référence) ; M24 |
+| R6. Les résultats de LFI dépendent fortement de la traduction des recettes sans canal propre et de l'additionnalité de l'investissement hors budget. | A ; additionnalite:* ; mesure:L03, L08-L16, L33 | t9_mesures ; t9_variantes ; ch. 9 | LFI_BUDGET |
+| R7. Les variantes européennes modifient peu les effets à cinq ans ; la variante « tension » pèse surtout sur la dette à long terme. | europe:conforme, contentieux, tension | t9_variantes ; ch. 8, 9 | règlement (UE) 2024/1264 ; directive 2022/542 |
+| R8. Les effets distributifs statiques diffèrent par leur concentration : prélèvements sur le haut de la distribution (LFI), gains diffus (RN), pertes concentrées sur les allocataires du RSA (Horizons). | traductions A (microsimulation) | t10_deciles ; ch. 10 | OpenFisca-France ; M4 |
+| R9. Une mise en œuvre à 50 % divise les effets à peu près par deux ; un retard de deux ans décale les effets de court terme. | mise_en_oeuvre:* | t9_variantes ; ch. 9 | — |
+| R10. Les multiplicateurs simulés diminuent avec l'horizon ; ils sont plus élevés pour la consommation publique que pour les transferts et les baisses de prélèvements sur les entreprises. | multiplicateurs | ch. 7 | phase7/resultats/multiplicateurs.csv ; Blanchard et Leigh (2013) ; Ramey (2019) |
+
+**Statut des conclusions.** R1, R2, R4 et R10 sont robustes au sens du chapitre \ref{sec:robustesse} ; R3 est une
+conclusion sur la fragilité elle-même ; R5, R6 et R8 dépendent d'hypothèses de traduction explicitées
+(compositions [H], additionnalité, rendements) ; R7 dépend d'hypothèses de scénario européen [H] ; R9 est une propriété
+quasi linéaire du modèle à cette échelle.

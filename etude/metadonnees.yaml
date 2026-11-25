@@ -1,0 +1,24 @@
+---
+title: "Comparer les programmes présidentiels de 2027"
+subtitle: "Un modèle macroéconométrique de la France, ses fondements, ses résultats et ses limites — étude scientifique exploratoire"
+author: "Projet « Présidentielle » — modèle macroéconométrique ouvert de l'économie française"
+date: "Version provisoire du 25 novembre 2026 (corpus des programmes arrêté au 24 novembre 2026)"
+lang: fr-FR
+documentclass: book
+classoption: [11pt, a4paper, openany]
+geometry: [margin=2.4cm, top=2.6cm, bottom=2.6cm]
+mainfont: "TeX Gyre Pagella"
+mathfont: "Latin Modern Math"
+sansfont: "TeX Gyre Heros"
+monofont: "DejaVu Sans Mono"
+fontsize: 11pt
+linestretch: 1.12
+toc: true
+toc-depth: 2
+numbersections: true
+colorlinks: true
+linkcolor: "blue!50!black"
+urlcolor: "blue!50!black"
+header-includes: |
+  \input{entete.tex}
+---

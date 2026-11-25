@@ -60,6 +60,35 @@ class RegleBudgetaire:
         assert abs(sum(self.parts.values()) - 1) < 1e-9 and set(self.parts) <= set(INSTRUMENTS)
 
 
+@dataclass
+class ObjectifBudgetaire:
+    """Lecture « par objectifs budgétaires » d'un programme (finalisation 2026-11) : trajectoire cible du solde public
+    (% du PIB, solde effectif) annoncée par le candidat, atteinte par un effort supplémentaire réparti sur les
+    instruments `parts`, en plus des mesures documentées et de la règle du régime. L'effort est calculé chaque année
+    à partir du solde de l'année précédente (Δe = α (cible_t − s_{t−1}), borné par ±plafond) puis la cible est
+    corrigée de l'écart réalisé sur plusieurs passes (`simuler_objectif`). Toutes les valeurs sont des hypothèses de
+    lecture [H], la cible étant celle du candidat [D, source dans m27_corpus]."""
+    cibles: dict = field(default_factory=dict)      # {année: solde cible en % du PIB} ; interpolation linéaire, tenue après
+    parts: dict = field(default_factory=lambda: {"conso_publique": 0.5, "prestations": 0.5})
+    debut: int = 2027
+    alpha: float = 1.0
+    plafond: float = 2.0
+    nom: str = "objectif"
+
+    def __post_init__(self):
+        assert abs(sum(self.parts.values()) - 1) < 1e-9 and set(self.parts) <= set(INSTRUMENTS)
+
+    def cible(self, t):
+        if not self.cibles:
+            return None
+        ks = sorted(self.cibles)
+        if t <= ks[0]:
+            return float(self.cibles[ks[0]])
+        if t >= ks[-1]:
+            return float(self.cibles[ks[-1]])
+        return float(np.interp(t, ks, [self.cibles[k] for k in ks]))
+
+
 from m24_monetaire import RegimeMonetaire as ReglesMonetaire, AppliqueurMonetaire  # noqa: E402  (lot 5.2)
 
 
@@ -203,9 +232,11 @@ class AppliqueurBudgetaire:
     """Calcule (mode règle) ou impose (mode figé) l'effort e_t et le traduit en mesures sur les leviers de M8.
     Enregistre pour chaque année : effort ex ante total et par instrument, cible, solde stabilisant."""
 
-    def __init__(self, regle: RegleBudgetaire, mod, effort_impose: dict | None = None):
+    def __init__(self, regle: RegleBudgetaire, mod, effort_impose: dict | None = None,
+                 objectif: "ObjectifBudgetaire | None" = None):
         self.r, self.mod = regle, mod
         self.effort_impose = effort_impose
+        self.obj, self.e_obj = objectif, {}
         self.e = {}
         self.journal = {}
         B = mod.B
@@ -244,6 +275,19 @@ class AppliqueurBudgetaire:
         return e, {"dette_t_1": d, "solde_primaire_ajuste_t_1": s, "r_bar": 100 * rbar, "g_bar": 100 * gbar,
                    "solde_stabilisant": sbar, "cible": cible, "delta_effort": e - self.e.get(t - 1, 0.0), "suspendu": suspendu}
 
+    def _objectif(self, t, res):
+        o = self.obj
+        if t < o.debut or not res:
+            return 0.0
+        h = pd.DataFrame(res).set_index("annee")
+        if t - 1 not in h.index:
+            return self.e_obj.get(t - 1, 0.0)
+        c = o.cible(t)
+        if c is None:
+            return self.e_obj.get(t - 1, 0.0)
+        de = float(np.clip(o.alpha * (c - float(h.loc[t - 1, "solde_pib"])), -o.plafond, o.plafond))
+        return self.e_obj.get(t - 1, 0.0) + de
+
     def __call__(self, mod, ex, t, res):
         if self._g0 is None:
             self._g0 = ex.conso_publique.copy()
@@ -254,8 +298,13 @@ class AppliqueurBudgetaire:
         self.e[t] = e
         p = self.r.parts
         ins = {k: e * p.get(k, 0.0) for k in INSTRUMENTS}
-        self.journal[t] = {"effort": e, **{f"effort_{k}": v for k, v in ins.items()}, **info}
-        if e == 0.0 and not self.e.get(t - 1):
+        eo = self._objectif(t, res) if self.obj is not None else 0.0
+        if self.obj is not None:
+            self.e_obj[t] = eo
+            for k in INSTRUMENTS:
+                ins[k] += eo * self.obj.parts.get(k, 0.0)
+        self.journal[t] = {"effort": e, "effort_objectif": eo, **{f"effort_{k}": v for k, v in ins.items()}, **info}
+        if e == 0.0 and eo == 0.0 and not self.e.get(t - 1) and not self.e_obj.get(t - 1):
             return
         B = mod.B
         pibB = float(mod.macro.pib_cp[B])
@@ -350,7 +399,7 @@ def variante_oat(cible=3.82, debut=2027, fin_convergence=2029, avec=None):
 
 
 def simuler(env: Environnement, reg: Regime, prog: Programme = PROGRAMME_NUL, effort_impose: dict | None = None,
-            variante_env=None) -> dict:
+            variante_env=None, objectif: "ObjectifBudgetaire | None" = None) -> dict:
     """Une simulation (E, R, P). Ne recalibre jamais l'environnement. Renvoie la trajectoire (avec colonnes « imposé »
     et « produit »), l'effort budgétaire et la durée. `variante_env` : hypothèse exogène alternative (fonction)."""
     t0 = time.time()
@@ -358,6 +407,10 @@ def simuler(env: Environnement, reg: Regime, prog: Programme = PROGRAMME_NUL, ef
     ex = copy.deepcopy(env.R["exogenes"])
     if variante_env is not None:
         variante_env(env.mod, ex)
+    # base des taux pour le régime monétaire : exogènes de l'environnement APRÈS la variante d'environnement (sinon une
+    # variante de taux, par exemple `variante_oat`, serait écrasée par l'appliqueur monétaire à partir de 2027 —
+    # défaut corrigé lors de la finalisation, 2026-11-24)
+    ex_taux = copy.deepcopy(ex) if variante_env is not None else env.R["exogenes"]
     if prog.appliquer is not None:
         prog.appliquer(env.mod, ex)
     sauv = _appliquer_parametres(reg.parametres, ex)
@@ -367,11 +420,11 @@ def simuler(env: Environnement, reg: Regime, prog: Programme = PROGRAMME_NUL, ef
     soc = {k: v for k, v in reg.structurels.items() if STRUCTURELS[k][0] == "societes"}
     if soc:
         ex.variante_societes = {**(ex.variante_societes or {}), **soc}
-    app = AppliqueurBudgetaire(reg.budgetaire, env.mod, effort_impose)
+    app = AppliqueurBudgetaire(reg.budgetaire, env.mod, effort_impose, objectif)
     m = reg.monetaire
     besoin_ref = m.type == "bce" or m.prime == "ecart_reference"
     ref_m = env.reference_monetaire(m.taux_court_reference) if besoin_ref else None
-    mon = AppliqueurMonetaire(m, env.mod, env.R["exogenes"], ref_m)
+    mon = AppliqueurMonetaire(m, env.mod, ex_taux, ref_m)
 
     def crochet(mod, ex_, t, res):
         mon(mod, ex_, t, res)
@@ -382,27 +435,51 @@ def simuler(env: Environnement, reg: Regime, prog: Programme = PROGRAMME_NUL, ef
     finally:
         E.PHILLIPS = sauv[0]
     j = pd.DataFrame(app.journal).T.reindex(r.index)
-    for k in ["effort"] + [f"effort_{i}" for i in INSTRUMENTS]:
+    for k in ["effort", "effort_objectif"] + [f"effort_{i}" for i in INSTRUMENTS]:
         r["impose_" + k] = j[k].astype(float).fillna(0.0) if k in j else 0.0
     r["solde_primaire_pib"] = r.solde_pib + 100 * r.interets / r.pib_nominal
     jm = pd.DataFrame(mon.journal).T.reindex(r.index)
     for k in ("taux_directeur", "ecart_directeur", "ecart_bund", "ecart_souverain", "oat", "ecart_credit_menages", "ecart_credit_entreprises"):
         r["mon_" + k] = jm[k].astype(float) if k in jm else np.nan
-    return {"trajectoire": r, "effort": dict(app.e), "journal": app.journal, "duree_s": time.time() - t0,
+    return {"trajectoire": r, "effort": dict(app.e), "effort_objectif": dict(app.e_obj), "journal": app.journal,
+            "duree_s": time.time() - t0,
             "regime": reg.description(), "programme": prog.nom, "environnement": env.empreinte()}
 
 
-def evaluer(env: Environnement, reg: Regime, prog: Programme, ref: dict | None = None, variante_env=None) -> dict:
+def simuler_objectif(env: Environnement, reg: Regime, prog: Programme, objectif: "ObjectifBudgetaire", passes: int = 3,
+                     effort_impose: dict | None = None, variante_env=None) -> dict:
+    """Lecture B : programme + effort supplémentaire pour suivre la trajectoire cible. Les cibles internes sont
+    corrigées à chaque passe de l'écart réalisé (anticipation parfaite de la dérive par le gouvernement [H]).
+    Renvoie la dernière simulation, avec les cibles annoncées et l'écart final par année."""
+    obj = copy.deepcopy(objectif)
+    fin = max(env.annees)
+    annonce = {t: objectif.cible(t) for t in range(objectif.debut, fin + 1)}
+    obj.cibles = dict(annonce)
+    for _ in range(passes):
+        out = simuler(env, reg, prog, effort_impose=effort_impose, variante_env=variante_env, objectif=obj)
+        tr = out["trajectoire"]
+        obj.cibles = {t: obj.cibles[t] + (annonce[t] - float(tr.solde_pib[t])) for t in annonce}
+    out["cibles_annoncees"] = annonce
+    out["ecart_cible"] = {t: float(out["trajectoire"].solde_pib[t]) - annonce[t] for t in annonce}
+    return out
+
+
+def evaluer(env: Environnement, reg: Regime, prog: Programme, ref: dict | None = None, variante_env=None,
+            objectif: "ObjectifBudgetaire | None" = None) -> dict:
     """Effet d'un programme dans un régime : Y(E, R, P) − Y(E, R, ∅). Règle figée : l'effort de la référence (E, R, ∅)
     est imposé à la simulation avec programme. Renvoie référence, variante et écarts."""
     ref = ref or simuler(env, reg, variante_env=variante_env)
     impose = ref["effort"] if reg.budgetaire.mode == "figee" else None
-    var = simuler(env, reg, prog, effort_impose=impose, variante_env=variante_env)
+    if objectif is None:
+        var = simuler(env, reg, prog, effort_impose=impose, variante_env=variante_env)
+    else:
+        var = simuler_objectif(env, reg, prog, objectif, effort_impose=impose, variante_env=variante_env)
     a, b = var["trajectoire"], ref["trajectoire"]
     ecart = pd.DataFrame({
         "PIB (%)": 100 * np.log(a.pib / b.pib), "emploi (milliers)": a.emploi - b.emploi, "chômage (pt)": a.chomage - b.chomage,
         "prix (%)": 100 * np.log(a.pc / b.pc), "solde (pt PIB)": a.solde_pib - b.solde_pib, "dette (pt PIB)": a.dette_pib - b.dette_pib,
-        "effort imposé (pt PIB)": a.impose_effort - b.impose_effort})
+        "effort imposé (pt PIB)": a.impose_effort - b.impose_effort,
+        "effort objectif (pt PIB)": a.impose_effort_objectif - b.impose_effort_objectif})
     return {"reference": ref, "variante": var, "ecart": ecart}
 
 

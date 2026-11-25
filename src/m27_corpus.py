@@ -178,14 +178,16 @@ M += [
            "Financement, dette du pôle public et effet d'offre non représentés.", "partiel", "pole_public_bancaire",
            debut=2028),
     Mesure("L34", L, "retraites", "Abrogation de la réforme de 2023 (retour à 62 ans)", -9.0, 2027, "candidat",
-           "dès l'année suivant l'élection", "assurés", "", B, (("age_legal_immediat", 62),),
-           "Coût calculé par M9 (le montant annoncé sert de contrôle).", "oui", None),
+           "dès l'année suivant l'élection", "assurés", "", B, (("retraites", {"age": 62, "mode": "immediat", "duree": "2014"}),),
+           "Retour à 62 ans sans transition et au calendrier de durée de la loi de 2014 ; coût calculé par M9 (le "
+           "montant annoncé sert de contrôle).", "oui", None),
     Mesure("L35", L, "assurance chômage", "Abrogation des réformes de l'assurance chômage", -3.0, 2027, "candidat",
            "dès l'année suivant l'élection", "demandeurs d'emploi", "", B, (("assurance_chomage", _ac(3.0)),),
            "Variation = montant / 40 Md€ de dépense.", "oui", None),
     Mesure("L36", L, "retraites", "Retour à 60 ans avec 40 annuités", None, None, "aucun", "en un mandat", "assurés", "",
-           B, (("age_legal", 60),), "Objectif de mandat : variante (non incluse dans le paquet 2027).", "partiel", None,
-           debut=2028),
+           B, (("retraites", {"age": 60, "mode": "progressif", "duree": 160, "duree_mode": "progressif"}),),
+           "Objectif de mandat : variante (non incluse dans le paquet 2027) ; 40 annuités = 160 trimestres, un "
+           "trimestre par génération [H].", "partiel", None, debut=2028),
     Mesure("L37", L, "épargne", "Plafond du livret A relevé à 30 000 € ; centralisation portée à 80 % ; livret B",
            None, None, "aucun", "", "épargnants", "", ("LFI_BUDGET", "LFI_EPARGNE"), (),
            "Pas de canal de l'intermédiation financière dans le modèle.", "non", "pole_public_bancaire"),
@@ -228,9 +230,11 @@ M += [
     Mesure("P08", R, "retraites", "Âge légal ramené à 62 ans (60 ans pour les carrières commencées avant 20 ans), 42 "
            "annuités ; pilier de capitalisation obligatoire (socle : Fonds de réserve pour les retraites)", -18.6, 2032,
            "candidat", "application au 1er janvier 2028", "assurés", "réforme « pleinement financée »",
-           ("RN_RETRAITES_PS", "RN_RETRAITES_SUD", "RN_RETRAITES_BRUT"), (("age_legal", 62),),
-           "Coût brut annoncé 18,6 Md€ en 2032. Carrières longues, durée et pilier de capitalisation non représentés "
-           "dans M9 (extension identifiée, doc 26).", "partiel", None, debut=2028),
+           ("RN_RETRAITES_PS", "RN_RETRAITES_SUD", "RN_RETRAITES_BRUT"), (("retraites", {"age": 62, "mode": "immediat", "duree": 168, "groupe": 60, "groupe_part": 0.17}),),
+           "Coût brut annoncé 18,6 Md€ en 2032. M9 : âge 62 ans, 42 annuités (168 trimestres), départ à 60 ans pour "
+           "une fraction de chaque génération égale à la part des départs pour carrière longue au régime général "
+           "(17 %, CNAV 2024) [H : éligibilité « avant 20 ans » approchée par cette part]. Pilier de capitalisation non "
+           "chiffré : non représenté.", "partiel", None, debut=2028),
     Mesure("P09", R, "retraites", "Économies sur les retraites (« corrections de mesures injustes »)", 17.5, 2032, "candidat",
            "à terme", "", "", ("RN_PS_BUDGET", "RN_MONEYVOX"), (),
            "Fourchette 15-20 Md€, mesures non détaillées.", "partiel", None),
@@ -276,8 +280,11 @@ M += [
            "canal education (Md€) à chiffrer.", "partiel", None),
     Mesure("H05", P, "retraites", "Âge de départ à 65 ans et 45 annuités ; départ précoce pour un tiers des assurés ; "
            "capitalisation collective", None, None, "aucun", "non précisé", "assurés", "", E + ("EP_EURONEWS",),
-           (("age_legal", 65),), "Durée d'assurance, départs précoces et capitalisation non représentés dans M9.",
-           "partiel", None, debut=2028),
+           (("retraites", {"age": 65, "mode": "progressif", "duree": 180, "duree_mode": "progressif", "groupe": "ref",
+                          "groupe_part": 1 / 3}),),
+           "M9 : âge 65 ans et 45 annuités (180 trimestres), montée d'un trimestre par génération [H] ; le tiers des "
+           "assurés annoncé comme pouvant partir plus tôt garde les conditions actuelles [H]. Capitalisation "
+           "collective non chiffrée : non représentée.", "partiel", None, debut=2028),
     Mesure("H06", P, "travail", "Fin des 35 heures ; deux heures supplémentaires hebdomadaires exonérées de cotisations",
            None, None, "aucun", "ordonnances de juillet 2027", "salariés", "≈ 1 000 € par an pour un salarié au SMIC",
            ("EP_PS_VOL1", "EP_EURONEWS"), (("temps_travail", 37),),
@@ -366,7 +373,7 @@ def _valeur(m: "Mesure", v, reference, annee):
     return v
 
 
-ABSOLUS = ("age_legal", "age_legal_immediat", "temps_travail", "taux_is")
+ABSOLUS = ("age_legal", "age_legal_immediat", "temps_travail", "taux_is")  # "retraites" : jamais modulé par M26
 NEUTRES = {"age_legal": 64, "age_legal_immediat": 64, "temps_travail": 35, "taux_is": TAUX_IS_ACTUEL}
 
 
@@ -422,3 +429,30 @@ def table(candidat: str | None = None):
              "regime": m.regime, "regle": m.regle, "sources": ", ".join(m.sources)}
             for m in M if candidat in (None, m.candidat)]
     return pd.DataFrame(rows)
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# Lecture B : objectifs budgétaires annoncés (finalisation 2026-11)
+# ---------------------------------------------------------------------------------------------------------------
+# cibles : solde public effectif en % du PIB, annoncé par le candidat [D] ; "stabilisation:2032" = solde stabilisant
+# le ratio de dette calculé dans le modèle à partir de la trajectoire des mesures (lecture du projet [H]) ;
+# parts : répartition de l'effort non ventilé entre instruments, déduite des déclarations [H].
+OBJECTIFS = {
+    "melenchon": {"cibles": "stabilisation:2032", "parts": {"impots_menages": 1.0},
+                  "texte": "réduction du déficit de 24,7 Md€ en 2027 (mesures) puis stabilisation du ratio dette/PIB en un "
+                           "quinquennat", "sources": ("LFI_BUDGET",),
+                  "hypotheses": "effort supplémentaire porté par les impôts des ménages (programme fondé sur des recettes "
+                                "nouvelles) [H] ; le modèle ne cible pas l'effort sur les hauts revenus"},
+    "le_pen": {"cibles": {2030: -3.0}, "parts": {"conso_publique": 0.6, "prestations": 0.4},
+               "texte": "déficit à 3 % du PIB en 2030 ; dette de 121 % (2027) à 112 % (2032) ; 140 Md€ d'économies",
+               "sources": ("RN_MONEYVOX", "RN_PS_BUDGET"),
+               "hypotheses": "effort par les dépenses (État, collectivités, opérateurs : consommation publique ; "
+                             "immigration et retraites : prestations) [H] ; cible tenue après 2030 [H] ; la cible de "
+                             "dette sert de contrôle"},
+    "philippe": {"cibles": {2032: -2.5}, "parts": {"prestations": 2 / 3, "conso_publique": 1 / 3},
+                 "texte": "déficit sous 2,5 % du PIB en fin de quinquennat ; moitié de l'effort sur les dépenses sociales, "
+                          "un quart sur l'État et les collectivités, un quart « sur la croissance » ; aucun nouvel impôt",
+                 "sources": ("EP_COMPTES",),
+                 "hypotheses": "le quart « croissance » n'est pas un instrument : il est laissé au modèle ; l'effort "
+                               "budgétaire est réparti 2/3 prestations, 1/3 consommation publique [H] ; variante −2,0 %"},
+}

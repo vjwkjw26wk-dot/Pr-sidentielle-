@@ -143,9 +143,18 @@ def _serie_g(mod, ex, points, debut, montee=1):
 
 
 def regle_age(p: dict) -> str:
-    """Règle M9 : {"age": 60, "debut": 2028, "mode": "progressif"|"immediat"} ou ancienne forme {"regle": ...}."""
+    """Règle M9 : {"age": 60, "debut": 2028, "mode": "progressif"|"immediat"} ou ancienne forme {"regle": ...}.
+    Options (finalisation 2026-11) : "duree" (trimestres requis, ou "2014" pour le calendrier de la loi de 2014),
+    "duree_mode" ("immediat" | "progressif", un trimestre par génération), "groupe" (âge de départ d'un groupe de
+    carrières longues, ou "ref" : conditions actuelles maintenues) et "groupe_part" (fraction de chaque génération)."""
     if "age" in p:
-        return f"{float(p['age']):g}@{int(p.get('debut', DEBUT_DEFAUT))}:{p.get('mode', 'progressif')}"
+        d = int(p.get("debut", DEBUT_DEFAUT))
+        r = f"{float(p['age']):g}@{d}:{p.get('mode', 'progressif')}"
+        if p.get("duree") is not None:
+            r += "|D=2014" if str(p["duree"]) == "2014" else f"|D={float(p['duree']):g}@{d}:{p.get('duree_mode', 'immediat')}"
+        if p.get("groupe") is not None:
+            r += f"|G={p['groupe']}:{float(p.get('groupe_part', 0.0)):g}"
+        return r
     return str(p["regle"])
 
 
