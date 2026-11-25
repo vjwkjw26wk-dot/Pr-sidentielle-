@@ -1,6 +1,6 @@
 # Gel technique du modèle — version 1.0 (25 novembre 2026)
 
-Étiquette git : `v1.0-gel-2026-11-25` (branche `phase43`). La branche `main` conserve la version 0.8, immuable ;
+Version gelée : commit `8a0baf4` de la branche `phase43` (étiquette locale `v1.0-gel-2026-11-25` ; l'étiquette n'a pas pu être poussée sur GitHub depuis l'environnement de travail — à créer sur ce commit si besoin : `git tag v1.0-gel-2026-11-25 8a0baf4`). La branche `main` conserve la version 0.8, immuable ;
 les versions 0.9, T1 et P4 restent sélectionnables (`m23_regimes.CONFIGURATIONS`).
 
 ## 1. Configuration de référence
@@ -29,7 +29,7 @@ les versions 0.9, T1 et P4 restent sélectionnables (`m23_regimes.CONFIGURATIONS
 
 ## 3. Versions du code et des données
 
-- Code : commit étiqueté `v1.0-gel-2026-11-25`.
+- Code : commit `8a0baf4` (branche `phase43`) ; seuls ce fichier et la documentation ont été modifiés ensuite.
 - Données : `data/raw/` ; empreintes SHA-256 dans `data/raw/_registre.json` ; téléchargement par
   `src/telechargement.py` (sources ouvertes uniquement).
 - Environnements calibrés : `outputs/` (non versionné, reconstructible) ; leur validité est vérifiée à chaque
